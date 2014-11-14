@@ -1,0 +1,9 @@
+{
+	"name": "TabbyChat 2",
+	"version": "${version}",
+	"revision": "${revision}",
+	"author": "killjoy1221",
+	"mcversion": "${mcversion}",
+	"description": "Chat overhaul.",
+	"classTransformerClasses": "mnm.mods.util.asm.AccessTransformer"
+}

@@ -1,0 +1,97 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
+        }
+        maven {
+            name = "sonatype"
+            url = "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+    }
+}
+
+apply plugin: 'fml'
+
+group = "mnm.mods"
+archivesBaseName = "TabbyChat"
+version = String.format("%s.%s.%s-alpha", versionMajor, versionMinor, versionRevision)
+
+minecraft {
+    version = String.format("%s-%s", mcversion, fmlversion)
+    runDir = "run"
+	
+	replace "@VERSION@", project.version
+}
+System.out.println()
+System.out.println(String.format("%s %s for Minecraft %s", archivesBaseName, version, minecraft.version))
+System.out.println()
+processResources{
+    // this will ensure that this task is redone when the versions change.
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+    inputs.property "revision", versionBuild
+
+    // replace stuff in mcmod.info, nothing else
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info', 'litemod.json'
+
+        // replace version and mcversion
+        expand 'version':project.version, 'mcversion':project.minecraft.version, 'revision':versionBuild
+    }
+
+    // copy everything else, thats not the mcmod.info
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info', 'litemod.json'
+    }
+}
+dependencies{
+    compile project(":MnM-Utils")
+}
+jar{
+    from sourceSets.api.output
+    manifest{
+		attributes "FMLAT":"tabbychat2_at.cfg"
+        attributes "ModType":"FML,LiteLoader"
+        attributes "ModSide":"CLIENT"
+    }
+}
+task jarAPI(type:Jar){
+    from sourceSets.api.output
+    classifier "api"
+}
+task jarDev(type:Jar){
+	from sourceSets.main.output
+	from sourceSets.api.output
+	
+	classifier "dev"
+}
+task jarSrc(type:Jar){
+    from sourceSets.main.allSource
+    from sourceSets.api.allSource
+    
+    classifier "src"
+}
+artifacts{
+    archives jarAPI
+    archives jarSrc
+}
+reobf{reobf(jar){
+	setSrgMcp()
+}}
+/*
+apply plugin: 'liteloader'
+jarLiteloader{
+    from sourceSets.api.output
+    exclude "mcmod.info"
+    exclude "**//*bridge/fml/**"
+    manifest{
+		attributes "FMLAT":"tabbychat2_at.cfg"
+        attributes "ModType":"LiteMod"
+    }
+}
+*/

@@ -1,0 +1,13 @@
+{
+	"modListVersion": 2,
+	"modList": [{
+		"modid": "TabbyChat2",
+		"name": "TabbyChat 2",
+		"version": "${version}",
+		"mcversion": "${mcversion}",
+		"authorList": [ "killjoy1221" ],
+		"credits": "Original mod by RocketMan10404",
+		"url": "http://www.minecraftforum.net/forums/topic/2181597-n",
+		"description": ""
+	}]
+}
