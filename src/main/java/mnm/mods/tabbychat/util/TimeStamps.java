@@ -1,6 +1,6 @@
-package mnm.mods.tabbychat.settings;
+package mnm.mods.tabbychat.util;
 
-public enum EnumTimeStamp {
+public enum TimeStamps {
 
     MILITARY("[HHmm]", "[2359]", "\\[[0-9]{4}\\]"),
     MILITARYWITHCOLON("[HH:mm]", "[23:59]", "\\[[0-9]{2}:[0-9]{2}\\]"),
@@ -14,7 +14,7 @@ public enum EnumTimeStamp {
     public String maxTime;
     public String regEx;
 
-    private EnumTimeStamp(String _code, String _maxTime, String _regex) {
+    private TimeStamps(String _code, String _maxTime, String _regex) {
         this.code = _code;
         this.maxTime = _maxTime;
         this.regEx = _regex;

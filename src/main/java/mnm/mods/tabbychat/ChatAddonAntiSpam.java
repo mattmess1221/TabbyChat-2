@@ -18,7 +18,7 @@ public class ChatAddonAntiSpam implements ChatRecievedListener {
 
     @Override
     public void onChatRecievedFilter(ChatRecievedFilterEvent message) {
-        if (message.id == 0) {
+        if (TabbyChat.getInstance().generalSettings.antiSpam.getValue() && message.id == 0) {
             IChatComponent chat = message.chat;
             if (!this.lastMessage.isEmpty() && chat.getUnformattedText().equals(this.lastMessage)) {
                 spamCounter++;

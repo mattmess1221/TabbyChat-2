@@ -1,13 +1,14 @@
 package mnm.mods.tabbychat.settings.gui;
 
-import mnm.mods.tabbychat.settings.TabbySettings;
+import mnm.mods.tabbychat.TabbyChat;
+import mnm.mods.tabbychat.settings.GeneralSettings;
 
-public class GuiSettingsGeneral extends GuiSettings {
+public class GuiSettingsGeneral extends GuiSettings<GeneralSettings> {
 
     @Override
-    protected TabbySettings getSettings() {
+    protected GeneralSettings getSettings() {
         // TODO Auto-generated method stub
-        return null;
+        return TabbyChat.getInstance().generalSettings;
     }
 
 }

@@ -5,11 +5,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.Chat;
 import mnm.mods.tabbychat.api.Message;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
-import mnm.mods.tabbychat.settings.TabbySettings;
+import mnm.mods.tabbychat.settings.ChatBoxSettings;
+import mnm.mods.tabbychat.settings.ColorSettings;
 import mnm.mods.tabbychat.util.ChatChannel;
 import mnm.mods.tabbychat.util.ChatMessage;
 import mnm.mods.tabbychat.util.ChatTextUtils;
@@ -24,6 +26,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class ChatBox extends GuiPanel implements Chat {
+
+    private static ChatBoxSettings settings = TabbyChat.getInstance().chatSettings;
+    private static ColorSettings colors = TabbyChat.getInstance().colorSettings;
 
     private final int absMinX = 0;
     private final int absMinY = 0;
@@ -43,11 +48,15 @@ public class ChatBox extends GuiPanel implements Chat {
     private ScaledResolution sr = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
 
     public ChatBox() {
-        this(5, 17, 300, 160);
+        this(getSavedRect());
     }
 
-    public ChatBox(int xPos, int yPos, int width, int height) {
-        this(new Rectangle(xPos, yPos, width, height));
+    private static Rectangle getSavedRect() {
+        int x = settings.xPos.getValue();
+        int y = settings.yPos.getValue();
+        int w = settings.width.getValue();
+        int h = settings.height.getValue();
+        return new Rectangle(x, y, w, h);
     }
 
     public ChatBox(Rectangle rect) {
@@ -57,8 +66,8 @@ public class ChatBox extends GuiPanel implements Chat {
         this.addComponent(chatArea = new ChatArea(this), BorderLayout.Position.CENTER);
         this.addComponent(txtChatInput = new TextBox(this), BorderLayout.Position.SOUTH);
         this.setBounds(rect);
-        this.setForeColor(0xffffff);
-
+        this.setForeColor(colors.chatTxtColor.getValue().getColor());
+        this.setBackColor(colors.chatBoxColor.getValue().getColor());
     }
 
     @Override
@@ -106,23 +115,12 @@ public class ChatBox extends GuiPanel implements Chat {
                 pnlTray.getBounds().height);
 
         // Save the new position.
-        TabbySettings settings = TabbySettings.getSettings("chatbox");
-        settings.setSetting("chatbox.box.xPos", bounds.x);
-        settings.setSetting("chatbox.box.yPos", bounds.y);
-        settings.setSetting("chatbox.box.width", bounds.width);
-        settings.setSetting("chatbox.box.height", bounds.height);
-    }
-
-    @Override
-    public void updateComponent() {
-
-        // Update the opacity
-        // TODO Replace this with color setting
-        float opacity = this.mc.gameSettings.chatOpacity * 0.9F + 0.1F;
-        int color = (int) (opacity * 255F);
-        setBackColor(color / 3 << 24);
-
-        super.updateComponent();
+        ChatBoxSettings settings = TabbyChat.getInstance().chatSettings;
+        settings.xPos.setValue(bounds.x);
+        settings.yPos.setValue(bounds.y);
+        settings.width.setValue(bounds.width);
+        settings.height.setValue(bounds.height);
+        settings.saveSettingsFile();
     }
 
     public int getWidth() {

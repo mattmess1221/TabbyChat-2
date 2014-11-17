@@ -1,11 +1,13 @@
 package mnm.mods.tabbychat.liteloader;
 
 import java.io.File;
+import java.net.SocketAddress;
 
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.util.TabbyRef;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.play.server.S01PacketJoinGame;
 
@@ -28,7 +30,7 @@ public class LiteModTabbyChat extends TabbyChat implements RenderListener, JoinG
     @Override
     public void init(File configPath) {
         setInstance(this);
-        setDataDirectory(configPath);
+        setConfigFolder(configPath);
         init();
     }
 
@@ -40,7 +42,8 @@ public class LiteModTabbyChat extends TabbyChat implements RenderListener, JoinG
     @Override
     public void onJoinGame(INetHandler iNet, S01PacketJoinGame packet, ServerData serverData,
             RealmsServer realms) {
-        onJoin(serverData);
+        SocketAddress addr = ((NetHandlerPlayClient) iNet).getNetworkManager().getRemoteAddress();
+        onJoin(addr);
     }
 
     // Unused

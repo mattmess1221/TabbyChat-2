@@ -1,6 +1,7 @@
 package mnm.mods.tabbychat.fml;
 
 import java.io.File;
+import java.net.SocketAddress;
 
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.util.TabbyRef;
@@ -32,7 +33,7 @@ public class FMLTabbyChat extends TabbyChat {
     public void init(FMLInitializationEvent event) {
         if (shouldLoad) {
             setInstance(this);
-            this.setDataDirectory(tempDir);
+            this.setConfigFolder(tempDir);
             FMLCommonHandler.instance().bus().register(this);
             init();
         } else {
@@ -48,6 +49,10 @@ public class FMLTabbyChat extends TabbyChat {
 
     @SubscribeEvent
     public void onJoin(ClientConnectedToServerEvent event) {
-        onJoin(Minecraft.getMinecraft().getCurrentServerData());
+        if (event.isLocal) {
+            onJoin((SocketAddress) null);
+        } else {
+            onJoin(event.manager.getRemoteAddress());
+        }
     }
 }

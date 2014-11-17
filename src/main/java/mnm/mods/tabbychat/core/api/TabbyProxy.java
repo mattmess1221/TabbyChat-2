@@ -1,5 +1,6 @@
 package mnm.mods.tabbychat.core.api;
 
+import java.net.SocketAddress;
 import java.util.List;
 
 import mnm.mods.tabbychat.api.listener.events.ChatInitEvent;
@@ -10,7 +11,6 @@ import mnm.mods.tabbychat.api.listener.events.ChatMessageEvent.ChatSentFilterEve
 import mnm.mods.tabbychat.api.listener.events.PostLoginEvent;
 import mnm.mods.util.gui.GuiComponent;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.multiplayer.ServerData;
 
 public class TabbyProxy {
 
@@ -41,8 +41,8 @@ public class TabbyProxy {
         TabbyProxy.provider.onActionPerformed(button);
     }
 
-    public static void onJoinGame(ServerData server) {
-        PostLoginEvent loginEvent = new PostLoginEvent(server);
+    public static void onJoinGame(SocketAddress address) {
+        PostLoginEvent loginEvent = new PostLoginEvent(address);
         TabbyProxy.provider.onPostLogin(loginEvent);
     }
 

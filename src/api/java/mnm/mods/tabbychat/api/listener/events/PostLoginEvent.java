@@ -1,12 +1,15 @@
 package mnm.mods.tabbychat.api.listener.events;
 
-import net.minecraft.client.multiplayer.ServerData;
+import java.net.SocketAddress;
 
 public class PostLoginEvent extends Event {
 
-    public ServerData serverData;
+    /**
+     * The ip of the server being connected to. Null means single player.
+     */
+    public SocketAddress serverData;
 
-    public PostLoginEvent(ServerData server) {
-        this.serverData = server;
+    public PostLoginEvent(SocketAddress address) {
+        this.serverData = address;
     }
 }

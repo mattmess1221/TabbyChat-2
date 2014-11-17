@@ -4,9 +4,9 @@ import java.awt.Dimension;
 import java.util.Iterator;
 import java.util.List;
 
+import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Message;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
-import mnm.mods.tabbychat.settings.TabbySettings;
 import mnm.mods.tabbychat.util.ChatMessage;
 import mnm.mods.util.gui.GuiComponent;
 import mnm.mods.util.gui.GuiPanel;
@@ -40,7 +40,6 @@ public class ChatArea extends GuiComponent {
                     div *= 3;
                 }
                 scroll(scroll / div);
-                System.out.println(scroll / div);
             }
         });
     }
@@ -181,7 +180,7 @@ public class ChatArea extends GuiComponent {
         int opacity = (int) (255 * mc.gameSettings.chatOpacity);
         double age = mc.ingameGUI.getUpdateCounter() - line.getCounter();
         if (!mc.ingameGUI.getChatGUI().getChatOpen()) {
-            double opacPerc = age / TabbySettings.getSettings("chatbox").getInt("chatbox.fade");
+            double opacPerc = age / TabbyChat.getInstance().chatSettings.fadeTime.getValue();
             opacPerc = 1.0D - opacPerc;
             opacPerc *= 10.0D;
 
