@@ -2,9 +2,6 @@ package mnm.mods.tabbychat.api;
 
 /**
  * Represents the main object for TabbyChat
- *
- * @author Matthew
- *
  */
 public abstract class TabbyAPI {
 
@@ -17,6 +14,11 @@ public abstract class TabbyAPI {
         instance = tabbychat;
     }
 
+    /**
+     * Gets the API.
+     *
+     * @return The api
+     */
     public static TabbyAPI getAPI() {
         return instance;
     }

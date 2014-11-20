@@ -21,6 +21,9 @@ public abstract class ChatMessageEvent extends Event {
         }
     }
 
+    /**
+     * Filters the messages when they are sent.
+     */
     public static class ChatSentFilterEvent extends ChatMessageEvent {
 
         public String message;

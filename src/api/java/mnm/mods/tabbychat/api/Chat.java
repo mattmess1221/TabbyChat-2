@@ -6,9 +6,6 @@ import net.minecraft.util.IChatComponent;
 
 /**
  * Represents the Chat.
- *
- * @author Matthew
- *
  */
 public interface Chat {
 
@@ -91,6 +88,9 @@ public interface Chat {
      */
     void removeMessages(int id);
 
+    /**
+     * Clears all the messages in the chat.
+     */
     void clearMessages();
 
 }
