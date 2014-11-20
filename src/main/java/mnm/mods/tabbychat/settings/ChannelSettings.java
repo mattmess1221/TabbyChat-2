@@ -1,7 +1,7 @@
 package mnm.mods.tabbychat.settings;
 
 import java.lang.reflect.Type;
-import java.net.SocketAddress;
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +41,7 @@ public class ChannelSettings extends ServerSettings {
             new ArrayList<String>());
     public SettingValue<Boolean> useIgnorePatterns = new SettingValue<Boolean>(false);
 
-    public ChannelSettings(SocketAddress url) {
+    public ChannelSettings(InetSocketAddress url) {
         super(url, "server");
     }
 

@@ -1,6 +1,7 @@
 package mnm.mods.tabbychat;
 
 import java.io.File;
+import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
 import mnm.mods.tabbychat.api.Chat;
@@ -109,7 +110,7 @@ public abstract class TabbyChat extends TabbyAPI {
     protected void onJoin(SocketAddress address) {
         this.currentServer = address;
         // Set server settings
-        channelSettings = new ChannelSettings(currentServer);
+        channelSettings = new ChannelSettings((InetSocketAddress) currentServer);
         channelSettings.loadSettingsFile();
         channelSettings.saveSettingsFile();
 

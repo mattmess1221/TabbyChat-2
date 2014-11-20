@@ -1,29 +1,30 @@
 package mnm.mods.tabbychat.settings;
 
-import java.net.SocketAddress;
+import java.net.InetSocketAddress;
 
 import mnm.mods.util.IPUtils;
 
 public abstract class ServerSettings extends TabbySettings {
 
-    private final SocketAddress ip;
+    private final InetSocketAddress ip;
 
-    public ServerSettings(SocketAddress url, String name) {
+    public ServerSettings(InetSocketAddress url, String name) {
         super(getIPForFileName(url), name);
         this.ip = url;
     }
 
-    private static String getIPForFileName(SocketAddress addr) {
+    private static String getIPForFileName(InetSocketAddress addr) {
         String ip;
         if (addr == null) {
             ip = "singleplayer";
         } else {
-            ip = "multiplayer/" + IPUtils.parse(addr.toString()).getFileSafeAddress();
+            String url = addr.getHostName();
+            ip = "multiplayer/" + IPUtils.parse(url).getFileSafeAddress();
         }
         return ip;
     }
 
-    public SocketAddress getIP() {
+    public InetSocketAddress getIP() {
         return this.ip;
     }
 }
