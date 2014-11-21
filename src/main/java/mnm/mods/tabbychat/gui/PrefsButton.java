@@ -1,21 +1,24 @@
 package mnm.mods.tabbychat.gui;
 
 import mnm.mods.util.gui.GuiButton;
-import mnm.mods.util.gui.GuiPanel;
 import net.minecraft.client.gui.Gui;
 
 public class PrefsButton extends GuiButton {
 
-    public PrefsButton(GuiPanel parent, String text) {
-        this(parent, 0, 0, 100, 20, text);
+    public PrefsButton() {
+        this("");
     }
 
-    public PrefsButton(GuiPanel parent, int x, int y, String text) {
-        this(parent, x, y, 100, 20, text);
+    public PrefsButton(String text) {
+        this(0, 0, 100, 20, text);
     }
 
-    public PrefsButton(GuiPanel parent, int x, int y, int width, int height, String text) {
-        super(parent, x, y, width, height);
+    public PrefsButton(int x, int y, String text) {
+        this(x, y, 100, 20, text);
+    }
+
+    public PrefsButton(int x, int y, int width, int height, String text) {
+        super(x, y, width, height);
         setText(text);
     }
 

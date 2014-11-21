@@ -62,9 +62,9 @@ public class ChatBox extends GuiPanel implements Chat {
     public ChatBox(Rectangle rect) {
         super();
         this.setLayout(new BorderLayout());
-        this.addComponent(pnlTray = new ChatTray(this), BorderLayout.Position.NORTH);
-        this.addComponent(chatArea = new ChatArea(this), BorderLayout.Position.CENTER);
-        this.addComponent(txtChatInput = new TextBox(this), BorderLayout.Position.SOUTH);
+        this.addComponent(pnlTray = new ChatTray(), BorderLayout.Position.NORTH);
+        this.addComponent(chatArea = new ChatArea(), BorderLayout.Position.CENTER);
+        this.addComponent(txtChatInput = new TextBox(), BorderLayout.Position.SOUTH);
         this.setBounds(rect);
         this.setForeColor(colors.chatTxtColor.getValue().getColor());
         this.setBackColor(colors.chatBoxColor.getValue().getColor());

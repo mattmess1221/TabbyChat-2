@@ -4,14 +4,13 @@ import java.awt.Dimension;
 
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
-import mnm.mods.util.gui.GuiPanel;
 
 public class ChatTab extends PrefsButton {
 
     private final Channel channel;
 
-    public ChatTab(GuiPanel parent, Channel channel) {
-        super(parent, channel.getAlias());
+    public ChatTab(Channel channel) {
+        super(channel.getAlias());
         this.channel = channel;
     }
 

@@ -9,7 +9,6 @@ import mnm.mods.tabbychat.api.Message;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.util.ChatMessage;
 import mnm.mods.util.gui.GuiComponent;
-import mnm.mods.util.gui.GuiPanel;
 import mnm.mods.util.gui.events.GuiMouseAdapter;
 import mnm.mods.util.gui.events.GuiMouseWheelEvent;
 import net.minecraft.client.gui.Gui;
@@ -27,8 +26,7 @@ public class ChatArea extends GuiComponent {
     private List<Message> chatLines = Lists.newArrayList();
     private int scrollPos = 0;
 
-    public ChatArea(GuiPanel panel) {
-        super(panel);
+    public ChatArea() {
         this.addEventListener(new GuiMouseAdapter() {
             @Override
             public void mouseWheelMoved(GuiMouseWheelEvent event) {

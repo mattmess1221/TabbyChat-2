@@ -19,13 +19,13 @@ import net.minecraft.client.gui.GuiScreen;
 
 public class ChatTray extends GuiPanel {
 
-    private GuiPanel tabList = new GuiPanel(this, new FlowLayout());
-    private GuiPanel controls = new GuiPanel(this, new FlowLayout());
+    private GuiPanel tabList = new GuiPanel(new FlowLayout());
+    private GuiPanel controls = new GuiPanel(new FlowLayout());
 
     private int count = 0;
 
-    public ChatTray(GuiPanel parent) {
-        super(parent, new BorderLayout());
+    public ChatTray() {
+        super(new BorderLayout());
         this.addComponent(tabList, BorderLayout.Position.WEST);
         this.addComponent(controls, BorderLayout.Position.EAST);
         addChannel(ChatChannel.DEFAULT_CHANNEL);
@@ -43,7 +43,7 @@ public class ChatTray extends GuiPanel {
 
     public void addChannel(Channel channel) {
         channel.setPosition(count);
-        GuiComponent gc = new ChatTab(tabList, channel);
+        GuiComponent gc = new ChatTab(channel);
         gc.addEventListener(new ChannelClickListener());
         tabList.addComponent(gc);
         count++;

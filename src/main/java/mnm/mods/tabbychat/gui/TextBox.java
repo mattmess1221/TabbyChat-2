@@ -22,8 +22,8 @@ public class TextBox extends GuiComponent {
     private int selectDist = 0;
     private int cursorCounter;
 
-    public TextBox(ChatBox chatBox) {
-        super(chatBox);
+    public TextBox() {
+        super();
         this.addEventListener(new GuiMouseAdapter() {
 
             @Override
