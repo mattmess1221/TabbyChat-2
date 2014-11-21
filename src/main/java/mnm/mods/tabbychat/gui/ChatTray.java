@@ -44,7 +44,31 @@ public class ChatTray extends GuiPanel {
     public void addChannel(Channel channel) {
         channel.setPosition(count);
         GuiComponent gc = new ChatTab(channel);
-        gc.addEventListener(new ChannelClickListener());
+        gc.addEventListener(new GuiMouseAdapter(){
+            @Override
+            public void mouseClicked(GuiMouseEvent event) {
+                ChatTab comp = (ChatTab) event.getComponent();
+                if (event.getButton() == 0) {
+                    if (GuiScreen.isShiftKeyDown()) {
+                        // Remove channel
+                        TabbyChat.getInstance().getChat().removeChannel(comp.getChannel());
+                    } else if (GuiScreen.isCtrlKeyDown()) {
+                        // Toggle channel
+                        boolean active = comp.getChannel().isActive();
+                        comp.getChannel().setActive(!active);
+                    } else {
+                        // Enable channel, disable others
+                        for (Channel chan : TabbyAPI.getAPI().getChat().getChannels()) {
+                            chan.setActive(false);
+                        }
+                        comp.getChannel().setActive(true);
+                    }
+                } else if (event.getButton() == 1) {
+                    // Open channel options
+                    comp.getChannel().openSettings();
+                }
+            }
+        });
         tabList.addComponent(gc);
         count++;
     }
@@ -73,32 +97,5 @@ public class ChatTray extends GuiPanel {
     @Override
     public Dimension getPreferedSize() {
         return new Dimension(getParent().getBounds().width, 15);
-    }
-
-    private class ChannelClickListener extends GuiMouseAdapter {
-        @Override
-        public void mouseClicked(GuiMouseEvent event) {
-            ChatTab comp = (ChatTab) event.getComponent();
-            if (event.getButton() == 0) {
-                if (GuiScreen.isShiftKeyDown()) {
-                    // Remove channel
-                    TabbyChat.getInstance().getChat().removeChannel(comp.getChannel());
-                } else if (GuiScreen.isCtrlKeyDown()) {
-                    // Toggle channel
-                    boolean active = comp.getChannel().isActive();
-                    comp.getChannel().setActive(!active);
-                } else {
-                    // Enable channel, disable others
-                    for (Channel chan : TabbyAPI.getAPI().getChat().getChannels()) {
-                        chan.setActive(false);
-                    }
-                    comp.getChannel().setActive(true);
-                }
-
-            } else if (event.getButton() == 1) {
-                // Open channel options
-                comp.getChannel().openSettings();
-            }
-        }
     }
 }
