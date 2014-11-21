@@ -55,7 +55,7 @@ public class ChatTray extends GuiPanel {
         while (iter.hasNext() && !found) {
             GuiComponent gc = iter.next();
             if (gc instanceof ChatTab && ((ChatTab) gc).getChannel().equals(channel)) {
-                iter.remove();
+                tabList.removeComponent(gc);
                 found = true;
             }
         }
