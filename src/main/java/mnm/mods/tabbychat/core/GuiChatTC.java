@@ -35,7 +35,7 @@ public class GuiChatTC extends GuiChat {
     private int sentHistoryIndex;
     private String sentHistoryBuffer = "";
 
-    protected TextBox inputField;
+    protected TextBox textBox;
 
     private boolean waitingOnAutocomplete = false;
     private boolean playerNamesFound;
@@ -53,7 +53,7 @@ public class GuiChatTC extends GuiChat {
         super(text);
         sentHistoryIndex = chatGui.getSentMessages().size();
         chatbox = chatGui.getChatbox();
-        inputField = chatbox.getChatInput();
+        textBox = chatbox.getChatInput();
     }
 
     @Override
@@ -61,8 +61,8 @@ public class GuiChatTC extends GuiChat {
         super.initGui();
         TabbyProxy.onInitScreen(this.buttonList, componentList);
         if (!opened) {
-            inputField.clear();
-            inputField.writeText(defaultInputFieldText);
+            textBox.clear();
+            textBox.writeText(defaultInputFieldText);
             this.opened = true;
         }
     }
@@ -85,7 +85,7 @@ public class GuiChatTC extends GuiChat {
     public void onGuiClosed() {
         TabbyProxy.onCloseScreen();
         this.sentHistoryBuffer = "";
-        inputField.clear();
+        textBox.clear();
         chatbox.getChatArea().resetScroll();
         super.onGuiClosed();
     }
@@ -131,26 +131,26 @@ public class GuiChatTC extends GuiChat {
         case Keyboard.KEY_DOWN:
             if (this.sentHistoryIndex < chatGui.getSentMessages().size() - 1) {
                 this.sentHistoryIndex++;
-                this.inputField.setText(chatGui.getSentMessages().get(this.sentHistoryIndex));
+                this.textBox.setText(chatGui.getSentMessages().get(this.sentHistoryIndex));
             } else {
                 this.sentHistoryIndex = chatGui.getSentMessages().size();
-                this.inputField.setText(sentHistoryBuffer);
+                this.textBox.setText(sentHistoryBuffer);
             }
             break;
         case Keyboard.KEY_UP:
             if (this.sentHistoryIndex > 0) {
                 this.sentHistoryIndex--;
-                this.inputField.setText(chatGui.getSentMessages().get(this.sentHistoryIndex));
+                this.textBox.setText(chatGui.getSentMessages().get(this.sentHistoryIndex));
             }
             break;
         case Keyboard.KEY_ESCAPE:
             mc.displayGuiScreen(null);
             break;
         default:
-            this.inputField.keyTyped(key, code);
+            this.textBox.keyTyped(key, code);
         }
         if (code != Keyboard.KEY_UP && code != Keyboard.KEY_DOWN) {
-            sentHistoryBuffer = inputField.getText();
+            sentHistoryBuffer = textBox.getText();
             sentHistoryIndex = chatGui.getSentMessages().size();
         }
     }
@@ -188,7 +188,7 @@ public class GuiChatTC extends GuiChat {
     }
 
     protected void sendCurrentChat(boolean keepOpen) {
-        String message = this.inputField.getText().trim();
+        String message = this.textBox.getText().trim();
         // send the outbound message to ChatSent modules.
         message = TabbyProxy.onChatSent(message);
 
@@ -198,12 +198,12 @@ public class GuiChatTC extends GuiChat {
             this.sentHistoryBuffer = "";
         }
         chatGui.resetScroll();
-        inputField.clear();
+        textBox.clear();
 
         if (!keepOpen) {
             mc.displayGuiScreen(null);
         } else {
-            this.inputField.setText("");
+            this.textBox.setText("");
         }
     }
 
@@ -235,19 +235,19 @@ public class GuiChatTC extends GuiChat {
     public void autocompletePlayerNames() {
         String s1;
         if (this.playerNamesFound) {
-            this.inputField.deleteFromCursor(this.inputField.func_146197_a(-1,
-                    this.inputField.getCursorPosition(), false)
-                    - this.inputField.getCursorPosition());
+            this.textBox.deleteFromCursor(this.textBox.func_146197_a(-1,
+                    this.textBox.getCursorPosition(), false)
+                    - this.textBox.getCursorPosition());
 
             if (this.autocompleteIndex >= this.foundPlayerNames.size()) {
                 this.autocompleteIndex = 0;
             }
         } else {
-            int i = this.inputField.func_146197_a(-1, this.inputField.getCursorPosition(), false);
+            int i = this.textBox.func_146197_a(-1, this.textBox.getCursorPosition(), false);
             this.foundPlayerNames.clear();
             this.autocompleteIndex = 0;
-            String s = this.inputField.getText().substring(i).toLowerCase();
-            s1 = this.inputField.getText().substring(0, this.inputField.getCursorPosition());
+            String s = this.textBox.getText().substring(i).toLowerCase();
+            s1 = this.textBox.getText().substring(0, this.textBox.getCursorPosition());
             this.sendAutocompleteRequest(s1, s);
 
             if (foundPlayerNames.isEmpty()) {
@@ -255,7 +255,7 @@ public class GuiChatTC extends GuiChat {
             }
 
             this.playerNamesFound = true;
-            this.inputField.deleteFromCursor(i - this.inputField.getCursorPosition());
+            this.textBox.deleteFromCursor(i - this.textBox.getCursorPosition());
 
         }
 
@@ -263,7 +263,7 @@ public class GuiChatTC extends GuiChat {
             this.printListToChat(foundPlayerNames, 1);
         }
 
-        inputField.writeText(getCleanText(this.foundPlayerNames.get(this.autocompleteIndex++)));
+        textBox.writeText(getCleanText(this.foundPlayerNames.get(this.autocompleteIndex++)));
     }
 
     private void sendAutocompleteRequest(String word, String s1) {
@@ -299,16 +299,16 @@ public class GuiChatTC extends GuiChat {
                 foundPlayerNames.add(string);
             }
 
-            String s1 = this.inputField.getText().substring(
-                    this.inputField.func_146197_a(-1, this.inputField.getCursorPosition(), false));
+            String s1 = this.textBox.getText().substring(
+                    this.textBox.func_146197_a(-1, this.textBox.getCursorPosition(), false));
             String s2 = StringUtils.getCommonPrefix(array);
 
             if (s2.length() > 0 && !s1.equalsIgnoreCase(s2)) {
-                this.inputField.deleteFromCursor(this.inputField.func_146197_a(-1,
-                        this.inputField.getCursorPosition(), false)
-                        - this.inputField.getCursorPosition());
+                this.textBox.deleteFromCursor(this.textBox.func_146197_a(-1,
+                        this.textBox.getCursorPosition(), false)
+                        - this.textBox.getCursorPosition());
 
-                this.inputField.writeText(s2);
+                this.textBox.writeText(s2);
             } else if (this.foundPlayerNames.size() > 0) {
                 this.playerNamesFound = true;
                 this.autocompletePlayerNames();
