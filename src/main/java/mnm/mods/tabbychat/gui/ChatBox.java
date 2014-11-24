@@ -83,6 +83,8 @@ public class ChatBox extends GuiPanel implements Chat {
         // Scale it accordingly
         GlStateManager.scale(scale, scale, 1.0F);
 
+        // Make the upper left corner of the panel (0,0).
+        GlStateManager.translate(this.getBounds().x, this.getBounds().y, 0.0F);
         super.drawComponent(mouseX, mouseY);
 
         GlStateManager.popMatrix();
