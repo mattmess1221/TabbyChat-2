@@ -25,8 +25,8 @@ public class TabbyProxy {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static void onInitScreen(List buttons, List<GuiComponent> components) {
-        TabbyProxy.provider.onInitScreen(new ChatInitEvent(buttons, components));
+    public static void onInitScreen(List<GuiComponent> components) {
+        TabbyProxy.provider.onInitScreen(new ChatInitEvent(components));
     }
 
     public static void onUpdateScreen() {

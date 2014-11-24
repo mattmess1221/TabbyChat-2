@@ -59,7 +59,7 @@ public class GuiChatTC extends GuiChat {
     @Override
     public void initGui() {
         super.initGui();
-        TabbyProxy.onInitScreen(this.buttonList, componentList);
+        TabbyProxy.onInitScreen(componentList);
         if (!opened) {
             textBox.clear();
             textBox.writeText(defaultInputFieldText);
