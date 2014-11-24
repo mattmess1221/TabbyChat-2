@@ -11,13 +11,14 @@ import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.core.GuiSleepTC;
 import mnm.mods.tabbychat.core.api.TabbyProvider;
 import mnm.mods.tabbychat.core.api.TabbyProxy;
+import mnm.mods.tabbychat.gui.settings.GuiSettingsScreen;
 import mnm.mods.tabbychat.settings.ChannelSettings;
 import mnm.mods.tabbychat.settings.ChatBoxSettings;
 import mnm.mods.tabbychat.settings.ColorSettings;
 import mnm.mods.tabbychat.settings.GeneralSettings;
-import mnm.mods.tabbychat.settings.gui.GuiSettingsGeneral;
 import mnm.mods.tabbychat.util.TabbyRef;
 import mnm.mods.util.LogHelper;
+import mnm.mods.util.gui.SettingPanel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiIngame;
@@ -57,9 +58,8 @@ public abstract class TabbyChat extends TabbyAPI {
         return GuiNewChatTC.getInstance().getChatbox();
     }
 
-    @Override
     public void openSettings() {
-        Minecraft.getMinecraft().displayGuiScreen(new GuiSettingsGeneral());
+        Minecraft.getMinecraft().displayGuiScreen(new GuiSettingsScreen());
     }
 
     public SocketAddress getCurrentServer() {
@@ -69,6 +69,11 @@ public abstract class TabbyChat extends TabbyAPI {
 
     public File getDataFolder() {
         return dataFolder;
+    }
+
+    @Override
+    public void registerSettings(Class<? extends SettingPanel> setting) {
+        GuiSettingsScreen.registerSetting(setting);
     }
 
     // Protected methods

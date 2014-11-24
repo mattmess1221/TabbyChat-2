@@ -1,5 +1,8 @@
 package mnm.mods.tabbychat.api;
 
+import mnm.mods.util.gui.SettingPanel;
+
+
 /**
  * Represents the main object for TabbyChat
  */
@@ -24,9 +27,11 @@ public abstract class TabbyAPI {
     }
 
     /**
-     * Opens the general settings screen.
+     * Registers a setting category with the setting screen.
+     * 
+     * @param setting The setting class.
      */
-    public abstract void openSettings();
+    public abstract void registerSettings(Class<? extends SettingPanel> setting);
 
     /**
      * Gets the chat.

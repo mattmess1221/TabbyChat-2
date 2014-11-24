@@ -1,5 +1,6 @@
 package mnm.mods.tabbychat.util;
 
+import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 
 public class ChatChannel implements Channel {
@@ -21,7 +22,7 @@ public class ChatChannel implements Channel {
         @Override
         public void openSettings() {
             // There are no settings for this channel
-            // TabbyChat.getInstance().openSettings();
+            TabbyChat.getInstance().openSettings();
         };
 
         // Locked at 0
