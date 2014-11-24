@@ -1,0 +1,7 @@
+tabbychat.formats.messages.vanilla=Vanilla
+tabbychat.formats.messages.essentials=Essentials
+tabbychat.formats.messages.herochat=HeroChat
+tabbychat.formats.messages.custom=Custom
+
+tabbychat.settings.save=Save
+tabbychat.settings.close=Close

@@ -1,6 +1,8 @@
 package mnm.mods.tabbychat.util;
 
-public enum TimeStamps {
+import mnm.mods.util.Translatable;
+
+public enum TimeStamps implements Translatable {
 
     MILITARY("[HHmm]", "[2359]", "\\[[0-9]{4}\\]"),
     MILITARYWITHCOLON("[HH:mm]", "[23:59]", "\\[[0-9]{2}:[0-9]{2}\\]"),
@@ -20,11 +22,13 @@ public enum TimeStamps {
         this.regEx = _regex;
     }
 
-    public String toString() {
+    @Override
+    public String getUnlocalized() {
         return this.maxTime;
     }
 
     public String toCode() {
         return this.code;
     }
+
 }
