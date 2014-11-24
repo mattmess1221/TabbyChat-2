@@ -243,7 +243,7 @@ public class ChatBox extends GuiPanel implements Chat {
     @Override
     public void removeMessageAt(int pos) {
         recievedChat.remove(pos);
-
+        refreshChat();
     }
 
     @Override
