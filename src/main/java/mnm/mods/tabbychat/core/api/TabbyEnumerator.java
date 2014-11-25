@@ -62,8 +62,7 @@ public class TabbyEnumerator {
             if (file.isDirectory()) {
                 // We're in a dev environment.
                 classesToSearch.addAll(listClassNames(file));
-            } else {
-                // This must be a jar.
+            } else if (file.isFile()) { // This might not exist.
                 JarFile jar = new JarFile(file);
                 classesToSearch.addAll(listJarEntries(jar.entries()));
                 jar.close();
@@ -94,9 +93,9 @@ public class TabbyEnumerator {
 
     /*
      * Gets a list of class names in the directory.
-     * 
+     *
      * @param parentDir The directory representing the default package.
-     * 
+     *
      * @return A list of class names
      */
     private static List<String> listClassNames(File parentDir) {

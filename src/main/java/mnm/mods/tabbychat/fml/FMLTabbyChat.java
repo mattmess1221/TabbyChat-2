@@ -5,7 +5,6 @@ import java.net.SocketAddress;
 
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.util.TabbyRef;
-import mnm.mods.util.TweakTools;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -20,24 +19,22 @@ import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToSe
 @Mod(modid = TabbyRef.MOD_ID, name = TabbyRef.MOD_NAME, version = TabbyRef.MOD_VERSION)
 public class FMLTabbyChat extends TabbyChat {
 
-    private boolean shouldLoad;
     private File tempDir;
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        shouldLoad = !TweakTools.isLiteLoaderLoaded();
         tempDir = event.getModConfigurationDirectory();
     }
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
-        if (shouldLoad) {
+        if (getAPI() == null) {
             setInstance(this);
             this.setConfigFolder(tempDir);
             FMLCommonHandler.instance().bus().register(this);
             init();
         } else {
-            getLogger().info("LiteLoader detected. Not registering FML events.");
+            getLogger().info("TabbyChat already initialized. Not registering FML events.");
         }
     }
 
