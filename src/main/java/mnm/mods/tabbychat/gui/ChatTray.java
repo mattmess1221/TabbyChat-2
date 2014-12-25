@@ -5,7 +5,6 @@ import java.util.Iterator;
 
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
-import mnm.mods.tabbychat.api.TabbyAPI;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.util.ChatChannel;
 import mnm.mods.util.gui.BorderLayout;
@@ -44,7 +43,7 @@ public class ChatTray extends GuiPanel {
     public void addChannel(Channel channel) {
         channel.setPosition(count);
         GuiComponent gc = new ChatTab(channel);
-        gc.addEventListener(new GuiMouseAdapter(){
+        gc.addEventListener(new GuiMouseAdapter() {
             @Override
             public void mouseClicked(GuiMouseEvent event) {
                 ChatTab comp = (ChatTab) event.getComponent();
@@ -52,16 +51,9 @@ public class ChatTray extends GuiPanel {
                     if (GuiScreen.isShiftKeyDown()) {
                         // Remove channel
                         TabbyChat.getInstance().getChat().removeChannel(comp.getChannel());
-                    } else if (GuiScreen.isCtrlKeyDown()) {
-                        // Toggle channel
-                        boolean active = comp.getChannel().isActive();
-                        comp.getChannel().setActive(!active);
                     } else {
                         // Enable channel, disable others
-                        for (Channel chan : TabbyAPI.getAPI().getChat().getChannels()) {
-                            chan.setActive(false);
-                        }
-                        comp.getChannel().setActive(true);
+                        TabbyChat.getInstance().getChat().setActiveChannel(comp.getChannel());
                     }
                 } else if (event.getButton() == 1) {
                     // Open channel options
@@ -88,7 +80,7 @@ public class ChatTray extends GuiPanel {
 
     public void clear() {
         this.tabList.clearComponents();
-        this.count=0;
+        this.count = 0;
 
         addChannel(ChatChannel.DEFAULT_CHANNEL);
         ChatChannel.DEFAULT_CHANNEL.setActive(true);

@@ -50,19 +50,15 @@ public class LiteModTabbyChat extends TabbyChat implements RenderListener, JoinG
     // | | |
     // V V V
     @Override
-    public void onRender() {
-    }
+    public void onRender() {}
 
     @Override
-    public void onRenderWorld() {
-    }
+    public void onRenderWorld() {}
 
     @Override
-    public void onSetupCameraTransform() {
-    }
+    public void onSetupCameraTransform() {}
 
     @Override
-    public void upgradeSettings(String version, File configPath, File oldConfigPath) {
-    }
+    public void upgradeSettings(String version, File configPath, File oldConfigPath) {}
 
 }

@@ -2,7 +2,6 @@ package mnm.mods.tabbychat.api;
 
 import mnm.mods.util.gui.SettingPanel;
 
-
 /**
  * Represents the main object for TabbyChat
  */
@@ -39,5 +38,12 @@ public abstract class TabbyAPI {
      * @return The chat
      */
     public abstract Chat getChat();
+
+    /**
+     * Gets the {@link AddonManager} used to register listeners.
+     * 
+     * @return The addon manager
+     */
+    public abstract AddonManager getAddonManager();
 
 }

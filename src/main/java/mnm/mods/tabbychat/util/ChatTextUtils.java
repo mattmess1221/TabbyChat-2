@@ -25,7 +25,7 @@ public class ChatTextUtils {
         while (iter.hasNext() && result.size() <= 100) {
             Message line = iter.next();
             List<IChatComponent> chatlist = split(line.getMessage(), width);
-            for (int i = 0; i < chatlist.size(); i++) {
+            for (int i = chatlist.size() - 1; i >= 0; i--) {
                 IChatComponent chat = chatlist.get(i);
                 result.add(new ChatMessage(line.getCounter(), chat, line.getID()));
             }

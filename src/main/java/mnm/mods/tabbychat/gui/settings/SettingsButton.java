@@ -37,8 +37,7 @@ public class SettingsButton extends GuiButton {
         Gui.drawRect(displayX - 30, 2, getBounds().width + displayX - 30, getBounds().height - 2,
                 getBackColor());
         String string = mc.fontRendererObj.trimStringToWidth(getText(), getBounds().width);
-        mc.fontRendererObj
-                .drawString(string, displayX - 20, 6, getForeColor());
+        mc.fontRendererObj.drawString(string, displayX - 20, 6, getForeColor());
     }
 
     @Override

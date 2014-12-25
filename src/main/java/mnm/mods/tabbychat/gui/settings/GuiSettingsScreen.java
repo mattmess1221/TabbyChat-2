@@ -39,8 +39,8 @@ public class GuiSettingsScreen extends ComponentScreen {
         getPanel().addComponent(panel = new GuiPanel());
         panel.setLayout(new BorderLayout());
         panel.setSize(300, 200);
-        panel.setPosition(width / 2 - panel.getBounds().width / 2,
-                height / 2 - panel.getBounds().height / 2);
+        panel.setPosition(width / 2 - panel.getBounds().width / 2, height / 2
+                - panel.getBounds().height / 2);
         panel.addComponent(new PrefsButton(EnumChatFormatting.BOLD + "TabbyChat 2 Settings"),
                 BorderLayout.Position.NORTH);
         panel.addComponent(settingsList = new GuiPanel(new VerticalLayout()),

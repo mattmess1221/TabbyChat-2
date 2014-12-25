@@ -1,6 +1,6 @@
 package mnm.mods.tabbychat.core.api;
 
-import mnm.mods.tabbychat.api.listener.TabbyAddon;
+import mnm.mods.tabbychat.api.listener.TabbyListener;
 import mnm.mods.tabbychat.api.listener.events.PostLoginEvent;
 
 /**
@@ -11,7 +11,7 @@ import mnm.mods.tabbychat.api.listener.events.PostLoginEvent;
  *
  * @author Matthew
  */
-public interface JoinGameListener extends TabbyAddon {
+public interface JoinGameListener extends TabbyListener {
 
     void onJoinGame(PostLoginEvent loginEvent);
 }

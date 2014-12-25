@@ -10,7 +10,6 @@ public final class Translations {
     public static final String SETTINGS_SAVE = "tabbychat.settings.save";
     public static final String SETTINGS_CLOSE = "tabbychat.settings.close";
 
-    private Translations() {
-    }
+    private Translations() {}
 
 }

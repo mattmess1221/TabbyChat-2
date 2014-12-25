@@ -298,7 +298,7 @@ public class TextBox extends GuiComponent {
             this.setCursorPosition(getText().length());
             break;
 
-            // TODO The rest of the shortcuts
+        // TODO The rest of the shortcuts
         }
     }
 
