@@ -14,7 +14,7 @@ public abstract class ChatMessageEvent extends Event {
      */
     public static class ChatSentEvent extends ChatMessageEvent {
 
-        public final String message;
+        public String message;
 
         public ChatSentEvent(String message) {
             this.message = message;
@@ -22,42 +22,16 @@ public abstract class ChatMessageEvent extends Event {
     }
 
     /**
-     * Filters the messages when they are sent.
-     */
-    public static class ChatSentFilterEvent extends ChatMessageEvent {
-
-        public String message;
-
-        public ChatSentFilterEvent(String message) {
-            this.message = message;
-        }
-    }
-
-    /**
-     * Used to listen to chat and assign it a number of channels. Chat and
-     * position cannot be changed. Use {@link ChatRecievedFilterEvent} instead.
+     * Used to listen to chat and modify it. Can also select which channels it
+     * goes to.
      */
     public static class ChatRecievedEvent extends ChatMessageEvent {
 
-        public final IChatComponent chat;
-        public final int id;
-        public final List<Channel> channels = Lists.newArrayList();
-
-        public ChatRecievedEvent(IChatComponent chat, int id) {
-            this.chat = chat;
-            this.id = id;
-        }
-    }
-
-    /**
-     * Used to change or move chat.
-     */
-    public static class ChatRecievedFilterEvent extends ChatMessageEvent {
-
         public IChatComponent chat;
         public int id;
+        public List<Channel> channels = Lists.newArrayList();
 
-        public ChatRecievedFilterEvent(IChatComponent chat, int id) {
+        public ChatRecievedEvent(IChatComponent chat, int id) {
             this.chat = chat;
             this.id = id;
         }
