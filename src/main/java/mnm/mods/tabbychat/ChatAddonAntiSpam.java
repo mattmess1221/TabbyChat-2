@@ -18,7 +18,7 @@ public class ChatAddonAntiSpam implements ChannelListener {
 
         boolean prefEnableAntiSpam = TabbyChat.getInstance().generalSettings.antiSpam.getValue();
         boolean prefPartialMatching = TabbyChat.getInstance().generalSettings.antiSpamPartial.getValue();
-        int     prefPartialMatchAmount = TabbyChat.getInstance().generalSettings.antiSpamPartialAmount.getValue();
+        float   prefPartialMatchAmount = TabbyChat.getInstance().generalSettings.antiSpamPartialAmount.getValue();
 
         if (prefEnableAntiSpam && event.id == 0) {
             Channel channel = event.channel;
@@ -28,7 +28,7 @@ public class ChatAddonAntiSpam implements ChannelListener {
                 messageMap.put(channel, counter);
             }
             String chat = event.chat.getUnformattedText();
-            if ((!prefPartialMatching && chat.equals(counter.lastMessage)) || (prefPartialMatching &&  getDifference(chat, counter.lastMessage) <= prefPartialMatchAmount)) {
+            if ((!prefPartialMatching && chat.equals(counter.lastMessage)) || (prefPartialMatching &&  getDifference(chat, counter.lastMessage) <= (prefPartialMatchAmount))) {
                 counter.spamCounter++;
                 event.chat.appendText(" [" + counter.spamCounter + "x]");
                 channel.removeMessageAt(0);
@@ -48,7 +48,7 @@ public class ChatAddonAntiSpam implements ChannelListener {
         }
     }
 
-    private int getDifference(String s1, String s2){
+    private float getDifference(String s1, String s2){
         return StringUtils.getLevenshteinDistance(s1.toLowerCase(), s2.toLowerCase())*100/s1.length();
     }
 }
