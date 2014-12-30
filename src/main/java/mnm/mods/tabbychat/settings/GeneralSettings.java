@@ -27,7 +27,7 @@ public class GeneralSettings extends TabbySettings {
             EnumChatFormatting.WHITE);
     public SettingValue<Boolean> antiSpam = new SettingValue<Boolean>(false);
     public SettingValue<Boolean> antiSpamPartial = new SettingValue<Boolean>(true);
-    public SettingValue<Integer> antiSpamPartialAmount = new SettingValue<Integer>(10);
+    public SettingValue<Float> antiSpamPartialAmount = new SettingValue<Float>(0.1f);
     public SettingValue<Boolean> unreadFlashing = new SettingValue<Boolean>(true);
 
     public GeneralSettings() {
@@ -53,7 +53,7 @@ public class GeneralSettings extends TabbySettings {
         } else if (setting.equals(ANTI_SPAM_PARTIAL)) {
             antiSpamPartial.setValue(value.getAsBoolean());
         } else if (setting.equals(ANTI_SPAM_PARTIAL_AMOUNT)) {
-            antiSpamPartialAmount.setValue(value.getAsInt());
+            antiSpamPartialAmount.setValue(value.getAsFloat());
         }
     }
 
