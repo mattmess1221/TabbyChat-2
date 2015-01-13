@@ -24,8 +24,7 @@ public class ChannelSettings extends ServerSettings {
     private static final String IGNORED_CHANNELS = "ignoredChannels";
     private static final String USE_IGNORE_PATTERNS = "useIgnorePatterns";
 
-    private static final Type LIST_TYPE = new TypeToken<List<String>>() {
-    }.getType();
+    private static final Type LIST_TYPE = new TypeToken<List<String>>() {}.getType();
 
     public SettingValue<Boolean> channelsEnabled = new SettingValue<Boolean>(true);
     public SettingValue<Boolean> pmEnabled = new SettingValue<Boolean>(true);
@@ -76,10 +75,10 @@ public class ChannelSettings extends ServerSettings {
             customPmFromMe.setValue(value.getAsString());
         } else if (setting.equals(DEFAULT_CHANNELS)) {
             defaultChannels
-            .setValue((List<String>) gson.fromJson(value.getAsJsonArray(), LIST_TYPE));
+                    .setValue((List<String>) gson.fromJson(value.getAsJsonArray(), LIST_TYPE));
         } else if (setting.equals(IGNORED_CHANNELS)) {
             ignoredChannels
-            .setValue((List<String>) gson.fromJson(value.getAsJsonArray(), LIST_TYPE));
+                    .setValue((List<String>) gson.fromJson(value.getAsJsonArray(), LIST_TYPE));
         } else if (setting.equals(USE_IGNORE_PATTERNS)) {
             useIgnorePatterns.setValue(value.getAsBoolean());
         }

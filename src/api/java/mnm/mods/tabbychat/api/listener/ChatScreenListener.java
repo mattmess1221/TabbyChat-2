@@ -9,7 +9,7 @@ import net.minecraft.client.gui.GuiButton;
  * @author Matthew
  *
  */
-public interface ChatScreenListener extends TabbyAddon {
+public interface ChatScreenListener extends TabbyListener {
 
     void onInitScreen(ChatInitEvent chatInitEvent);
 

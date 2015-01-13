@@ -4,13 +4,14 @@ import java.io.File;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
+import mnm.mods.tabbychat.api.AddonManager;
 import mnm.mods.tabbychat.api.Chat;
 import mnm.mods.tabbychat.api.TabbyAPI;
 import mnm.mods.tabbychat.core.GuiChatTC;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.core.GuiSleepTC;
-import mnm.mods.tabbychat.core.api.TabbyProvider;
-import mnm.mods.tabbychat.core.api.TabbyProxy;
+import mnm.mods.tabbychat.core.api.TabbyAddonManager;
+import mnm.mods.tabbychat.core.api.TabbyEvents;
 import mnm.mods.tabbychat.gui.settings.GuiSettingsScreen;
 import mnm.mods.tabbychat.settings.ChannelSettings;
 import mnm.mods.tabbychat.settings.ChatBoxSettings;
@@ -29,6 +30,9 @@ public abstract class TabbyChat extends TabbyAPI {
 
     private static final LogHelper LOGGER = LogHelper.getLogger(TabbyRef.MOD_ID);
     private static TabbyChat instance;
+
+    private AddonManager addonManager;
+    private TabbyEvents events;
 
     public GeneralSettings generalSettings;
     public ChatBoxSettings chatSettings;
@@ -54,8 +58,16 @@ public abstract class TabbyChat extends TabbyAPI {
 
     @Override
     public Chat getChat() {
-        // TODO Auto-generated method stub
         return GuiNewChatTC.getInstance().getChatbox();
+    }
+
+    @Override
+    public AddonManager getAddonManager() {
+        return this.addonManager;
+    }
+
+    public TabbyEvents getEventManager() {
+        return this.events;
     }
 
     public void openSettings() {
@@ -65,7 +77,6 @@ public abstract class TabbyChat extends TabbyAPI {
     public SocketAddress getCurrentServer() {
         return this.currentServer;
     }
-
 
     public File getDataFolder() {
         return dataFolder;
@@ -83,6 +94,9 @@ public abstract class TabbyChat extends TabbyAPI {
     }
 
     protected void init() {
+        addonManager = new TabbyAddonManager();
+        events = new TabbyEvents(addonManager);
+
         // Set global settings
         generalSettings = new GeneralSettings();
         chatSettings = new ChatBoxSettings();
@@ -97,7 +111,8 @@ public abstract class TabbyChat extends TabbyAPI {
         generalSettings.saveSettingsFile();
         chatSettings.saveSettingsFile();
         colorSettings.saveSettingsFile();
-        TabbyProvider.getInstance().initProvider();
+
+        addonManager.registerListener(new ChatAddonAntiSpam());
     }
 
     protected void onRender(GuiScreen currentScreen) {
@@ -124,7 +139,7 @@ public abstract class TabbyChat extends TabbyAPI {
         } catch (Exception e) {
             LOGGER.fatal("Unable to hook into chat.  This is bad.", e);
         }
-        TabbyProxy.onJoinGame(address);
+        events.onJoinGame(address);
     }
 
     // Private methods

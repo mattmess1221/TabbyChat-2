@@ -3,11 +3,13 @@ package mnm.mods.tabbychat.gui;
 import java.awt.Dimension;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import mnm.mods.tabbychat.TabbyChat;
+import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.Message;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
-import mnm.mods.tabbychat.util.ChatMessage;
+import mnm.mods.tabbychat.util.ChatTextUtils;
 import mnm.mods.util.gui.GuiComponent;
 import mnm.mods.util.gui.events.GuiMouseAdapter;
 import mnm.mods.util.gui.events.GuiMouseWheelEvent;
@@ -19,11 +21,19 @@ import net.minecraft.entity.player.EntityPlayer.EnumChatVisibility;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IChatComponent;
 
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 import com.google.common.collect.Lists;
 
 public class ChatArea extends GuiComponent {
 
-    private List<Message> chatLines = Lists.newArrayList();
+    private Supplier<List<Message>> supplier = Suppliers.memoizeWithExpiration(
+            new Supplier<List<Message>>() {
+                @Override
+                public List<Message> get() {
+                    return ChatArea.this.getChat(true);
+                };
+            }, 50, TimeUnit.MILLISECONDS);
     private int scrollPos = 0;
 
     public ChatArea() {
@@ -45,7 +55,7 @@ public class ChatArea extends GuiComponent {
     @Override
     public void drawComponent(int mouseX, int mouseY) {
         if (mc.gameSettings.chatVisibility != EnumChatVisibility.HIDDEN) {
-            List<Message> visible = getVisibleChat();
+            List<Message> visible = getChat(false);
             int height = visible.size() * mc.fontRendererObj.FONT_HEIGHT;
             if (GuiNewChatTC.getInstance().getChatOpen()) {
                 Gui.drawRect(0, 0, getBounds().width, getBounds().height,
@@ -74,85 +84,23 @@ public class ChatArea extends GuiComponent {
         GlStateManager.disableBlend();
     }
 
-    /**
-     * Adds a message.
-     *
-     * @param line The message
-     */
-    public void addChatMessage(IChatComponent line) {
-        addChatMessage(line, 0);
-    }
-
-    /**
-     * Adds a message that may be deleted. The id determines whether to delete
-     * it. If a message is sent with the same id as another (except 0), all
-     * other messages with that id will be removed.
-     *
-     * @param chat The message
-     * @param id The id of the message.
-     */
-    public void addChatMessage(IChatComponent chat, int id) {
-        if (id != 0) {
-            removeChatLines(id);
+    public List<Message> getChat(boolean force) {
+        if (!force) {
+            return supplier.get();
         }
-        int counter = mc.ingameGUI.getUpdateCounter();
-        Message line = new ChatMessage(counter, chat, id);
-        chatLines.add(line);
-        while (chatLines.size() > 100) {
-            chatLines.remove(chatLines.size() - 1);
-        }
+        return getChat();
     }
 
-    /**
-     * Removes any message with the given id.
-     *
-     * @param id The ID of the message
-     */
-    public void removeChatLines(int id) {
-        Iterator<Message> iter = this.chatLines.iterator();
-
-        while (iter.hasNext()) {
-            Message line = iter.next();
-            if (line.getID() == id) {
-                iter.remove();
-            }
-        }
-    }
-
-    /**
-     * Removes a message that the given position.
-     *
-     * @param pos The position of the message.
-     */
-    public void removeChatMessage(int pos) {
-        if (chatLines.size() > pos) {
-            chatLines.remove(chatLines.size() - pos);
-        }
-    }
-
-    public void clearMessages() {
-        chatLines.clear();
-    }
-
-    public void addChatLine(Message line) {
-        chatLines.add(0, line);
-    }
-
-    private List<Message> filterDeactiveChannels(List<Message> messages) {
-        List<Message> result = Lists.newArrayList();
-        for (Message mess : messages) {
-            if (mess.isActive()) {
-                result.add(mess);
-            }
-        }
-        return result;
-
-    }
-
-    private List<Message> getVisibleChat() {
-        List<Message> visible = Lists.newArrayList();
+    private List<Message> getChat() {
+        Channel channel = TabbyChat.getAPI().getChat().getActiveChannel();
+        List<Message> messages = Lists.newArrayList();
+        List<Message> lines = ChatTextUtils.split(channel.getMessages(), getBounds().width);
         int length = 0;
-        List<Message> lines = filterDeactiveChannels(chatLines);
+
+        this.scrollPos = Math.min(this.scrollPos, lines.size()
+                - (getBounds().height / mc.fontRendererObj.FONT_HEIGHT));
+        this.scrollPos = Math.max(this.scrollPos, 0);
+
         int pos = scrollPos;
         // TODO Setting
         int div = GuiNewChatTC.getInstance().getChatOpen() ? 1 : 2;
@@ -160,9 +108,9 @@ public class ChatArea extends GuiComponent {
             Message line = lines.get(pos);
 
             if (GuiNewChatTC.getInstance().getChatOpen()) {
-                visible.add(line);
+                messages.add(line);
             } else if (getLineOpacity(line) > 3) {
-                visible.add(line);
+                messages.add(line);
             } else {
                 break;
             }
@@ -171,7 +119,7 @@ public class ChatArea extends GuiComponent {
             length += mc.fontRendererObj.FONT_HEIGHT;
         }
 
-        return visible;
+        return messages;
     }
 
     private int getLineOpacity(Message line) {
@@ -193,9 +141,6 @@ public class ChatArea extends GuiComponent {
 
     public void scroll(int scr) {
         this.scrollPos += scr;
-        this.scrollPos = Math.min(this.scrollPos, this.chatLines.size()
-                - (getBounds().height / mc.fontRendererObj.FONT_HEIGHT));
-        this.scrollPos = Math.max(this.scrollPos, 0);
     }
 
     public void resetScroll() {
@@ -215,8 +160,8 @@ public class ChatArea extends GuiComponent {
                         .abs((clickY - getBounds().height - getActualPosition().y - (bottom % mc.fontRendererObj.FONT_HEIGHT))
                                 / (this.mc.fontRendererObj.FONT_HEIGHT) + 1);
 
-                if (linePos >= 0 && linePos < this.getVisibleChat().size()) {
-                    Message chatline = getVisibleChat().get(linePos);
+                if (linePos >= 0 && linePos < this.getChat(false).size()) {
+                    Message chatline = getChat(false).get(linePos);
                     int l1 = 0;
                     @SuppressWarnings("unchecked")
                     Iterator<IChatComponent> iterator = chatline.getMessage().iterator();

@@ -1,37 +1,45 @@
 package mnm.mods.tabbychat;
 
-import mnm.mods.tabbychat.api.TabbyAPI;
-import mnm.mods.tabbychat.api.listener.ChatRecievedListener;
-import mnm.mods.tabbychat.api.listener.events.AddonInitEvent;
-import mnm.mods.tabbychat.api.listener.events.ChatMessageEvent.ChatRecievedEvent;
-import mnm.mods.tabbychat.api.listener.events.ChatMessageEvent.ChatRecievedFilterEvent;
-import net.minecraft.util.IChatComponent;
+import java.util.Map;
 
-public class ChatAddonAntiSpam implements ChatRecievedListener {
+import mnm.mods.tabbychat.api.Channel;
+import mnm.mods.tabbychat.api.listener.ChannelListener;
+import mnm.mods.tabbychat.api.listener.events.MessageAddedToChannelEvent;
 
-    private String lastMessage = "";
-    private int spamCounter = 1;
+import com.google.common.collect.Maps;
 
-    @Override
-    public void initAddon(AddonInitEvent init) {
-    }
+public class ChatAddonAntiSpam implements ChannelListener {
+
+    private Map<Channel, Counter> messageMap = Maps.newHashMap();
 
     @Override
-    public void onChatRecievedFilter(ChatRecievedFilterEvent message) {
-        if (TabbyChat.getInstance().generalSettings.antiSpam.getValue() && message.id == 0) {
-            IChatComponent chat = message.chat;
-            if (!this.lastMessage.isEmpty() && chat.getUnformattedText().equals(this.lastMessage)) {
-                spamCounter++;
-                chat.appendText(" [" + spamCounter + "x]");
-                TabbyAPI.getAPI().getChat().removeMessageAt(1);
+    public void onMessageAdded(MessageAddedToChannelEvent event) {
+        if (TabbyChat.getInstance().generalSettings.antiSpam.getValue() && event.id == 0) {
+            Channel channel = event.channel;
+            Counter counter = this.messageMap.get(channel);
+            if (counter == null) {
+                counter = new Counter("");
+                messageMap.put(channel, counter);
+            }
+            String chat = event.chat.getUnformattedText();
+            if (chat.equals(counter.lastMessage)) {
+                counter.spamCounter++;
+                event.chat.appendText(" [" + counter.spamCounter + "x]");
+                channel.removeMessageAt(0);
             } else {
-                spamCounter = 1;
-                this.lastMessage = chat.getUnformattedText();
+                counter.lastMessage = chat;
+                counter.spamCounter = 1;
             }
         }
     }
 
-    @Override
-    public void onChatRecieved(ChatRecievedEvent message) {
+    private class Counter {
+        private String lastMessage;
+        private int spamCounter = 1;
+
+        private Counter(String lastMessage) {
+            this.lastMessage = lastMessage;
+        }
     }
+
 }

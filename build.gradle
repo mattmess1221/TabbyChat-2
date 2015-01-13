@@ -33,7 +33,9 @@ allprojects {
         mappings = "snapshot_20150112"
         runDir = "run"
     }
-
+    reobf{
+        setSrgMcp()
+    }
     processResources{
         // this will ensure that this task is redone when the versions change.
         inputs.property "version", project.version
@@ -100,18 +102,3 @@ artifacts{
     archives jarAPI
     archives jarSrc
 }
-reobf{
-    reobf(jar){ setSrgMcp() }
-}
-/*
-apply plugin: 'liteloader'
-jarLiteloader{
-    from sourceSets.api.output
-    exclude "mcmod.info"
-    exclude "**//*bridge/fml/**"
-    manifest{
-        attributes "FMLAT":"tabbychat2_at.cfg"
-        attributes "ModType":"LiteMod"
-    }
-}
-*/

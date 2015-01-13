@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
-import mnm.mods.tabbychat.core.api.TabbyProxy;
+import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.gui.ChatBox;
 import mnm.mods.tabbychat.gui.TextBox;
 import mnm.mods.tabbychat.util.ForgeClientCommands;
@@ -44,6 +44,8 @@ public class GuiChatTC extends GuiChat {
 
     private boolean opened = false;
 
+    private TabbyChat tc = TabbyChat.getInstance();
+
     public GuiChatTC() {
         this("");
 
@@ -59,7 +61,7 @@ public class GuiChatTC extends GuiChat {
     @Override
     public void initGui() {
         super.initGui();
-        TabbyProxy.onInitScreen(componentList);
+        tc.getEventManager().onInitScreen(componentList);
         if (!opened) {
             textBox.clear();
             textBox.writeText(defaultInputFieldText);
@@ -74,7 +76,7 @@ public class GuiChatTC extends GuiChat {
         for (GuiComponent comp : this.componentList) {
             comp.updateComponent();
         }
-        TabbyProxy.onUpdateScreen();
+        tc.getEventManager().onUpdateScreen();
     }
 
     public boolean hasOpened() {
@@ -83,7 +85,7 @@ public class GuiChatTC extends GuiChat {
 
     @Override
     public void onGuiClosed() {
-        TabbyProxy.onCloseScreen();
+        tc.getEventManager().onCloseScreen();
         this.sentHistoryBuffer = "";
         textBox.clear();
         chatbox.getChatArea().resetScroll();
@@ -93,7 +95,7 @@ public class GuiChatTC extends GuiChat {
     @Override
     protected void actionPerformed(GuiButton button) throws IOException {
         super.actionPerformed(button);
-        TabbyProxy.onActionPerformed(button);
+        tc.getEventManager().onActionPerformed(button);
     }
 
     @Override
@@ -190,7 +192,7 @@ public class GuiChatTC extends GuiChat {
     protected void sendCurrentChat(boolean keepOpen) {
         String message = this.textBox.getText().trim();
         // send the outbound message to ChatSent modules.
-        message = TabbyProxy.onChatSent(message);
+        message = tc.getEventManager().onChatSent(message);
 
         if (message != null && !message.isEmpty()) {
             this.sendChatMessage(message);
