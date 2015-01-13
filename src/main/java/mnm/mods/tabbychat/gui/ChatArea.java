@@ -48,9 +48,9 @@ public class ChatArea extends GuiComponent {
             List<Message> visible = getVisibleChat();
             int height = visible.size() * mc.fontRendererObj.FONT_HEIGHT;
             if (GuiNewChatTC.getInstance().getChatOpen()) {
-                Gui.drawRect(getBounds().x, getBounds().y, getBounds().width, getBounds().height,
+                Gui.drawRect(0, 0, getBounds().width, getBounds().height,
                         getBackColor());
-                drawBorders(getBounds().x, getBounds().y, getBounds().width, getBounds().height);
+                drawBorders(0, 0, getBounds().width, getBounds().height);
             } else if (height != 0) {
                 int y = getBounds().height - height;
                 Gui.drawRect(getBounds().x, y - 1, getBounds().width, y + height, getBackColor());
@@ -68,7 +68,7 @@ public class ChatArea extends GuiComponent {
     private void drawChatLine(Message line, int xPos, int yPos) {
         GlStateManager.enableBlend();
         String text = line.getMessage().getFormattedText();
-        mc.fontRendererObj.func_175063_a(text, xPos, yPos, (getForeColor())
+        mc.fontRendererObj.drawStringWithShadow(text, xPos, yPos, (getForeColor())
                 + (getLineOpacity(line) << 24));
         GlStateManager.disableAlpha();
         GlStateManager.disableBlend();

@@ -90,7 +90,7 @@ public class TextBox extends GuiComponent {
         for (String line : getWrappedLines()) {
             int xPos = 1;
             for (Character c : line.toCharArray()) {
-                fr.func_175063_a(c.toString(), xPos, yPos, getForeColor());
+                fr.drawString(c.toString(), xPos, yPos, getForeColor());
                 int width = fr.getCharWidth(c);
                 if (selectDist != 0) {
                     if (!started && pos == Math.min(cursorPos, cursorPos + selectDist)) {
@@ -298,7 +298,7 @@ public class TextBox extends GuiComponent {
             this.setCursorPosition(getText().length());
             break;
 
-            // TODO The rest of the shortcuts
+        // TODO The rest of the shortcuts
         }
     }
 

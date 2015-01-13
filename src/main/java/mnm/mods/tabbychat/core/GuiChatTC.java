@@ -159,7 +159,7 @@ public class GuiChatTC extends GuiChat {
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         if (mouseButton == 0) {
             IChatComponent chat = chatGui.getChatComponent(mouseX, mouseY);
-            this.func_175276_a(chat);
+            this.handleComponentClick(chat);
         }
         super.mouseClicked(mouseX, mouseY, mouseButton);
     }
@@ -168,7 +168,7 @@ public class GuiChatTC extends GuiChat {
     public void drawScreen(int mouseX, int mouseY, float tick) {
 
         IChatComponent chat = chatGui.getChatComponent(mouseX, mouseY);
-        this.func_175272_a(chat, mouseX, mouseY);
+        this.handleComponentHover(chat, mouseX, mouseY);
 
         // Draw the components
         for (GuiComponent component : componentList) {
@@ -274,7 +274,7 @@ public class GuiChatTC extends GuiChat {
             BlockPos blockpos = null;
             if (this.mc.objectMouseOver != null
                     && this.mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-                blockpos = this.mc.objectMouseOver.func_178782_a();
+                blockpos = this.mc.objectMouseOver.getBlockPos();
             }
 
             this.mc.thePlayer.sendQueue.addToSendQueue(new C14PacketTabComplete(word, blockpos));

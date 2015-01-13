@@ -2,7 +2,6 @@ package mnm.mods.tabbychat.api;
 
 import mnm.mods.util.gui.SettingPanel;
 
-
 /**
  * Represents the main object for TabbyChat
  */

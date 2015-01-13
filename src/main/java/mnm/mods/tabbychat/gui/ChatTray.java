@@ -44,7 +44,7 @@ public class ChatTray extends GuiPanel {
     public void addChannel(Channel channel) {
         channel.setPosition(count);
         GuiComponent gc = new ChatTab(channel);
-        gc.addEventListener(new GuiMouseAdapter(){
+        gc.addEventListener(new GuiMouseAdapter() {
             @Override
             public void mouseClicked(GuiMouseEvent event) {
                 ChatTab comp = (ChatTab) event.getComponent();
@@ -88,7 +88,7 @@ public class ChatTray extends GuiPanel {
 
     public void clear() {
         this.tabList.clearComponents();
-        this.count=0;
+        this.count = 0;
 
         addChannel(ChatChannel.DEFAULT_CHANNEL);
         ChatChannel.DEFAULT_CHANNEL.setActive(true);
