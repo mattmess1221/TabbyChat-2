@@ -12,7 +12,13 @@ import mnm.mods.tabbychat.settings.ColorSettings;
 import mnm.mods.tabbychat.util.ChatChannel;
 import mnm.mods.util.gui.BorderLayout;
 import mnm.mods.util.gui.GuiPanel;
+import mnm.mods.util.gui.events.GuiMouseAdapter;
+import mnm.mods.util.gui.events.GuiMouseEvent;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -38,6 +44,24 @@ public class ChatBox extends GuiPanel implements Chat {
         this.setBounds(rect);
         this.setForeColor(colors.chatTxtColor.getValue().getColor());
         this.setBackColor(colors.chatBoxColor.getValue().getColor());
+
+        this.addEventListener(new GuiMouseAdapter() {
+
+            @Override
+            public void mouseDragged(GuiMouseEvent event) {
+                if (Mouse.isButtonDown(0)
+                        && (pnlTray.held || Keyboard.isKeyDown(Keyboard.KEY_LMENU))) {
+                    ScaledResolution sr = new ScaledResolution(mc, mc.displayWidth,
+                            mc.displayHeight);
+                    Rectangle bounds = getBounds();
+                    int x, y;
+                    x = (int) ((double) Mouse.getEventDX() / (double) sr.getScaleFactor());
+                    y = (int) ((double) Mouse.getEventDY() / (double) sr.getScaleFactor());
+                    bounds.x += x;
+                    bounds.y -= y;
+                }
+            }
+        });
     }
 
     @Override
