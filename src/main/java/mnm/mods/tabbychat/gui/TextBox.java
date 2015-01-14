@@ -122,7 +122,7 @@ public class TextBox extends GuiComponent {
         List<String> list = fr.listFormattedStringToWidth(text, getBounds().width);
         int newHeight = Math.max(1, list.size()) * (fr.FONT_HEIGHT + 2);
         // int newY = getBounds().y + getBounds().height - newHeight;
-        this.setSize(getPreferedSize().width, newHeight);
+        this.setSize(getMinimumSize().width, newHeight);
 
     }
 
@@ -132,7 +132,7 @@ public class TextBox extends GuiComponent {
     }
 
     @Override
-    public Dimension getPreferedSize() {
+    public Dimension getMinimumSize() {
         return new Dimension(100, (fr.FONT_HEIGHT + 2) * getWrappedLines().size());
     }
 
@@ -298,7 +298,7 @@ public class TextBox extends GuiComponent {
             this.setCursorPosition(getText().length());
             break;
 
-        // TODO The rest of the shortcuts
+            // TODO The rest of the shortcuts
         }
     }
 

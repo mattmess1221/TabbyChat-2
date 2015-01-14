@@ -87,7 +87,7 @@ public class ChatTray extends GuiPanel {
     }
 
     @Override
-    public Dimension getPreferedSize() {
+    public Dimension getMinimumSize() {
         return new Dimension(getParent().getBounds().width, 15);
     }
 }

@@ -68,7 +68,7 @@ public class ChatTab extends PrefsButton {
     }
 
     @Override
-    public Dimension getPreferedSize() {
+    public Dimension getMinimumSize() {
         return new Dimension(mc.fontRendererObj.getStringWidth("<" + channel.getAlias() + ">") + 8,
                 15);
     }

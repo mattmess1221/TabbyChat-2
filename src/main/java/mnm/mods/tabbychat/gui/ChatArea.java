@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.Message;
+import mnm.mods.tabbychat.api.TabbyAPI;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.util.ChatTextUtils;
 import mnm.mods.util.gui.GuiComponent;
@@ -37,6 +38,7 @@ public class ChatArea extends GuiComponent {
     private int scrollPos = 0;
 
     public ChatArea() {
+        this.setMinimumSize(new Dimension(300, 160));
         this.addEventListener(new GuiMouseAdapter() {
             @Override
             public void mouseWheelMoved(GuiMouseWheelEvent event) {
@@ -92,7 +94,7 @@ public class ChatArea extends GuiComponent {
     }
 
     private List<Message> getChat() {
-        Channel channel = TabbyChat.getAPI().getChat().getActiveChannel();
+        Channel channel = TabbyAPI.getAPI().getChat().getActiveChannel();
         List<Message> messages = Lists.newArrayList();
         List<Message> lines = ChatTextUtils.split(channel.getMessages(), getBounds().width);
         int length = 0;
@@ -185,10 +187,4 @@ public class ChatArea extends GuiComponent {
     public float getChatScale() {
         return this.mc.gameSettings.chatScale;
     }
-
-    @Override
-    public Dimension getPreferedSize() {
-        return new Dimension(300, 160);
-    }
-
 }
