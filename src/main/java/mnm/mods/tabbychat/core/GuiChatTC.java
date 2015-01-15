@@ -6,13 +6,13 @@ import java.util.List;
 
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.gui.ChatBox;
-import mnm.mods.tabbychat.gui.TextBox;
 import mnm.mods.tabbychat.util.ForgeClientCommands;
 import mnm.mods.util.gui.GuiComponent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiLabel;
+import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.network.play.client.C14PacketTabComplete;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
@@ -35,7 +35,7 @@ public class GuiChatTC extends GuiChat {
     private int sentHistoryIndex;
     private String sentHistoryBuffer = "";
 
-    protected TextBox textBox;
+    protected GuiTextField textBox;
 
     private boolean waitingOnAutocomplete = false;
     private boolean playerNamesFound;
@@ -55,7 +55,7 @@ public class GuiChatTC extends GuiChat {
         super(text);
         sentHistoryIndex = chatGui.getSentMessages().size();
         chatbox = chatGui.getChatbox();
-        textBox = chatbox.getChatInput();
+        textBox = chatbox.getChatInput().getTextField();
     }
 
     @Override
@@ -63,7 +63,7 @@ public class GuiChatTC extends GuiChat {
         super.initGui();
         tc.getEventManager().onInitScreen(componentList);
         if (!opened) {
-            textBox.clear();
+            textBox.setText("");
             textBox.writeText(defaultInputFieldText);
             this.opened = true;
         }
@@ -87,7 +87,7 @@ public class GuiChatTC extends GuiChat {
     public void onGuiClosed() {
         tc.getEventManager().onCloseScreen();
         this.sentHistoryBuffer = "";
-        textBox.clear();
+        textBox.setText("");
         chatbox.getChatArea().resetScroll();
         super.onGuiClosed();
     }
@@ -149,7 +149,7 @@ public class GuiChatTC extends GuiChat {
             mc.displayGuiScreen(null);
             break;
         default:
-            this.textBox.keyTyped(key, code);
+            this.textBox.textboxKeyTyped(key, code);
         }
         if (code != Keyboard.KEY_UP && code != Keyboard.KEY_DOWN) {
             sentHistoryBuffer = textBox.getText();
@@ -163,7 +163,7 @@ public class GuiChatTC extends GuiChat {
             IChatComponent chat = chatGui.getChatComponent(mouseX, mouseY);
             this.handleComponentClick(chat);
         }
-        super.mouseClicked(mouseX, mouseY, mouseButton);
+        textBox.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
     @Override
@@ -200,7 +200,7 @@ public class GuiChatTC extends GuiChat {
             this.sentHistoryBuffer = "";
         }
         chatGui.resetScroll();
-        textBox.clear();
+        textBox.setText("");
 
         if (!keepOpen) {
             mc.displayGuiScreen(null);
