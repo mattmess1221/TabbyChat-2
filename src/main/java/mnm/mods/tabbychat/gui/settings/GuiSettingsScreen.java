@@ -13,8 +13,6 @@ import mnm.mods.util.gui.GuiComponent;
 import mnm.mods.util.gui.GuiPanel;
 import mnm.mods.util.gui.SettingPanel;
 import mnm.mods.util.gui.VerticalLayout;
-import mnm.mods.util.gui.events.ActionPerformed;
-import mnm.mods.util.gui.events.GuiEvent;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.util.EnumChatFormatting;
 
@@ -50,43 +48,30 @@ public class GuiSettingsScreen extends ComponentScreen {
         PrefsButton save = new PrefsButton("Save");
         save.setSize(40, 10);
         save.setBackColor(Color.getColor(0, 255, 0, 127));
-        save.addEventListener(new ActionPerformed() {
-            @Override
-            public void actionPerformed(GuiEvent event) {
-                selectedSetting.saveSettings();
-                selectedSetting.getSettings().saveSettingsFile();
-            }
+        save.addActionListener(event -> {
+            selectedSetting.saveSettings();
+            selectedSetting.getSettings().saveSettingsFile();
         });
         closeSaveButtons.addComponent(save);
         PrefsButton close = new PrefsButton("Close");
         close.setSize(40, 10);
         close.setBackColor(Color.getColor(0, 255, 0, 127));
-        close.addEventListener(new ActionPerformed() {
-            @Override
-            public void actionPerformed(GuiEvent event) {
-                mc.displayGuiScreen(null);
-            }
-        });
+        close.addActionListener(event -> mc.displayGuiScreen(null));
         closeSaveButtons.addComponent(close);
 
         {
             // Populate the settings
-            for (Class<? extends SettingPanel> sett : settings) {
+            settings.forEach(sett -> {
                 try {
                     SettingsButton button = new SettingsButton(sett.newInstance());
-                    button.addEventListener(new ActionPerformed() {
-                        @Override
-                        public void actionPerformed(GuiEvent event) {
-                            selectSetting(((SettingsButton) event.getComponent()).getSettings()
-                                    .getClass(), true);
-                        }
-                    });
+                    button.addActionListener(event -> selectSetting(
+                            ((SettingsButton) event.component).getSettings().getClass(), true));
                     settingsList.addComponent(button);
                 } catch (Exception e) {
                     TabbyChat.getLogger().error(
                             "Unable to add " + sett.getName() + " as a setting.", e);
                 }
-            }
+            });
         }
         boolean init;
         Class<? extends SettingPanel> panelClass;

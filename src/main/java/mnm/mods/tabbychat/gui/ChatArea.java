@@ -12,8 +12,7 @@ import mnm.mods.tabbychat.api.TabbyAPI;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.util.ChatTextUtils;
 import mnm.mods.util.gui.GuiComponent;
-import mnm.mods.util.gui.events.GuiMouseAdapter;
-import mnm.mods.util.gui.events.GuiMouseWheelEvent;
+import mnm.mods.util.gui.events.GuiMouseEvent;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiUtilRenderComponents;
@@ -29,21 +28,15 @@ import com.google.common.collect.Lists;
 public class ChatArea extends GuiComponent {
 
     private Supplier<List<Message>> supplier = Suppliers.memoizeWithExpiration(
-            new Supplier<List<Message>>() {
-                @Override
-                public List<Message> get() {
-                    return ChatArea.this.getChat(true);
-                };
-            }, 50, TimeUnit.MILLISECONDS);
+            () -> ChatArea.this.getChat(true), 50, TimeUnit.MILLISECONDS);
     private int scrollPos = 0;
 
     public ChatArea() {
         this.setMinimumSize(new Dimension(300, 160));
-        this.addEventListener(new GuiMouseAdapter() {
-            @Override
-            public void mouseWheelMoved(GuiMouseWheelEvent event) {
+        this.addMouseAdapter(event -> {
+            if (event.event == GuiMouseEvent.SCROLLED) {
                 // Scrolling
-                int scroll = event.getWheelDirection();
+                int scroll = event.scroll;
                 // One tick = 120
                 int div = 60;
                 if (GuiScreen.isShiftKeyDown()) {

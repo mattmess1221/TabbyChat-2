@@ -11,7 +11,6 @@ import mnm.mods.util.gui.BorderLayout;
 import mnm.mods.util.gui.FlowLayout;
 import mnm.mods.util.gui.GuiComponent;
 import mnm.mods.util.gui.GuiPanel;
-import mnm.mods.util.gui.events.GuiMouseAdapter;
 import mnm.mods.util.gui.events.GuiMouseEvent;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
@@ -43,11 +42,10 @@ public class ChatTray extends GuiPanel {
     public void addChannel(Channel channel) {
         channel.setPosition(count);
         GuiComponent gc = new ChatTab(channel);
-        gc.addEventListener(new GuiMouseAdapter() {
-            @Override
-            public void mouseClicked(GuiMouseEvent event) {
-                ChatTab comp = (ChatTab) event.getComponent();
-                if (event.getButton() == 0) {
+        gc.addMouseAdapter(event -> {
+            if (event.event == GuiMouseEvent.CLICKED) {
+                ChatTab comp = (ChatTab) event.component;
+                if (event.button == 0) {
                     if (GuiScreen.isShiftKeyDown()) {
                         // Remove channel
                         TabbyChat.getInstance().getChat().removeChannel(comp.getChannel());
@@ -55,7 +53,7 @@ public class ChatTray extends GuiPanel {
                         // Enable channel, disable others
                         TabbyChat.getInstance().getChat().setActiveChannel(comp.getChannel());
                     }
-                } else if (event.getButton() == 1) {
+                } else if (event.button == 1) {
                     // Open channel options
                     comp.getChannel().openSettings();
                 }

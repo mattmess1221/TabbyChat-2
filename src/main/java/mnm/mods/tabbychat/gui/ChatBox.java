@@ -12,7 +12,6 @@ import mnm.mods.tabbychat.settings.ColorSettings;
 import mnm.mods.tabbychat.util.ChatChannel;
 import mnm.mods.util.gui.BorderLayout;
 import mnm.mods.util.gui.GuiPanel;
-import mnm.mods.util.gui.events.GuiMouseAdapter;
 import mnm.mods.util.gui.events.GuiMouseEvent;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
@@ -45,10 +44,8 @@ public class ChatBox extends GuiPanel implements Chat {
         this.setForeColor(colors.chatTxtColor.getValue().getColor());
         this.setBackColor(colors.chatBoxColor.getValue().getColor());
 
-        this.addEventListener(new GuiMouseAdapter() {
-
-            @Override
-            public void mouseDragged(GuiMouseEvent event) {
+        this.addMouseAdapter(event -> {
+            if (event.event == GuiMouseEvent.DRAGGED) {
                 if (Mouse.isButtonDown(0)
                         && (pnlTray.held || Keyboard.isKeyDown(Keyboard.KEY_LMENU))) {
                     ScaledResolution sr = new ScaledResolution(mc, mc.displayWidth,
