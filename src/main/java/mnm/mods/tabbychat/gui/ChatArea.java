@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.Message;
+import mnm.mods.tabbychat.api.TabbyAPI;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.util.ChatTextUtils;
 import mnm.mods.util.gui.GuiComponent;
@@ -37,6 +38,7 @@ public class ChatArea extends GuiComponent {
     private int scrollPos = 0;
 
     public ChatArea() {
+        this.setMinimumSize(new Dimension(300, 160));
         this.addEventListener(new GuiMouseAdapter() {
             @Override
             public void mouseWheelMoved(GuiMouseWheelEvent event) {
@@ -58,9 +60,9 @@ public class ChatArea extends GuiComponent {
             List<Message> visible = getChat(false);
             int height = visible.size() * mc.fontRendererObj.FONT_HEIGHT;
             if (GuiNewChatTC.getInstance().getChatOpen()) {
-                Gui.drawRect(getBounds().x, getBounds().y, getBounds().width, getBounds().height,
+                Gui.drawRect(0, 0, getBounds().width, getBounds().height,
                         getBackColor());
-                drawBorders(getBounds().x, getBounds().y, getBounds().width, getBounds().height);
+                drawBorders(0, 0, getBounds().width, getBounds().height);
             } else if (height != 0) {
                 int y = getBounds().height - height;
                 Gui.drawRect(getBounds().x, y - 1, getBounds().width, y + height, getBackColor());
@@ -78,7 +80,7 @@ public class ChatArea extends GuiComponent {
     private void drawChatLine(Message line, int xPos, int yPos) {
         GlStateManager.enableBlend();
         String text = line.getMessage().getFormattedText();
-        mc.fontRendererObj.func_175063_a(text, xPos, yPos, (getForeColor())
+        mc.fontRendererObj.drawStringWithShadow(text, xPos, yPos, (getForeColor())
                 + (getLineOpacity(line) << 24));
         GlStateManager.disableAlpha();
         GlStateManager.disableBlend();
@@ -92,7 +94,7 @@ public class ChatArea extends GuiComponent {
     }
 
     private List<Message> getChat() {
-        Channel channel = TabbyChat.getAPI().getChat().getActiveChannel();
+        Channel channel = TabbyAPI.getAPI().getChat().getActiveChannel();
         List<Message> messages = Lists.newArrayList();
         List<Message> lines = ChatTextUtils.split(channel.getMessages(), getBounds().width);
         int length = 0;
@@ -185,10 +187,4 @@ public class ChatArea extends GuiComponent {
     public float getChatScale() {
         return this.mc.gameSettings.chatScale;
     }
-
-    @Override
-    public Dimension getPreferedSize() {
-        return new Dimension(300, 160);
-    }
-
 }

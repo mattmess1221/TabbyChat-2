@@ -19,8 +19,18 @@ allprojects {
     apply plugin: 'fml'
     group = "mnm.mods"
 
+    configurations {
+        compile {
+            exclude group: "org.scala-lang"
+            exclude group: "org.scala-lang.plugins"
+            exclude group: "com.typesafe"
+            exclude group: "com.typesafe.akka"
+        }
+    }
+
     minecraft {
         version = String.format("%s-%s", mcversion, fmlversion)
+        mappings = "snapshot_20150112"
         runDir = "run"
     }
     reobf{

@@ -8,6 +8,7 @@
 		"authorList": [ "killjoy1221" ],
 		"credits": "Original mod by RocketMan10404",
 		"url": "http://www.minecraftforum.net/forums/topic/2181597-n",
-		"description": ""
+		"description": "",
+		"dependencies": ["MnmModUtils"]
 	}]
 }
