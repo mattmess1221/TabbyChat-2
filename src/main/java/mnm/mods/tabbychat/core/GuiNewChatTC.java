@@ -36,8 +36,9 @@ public class GuiNewChatTC extends GuiNewChat {
     }
 
     public static GuiNewChatTC getInstance() {
-        if (instance == null)
+        if (instance == null) {
             instance = new GuiNewChatTC(Minecraft.getMinecraft());
+        }
         return instance;
     }
 
@@ -68,6 +69,7 @@ public class GuiNewChatTC extends GuiNewChat {
                 channel.addMessage(chat, id);
             }
         }
+        TabbyChat.getLogger().info("[CHAT] " + chat.getUnformattedText());
     }
 
     @Override

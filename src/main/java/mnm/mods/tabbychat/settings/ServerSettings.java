@@ -29,7 +29,7 @@ public class ServerSettings extends AbstractServerSettings {
     public SettingValue<Boolean> channelsEnabled = new SettingValue<Boolean>(true);
     public SettingValue<Boolean> pmEnabled = new SettingValue<Boolean>(true);
     public SettingValue<ChannelPatterns> channelPattern = new SettingValue<ChannelPatterns>(
-            ChannelPatterns.BRACES);
+            ChannelPatterns.BRACKETS);
     public SettingValue<MessagePatterns> messegePattern = new SettingValue<MessagePatterns>(
             MessagePatterns.VANILLA);
     public SettingValue<String> customChannel = new SettingValue<String>("");

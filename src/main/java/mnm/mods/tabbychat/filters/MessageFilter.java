@@ -7,6 +7,7 @@ import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.TabbyAPI;
 import mnm.mods.tabbychat.api.filters.Filter;
+import mnm.mods.tabbychat.api.filters.FilterEvent;
 import mnm.mods.tabbychat.util.MessagePatterns;
 
 /**
@@ -32,7 +33,7 @@ public class MessageFilter extends TabFilter {
 
     @Override
     public void action(Filter filter, FilterEvent event) {
-        String player = event.matcher.group();
+        String player = event.matcher.group(1);
         Channel dest = TabbyAPI.getAPI().getChat().getChannel(player);
         if (dest.getPrefix().isEmpty()) {
             dest.setPrefix("/msg " + player);

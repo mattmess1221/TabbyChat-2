@@ -1,8 +1,17 @@
 package mnm.mods.tabbychat.api.filters;
 
-import mnm.mods.tabbychat.filters.FilterEvent;
 
+/**
+ * Used to create actions for a {@link Filter}. Implement and invoke
+ * {@link Filter#setAction(IFilterAction)} to use.
+ */
 public interface IFilterAction {
 
+    /**
+     * The action that the {@link Filter} triggers.
+     *
+     * @param filter The filter that triggered this action
+     * @param event The filter event
+     */
     void action(Filter filter, FilterEvent event);
 }

@@ -21,7 +21,6 @@ public class FilterAddon implements ChatRecievedListener {
         }
         List<ChatFilter> filters = settings.filters.getValue();
 
-        // Strip formatting so pattern works.
         channelFilter.applyFilter(message);
         messageFilter.applyFilter(message);
         for (ChatFilter filter : filters) {

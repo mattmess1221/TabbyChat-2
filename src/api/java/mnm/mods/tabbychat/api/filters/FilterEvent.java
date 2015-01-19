@@ -1,4 +1,4 @@
-package mnm.mods.tabbychat.filters;
+package mnm.mods.tabbychat.api.filters;
 
 import java.util.Set;
 import java.util.regex.Matcher;

@@ -7,6 +7,7 @@ import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.TabbyAPI;
 import mnm.mods.tabbychat.api.filters.Filter;
+import mnm.mods.tabbychat.api.filters.FilterEvent;
 import mnm.mods.tabbychat.util.ChannelPatterns;
 
 public class ChannelFilter extends TabFilter {
@@ -29,7 +30,7 @@ public class ChannelFilter extends TabFilter {
 
     @Override
     public void action(Filter filter, FilterEvent event) {
-        String chan = event.matcher.group();
+        String chan = event.matcher.group(1);
         Channel dest = TabbyAPI.getAPI().getChat().getChannel(chan);
         event.channels.add(dest);
     }
