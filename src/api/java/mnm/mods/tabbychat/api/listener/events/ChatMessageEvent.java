@@ -1,11 +1,11 @@
 package mnm.mods.tabbychat.api.listener.events;
 
-import java.util.List;
+import java.util.Set;
 
 import mnm.mods.tabbychat.api.Channel;
 import net.minecraft.util.IChatComponent;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 public abstract class ChatMessageEvent extends Event {
 
@@ -29,7 +29,7 @@ public abstract class ChatMessageEvent extends Event {
 
         public IChatComponent chat;
         public int id;
-        public List<Channel> channels = Lists.newArrayList();
+        public Set<Channel> channels = Sets.newHashSet();
 
         public ChatRecievedEvent(IChatComponent chat, int id) {
             this.chat = chat;

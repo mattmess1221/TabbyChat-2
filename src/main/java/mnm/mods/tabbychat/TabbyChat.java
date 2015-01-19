@@ -4,6 +4,8 @@ import java.io.File;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
+import javax.annotation.Nullable;
+
 import mnm.mods.tabbychat.api.AddonManager;
 import mnm.mods.tabbychat.api.Chat;
 import mnm.mods.tabbychat.api.TabbyAPI;
@@ -12,11 +14,13 @@ import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.core.GuiSleepTC;
 import mnm.mods.tabbychat.core.api.TabbyAddonManager;
 import mnm.mods.tabbychat.core.api.TabbyEvents;
+import mnm.mods.tabbychat.filters.FilterAddon;
 import mnm.mods.tabbychat.gui.settings.GuiSettingsScreen;
 import mnm.mods.tabbychat.settings.ChannelSettings;
 import mnm.mods.tabbychat.settings.ChatBoxSettings;
 import mnm.mods.tabbychat.settings.ColorSettings;
 import mnm.mods.tabbychat.settings.GeneralSettings;
+import mnm.mods.tabbychat.settings.ServerSettings;
 import mnm.mods.tabbychat.util.TabbyRef;
 import mnm.mods.util.LogHelper;
 import mnm.mods.util.gui.SettingPanel;
@@ -38,7 +42,10 @@ public abstract class TabbyChat extends TabbyAPI {
     public ChatBoxSettings chatSettings;
     public ColorSettings colorSettings;
     // Server settings
+    @Nullable
     public ChannelSettings channelSettings;
+    @Nullable
+    public ServerSettings serverSettings;
 
     private File dataFolder;
     private SocketAddress currentServer;
@@ -113,6 +120,7 @@ public abstract class TabbyChat extends TabbyAPI {
         colorSettings.saveSettingsFile();
 
         addonManager.registerListener(new ChatAddonAntiSpam());
+        addonManager.registerListener(new FilterAddon());
     }
 
     protected void onRender(GuiScreen currentScreen) {
@@ -131,6 +139,7 @@ public abstract class TabbyChat extends TabbyAPI {
         this.currentServer = address;
         // Set server settings
         channelSettings = new ChannelSettings((InetSocketAddress) currentServer);
+        serverSettings = new ServerSettings((InetSocketAddress) currentServer);
         channelSettings.loadSettingsFile();
         channelSettings.saveSettingsFile();
 
