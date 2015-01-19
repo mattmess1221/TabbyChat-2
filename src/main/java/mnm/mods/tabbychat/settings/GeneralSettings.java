@@ -14,6 +14,8 @@ public class GeneralSettings extends TabbySettings {
     private static final String TIMESTAMP_STYLE = "timestampStyle";
     private static final String TIMESTAMP_COLOR = "timestampColor";
     private static final String ANTI_SPAM = "antiSpam";
+    private static final String ANTI_SPAM_PARTIAL = "antiSpamPartial";
+    private static final String ANTI_SPAM_PARTIAL_AMOUNT = "antiSpamPartialAmount";
     private static final String UNREAD_FLASHING = "unreadFlashing";
 
     public SettingValue<Boolean> logChat = new SettingValue<Boolean>(true);
@@ -24,6 +26,8 @@ public class GeneralSettings extends TabbySettings {
     public SettingValue<EnumChatFormatting> timestampColor = new SettingValue<EnumChatFormatting>(
             EnumChatFormatting.WHITE);
     public SettingValue<Boolean> antiSpam = new SettingValue<Boolean>(false);
+    public SettingValue<Boolean> antiSpamPartial = new SettingValue<Boolean>(true);
+    public SettingValue<Float> antiSpamPartialAmount = new SettingValue<Float>(0.1f);
     public SettingValue<Boolean> unreadFlashing = new SettingValue<Boolean>(true);
 
     public GeneralSettings() {
@@ -46,6 +50,10 @@ public class GeneralSettings extends TabbySettings {
             antiSpam.setValue(value.getAsBoolean());
         } else if (setting.equals(UNREAD_FLASHING)) {
             unreadFlashing.setValue(value.getAsBoolean());
+        } else if (setting.equals(ANTI_SPAM_PARTIAL)) {
+            antiSpamPartial.setValue(value.getAsBoolean());
+        } else if (setting.equals(ANTI_SPAM_PARTIAL_AMOUNT)) {
+            antiSpamPartialAmount.setValue(value.getAsFloat());
         }
     }
 
@@ -58,5 +66,7 @@ public class GeneralSettings extends TabbySettings {
         saveSetting(TIMESTAMP_COLOR, timestampColor.getValue().getFriendlyName());
         saveSetting(ANTI_SPAM, antiSpam.getValue());
         saveSetting(UNREAD_FLASHING, unreadFlashing.getValue());
+        saveSetting(ANTI_SPAM_PARTIAL, antiSpamPartial.getValue());
+        saveSetting(ANTI_SPAM_PARTIAL_AMOUNT, antiSpamPartialAmount.getValue());
     }
 }
