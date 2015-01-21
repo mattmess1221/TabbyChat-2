@@ -29,11 +29,11 @@ public enum MessagePatterns implements Translatable {
 
     private static final String PLAYER_PATTERN = "([\\p{L}\\p{N}_]{3,16})";
 
-    private final Translation translation;
+    private final Translatable translation;
     private final String incoming;
     private final String outgoing;
 
-    private MessagePatterns(Translation translation, String incoming, String outgoing) {
+    private MessagePatterns(Translatable translation, String incoming, String outgoing) {
         this.translation = translation;
         this.incoming = incoming;
         this.outgoing = outgoing;
@@ -50,10 +50,6 @@ public enum MessagePatterns implements Translatable {
 
     public String getOutgoing() {
         return outgoing;
-    }
-
-    public Translation getTranslation() {
-        return translation;
     }
 
     @Override

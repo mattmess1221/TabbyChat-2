@@ -44,4 +44,9 @@ public enum TimeStamps implements Translatable {
         return this.code;
     }
 
+    @Override
+    public String toString() {
+        return translate();
+    }
+
 }

@@ -15,6 +15,7 @@ public class GeneralSettings extends TabbySettings {
     private static final String TIMESTAMP_COLOR = "timestampColor";
     private static final String ANTI_SPAM = "antiSpam";
     private static final String UNREAD_FLASHING = "unreadFlashing";
+    private static final String CHECK_UPDATES = "checkUpdates";
 
     public SettingValue<Boolean> logChat = new SettingValue<Boolean>(true);
     public SettingValue<Boolean> splitLog = new SettingValue<Boolean>(true);
@@ -25,6 +26,7 @@ public class GeneralSettings extends TabbySettings {
             EnumChatFormatting.WHITE);
     public SettingValue<Boolean> antiSpam = new SettingValue<Boolean>(false);
     public SettingValue<Boolean> unreadFlashing = new SettingValue<Boolean>(true);
+    public SettingValue<Boolean> checkUpdates = new SettingValue<Boolean>(true);
 
     public GeneralSettings() {
         super("general");
@@ -46,6 +48,8 @@ public class GeneralSettings extends TabbySettings {
             antiSpam.setValue(value.getAsBoolean());
         } else if (setting.equals(UNREAD_FLASHING)) {
             unreadFlashing.setValue(value.getAsBoolean());
+        } else if (setting.equals(CHECK_UPDATES)) {
+            checkUpdates.setValue(value.getAsBoolean());
         }
     }
 
@@ -58,5 +62,6 @@ public class GeneralSettings extends TabbySettings {
         saveSetting(TIMESTAMP_COLOR, timestampColor.getValue().getFriendlyName());
         saveSetting(ANTI_SPAM, antiSpam.getValue());
         saveSetting(UNREAD_FLASHING, unreadFlashing.getValue());
+        saveSetting(CHECK_UPDATES, checkUpdates.getValue());
     }
 }

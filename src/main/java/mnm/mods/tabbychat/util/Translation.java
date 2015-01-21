@@ -5,8 +5,8 @@ import net.minecraft.client.resources.I18n;
 
 public class Translation implements Translatable {
 
-    public static final Translation //
-    TABBYCHAT = new Translation("tabbychat"), // Bah formatting!
+    public static final Translatable
+            TABBYCHAT = new Translation("tabbychat"),
 
             FORMAT_MESSAGE_VANILLA = new Translation("tabbychat.formats.messages.vanilla"),
             FORMAT_MESSAGE_ESSENTIALS = new Translation("tabbychat.formats.messages.essentials"),
@@ -20,16 +20,18 @@ public class Translation implements Translatable {
             DELIMS_ANGLES_PARENS = new Translation("tabbychat.delims.anglesparens"),
             DELIMS_ANGLES_BRAKETS = new Translation("tabbychat.delims.anglesbrackets"),
 
+            SETTINGS_TITLE = new Translation("tabbychat.settings.title"),
             SETTINGS_SAVE = new Translation("tabbychat.settings.save"),
             SETTINGS_CLOSE = new Translation("tabbychat.settings.close"),
 
             SETTINGS_GENERAL = new Translation("tabbychat.settings.general"),
             SETTINGS_SERVER = new Translation("tabbychat.settings.server"),
+            SETTINGS_FILTERS = new Translation("tabbychat.settings.filters"),
             SETTINGS_COLORS = new Translation("tabbychat.settings.colors");
 
     private final String translation;
 
-    private Translation(String trans) {
+    public Translation(String trans) {
         this.translation = trans;
     }
 

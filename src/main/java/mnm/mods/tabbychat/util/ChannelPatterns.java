@@ -11,11 +11,11 @@ public enum ChannelPatterns implements Translatable {
     ANGLESPARENS(Translation.DELIMS_ANGLES_PARENS, "<(", ")(?: )?[A-Za-z0-9_]{1-16}>"),
     ANGLESBRACKETS(Translation.DELIMS_ANGLES_BRAKETS, "<\\[", "](?: )?[A-Za-z0-9_]{1-16}>");
 
-    private final Translation translation;
+    private final Translatable translation;
     private final String open;
     private final String close;
 
-    private ChannelPatterns(Translation title, String open, String close) {
+    private ChannelPatterns(Translatable title, String open, String close) {
         this.translation = title;
         this.open = open;
         this.close = close;

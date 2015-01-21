@@ -25,7 +25,7 @@ public class PrefsButton extends GuiButton {
     @Override
     public void drawComponent(int mouseX, int mouseY) {
         Gui.drawRect(0, 0, getBounds().width, getBounds().height, getBackColor());
-        this.drawCenteredString(mc.fontRendererObj, this.text, this.getBounds().width / 2,
+        this.drawCenteredString(mc.fontRendererObj, this.getText(), this.getBounds().width / 2,
                 (this.getBounds().height - 8) / 2, getForeColor());
     }
 }

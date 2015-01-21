@@ -90,7 +90,7 @@ public abstract class TabbyChat extends TabbyAPI {
     }
 
     @Override
-    public void registerSettings(Class<? extends SettingPanel> setting) {
+    public void registerSettings(Class<? extends SettingPanel<?>> setting) {
         GuiSettingsScreen.registerSetting(setting);
     }
 
@@ -128,10 +128,11 @@ public abstract class TabbyChat extends TabbyAPI {
             Minecraft mc = Minecraft.getMinecraft();
             // Get the default text via Access Transforming
             String inputBuffer = ((GuiChat) currentScreen).defaultInputFieldText;
-            if (currentScreen instanceof GuiSleepMP)
+            if (currentScreen instanceof GuiSleepMP) {
                 mc.displayGuiScreen(new GuiSleepTC());
-            else
+            } else {
                 mc.displayGuiScreen(new GuiChatTC(inputBuffer));
+            }
         }
     }
 

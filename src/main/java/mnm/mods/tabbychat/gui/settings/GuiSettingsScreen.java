@@ -5,6 +5,7 @@ import java.util.List;
 
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.gui.PrefsButton;
+import mnm.mods.tabbychat.util.Translation;
 import mnm.mods.util.Color;
 import mnm.mods.util.gui.BorderLayout;
 import mnm.mods.util.gui.ComponentScreen;
@@ -20,12 +21,14 @@ import net.minecraft.util.EnumChatFormatting;
 
 import com.google.common.collect.Lists;
 
+@SuppressWarnings("rawtypes")
 public class GuiSettingsScreen extends ComponentScreen {
 
     private static List<Class<? extends SettingPanel>> settings = Lists.newArrayList();
 
     static {
         registerSetting(GuiSettingsGeneral.class);
+        registerSetting(GuiFilterSettings.class);
         registerSetting(GuiSettingsColors.class);
     }
 
@@ -41,13 +44,14 @@ public class GuiSettingsScreen extends ComponentScreen {
         panel.setSize(300, 200);
         panel.setPosition(width / 2 - panel.getBounds().width / 2, height / 2
                 - panel.getBounds().height / 2);
-        panel.addComponent(new PrefsButton(EnumChatFormatting.BOLD + "TabbyChat 2 Settings"),
+        panel.addComponent(
+                new PrefsButton(EnumChatFormatting.BOLD + Translation.SETTINGS_TITLE.translate()),
                 BorderLayout.Position.NORTH);
         panel.addComponent(settingsList = new GuiPanel(new VerticalLayout()),
                 BorderLayout.Position.WEST);
         panel.addComponent(closeSaveButtons = new GuiPanel(new FlowLayout()),
                 BorderLayout.Position.SOUTH);
-        PrefsButton save = new PrefsButton("Save");
+        PrefsButton save = new PrefsButton(Translation.SETTINGS_SAVE.translate());
         save.setSize(40, 10);
         save.setBackColor(Color.getColor(0, 255, 0, 127));
         save.addEventListener(new ActionPerformed() {
@@ -58,7 +62,7 @@ public class GuiSettingsScreen extends ComponentScreen {
             }
         });
         closeSaveButtons.addComponent(save);
-        PrefsButton close = new PrefsButton("Close");
+        PrefsButton close = new PrefsButton(Translation.SETTINGS_CLOSE.translate());
         close.setSize(40, 10);
         close.setBackColor(Color.getColor(0, 255, 0, 127));
         close.addEventListener(new ActionPerformed() {
