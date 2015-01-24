@@ -33,7 +33,12 @@ public class MessageFilter extends TabFilter {
 
     @Override
     public void action(Filter filter, FilterEvent event) {
+        // 0 = whole message, 1 = outgoing recipient, 2 = incoming recipient
         String player = event.matcher.group(1);
+        // For when it's an incoming message.
+        if (player == null) {
+            player = event.matcher.group(2);
+        }
         Channel dest = TabbyAPI.getAPI().getChat().getChannel(player);
         if (dest.getPrefix().isEmpty()) {
             dest.setPrefix("/msg " + player);
