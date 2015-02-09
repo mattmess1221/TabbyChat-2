@@ -16,7 +16,7 @@ buildscript {
 }
 
 allprojects {
-    apply plugin: 'fml'
+    apply plugin: 'forge'
     group = "mnm.mods"
 
     configurations {
