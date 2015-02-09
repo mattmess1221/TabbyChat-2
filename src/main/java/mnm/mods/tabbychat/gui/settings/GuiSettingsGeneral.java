@@ -50,7 +50,6 @@ public class GuiSettingsGeneral extends SettingPanel<GeneralSettings> {
                 new int[] { 1, 13 });
     }
 
-    @SuppressWarnings("unchecked")
     private EnumChatFormatting[] getColors() {
         Collection<String> colors = EnumChatFormatting.getValidValues(true, false);
         List<EnumChatFormatting> list = Lists.newArrayList();
@@ -60,7 +59,6 @@ public class GuiSettingsGeneral extends SettingPanel<GeneralSettings> {
         return Iterables.toArray(list, EnumChatFormatting.class);
     }
 
-    @SuppressWarnings("unchecked")
     private String[] getColorNames() {
         Collection<String> colors = EnumChatFormatting.getValidValues(true, false);
         List<String> list = Lists.newArrayList();

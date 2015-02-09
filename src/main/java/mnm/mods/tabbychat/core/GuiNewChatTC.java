@@ -44,7 +44,6 @@ public class GuiNewChatTC extends GuiNewChat {
 
     @Override
     public void refreshChat() {
-        // TODO Auto-generated method stub
         chatbox.updateComponent();
     }
 
@@ -68,8 +67,8 @@ public class GuiNewChatTC extends GuiNewChat {
             for (Channel channel : chatevent.channels) {
                 channel.addMessage(chat, id);
             }
+            TabbyChat.getLogger().info("[CHAT] " + chat.getUnformattedText());
         }
-        TabbyChat.getLogger().info("[CHAT] " + chat.getUnformattedText());
     }
 
     @Override
@@ -84,7 +83,6 @@ public class GuiNewChatTC extends GuiNewChat {
         super.clearChatMessages();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public List<String> getSentMessages() {
         return super.getSentMessages();

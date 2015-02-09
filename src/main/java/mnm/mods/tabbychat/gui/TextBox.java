@@ -125,7 +125,6 @@ public class TextBox extends GuiComponent {
         textField.height = getBounds().height;
     }
 
-    @SuppressWarnings("unchecked")
     public List<String> getWrappedLines() {
         return fr.listFormattedStringToWidth(textField.getText(), getBounds().width);
     }

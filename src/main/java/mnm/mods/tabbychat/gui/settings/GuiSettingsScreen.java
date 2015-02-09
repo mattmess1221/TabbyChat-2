@@ -82,7 +82,7 @@ public class GuiSettingsScreen extends ComponentScreen {
                         @Override
                         public void actionPerformed(GuiEvent event) {
                             selectSetting(((SettingsButton) event.getComponent()).getSettings()
-                                    .getClass(), true);
+                                    .getClass());
                         }
                     });
                     settingsList.addComponent(button);
@@ -92,16 +92,13 @@ public class GuiSettingsScreen extends ComponentScreen {
                 }
             }
         }
-        boolean init;
         Class<? extends SettingPanel> panelClass;
         if (selectedSetting == null) {
-            init = true;
             panelClass = settings.get(0);
         } else {
-            init = false;
             panelClass = selectedSetting.getClass();
         }
-        selectSetting(panelClass, init);
+        selectSetting(panelClass);
 
     }
 
@@ -131,23 +128,22 @@ public class GuiSettingsScreen extends ComponentScreen {
         super.drawScreen(mouseX, mouseY, tick);
     }
 
-    private void selectSetting(Class<? extends SettingPanel> settingClass, boolean init) {
+    private void selectSetting(Class<? extends SettingPanel> settingClass) {
         if (!settings.contains(settingClass)) {
             throw new IllegalArgumentException(settingClass.getName()
                     + " is not a registered setting category.");
-        } else {
-            try {
-                deactivateAll();
-                panel.removeComponent(selectedSetting);
-                selectedSetting = settingClass.newInstance();
-                // if (init) {
-                selectedSetting.initGUI();
-                // }
-                activate(settingClass);
-                panel.addComponent(selectedSetting, BorderLayout.Position.CENTER);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+        }
+        try {
+            deactivateAll();
+            panel.removeComponent(selectedSetting);
+            selectedSetting = settingClass.newInstance();
+            // if (init) {
+            selectedSetting.initGUI();
+            // }
+            activate(settingClass);
+            panel.addComponent(selectedSetting, BorderLayout.Position.CENTER);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

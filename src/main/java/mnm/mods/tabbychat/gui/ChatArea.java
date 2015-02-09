@@ -33,7 +33,7 @@ public class ChatArea extends GuiComponent {
                 @Override
                 public List<Message> get() {
                     return ChatArea.this.getChat(true);
-                };
+                }
             }, 50, TimeUnit.MILLISECONDS);
     private int scrollPos = 0;
 
@@ -165,7 +165,6 @@ public class ChatArea extends GuiComponent {
                 if (linePos >= 0 && linePos < this.getChat(false).size()) {
                     Message chatline = getChat(false).get(linePos);
                     int l1 = 0;
-                    @SuppressWarnings("unchecked")
                     Iterator<IChatComponent> iterator = chatline.getMessage().iterator();
 
                     while (iterator.hasNext() && l1 <= clickX) {

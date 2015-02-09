@@ -152,8 +152,6 @@ public abstract class TabbyChat extends TabbyAPI {
         events.onJoinGame(address);
     }
 
-    // Private methods
-
     private void hookIntoChat(GuiIngame guiIngame) {
         if (!GuiNewChatTC.class.isAssignableFrom(guiIngame.getChatGUI().getClass())) {
             guiIngame.persistantChatGUI = GuiNewChatTC.getInstance();
