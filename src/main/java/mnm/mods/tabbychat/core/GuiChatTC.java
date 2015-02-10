@@ -32,6 +32,8 @@ public class GuiChatTC extends GuiChat {
     protected List<GuiComponent> componentList = Lists.newArrayList();
     protected GuiNewChatTC chatGui = GuiNewChatTC.getInstance();
     protected ChatBox chatbox;
+
+    private String defaultInputFieldText;
     private int sentHistoryIndex;
     private String sentHistoryBuffer = "";
 
@@ -53,6 +55,7 @@ public class GuiChatTC extends GuiChat {
 
     public GuiChatTC(String text) {
         super(text);
+        this.defaultInputFieldText = text;
         sentHistoryIndex = chatGui.getSentMessages().size();
         chatbox = chatGui.getChatbox();
         textBox = chatbox.getChatInput().getTextField();
@@ -163,7 +166,7 @@ public class GuiChatTC extends GuiChat {
             IChatComponent chat = chatGui.getChatComponent(mouseX, mouseY);
             this.handleComponentClick(chat);
         }
-        textBox.mouseClicked(mouseX, mouseY, mouseButton);
+        chatbox.getChatInput().mouseClicked(mouseX, mouseY, mouseButton);
     }
 
     @Override

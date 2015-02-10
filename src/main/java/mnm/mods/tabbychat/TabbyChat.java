@@ -23,6 +23,7 @@ import mnm.mods.tabbychat.settings.GeneralSettings;
 import mnm.mods.tabbychat.settings.ServerSettings;
 import mnm.mods.tabbychat.util.TabbyRef;
 import mnm.mods.util.LogHelper;
+import mnm.mods.util.ReflectionHelper;
 import mnm.mods.util.gui.SettingPanel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
@@ -126,8 +127,12 @@ public abstract class TabbyChat extends TabbyAPI {
     protected void onRender(GuiScreen currentScreen) {
         if (currentScreen instanceof GuiChat && !(currentScreen instanceof GuiChatTC)) {
             Minecraft mc = Minecraft.getMinecraft();
-            // Get the default text via Access Transforming
-            String inputBuffer = ((GuiChat) currentScreen).defaultInputFieldText;
+            // Get the default text via Reflection
+            String inputBuffer = "";
+            try {
+                inputBuffer = (String) ReflectionHelper.getFieldValue(GuiChat.class, currentScreen,
+                        new String[] { "u", "field_146409_v", "defaultInputFieldText" });
+            } catch (Exception e) {}
             if (currentScreen instanceof GuiSleepMP) {
                 mc.displayGuiScreen(new GuiSleepTC());
             } else {
@@ -152,9 +157,11 @@ public abstract class TabbyChat extends TabbyAPI {
         events.onJoinGame(address);
     }
 
-    private void hookIntoChat(GuiIngame guiIngame) {
+    private void hookIntoChat(GuiIngame guiIngame) throws Exception {
         if (!GuiNewChatTC.class.isAssignableFrom(guiIngame.getChatGUI().getClass())) {
-            guiIngame.persistantChatGUI = GuiNewChatTC.getInstance();
+            // guiIngame.persistantChatGUI = GuiNewChatTC.getInstance();
+            ReflectionHelper.setFieldValue(GuiIngame.class, guiIngame, GuiNewChatTC.getInstance(),
+                    new String[] { "l", "field_73840_e", "persistantChatGUI" });
             LOGGER.info("Successfully hooked into chat.");
         }
     }
