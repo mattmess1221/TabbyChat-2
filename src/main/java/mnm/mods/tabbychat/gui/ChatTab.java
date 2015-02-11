@@ -2,16 +2,39 @@ package mnm.mods.tabbychat.gui;
 
 import java.awt.Dimension;
 
+import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
+import mnm.mods.util.gui.events.GuiMouseAdapter;
+import mnm.mods.util.gui.events.GuiMouseEvent;
+import net.minecraft.client.gui.GuiScreen;
 
-public class ChatTab extends PrefsButton {
+public class ChatTab extends PrefsButton implements GuiMouseAdapter {
 
     private final Channel channel;
 
     public ChatTab(Channel channel) {
         super(channel.getAlias());
         this.channel = channel;
+    }
+
+    @Override
+    public void accept(GuiMouseEvent event) {
+        if (event.event == GuiMouseEvent.CLICKED) {
+            ChatTab comp = (ChatTab) event.component;
+            if (event.button == 0) {
+                if (GuiScreen.isShiftKeyDown()) {
+                    // Remove channel
+                    TabbyChat.getInstance().getChat().removeChannel(comp.getChannel());
+                } else {
+                    // Enable channel, disable others
+                    TabbyChat.getInstance().getChat().setActiveChannel(comp.getChannel());
+                }
+            } else if (event.button == 1) {
+                // Open channel options
+                comp.getChannel().openSettings();
+            }
+        }
     }
 
     @Override

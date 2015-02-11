@@ -12,6 +12,7 @@ import mnm.mods.tabbychat.api.TabbyAPI;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.util.ChatTextUtils;
 import mnm.mods.util.gui.GuiComponent;
+import mnm.mods.util.gui.events.GuiMouseAdapter;
 import mnm.mods.util.gui.events.GuiMouseEvent;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
@@ -25,28 +26,29 @@ import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.Lists;
 
-public class ChatArea extends GuiComponent {
+public class ChatArea extends GuiComponent implements Supplier<List<Message>>, GuiMouseAdapter {
 
-    private Supplier<List<Message>> supplier = Suppliers.memoizeWithExpiration(
-            () -> ChatArea.this.getChat(true), 50, TimeUnit.MILLISECONDS);
+    private Supplier<List<Message>> supplier = Suppliers.memoizeWithExpiration(this, 50,
+            TimeUnit.MILLISECONDS);
     private int scrollPos = 0;
 
     public ChatArea() {
         this.setMinimumSize(new Dimension(300, 160));
-        this.addMouseAdapter(event -> {
-            if (event.event == GuiMouseEvent.SCROLLED) {
-                // Scrolling
-                int scroll = event.scroll;
-                // One tick = 120
-                int div = 60;
-                if (GuiScreen.isShiftKeyDown()) {
-                    div *= 3;
-                }
-                scroll(scroll / div);
-            }
-        });
     }
 
+    @Override
+    public void accept(GuiMouseEvent event) {
+        if (event.event == GuiMouseEvent.SCROLLED) {
+            // Scrolling
+            int scroll = event.scroll;
+            // One tick = 120
+            int div = 60;
+            if (GuiScreen.isShiftKeyDown()) {
+                div *= 3;
+            }
+            scroll(scroll / div);
+        }
+    }
     @Override
     public void drawComponent(int mouseX, int mouseY) {
         if (mc.gameSettings.chatVisibility != EnumChatVisibility.HIDDEN) {
@@ -77,6 +79,11 @@ public class ChatArea extends GuiComponent {
                 + (getLineOpacity(line) << 24));
         GlStateManager.disableAlpha();
         GlStateManager.disableBlend();
+    }
+
+    @Override
+    public List<Message> get() {
+        return getChat(true);
     }
 
     public List<Message> getChat(boolean force) {
@@ -158,7 +165,6 @@ public class ChatArea extends GuiComponent {
                 if (linePos >= 0 && linePos < this.getChat(false).size()) {
                     Message chatline = getChat(false).get(linePos);
                     int l1 = 0;
-                    @SuppressWarnings("unchecked")
                     Iterator<IChatComponent> iterator = chatline.getMessage().iterator();
 
                     while (iterator.hasNext() && l1 <= clickX) {

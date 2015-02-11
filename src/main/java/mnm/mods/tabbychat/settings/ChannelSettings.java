@@ -12,14 +12,14 @@ import mnm.mods.util.SettingValue;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 
-public class ChannelSettings extends ServerSettings {
+public class ChannelSettings extends AbstractServerSettings {
 
     private static final String CHANNELS_ENABLED = "channelsEnabled";
     private static final String PM_ENABLED = "pmEnabled";
     private static final String CHANNEL_PATTERNS = "channelPattern";
     private static final String PM_PATTERNS = "pmPattern";
-    private static final String CUSTOM_PM_TO_ME = "customPmToMe";
-    private static final String CUSTOM_PM_FROM_ME = "customPmFromMe";
+    private static final String CUSTOM_PM_TO_ME = "customPmIncoming";
+    private static final String CUSTOM_PM_FROM_ME = "customPmOutgoing";
     private static final String DEFAULT_CHANNELS = "defaultChannels";
     private static final String IGNORED_CHANNELS = "ignoredChannels";
     private static final String USE_IGNORE_PATTERNS = "useIgnorePatterns";
@@ -32,8 +32,8 @@ public class ChannelSettings extends ServerSettings {
             ChannelPatterns.BRACKETS);
     public SettingValue<MessagePatterns> pmPattern = new SettingValue<MessagePatterns>(
             MessagePatterns.VANILLA);
-    public SettingValue<String> customPmToMe = new SettingValue<String>("");
-    public SettingValue<String> customPmFromMe = new SettingValue<String>("");
+    public SettingValue<String> customPmIncoming = new SettingValue<String>("");
+    public SettingValue<String> customPmOutgoing = new SettingValue<String>("");
     public SettingValue<List<String>> defaultChannels = new SettingValue<List<String>>(
             new ArrayList<String>());
     public SettingValue<List<String>> ignoredChannels = new SettingValue<List<String>>(
@@ -50,8 +50,8 @@ public class ChannelSettings extends ServerSettings {
         this.saveSetting(PM_ENABLED, pmEnabled.getValue());
         this.saveSetting(CHANNEL_PATTERNS, channelPattern.getValue().name());
         this.saveSetting(PM_PATTERNS, pmPattern.getValue().name());
-        this.saveSetting(CUSTOM_PM_TO_ME, customPmToMe.getValue());
-        this.saveSetting(CUSTOM_PM_FROM_ME, customPmFromMe.getValue());
+        this.saveSetting(CUSTOM_PM_TO_ME, customPmIncoming.getValue());
+        this.saveSetting(CUSTOM_PM_FROM_ME, customPmOutgoing.getValue());
         this.saveSetting(DEFAULT_CHANNELS, gson.toJsonTree(defaultChannels.getValue()));
         this.saveSetting(IGNORED_CHANNELS, gson.toJsonTree(ignoredChannels.getValue()));
         this.saveSetting(USE_IGNORE_PATTERNS, useIgnorePatterns.getValue());
@@ -70,9 +70,9 @@ public class ChannelSettings extends ServerSettings {
         } else if (setting.equals(PM_PATTERNS)) {
             pmPattern.setValue(MessagePatterns.valueOf(value.getAsString()));
         } else if (setting.equals(CUSTOM_PM_TO_ME)) {
-            customPmToMe.setValue(value.getAsString());
+            customPmIncoming.setValue(value.getAsString());
         } else if (setting.equals(CUSTOM_PM_FROM_ME)) {
-            customPmFromMe.setValue(value.getAsString());
+            customPmOutgoing.setValue(value.getAsString());
         } else if (setting.equals(DEFAULT_CHANNELS)) {
             defaultChannels
                     .setValue((List<String>) gson.fromJson(value.getAsJsonArray(), LIST_TYPE));

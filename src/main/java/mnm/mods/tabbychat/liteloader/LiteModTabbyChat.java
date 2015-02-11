@@ -42,7 +42,13 @@ public class LiteModTabbyChat extends TabbyChat implements RenderListener, JoinG
     @Override
     public void onJoinGame(INetHandler iNet, S01PacketJoinGame packet, ServerData serverData,
             RealmsServer realms) {
-        SocketAddress addr = ((NetHandlerPlayClient) iNet).getNetworkManager().getRemoteAddress();
+        NetHandlerPlayClient play = (NetHandlerPlayClient) iNet;
+        SocketAddress addr;
+        if (play.getNetworkManager().isLocalChannel()) {
+            addr = null;
+        } else {
+            addr = play.getNetworkManager().getRemoteAddress();
+        }
         onJoin(addr);
     }
 

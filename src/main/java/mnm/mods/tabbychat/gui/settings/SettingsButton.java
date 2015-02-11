@@ -1,23 +1,25 @@
 package mnm.mods.tabbychat.gui.settings;
 
+import java.awt.Dimension;
+
 import mnm.mods.util.gui.GuiButton;
 import mnm.mods.util.gui.SettingPanel;
 import net.minecraft.client.gui.Gui;
 
 public class SettingsButton extends GuiButton {
 
-    private SettingPanel settings;
+    private SettingPanel<?> settings;
     private int displayX = 30;
     private boolean active;
 
-    public SettingsButton(SettingPanel settings) {
+    public SettingsButton(SettingPanel<?> settings) {
         super(settings.getDisplayString());
         this.settings = settings;
         this.setSize(75, 20);
         this.setBackColor(settings.getBackColor());
     }
 
-    public SettingPanel getSettings() {
+    public SettingPanel<?> getSettings() {
         return settings;
     }
 
@@ -36,5 +38,10 @@ public class SettingsButton extends GuiButton {
                 getBackColor());
         String string = mc.fontRendererObj.trimStringToWidth(getText(), getBounds().width);
         mc.fontRendererObj.drawString(string, displayX - 20, 6, getForeColor());
+    }
+
+    @Override
+    public Dimension getMinimumSize() {
+        return getBounds().getSize();
     }
 }

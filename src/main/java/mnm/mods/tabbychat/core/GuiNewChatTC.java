@@ -6,7 +6,6 @@ import java.util.List;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.listener.events.ChatMessageEvent.ChatRecievedEvent;
-import mnm.mods.tabbychat.api.listener.events.ChatMessageEvent.ChatRecievedFilterEvent;
 import mnm.mods.tabbychat.gui.ChatBox;
 import mnm.mods.tabbychat.settings.ChatBoxSettings;
 import mnm.mods.tabbychat.util.ChatChannel;
@@ -37,14 +36,14 @@ public class GuiNewChatTC extends GuiNewChat {
     }
 
     public static GuiNewChatTC getInstance() {
-        if (instance == null)
+        if (instance == null) {
             instance = new GuiNewChatTC(Minecraft.getMinecraft());
+        }
         return instance;
     }
 
     @Override
     public void refreshChat() {
-        // TODO Auto-generated method stub
         chatbox.updateComponent();
     }
 
@@ -62,14 +61,13 @@ public class GuiNewChatTC extends GuiNewChat {
         chatevent.channels.add(ChatChannel.DEFAULT_CHANNEL);
         tc.getEventManager().onChatRecieved(chatevent);
         // chat filters
-        ChatRecievedFilterEvent chatfilter = new ChatRecievedFilterEvent(chat, id);
-        tc.getEventManager().onChatReicevedFilter(chatfilter);
-        chat = chatfilter.chat;
-        id = chatfilter.id;
+        chat = chatevent.chat;
+        id = chatevent.id;
         if (chat != null && !chat.getUnformattedText().isEmpty()) {
             for (Channel channel : chatevent.channels) {
                 channel.addMessage(chat, id);
             }
+            TabbyChat.getLogger().info("[CHAT] " + chat.getUnformattedText());
         }
     }
 
@@ -85,7 +83,6 @@ public class GuiNewChatTC extends GuiNewChat {
         super.clearChatMessages();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public List<String> getSentMessages() {
         return super.getSentMessages();

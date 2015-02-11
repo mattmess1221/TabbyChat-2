@@ -18,23 +18,23 @@ public class ChatChannel implements Channel {
     public static final Channel DEFAULT_CHANNEL = new ChatChannel("*", 0) {
         // Don't mess with this channel
         @Override
-        public void setAlias(String alias) {};
+        public void setAlias(String alias) {}
 
         @Override
-        public void setPrefix(String prefix) {};
+        public void setPrefix(String prefix) {}
 
         @Override
-        public void setPrefixHidden(boolean hidden) {};
+        public void setPrefixHidden(boolean hidden) {}
 
         @Override
         public void openSettings() {
             // There are no settings for this channel
             TabbyChat.getInstance().openSettings();
-        };
+        }
 
         // Locked at 0
         @Override
-        public void setPosition(int pos) {};
+        public void setPosition(int pos) {}
     };
 
     private List<Message> messages = Lists.newArrayList();

@@ -27,10 +27,10 @@ public abstract class TabbyAPI {
 
     /**
      * Registers a setting category with the setting screen.
-     * 
+     *
      * @param setting The setting class.
      */
-    public abstract void registerSettings(Class<? extends SettingPanel> setting);
+    public abstract void registerSettings(Class<? extends SettingPanel<?>> setting);
 
     /**
      * Gets the chat.
@@ -41,7 +41,7 @@ public abstract class TabbyAPI {
 
     /**
      * Gets the {@link AddonManager} used to register listeners.
-     * 
+     *
      * @return The addon manager
      */
     public abstract AddonManager getAddonManager();

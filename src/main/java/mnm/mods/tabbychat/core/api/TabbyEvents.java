@@ -10,9 +10,7 @@ import mnm.mods.tabbychat.api.listener.ChatScreenListener;
 import mnm.mods.tabbychat.api.listener.ChatSentListener;
 import mnm.mods.tabbychat.api.listener.events.ChatInitEvent;
 import mnm.mods.tabbychat.api.listener.events.ChatMessageEvent.ChatRecievedEvent;
-import mnm.mods.tabbychat.api.listener.events.ChatMessageEvent.ChatRecievedFilterEvent;
 import mnm.mods.tabbychat.api.listener.events.ChatMessageEvent.ChatSentEvent;
-import mnm.mods.tabbychat.api.listener.events.ChatMessageEvent.ChatSentFilterEvent;
 import mnm.mods.tabbychat.api.listener.events.MessageAddedToChannelEvent;
 import mnm.mods.tabbychat.api.listener.events.PostLoginEvent;
 import mnm.mods.util.gui.GuiComponent;
@@ -32,11 +30,7 @@ public class TabbyEvents {
         for (ChatSentListener listener : listeners) {
             listener.onChatSent(sendEvent);
         }
-        ChatSentFilterEvent filter = new ChatSentFilterEvent(message);
-        for (ChatSentListener listener : listeners) {
-            listener.onChatSentFilter(filter);
-        }
-        return filter.message;
+        return sendEvent.message;
     }
 
     public void onInitScreen(List<GuiComponent> components) {
@@ -81,14 +75,6 @@ public class TabbyEvents {
                 .getListenersOfType(ChatRecievedListener.class);
         for (ChatRecievedListener chatrecieve : listeners) {
             chatrecieve.onChatRecieved(chat);
-        }
-    }
-
-    public void onChatReicevedFilter(ChatRecievedFilterEvent chat) {
-        List<ChatRecievedListener> listeners = manager
-                .getListenersOfType(ChatRecievedListener.class);
-        for (ChatRecievedListener chatrecieve : listeners) {
-            chatrecieve.onChatRecievedFilter(chat);
         }
     }
 

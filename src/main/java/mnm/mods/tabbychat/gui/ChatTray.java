@@ -3,7 +3,6 @@ package mnm.mods.tabbychat.gui;
 import java.awt.Dimension;
 import java.util.Iterator;
 
-import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.util.ChatChannel;
@@ -11,9 +10,7 @@ import mnm.mods.util.gui.BorderLayout;
 import mnm.mods.util.gui.FlowLayout;
 import mnm.mods.util.gui.GuiComponent;
 import mnm.mods.util.gui.GuiPanel;
-import mnm.mods.util.gui.events.GuiMouseEvent;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiScreen;
 
 public class ChatTray extends GuiPanel {
 
@@ -42,23 +39,6 @@ public class ChatTray extends GuiPanel {
     public void addChannel(Channel channel) {
         channel.setPosition(count);
         GuiComponent gc = new ChatTab(channel);
-        gc.addMouseAdapter(event -> {
-            if (event.event == GuiMouseEvent.CLICKED) {
-                ChatTab comp = (ChatTab) event.component;
-                if (event.button == 0) {
-                    if (GuiScreen.isShiftKeyDown()) {
-                        // Remove channel
-                        TabbyChat.getInstance().getChat().removeChannel(comp.getChannel());
-                    } else {
-                        // Enable channel, disable others
-                        TabbyChat.getInstance().getChat().setActiveChannel(comp.getChannel());
-                    }
-                } else if (event.button == 1) {
-                    // Open channel options
-                    comp.getChannel().openSettings();
-                }
-            }
-        });
         tabList.addComponent(gc);
         count++;
     }

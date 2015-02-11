@@ -119,13 +119,8 @@ public class TextBox extends GuiComponent {
         int newHeight = Math.max(1, list.size()) * (fr.FONT_HEIGHT + 2);
         // int newY = getBounds().y + getBounds().height - newHeight;
         this.setSize(getMinimumSize().width, newHeight);
-        textField.xPosition = getActualPosition().x;
-        textField.yPosition = getActualPosition().y;
-        textField.width = getBounds().width;
-        textField.height = getBounds().height;
     }
 
-    @SuppressWarnings("unchecked")
     public List<String> getWrappedLines() {
         return fr.listFormattedStringToWidth(textField.getText(), getBounds().width);
     }
@@ -137,6 +132,27 @@ public class TextBox extends GuiComponent {
 
     public GuiTextField getTextField() {
         return textField;
+    }
+
+    public void mouseClicked(int x, int y, int mouseButton) {
+        if (mouseButton == 0) {
+            int xPos = this.getActualPosition().x;
+            int yPos = this.getActualPosition().y;
+            int width = this.getBounds().width;
+            int row = (y - yPos) / (fr.FONT_HEIGHT + 2);
+            int col = x - xPos;
+
+            List<String> lines = getWrappedLines();
+            if (row < 0 || row >= lines.size() || col < 0 || col > width) {
+                return;
+            }
+            int index = 0;
+            for (int i = 0; i < row; i++) {
+                index += lines.get(i).length();
+            }
+            index += fr.trimStringToWidth(lines.get(row), col).length();
+            textField.setCursorPosition(index + 1);
+        }
     }
 
 }

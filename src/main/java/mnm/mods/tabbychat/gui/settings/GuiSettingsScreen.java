@@ -13,11 +13,14 @@ import mnm.mods.util.gui.GuiComponent;
 import mnm.mods.util.gui.GuiPanel;
 import mnm.mods.util.gui.SettingPanel;
 import mnm.mods.util.gui.VerticalLayout;
+import mnm.mods.util.gui.events.ActionPerformed;
+import mnm.mods.util.gui.events.GuiEvent;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.util.EnumChatFormatting;
 
 import com.google.common.collect.Lists;
 
+@SuppressWarnings("rawtypes")
 public class GuiSettingsScreen extends ComponentScreen {
 
     private static List<Class<? extends SettingPanel>> settings = Lists.newArrayList();
@@ -48,30 +51,43 @@ public class GuiSettingsScreen extends ComponentScreen {
         PrefsButton save = new PrefsButton("Save");
         save.setSize(40, 10);
         save.setBackColor(Color.getColor(0, 255, 0, 127));
-        save.addActionListener(event -> {
-            selectedSetting.saveSettings();
-            selectedSetting.getSettings().saveSettingsFile();
+        save.addActionListener(new ActionPerformed() {
+            @Override
+            public void action(GuiEvent event) {
+                selectedSetting.saveSettings();
+                selectedSetting.getSettings().saveSettingsFile();
+            }
         });
         closeSaveButtons.addComponent(save);
         PrefsButton close = new PrefsButton("Close");
         close.setSize(40, 10);
         close.setBackColor(Color.getColor(0, 255, 0, 127));
-        close.addActionListener(event -> mc.displayGuiScreen(null));
+        close.addActionListener(new ActionPerformed() {
+            @Override
+            public void action(GuiEvent event) {
+                mc.displayGuiScreen(null);
+            }
+        });
         closeSaveButtons.addComponent(close);
 
         {
             // Populate the settings
-            settings.forEach(sett -> {
+            for (Class<? extends SettingPanel> sett : settings) {
                 try {
                     SettingsButton button = new SettingsButton(sett.newInstance());
-                    button.addActionListener(event -> selectSetting(
-                            ((SettingsButton) event.component).getSettings().getClass(), true));
+                    button.addActionListener(new ActionPerformed() {
+                        @Override
+                        public void action(GuiEvent event) {
+                            selectSetting(((SettingsButton) event.component).getSettings()
+                                    .getClass(), true);
+                        }
+                    });
                     settingsList.addComponent(button);
                 } catch (Exception e) {
                     TabbyChat.getLogger().error(
                             "Unable to add " + sett.getName() + " as a setting.", e);
                 }
-            });
+            }
         }
         boolean init;
         Class<? extends SettingPanel> panelClass;
@@ -83,7 +99,6 @@ public class GuiSettingsScreen extends ComponentScreen {
             panelClass = selectedSetting.getClass();
         }
         selectSetting(panelClass, init);
-
     }
 
     private void deactivateAll() {
@@ -116,19 +131,18 @@ public class GuiSettingsScreen extends ComponentScreen {
         if (!settings.contains(settingClass)) {
             throw new IllegalArgumentException(settingClass.getName()
                     + " is not a registered setting category.");
-        } else {
-            try {
-                deactivateAll();
-                panel.removeComponent(selectedSetting);
-                selectedSetting = settingClass.newInstance();
-                // if (init) {
-                selectedSetting.initGUI();
-                // }
-                activate(settingClass);
-                panel.addComponent(selectedSetting, BorderLayout.Position.CENTER);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+        }
+        try {
+            deactivateAll();
+            panel.removeComponent(selectedSetting);
+            selectedSetting = settingClass.newInstance();
+            // if (init) {
+            selectedSetting.initGUI();
+            // }
+            activate(settingClass);
+            panel.addComponent(selectedSetting, BorderLayout.Position.CENTER);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

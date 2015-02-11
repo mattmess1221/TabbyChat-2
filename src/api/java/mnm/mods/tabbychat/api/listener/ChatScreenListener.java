@@ -7,7 +7,6 @@ import net.minecraft.client.gui.GuiButton;
  * Interface for modules that add buttons to GuiChat.
  *
  * @author Matthew
- *
  */
 public interface ChatScreenListener extends TabbyListener {
 

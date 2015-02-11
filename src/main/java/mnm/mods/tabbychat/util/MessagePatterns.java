@@ -4,48 +4,61 @@ import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.util.Translatable;
 
 public enum MessagePatterns implements Translatable {
-    ESSENTIALS(Translations.FORMAT_MESSAGE_ESSENTIALS,
-            "^\\[([\\p{L}\\p{N}_]{3,16})[ ]?\\-\\>[ ]?me\\]",
-            "^\\[me[ ]?\\-\\>[ ]?([\\p{L}\\p{N}_]{3,16})\\]"),
-    HEROCHAT(Translations.FORMAT_MESSAGE_HEROCHAT,
-            "^From ([\\p{L}\\p{N}_]{3,16})[ ]?:",
-            "^To ([\\p{L}\\p{N}_]{3,16})[ ]?:"),
-    VANILLA(Translations.FORMAT_MESSAGE_VANILLA,
-            "^([\\p{L}\\p{N}_]{3,16}) whispers to you:",
-            "^You whisper to ([\\p{L}\\p{N}_]{3,16}):"),
-    CUSTOM(Translations.FORMAT_MESSAGE_CUSTOM, null, null) {
+
+    ESSENTIALS(Translation.FORMAT_MESSAGE_ESSENTIALS,
+            "^\\[" + getPlayerPattern() + "[ ]?\\-\\>[ ]?me\\]",
+            "^\\[me[ ]?\\-\\>[ ]?" + getPlayerPattern() + "\\]"),
+    HEROCHAT(Translation.FORMAT_MESSAGE_HEROCHAT,
+            "^From " + getPlayerPattern() + "[ ]?:",
+            "^To " + getPlayerPattern() + "[ ]?:"),
+    VANILLA(Translation.FORMAT_MESSAGE_VANILLA,
+            "^" + getPlayerPattern() + " whispers to you:",
+            "^You whisper to " + getPlayerPattern() + ":"),
+    CUSTOM(Translation.FORMAT_MESSAGE_CUSTOM, null, null) {
         // Custom patterns
         @Override
-        public String getFromMe() {
-            return TabbyChat.getInstance().channelSettings.customPmFromMe.getValue();
+        public String getOutgoing() {
+            return TabbyChat.getInstance().channelSettings.customPmOutgoing.getValue();
         }
 
         @Override
-        public String getToMe() {
-            return TabbyChat.getInstance().channelSettings.customPmToMe.getValue();
+        public String getIncoming() {
+            return TabbyChat.getInstance().channelSettings.customPmIncoming.getValue();
         }
     };
 
-    private final String translation;
-    private final String toMe;
-    private final String fromMe;
+    private static final String PLAYER_PATTERN = "([\\p{L}\\p{N}_]{3,16})";
 
-    private MessagePatterns(String translation, String toMe, String fromMe) {
+    private final Translatable translation;
+    private final String incoming;
+    private final String outgoing;
+
+    private MessagePatterns(Translatable translation, String incoming, String outgoing) {
         this.translation = translation;
-        this.toMe = toMe;
-        this.fromMe = fromMe;
+        this.incoming = incoming;
+        this.outgoing = outgoing;
     }
 
-    public String getToMe() {
-        return toMe;
+    private static String getPlayerPattern() {
+        // Workaround for not being able to use local constants in enums.
+        return PLAYER_PATTERN;
     }
 
-    public String getFromMe() {
-        return fromMe;
+    public String getIncoming() {
+        return incoming;
+    }
+
+    public String getOutgoing() {
+        return outgoing;
     }
 
     @Override
     public String getUnlocalized() {
-        return this.translation;
+        return translation.getUnlocalized();
+    }
+
+    @Override
+    public String translate(Object... params) {
+        return translation.translate(params);
     }
 }

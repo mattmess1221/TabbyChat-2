@@ -5,6 +5,5 @@
 	"author": "killjoy1221",
 	"mcversion": "${mcversion}",
 	"description": "Chat overhaul.",
-	"dependsOn": "MnM Utils",
-	"classTransformerClasses": "mnm.mods.util.asm.AccessTransformer"
+	"dependsOn": "mnm utils"
 }

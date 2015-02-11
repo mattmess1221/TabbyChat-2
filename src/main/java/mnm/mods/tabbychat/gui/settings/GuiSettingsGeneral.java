@@ -1,39 +1,77 @@
 package mnm.mods.tabbychat.gui.settings;
 
+import java.util.Collection;
+import java.util.List;
+
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.settings.GeneralSettings;
 import mnm.mods.tabbychat.util.TimeStamps;
+import mnm.mods.tabbychat.util.Translation;
 import mnm.mods.util.Color;
-import mnm.mods.util.SettingValue;
+import mnm.mods.util.gui.GuiGridLayout;
+import mnm.mods.util.gui.GuiLabel;
 import mnm.mods.util.gui.GuiSettingBoolean;
 import mnm.mods.util.gui.GuiSettingEnum;
-import mnm.mods.util.gui.GuiSettingString;
 import mnm.mods.util.gui.SettingPanel;
+import net.minecraft.util.EnumChatFormatting;
 
-public class GuiSettingsGeneral extends SettingPanel {
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+
+public class GuiSettingsGeneral extends SettingPanel<GeneralSettings> {
+
+    public GuiSettingsGeneral() {
+        setLayout(new GuiGridLayout(10, 15));
+        setDisplayString(Translation.SETTINGS_GENERAL.translate());
+        setBackColor(Color.getColor(255, 0, 255, 64));
+    }
 
     @Override
     public void initGUI() {
-        // TODO Grid layout
-        addComponent(new GuiSettingBoolean(getSettings().antiSpam, 20, 10, "Anti spam"));
-        addComponent(new GuiSettingBoolean(getSettings().timestampChat, 20, 30, "Timestamp chat"));
-        addComponent(new GuiSettingEnum<TimeStamps>(getSettings().timestampStyle, 40, 50, 70, 15));
-        addComponent(new GuiSettingString(new SettingValue<String>("derp"), 40, 70, 100, 15));
+        GeneralSettings sett = getSettings();
+        addComponent(new GuiSettingBoolean(sett.logChat, "Log Chat"),
+                new int[] { 1, 1 });
+        addComponent(new GuiSettingBoolean(sett.splitLog, "Split log"),
+                new int[] { 6, 1 });
+        addComponent(new GuiSettingBoolean(sett.timestampChat, "Timestamp chat"),
+                new int[] { 1, 3 });
+        addComponent(new GuiLabel("Style"), new int[] { 3, 5 });
+        addComponent(new GuiSettingEnum<TimeStamps>(sett.timestampStyle, TimeStamps.values()),
+                new int[] { 5, 5, 4, 1 });
+        addComponent(new GuiLabel("Color"), new int[] { 3, 7 });
+        addComponent(new GuiSettingEnum<EnumChatFormatting>(sett.timestampColor, getColors(),
+                getColorNames()),
+                new int[] { 5, 7, 4, 1 });
+        addComponent(new GuiSettingBoolean(sett.antiSpam, "Anti spam"),
+                new int[] { 1, 9 });
+        addComponent(new GuiSettingBoolean(sett.unreadFlashing, "Unread flashing"),
+                new int[] { 1, 11 });
+        addComponent(new GuiSettingBoolean(sett.checkUpdates, "Check for updates"),
+                new int[] { 1, 13 });
+    }
+
+    private EnumChatFormatting[] getColors() {
+        Collection<String> colors = EnumChatFormatting.getValidValues(true, false);
+        List<EnumChatFormatting> list = Lists.newArrayList();
+        for (String color : colors) {
+            list.add(EnumChatFormatting.getValueByName(color));
+        }
+        return Iterables.toArray(list, EnumChatFormatting.class);
+    }
+
+    private String[] getColorNames() {
+        Collection<String> colors = EnumChatFormatting.getValidValues(true, false);
+        List<String> list = Lists.newArrayList();
+        for (String color : colors) {
+            list.add("tabbychat.colors." + color);
+        }
+
+        return Iterables.toArray(list, String.class);
     }
 
     @Override
     public GeneralSettings getSettings() {
         return TabbyChat.getInstance().generalSettings;
-    }
-
-    @Override
-    public String getDisplayString() {
-        return "General";
-    }
-
-    @Override
-    public int getBackColor() {
-        return Color.getColor(255, 0, 255, 64);
     }
 
 }

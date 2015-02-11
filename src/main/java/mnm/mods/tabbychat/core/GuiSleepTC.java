@@ -11,7 +11,6 @@ import org.lwjgl.input.Keyboard;
 
 public class GuiSleepTC extends GuiChatTC {
 
-    @SuppressWarnings("unchecked")
     @Override
     public void initGui() {
         super.initGui();
@@ -38,8 +37,9 @@ public class GuiSleepTC extends GuiChatTC {
     @Override
     public void updateScreen() {
         super.updateScreen();
-        if (!mc.thePlayer.isPlayerSleeping())
+        if (!mc.thePlayer.isPlayerSleeping()) {
             mc.displayGuiScreen(null);
+        }
     }
 
     @Override

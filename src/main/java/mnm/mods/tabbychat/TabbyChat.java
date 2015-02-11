@@ -4,6 +4,8 @@ import java.io.File;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
+import javax.annotation.Nullable;
+
 import mnm.mods.tabbychat.api.AddonManager;
 import mnm.mods.tabbychat.api.Chat;
 import mnm.mods.tabbychat.api.TabbyAPI;
@@ -12,13 +14,16 @@ import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.core.GuiSleepTC;
 import mnm.mods.tabbychat.core.api.TabbyAddonManager;
 import mnm.mods.tabbychat.core.api.TabbyEvents;
+import mnm.mods.tabbychat.filters.FilterAddon;
 import mnm.mods.tabbychat.gui.settings.GuiSettingsScreen;
 import mnm.mods.tabbychat.settings.ChannelSettings;
 import mnm.mods.tabbychat.settings.ChatBoxSettings;
 import mnm.mods.tabbychat.settings.ColorSettings;
 import mnm.mods.tabbychat.settings.GeneralSettings;
+import mnm.mods.tabbychat.settings.ServerSettings;
 import mnm.mods.tabbychat.util.TabbyRef;
 import mnm.mods.util.LogHelper;
+import mnm.mods.util.ReflectionHelper;
 import mnm.mods.util.gui.SettingPanel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
@@ -38,7 +43,10 @@ public abstract class TabbyChat extends TabbyAPI {
     public ChatBoxSettings chatSettings;
     public ColorSettings colorSettings;
     // Server settings
+    @Nullable
     public ChannelSettings channelSettings;
+    @Nullable
+    public ServerSettings serverSettings;
 
     private File dataFolder;
     private SocketAddress currentServer;
@@ -83,7 +91,7 @@ public abstract class TabbyChat extends TabbyAPI {
     }
 
     @Override
-    public void registerSettings(Class<? extends SettingPanel> setting) {
+    public void registerSettings(Class<? extends SettingPanel<?>> setting) {
         GuiSettingsScreen.registerSetting(setting);
     }
 
@@ -113,17 +121,23 @@ public abstract class TabbyChat extends TabbyAPI {
         colorSettings.saveSettingsFile();
 
         addonManager.registerListener(new ChatAddonAntiSpam());
+        addonManager.registerListener(new FilterAddon());
     }
 
     protected void onRender(GuiScreen currentScreen) {
         if (currentScreen instanceof GuiChat && !(currentScreen instanceof GuiChatTC)) {
             Minecraft mc = Minecraft.getMinecraft();
-            // Get the default text via Access Transforming
-            String inputBuffer = ((GuiChat) currentScreen).defaultInputFieldText;
-            if (currentScreen instanceof GuiSleepMP)
+            // Get the default text via Reflection
+            String inputBuffer = "";
+            try {
+                inputBuffer = (String) ReflectionHelper.getFieldValue(GuiChat.class, currentScreen,
+                        new String[] { "u", "field_146409_v", "defaultInputFieldText" });
+            } catch (Exception e) {}
+            if (currentScreen instanceof GuiSleepMP) {
                 mc.displayGuiScreen(new GuiSleepTC());
-            else
+            } else {
                 mc.displayGuiScreen(new GuiChatTC(inputBuffer));
+            }
         }
     }
 
@@ -131,6 +145,7 @@ public abstract class TabbyChat extends TabbyAPI {
         this.currentServer = address;
         // Set server settings
         channelSettings = new ChannelSettings((InetSocketAddress) currentServer);
+        serverSettings = new ServerSettings((InetSocketAddress) currentServer);
         channelSettings.loadSettingsFile();
         channelSettings.saveSettingsFile();
 
@@ -142,11 +157,11 @@ public abstract class TabbyChat extends TabbyAPI {
         events.onJoinGame(address);
     }
 
-    // Private methods
-
-    private void hookIntoChat(GuiIngame guiIngame) {
+    private void hookIntoChat(GuiIngame guiIngame) throws Exception {
         if (!GuiNewChatTC.class.isAssignableFrom(guiIngame.getChatGUI().getClass())) {
-            guiIngame.persistantChatGUI = GuiNewChatTC.getInstance();
+            // guiIngame.persistantChatGUI = GuiNewChatTC.getInstance();
+            ReflectionHelper.setFieldValue(GuiIngame.class, guiIngame, GuiNewChatTC.getInstance(),
+                    new String[] { "l", "field_73840_e", "persistantChatGUI" });
             LOGGER.info("Successfully hooked into chat.");
         }
     }

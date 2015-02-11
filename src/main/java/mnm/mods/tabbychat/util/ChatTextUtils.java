@@ -13,7 +13,6 @@ import com.google.common.collect.Lists;
 
 public class ChatTextUtils {
 
-    @SuppressWarnings("unchecked")
     public static List<IChatComponent> split(IChatComponent chat, int width) {
         FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
         return GuiUtilRenderComponents.func_178908_a(chat, width, fr, false, false);
