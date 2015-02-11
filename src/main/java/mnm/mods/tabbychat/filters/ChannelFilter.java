@@ -12,7 +12,7 @@ import mnm.mods.tabbychat.util.ChannelPatterns;
 
 public class ChannelFilter extends TabFilter {
 
-    private static final String PATTERN_FORMAT = "\\%s([\\p{L}0-9_]{1,16})\\%s";
+    private static final String PATTERN_FORMAT = "^\\%s([\\p{L}0-9_]{1,16})\\%s";
 
     @Override
     public Pattern getPattern() {
