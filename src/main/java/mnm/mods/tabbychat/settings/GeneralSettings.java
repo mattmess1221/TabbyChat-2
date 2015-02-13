@@ -1,6 +1,7 @@
 package mnm.mods.tabbychat.settings;
 
 import mnm.mods.tabbychat.util.TimeStamps;
+import mnm.mods.tabbychat.util.Translation;
 import mnm.mods.util.SettingValue;
 import net.minecraft.util.EnumChatFormatting;
 
@@ -29,7 +30,7 @@ public class GeneralSettings extends TabbySettings {
     public SettingValue<Boolean> checkUpdates = new SettingValue<Boolean>(true);
 
     public GeneralSettings() {
-        super("general");
+        super(Translation.SETTINGS_GENERAL.translate());
     }
 
     @Override

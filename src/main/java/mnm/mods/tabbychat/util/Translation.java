@@ -27,7 +27,9 @@ public class Translation implements Translatable {
             SETTINGS_GENERAL = new Translation("tabbychat.settings.general"),
             SETTINGS_SERVER = new Translation("tabbychat.settings.server"),
             SETTINGS_FILTERS = new Translation("tabbychat.settings.filters"),
-            SETTINGS_COLORS = new Translation("tabbychat.settings.colors");
+            SETTINGS_COLORS = new Translation("tabbychat.settings.colors"),
+            COLOR_CHATBOX = new Translation("tabbychat.settings.colors.chatbox"),
+            COLOR_CHAT_TEXT = new Translation("tabbychat.settings.colors.chattext");
 
     private final String translation;
 
@@ -43,6 +45,11 @@ public class Translation implements Translatable {
     @Override
     public String getUnlocalized() {
         return translation;
+    }
+
+    @Override
+    public String toString() {
+        return translate();
     }
 
 }

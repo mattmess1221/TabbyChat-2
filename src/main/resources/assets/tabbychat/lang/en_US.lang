@@ -1,23 +1,5 @@
 tabbychat=TabbyChat
 
-tabbychat.colors.black=Black
-tabbychat.colors.dark_blue=Dark Blue
-tabbychat.colors.dark_green=Dark Green
-tabbychat.colors.dark_aqua=Dark Aqua
-tabbychat.colors.dark_red=Dark Red
-tabbychat.colors.dark_purple=Dark Purple
-tabbychat.colors.gold=Gold
-tabbychat.colors.gray=Gray
-tabbychat.colors.dark_gray=Dark Gray
-tabbychat.colors.blue=Blue
-tabbychat.colors.green=Green
-tabbychat.colors.aqua=Aqua
-tabbychat.colors.red=Red
-tabbychat.colors.light_purple=Light Purple
-tabbychat.colors.yellow=Yellow
-tabbychat.colors.white=White
-tabbychat.colors.reset=Reset
-
 tabbychat.formats.messages.vanilla=Vanilla
 tabbychat.formats.messages.essentials=Essentials
 tabbychat.formats.messages.herochat=HeroChat
@@ -38,3 +20,6 @@ tabbychat.settings.general=General
 tabbychat.settings.server=Server
 tabbychat.settings.filters=Filters
 tabbychat.settings.colors=Colors
+
+tabbychat.settings.colors.chatbox=Chatbox color
+tabbychat.settings.colors.chattext=Chat text color

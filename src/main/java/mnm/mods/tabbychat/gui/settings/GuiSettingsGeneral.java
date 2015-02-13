@@ -63,7 +63,7 @@ public class GuiSettingsGeneral extends SettingPanel<GeneralSettings> {
         Collection<String> colors = EnumChatFormatting.getValidValues(true, false);
         List<String> list = Lists.newArrayList();
         for (String color : colors) {
-            list.add("tabbychat.colors." + color);
+            list.add("colors." + color);
         }
 
         return Iterables.toArray(list, String.class);

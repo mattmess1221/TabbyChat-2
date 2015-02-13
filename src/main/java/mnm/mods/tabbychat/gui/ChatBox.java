@@ -42,8 +42,6 @@ public class ChatBox extends GuiPanel implements Chat, GuiMouseAdapter {
         this.addComponent(chatArea = new ChatArea(), BorderLayout.Position.CENTER);
         this.addComponent(txtChatInput = new TextBox(), BorderLayout.Position.SOUTH);
         this.setBounds(rect);
-        this.setForeColor(colors.chatTxtColor.getValue().getColor());
-        this.setBackColor(colors.chatBoxColor.getValue().getColor());
     }
 
     @Override
@@ -65,6 +63,9 @@ public class ChatBox extends GuiPanel implements Chat, GuiMouseAdapter {
 
     @Override
     public void drawComponent(int mouseX, int mouseY) {
+
+        this.setForeColor(colors.chatTxtColor.getValue().getColor());
+        this.setBackColor(colors.chatBoxColor.getValue().getColor());
 
         float scale = GuiNewChatTC.getInstance().getChatScale();
 

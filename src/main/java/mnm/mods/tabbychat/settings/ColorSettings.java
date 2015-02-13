@@ -1,5 +1,6 @@
 package mnm.mods.tabbychat.settings;
 
+import mnm.mods.tabbychat.util.Translation;
 import mnm.mods.util.Color;
 import mnm.mods.util.SettingValue;
 
@@ -19,7 +20,7 @@ public class ColorSettings extends TabbySettings {
     public SettingValue<Color> chatTxtColor = new SettingValue<Color>(new Color(255, 255, 255, 255));
 
     public ColorSettings() {
-        super("colors");
+        super(Translation.SETTINGS_COLORS.translate());
     }
 
     @Override
