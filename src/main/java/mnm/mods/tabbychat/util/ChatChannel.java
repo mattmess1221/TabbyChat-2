@@ -152,7 +152,7 @@ public class ChatChannel implements Channel {
             return;
         }
         int uc = Minecraft.getMinecraft().ingameGUI.getUpdateCounter();
-        Message msg = new ChatMessage(uc, event.chat, id);
+        Message msg = new ChatMessage(uc, event.chat, id, true);
         this.messages.add(0, msg);
 
     }

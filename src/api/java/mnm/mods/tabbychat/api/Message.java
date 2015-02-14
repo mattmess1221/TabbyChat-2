@@ -1,5 +1,7 @@
 package mnm.mods.tabbychat.api;
 
+import java.util.Date;
+
 import net.minecraft.util.IChatComponent;
 
 /**
@@ -29,24 +31,10 @@ public interface Message {
     int getID();
 
     /**
-     * Gets the channels defined in this message.
-     *
-     * @return The channels
+     * Gets the date that this message was sent.
+     * 
+     * @return The date
      */
-    Channel[] getChannels();
-
-    /**
-     * Adds a channel (or channels) to this message.
-     *
-     * @param channels The new channels
-     */
-    void addChannel(Channel... channels);
-
-    /**
-     * Gets whether any channel in this message is active.
-     *
-     * @return True if active
-     */
-    boolean isActive();
+    Date getDate();
 
 }

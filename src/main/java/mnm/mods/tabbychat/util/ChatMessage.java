@@ -1,44 +1,48 @@
 package mnm.mods.tabbychat.util;
 
-import java.util.List;
+import java.util.Calendar;
+import java.util.Date;
 
-import mnm.mods.tabbychat.api.Channel;
+import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Message;
+import mnm.mods.tabbychat.settings.GeneralSettings;
 import net.minecraft.client.gui.ChatLine;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
-
-import com.google.common.collect.Lists;
 
 public class ChatMessage extends ChatLine implements Message {
 
-    private List<Channel> channels = Lists.newArrayList();
+    private Date date;
 
-    public ChatMessage(int updatedCounter, IChatComponent chat, int id) {
+    public ChatMessage(int updatedCounter, IChatComponent chat, int id, boolean isNew) {
         super(updatedCounter, chat, id);
-        this.channels.add(new ChatChannel("Derp", 0));
-    }
-
-    public ChatMessage(ChatLine chatline) {
-        this(chatline.getUpdatedCounter(), chatline.getChatComponent(), chatline.getChatLineID());
-    }
-
-    @Override
-    public void addChannel(Channel... channels) {
-        for (Channel chan : channels) {
-            if (!this.channels.contains(chan)) {
-                this.channels.add(chan);
-            }
+        if (isNew) {
+            this.date = Calendar.getInstance().getTime();
         }
     }
 
-    @Override
-    public Channel[] getChannels() {
-        return channels.toArray(new Channel[0]);
+    public ChatMessage(ChatLine chatline) {
+        this(chatline.getUpdatedCounter(), chatline.getChatComponent(), chatline.getChatLineID(),
+                true);
     }
 
     @Override
     public IChatComponent getMessage() {
-        return this.getChatComponent();
+        IChatComponent chat;
+        GeneralSettings settings = TabbyChat.getInstance().generalSettings;
+        if (date != null && settings.timestampChat.getValue()) {
+            chat = new ChatComponentText("");
+
+            TimeStamps stamp = settings.timestampStyle.getValue();
+            EnumChatFormatting format = settings.timestampColor.getValue();
+            chat = new ChatComponentTranslation("%s %s", format + stamp.format(date),
+                    getChatComponent());
+        } else {
+            chat = getChatComponent();
+        }
+        return chat;
     }
 
     @Override
@@ -52,14 +56,7 @@ public class ChatMessage extends ChatLine implements Message {
     }
 
     @Override
-    public boolean isActive() {
-        boolean result = false;
-        Channel[] channels = getChannels();
-        int i = 0;
-        while (i < channels.length && !result) {
-            result = channels[i].isActive();
-            i++;
-        }
-        return result;
+    public Date getDate() {
+        return this.date;
     }
 }

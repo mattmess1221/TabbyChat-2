@@ -6,6 +6,7 @@ import java.util.Iterator;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.util.ChatChannel;
+import mnm.mods.util.Color;
 import mnm.mods.util.gui.BorderLayout;
 import mnm.mods.util.gui.FlowLayout;
 import mnm.mods.util.gui.GuiComponent;
@@ -34,6 +35,15 @@ public class ChatTray extends GuiPanel {
             Gui.drawRect(0, 0, getBounds().width, getBounds().height, getBackColor());
             drawBorders(0, 0, getBounds().width, getBounds().height);
         }
+    }
+
+    @Override
+    public void updateComponent() {
+        super.updateComponent();
+        Color color = new Color(getParent().getBackColor());
+        Color bkg = new Color(color.getRed(), color.getGreen(), color.getBlue(),
+                color.getAlpha() / 4 * 3);
+        this.setBackColor(bkg.getColor());
     }
 
     public void addChannel(Channel channel) {

@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.util.List;
 
 import mnm.mods.tabbychat.core.GuiNewChatTC;
+import mnm.mods.util.Color;
 import mnm.mods.util.gui.GuiComponent;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -119,6 +120,11 @@ public class TextBox extends GuiComponent {
         int newHeight = Math.max(1, list.size()) * (fr.FONT_HEIGHT + 2);
         // int newY = getBounds().y + getBounds().height - newHeight;
         this.setSize(getMinimumSize().width, newHeight);
+
+        Color color = new Color(getParent().getBackColor());
+        Color bkg = new Color(color.getRed(), color.getGreen(), color.getBlue(),
+                color.getAlpha() / 4 * 3);
+        this.setBackColor(bkg.getColor());
     }
 
     public List<String> getWrappedLines() {
