@@ -5,11 +5,13 @@ import java.awt.Dimension;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
+import mnm.mods.util.gui.GuiButton;
 import mnm.mods.util.gui.events.GuiMouseAdapter;
 import mnm.mods.util.gui.events.GuiMouseEvent;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 
-public class ChatTab extends PrefsButton implements GuiMouseAdapter {
+public class ChatTab extends GuiButton implements GuiMouseAdapter {
 
     private final Channel channel;
 
@@ -23,6 +25,7 @@ public class ChatTab extends PrefsButton implements GuiMouseAdapter {
         if (event.event == GuiMouseEvent.CLICKED) {
             ChatTab comp = (ChatTab) event.component;
             if (event.button == 0) {
+                channel.setPending(false);
                 if (GuiScreen.isShiftKeyDown()) {
                     // Remove channel
                     TabbyChat.getInstance().getChat().removeChannel(comp.getChannel());
@@ -40,7 +43,9 @@ public class ChatTab extends PrefsButton implements GuiMouseAdapter {
     @Override
     public void drawComponent(int mouseX, int mouseY) {
         if (GuiNewChatTC.getInstance().getChatOpen() || channel.isPending()) {
-            super.drawComponent(mouseX, mouseY);
+            Gui.drawRect(0, 0, getBounds().width, getBounds().height, getBackColor());
+            this.drawCenteredString(mc.fontRendererObj, this.getText(), this.getBounds().width / 2,
+                    (this.getBounds().height - 8) / 2, getForeColor());
         }
     }
 

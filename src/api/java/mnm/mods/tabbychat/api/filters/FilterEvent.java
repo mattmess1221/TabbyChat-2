@@ -15,8 +15,9 @@ public class FilterEvent extends Event {
     public IChatComponent chat;
     public Set<Channel> channels = Sets.newHashSet();
 
-    public FilterEvent(Matcher matcher, IChatComponent chat) {
+    public FilterEvent(Matcher matcher, Set<Channel> channels, IChatComponent chat) {
         this.matcher = matcher;
         this.chat = chat;
+        this.channels = channels;
     }
 }

@@ -25,6 +25,12 @@ public class TextBox extends GuiComponent {
     }
 
     @Override
+    public void onClosed() {
+        this.textField.setText("");
+        super.onClosed();
+    }
+
+    @Override
     public void drawComponent(int mouseX, int mouseY) {
         if (GuiNewChatTC.getInstance().getChatOpen()) {
             Gui.drawRect(0, 0, getBounds().width, getBounds().height, getBackColor());

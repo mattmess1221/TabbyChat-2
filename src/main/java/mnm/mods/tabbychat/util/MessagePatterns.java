@@ -1,6 +1,5 @@
 package mnm.mods.tabbychat.util;
 
-import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.util.Translatable;
 
 public enum MessagePatterns implements Translatable {
@@ -14,18 +13,7 @@ public enum MessagePatterns implements Translatable {
     VANILLA(Translation.FORMAT_MESSAGE_VANILLA,
             "^" + getPlayerPattern() + " whispers to you:",
             "^You whisper to " + getPlayerPattern() + ":"),
-    CUSTOM(Translation.FORMAT_MESSAGE_CUSTOM, null, null) {
-        // Custom patterns
-        @Override
-        public String getOutgoing() {
-            return TabbyChat.getInstance().channelSettings.customPmOutgoing.getValue();
-        }
-
-        @Override
-        public String getIncoming() {
-            return TabbyChat.getInstance().channelSettings.customPmIncoming.getValue();
-        }
-    };
+    DISABLED(Translation.FORMAT_MESSAGE_DISABLED, "a^", "a^");
 
     private static final String PLAYER_PATTERN = "([\\p{L}\\p{N}_]{3,16})";
 

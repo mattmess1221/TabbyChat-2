@@ -51,6 +51,12 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, G
     }
 
     @Override
+    public void onClosed() {
+        resetScroll();
+        super.onClosed();
+    }
+
+    @Override
     public void drawComponent(int mouseX, int mouseY) {
         if (mc.gameSettings.chatVisibility != EnumChatVisibility.HIDDEN) {
             List<Message> visible = getChat(false);

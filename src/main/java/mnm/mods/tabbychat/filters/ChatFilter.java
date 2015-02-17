@@ -4,22 +4,42 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import mnm.mods.tabbychat.api.Channel;
+import mnm.mods.tabbychat.api.TabbyAPI;
 import mnm.mods.tabbychat.api.filters.Filter;
 import mnm.mods.tabbychat.api.filters.FilterEvent;
 import mnm.mods.tabbychat.api.filters.FilterSettings;
 import mnm.mods.tabbychat.api.filters.IFilterAction;
 import mnm.mods.tabbychat.api.listener.events.ChatMessageEvent.ChatRecievedEvent;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.StringUtils;
 
 public class ChatFilter implements Filter {
 
-    private FilterSettings settings = new ChatFilterSettings();
-    private Pattern pattern;
-    private IFilterAction action;
+    private String name = "New Filter";
+    private ChatFilterSettings settings = new ChatFilterSettings();
+    private Pattern pattern = Pattern.compile("a^");
+    private String action = DefaultAction.ID;
 
     @Override
-    public void setPattern(String pattern) throws PatternSyntaxException {
-        this.pattern = Pattern.compile(pattern);
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String getName() {
+        return this.name;
+    }
+
+    @Override
+    public void setPattern(String pattern) {
+        try {
+            this.pattern = Pattern.compile(pattern);
+        } catch (PatternSyntaxException e) {
+            e.printStackTrace();
+            TabbyAPI.getAPI().getChat().getChannel("TabbyChat")
+                    .addMessage(new ChatComponentText(e.getMessage()));
+        }
     }
 
     @Override
@@ -28,13 +48,18 @@ public class ChatFilter implements Filter {
     }
 
     @Override
-    public void setAction(IFilterAction action) {
+    public void setAction(String action) {
         this.action = action;
     }
 
     @Override
+    public String getActionId() {
+        return this.action;
+    }
+
+    @Override
     public IFilterAction getAction() {
-        return action;
+        return TabbyAPI.getAPI().getAddonManager().getFilterAction(action);
     }
 
     @Override
@@ -48,16 +73,34 @@ public class ChatFilter implements Filter {
         // Iterate through matches
         Matcher matcher = getPattern().matcher(chat);
         while (matcher.find()) {
-            FilterEvent event = new FilterEvent(matcher, message.chat);
+            FilterEvent event = new FilterEvent(matcher, message.channels, message.chat);
             doAction(event);
             message.chat = event.chat; // Set the new chat
-            message.channels.addAll(event.channels); // Add new channels.
+            message.channels = event.channels; // Add new channels.
         }
     }
 
     protected final void doAction(FilterEvent event) {
         if (getAction() != null) {
             getAction().action(this, event);
+        }
+    }
+
+    public static class DefaultAction implements IFilterAction {
+        public static final String ID = "Default";
+
+        @Override
+        public void action(Filter filter, FilterEvent event) {
+            // TODO Auto-generated method stub
+            FilterSettings settings = filter.getSettings();
+            if (settings.isRemove()) {
+                event.channels.clear();
+            }
+            for (String name : settings.getChannels()) {
+                // TODO groups
+                Channel channel = TabbyAPI.getAPI().getChat().getChannel(name);
+                event.channels.add(channel);
+            }
         }
     }
 }

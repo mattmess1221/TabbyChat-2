@@ -64,8 +64,15 @@ public class GuiNewChatTC extends GuiNewChat {
         chat = chatevent.chat;
         id = chatevent.id;
         if (chat != null && !chat.getUnformattedText().isEmpty()) {
+            boolean msg = false;
+            if (!chatevent.channels.contains(chatbox.getActiveChannel())) {
+                msg = true;
+            }
             for (Channel channel : chatevent.channels) {
                 channel.addMessage(chat, id);
+                if (msg) {
+                    channel.setPending(true);
+                }
             }
             TabbyChat.getLogger().info("[CHAT] " + chat.getUnformattedText());
         }

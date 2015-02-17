@@ -13,6 +13,7 @@ public class ChatFilterSettings implements FilterSettings {
 
     // destinations
     private final Set<String> channels = new HashSet<String>();
+    private boolean remove;
     // highlighting
     private boolean highlight = false;
     private EnumChatFormatting color;
@@ -24,6 +25,16 @@ public class ChatFilterSettings implements FilterSettings {
     @Override
     public Set<String> getChannels() {
         return channels;
+    }
+
+    @Override
+    public boolean isRemove() {
+        return remove;
+    }
+
+    @Override
+    public void setRemove(boolean value) {
+        this.remove = value;
     }
 
     @Override

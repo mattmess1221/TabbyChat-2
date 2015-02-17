@@ -147,7 +147,9 @@ public abstract class TabbyChat extends TabbyAPI {
         channelSettings = new ChannelSettings((InetSocketAddress) currentServer);
         serverSettings = new ServerSettings((InetSocketAddress) currentServer);
         channelSettings.loadSettingsFile();
+        serverSettings.loadSettingsFile();
         channelSettings.saveSettingsFile();
+        serverSettings.saveSettingsFile();
 
         try {
             hookIntoChat(Minecraft.getMinecraft().ingameGUI);

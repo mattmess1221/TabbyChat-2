@@ -23,6 +23,20 @@ public interface FilterSettings {
     Set<String> getChannels();
 
     /**
+     * Gets whether or not to remove the match from chat.
+     *
+     * @return True if should remove
+     */
+    boolean isRemove();
+
+    /**
+     * Sets whether or not to remove the match from chat.
+     *
+     * @param value new value
+     */
+    void setRemove(boolean value);
+
+    /**
      * Returns whether highlighting should be enabled for this filter.
      *
      * @return True if highlighting is enabled

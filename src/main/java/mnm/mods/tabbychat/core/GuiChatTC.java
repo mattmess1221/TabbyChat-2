@@ -90,8 +90,7 @@ public class GuiChatTC extends GuiChat {
     public void onGuiClosed() {
         tc.getEventManager().onCloseScreen();
         this.sentHistoryBuffer = "";
-        textBox.setText("");
-        chatbox.getChatArea().resetScroll();
+        this.chatbox.onClosed();
         super.onGuiClosed();
     }
 

@@ -4,11 +4,11 @@ import java.awt.Rectangle;
 import java.util.List;
 
 import mnm.mods.tabbychat.TabbyChat;
-import mnm.mods.tabbychat.gui.PrefsButton;
 import mnm.mods.util.Color;
 import mnm.mods.util.gui.BorderLayout;
 import mnm.mods.util.gui.ComponentScreen;
 import mnm.mods.util.gui.FlowLayout;
+import mnm.mods.util.gui.GuiButton;
 import mnm.mods.util.gui.GuiComponent;
 import mnm.mods.util.gui.GuiPanel;
 import mnm.mods.util.gui.SettingPanel;
@@ -16,7 +16,6 @@ import mnm.mods.util.gui.VerticalLayout;
 import mnm.mods.util.gui.events.ActionPerformed;
 import mnm.mods.util.gui.events.GuiEvent;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.util.EnumChatFormatting;
 
 import com.google.common.collect.Lists;
 
@@ -27,6 +26,7 @@ public class GuiSettingsScreen extends ComponentScreen {
 
     static {
         registerSetting(GuiSettingsGeneral.class);
+        registerSetting(GuiSettingsServer.class);
         registerSetting(GuiSettingsColors.class);
     }
 
@@ -42,13 +42,11 @@ public class GuiSettingsScreen extends ComponentScreen {
         panel.setSize(300, 200);
         panel.setPosition(width / 2 - panel.getBounds().width / 2, height / 2
                 - panel.getBounds().height / 2);
-        panel.addComponent(new PrefsButton(EnumChatFormatting.BOLD + "TabbyChat 2 Settings"),
-                BorderLayout.Position.NORTH);
         panel.addComponent(settingsList = new GuiPanel(new VerticalLayout()),
                 BorderLayout.Position.WEST);
         panel.addComponent(closeSaveButtons = new GuiPanel(new FlowLayout()),
                 BorderLayout.Position.SOUTH);
-        PrefsButton save = new PrefsButton("Save");
+        GuiButton save = new GuiButton("Save");
         save.setSize(40, 10);
         save.setBackColor(Color.getColor(0, 255, 0, 127));
         save.addActionListener(new ActionPerformed() {
@@ -59,7 +57,7 @@ public class GuiSettingsScreen extends ComponentScreen {
             }
         });
         closeSaveButtons.addComponent(save);
-        PrefsButton close = new PrefsButton("Close");
+        GuiButton close = new GuiButton("Close");
         close.setSize(40, 10);
         close.setBackColor(Color.getColor(0, 255, 0, 127));
         close.addActionListener(new ActionPerformed() {

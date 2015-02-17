@@ -3,7 +3,7 @@ tabbychat=TabbyChat
 tabbychat.formats.messages.vanilla=Vanilla
 tabbychat.formats.messages.essentials=Essentials
 tabbychat.formats.messages.herochat=HeroChat
-tabbychat.formats.messages.custom=Custom
+tabbychat.formats.messages.disabled=Disabled
 
 tabbychat.delims.angles=<Angles>
 tabbychat.delims.braces={Braces}
@@ -20,6 +20,21 @@ tabbychat.settings.general=General
 tabbychat.settings.server=Server
 tabbychat.settings.filters=Filters
 tabbychat.settings.colors=Colors
+
+tabbychat.settings.server.channelsEnabled=Enable Channels
+tabbychat.settings.server.pmEnabled=Enable Messages
+tabbychat.settings.server.channelPattern=Channel Pattern
+tabbychat.settings.server.messagePattern=Message Pattern
+tabbychat.settings.server.ignoredChannels=Ignored Channels
+tabbychat.settings.server.defaultChannels=Default Channels
+tabbychat.settings.server.filters=Filters
+tabbychat.settings.server.filters.new=New
+
+tabbychat.filter.title=Edit Filter
+tabbychat.filter.name=Name
+tabbychat.filter.hideMatches=Hide Matches
+tabbychat.filter.audioNotify=Audio Notification
+tabbychat.filter.expression=Expression
 
 tabbychat.settings.colors.chatbox=Chatbox color
 tabbychat.settings.colors.chattext=Chat text color

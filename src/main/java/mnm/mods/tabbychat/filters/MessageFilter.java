@@ -8,12 +8,17 @@ import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.TabbyAPI;
 import mnm.mods.tabbychat.api.filters.Filter;
 import mnm.mods.tabbychat.api.filters.FilterEvent;
+import mnm.mods.tabbychat.api.filters.IFilterAction;
 import mnm.mods.tabbychat.util.MessagePatterns;
 
 /**
  * Base class for filters that just need to set the
  */
 public class MessageFilter extends TabFilter {
+
+    public MessageFilter() {
+        super(MessageAction.ID);
+    }
 
     @Override
     public Pattern getPattern() {
@@ -30,18 +35,23 @@ public class MessageFilter extends TabFilter {
         return super.getPattern();
     }
 
-    @Override
-    public void action(Filter filter, FilterEvent event) {
-        // 0 = whole message, 1 = outgoing recipient, 2 = incoming recipient
-        String player = event.matcher.group(1);
-        // For when it's an incoming message.
-        if (player == null) {
-            player = event.matcher.group(2);
+    public static class MessageAction implements IFilterAction {
+
+        public static final String ID = "Message";
+
+        @Override
+        public void action(Filter filter, FilterEvent event) {
+            // 0 = whole message, 1 = outgoing recipient, 2 = incoming recipient
+            String player = event.matcher.group(1);
+            // For when it's an incoming message.
+            if (player == null) {
+                player = event.matcher.group(2);
+            }
+            Channel dest = TabbyAPI.getAPI().getChat().getChannel(player);
+            if (dest.getPrefix().isEmpty()) {
+                dest.setPrefix("/msg " + player);
+            }
+            event.channels.add(dest);
         }
-        Channel dest = TabbyAPI.getAPI().getChat().getChannel(player);
-        if (dest.getPrefix().isEmpty()) {
-            dest.setPrefix("/msg " + player);
-        }
-        event.channels.add(dest);
     }
 }

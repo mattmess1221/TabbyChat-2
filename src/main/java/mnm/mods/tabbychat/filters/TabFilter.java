@@ -3,13 +3,12 @@ package mnm.mods.tabbychat.filters;
 import java.util.regex.Matcher;
 
 import mnm.mods.tabbychat.api.filters.FilterEvent;
-import mnm.mods.tabbychat.api.filters.IFilterAction;
 import mnm.mods.tabbychat.api.listener.events.ChatMessageEvent.ChatRecievedEvent;
 
-public abstract class TabFilter extends ChatFilter implements IFilterAction {
+public abstract class TabFilter extends ChatFilter {
 
-    public TabFilter() {
-        this.setAction(this);
+    public TabFilter(String action) {
+        this.setAction(action);
     }
 
     @Override
@@ -17,9 +16,9 @@ public abstract class TabFilter extends ChatFilter implements IFilterAction {
         String chat = message.chat.getUnformattedText();
         Matcher matcher = getPattern().matcher(chat);
         if (matcher.find()) {
-            FilterEvent event = new FilterEvent(matcher, message.chat);
+            FilterEvent event = new FilterEvent(matcher, message.channels, message.chat);
             doAction(event);
-            message.channels.addAll(event.channels);
+            message.channels = event.channels;
         }
     }
 }

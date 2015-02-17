@@ -4,6 +4,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.RegEx;
 
 /**
@@ -11,6 +12,21 @@ import javax.annotation.RegEx;
  * {@link IFilterAction}, and {@link FilterSettings}.
  */
 public interface Filter {
+
+    /**
+     * Sets the name of this filter.
+     *
+     * @param name The new name
+     */
+    void setName(@Nonnull String name);
+
+    /**
+     * Sets the name of this filter.
+     *
+     * @return The name
+     */
+    @Nonnull
+    String getName();
 
     /**
      * Sets the pattern that will trigger this filter.
@@ -25,20 +41,30 @@ public interface Filter {
      *
      * @return The pattern
      */
+    @Nullable
     Pattern getPattern();
 
     /**
      * Sets the action that this filter does when it matches.
      *
-     * @param action The action
+     * @param action The action id
      */
-    void setAction(IFilterAction action);
+    void setAction(@Nonnull String action);
+
+    /**
+     * Gets the id of the action for this filter.
+     *
+     * @return The action id
+     */
+    @Nonnull
+    String getActionId();
 
     /**
      * Gets the action that this filter does when it matches.
      *
-     * @return The action
+     * @return The action or null if the id doesn't exist
      */
+    @Nullable
     IFilterAction getAction();
 
     /**

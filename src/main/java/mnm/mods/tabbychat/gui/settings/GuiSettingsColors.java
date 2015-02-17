@@ -14,16 +14,16 @@ public class GuiSettingsColors extends SettingPanel<ColorSettings> {
     public GuiSettingsColors() {
         setDisplayString(Translation.SETTINGS_COLORS.translate());
         setBackColor(Color.getColor(0, 255, 0, 64));
-        this.setLayout(new GuiGridLayout(60, 40));
+        this.setLayout(new GuiGridLayout(50, 40));
     }
 
     @Override
     public void initGUI() {
-        this.addComponent(new GuiSettingColor(getSettings().chatBoxColor), new int[] { 2, 0, 4, 4 });
-        this.addComponent(new GuiSettingColor(getSettings().chatTxtColor), new int[] { 2, 5, 4, 4 });
+        this.addComponent(new GuiSettingColor(getSettings().chatBoxColor), new int[] { 2, 1, 4, 4 });
+        this.addComponent(new GuiSettingColor(getSettings().chatTxtColor), new int[] { 2, 6, 4, 4 });
 
-        this.addComponent(new GuiLabel(Translation.COLOR_CHATBOX.translate()), new int[] { 8, 2 });
-        this.addComponent(new GuiLabel(Translation.COLOR_CHAT_TEXT.translate()), new int[] { 8, 7 });
+        this.addComponent(new GuiLabel(Translation.COLOR_CHATBOX.translate()), new int[] { 8, 3 });
+        this.addComponent(new GuiLabel(Translation.COLOR_CHAT_TEXT.translate()), new int[] { 8, 8 });
     }
 
     @Override

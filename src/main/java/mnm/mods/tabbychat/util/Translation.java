@@ -11,7 +11,7 @@ public class Translation implements Translatable {
             FORMAT_MESSAGE_VANILLA = new Translation("tabbychat.formats.messages.vanilla"),
             FORMAT_MESSAGE_ESSENTIALS = new Translation("tabbychat.formats.messages.essentials"),
             FORMAT_MESSAGE_HEROCHAT = new Translation("tabbychat.formats.messages.herochat"),
-            FORMAT_MESSAGE_CUSTOM = new Translation("tabbychat.formats.messages.custom"),
+            FORMAT_MESSAGE_DISABLED = new Translation("tabbychat.formats.messages.disabled"),
 
             DELIMS_ANGLES = new Translation("tabbychat.delims.angles"),
             DELIMS_BRACES = new Translation("tabbychat.delims.braces"),
@@ -28,6 +28,23 @@ public class Translation implements Translatable {
             SETTINGS_SERVER = new Translation("tabbychat.settings.server"),
             SETTINGS_FILTERS = new Translation("tabbychat.settings.filters"),
             SETTINGS_COLORS = new Translation("tabbychat.settings.colors"),
+
+            SERVER_CHANNELS_ENABLED = new Translation("tabbychat.settings.server.channelsEnabled"),
+            SERVER_PM_ENABLED = new Translation("tabbychat.settings.server.pmEnabled"),
+            SERVER_CHANNEL_PATTERN = new Translation("tabbychat.settings.server.channelPattern"),
+            SERVER_MESSAGE_PATTERN = new Translation("tabbychat.settings.server.messagePattern"),
+            SERVER_IGNORED_CHANNELS = new Translation("tabbychat.settings.server.ignoredChannels"),
+            SERVER_DEFAULT_CHANNELS = new Translation("tabbychat.settings.server.defaultChannels"),
+            SERVER_FILTERS = new Translation("tabbychat.settings.server.filters"),
+            SERVER_FILTERS_NEW = new Translation("tabbychat.settings.server.filters.new"),
+
+            FILTER_TITLE = new Translation("tabbychat.filter.title"),
+            FILTER_NAME = new Translation("tabbychat.filter.name"),
+            FILTER_DESTINATIONS = new Translation("tabbychat.filter.destinations"),
+            FILTER_HIDE = new Translation("tabbychat.filter.hideMatches"),
+            FILTER_AUDIO_NOTIFY = new Translation("tabbychat.filter.audioNotify"),
+            FILTER_EXPRESSION = new Translation("tabbychat.filter.expression"),
+
             COLOR_CHATBOX = new Translation("tabbychat.settings.colors.chatbox"),
             COLOR_CHAT_TEXT = new Translation("tabbychat.settings.colors.chattext");
 

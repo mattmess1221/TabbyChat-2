@@ -8,11 +8,17 @@ import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.TabbyAPI;
 import mnm.mods.tabbychat.api.filters.Filter;
 import mnm.mods.tabbychat.api.filters.FilterEvent;
+import mnm.mods.tabbychat.api.filters.IFilterAction;
 import mnm.mods.tabbychat.util.ChannelPatterns;
 
 public class ChannelFilter extends TabFilter {
 
     private static final String PATTERN_FORMAT = "^\\%s([\\p{L}0-9_]{1,16})\\%s";
+
+    public ChannelFilter() {
+        super(ChannelAction.ID);
+        // TODO Auto-generated constructor stub
+    }
 
     @Override
     public Pattern getPattern() {
@@ -28,10 +34,15 @@ public class ChannelFilter extends TabFilter {
         return super.getPattern();
     }
 
-    @Override
-    public void action(Filter filter, FilterEvent event) {
-        String chan = event.matcher.group(1);
-        Channel dest = TabbyAPI.getAPI().getChat().getChannel(chan);
-        event.channels.add(dest);
+    public static class ChannelAction implements IFilterAction {
+
+        public static final String ID = "Channel";
+
+        @Override
+        public void action(Filter filter, FilterEvent event) {
+            String chan = event.matcher.group(1);
+            Channel dest = TabbyAPI.getAPI().getChat().getChannel(chan);
+            event.channels.add(dest);
+        }
     }
 }
