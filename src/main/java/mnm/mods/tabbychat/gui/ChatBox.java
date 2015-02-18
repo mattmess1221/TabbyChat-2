@@ -48,7 +48,7 @@ public class ChatBox extends GuiPanel implements Chat, GuiMouseAdapter {
     public void accept(GuiMouseEvent event) {
         if (event.event == GuiMouseEvent.DRAGGED) {
             if (Mouse.isButtonDown(0)
-                    && (pnlTray.held || Keyboard.isKeyDown(Keyboard.KEY_LMENU))) {
+                    && (pnlTray.isButtonHeld() || Keyboard.isKeyDown(Keyboard.KEY_LMENU))) {
                 ScaledResolution sr = new ScaledResolution(mc, mc.displayWidth,
                         mc.displayHeight);
                 Rectangle bounds = getBounds();

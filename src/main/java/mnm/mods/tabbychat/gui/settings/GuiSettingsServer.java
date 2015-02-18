@@ -104,11 +104,11 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> implements C
             }
         });
         this.addComponent(delete, new int[] { 8, 15, 2, 1 });
-        prev.enabled = false;
+        prev.setEnabled(false);
         if (index == -1) {
-            delete.enabled = false;
-            edit.enabled = false;
-            next.enabled = false;
+            delete.setEnabled(false);
+            edit.setEnabled(false);
+            next.setEnabled(false);
         }
 
         update();
@@ -145,24 +145,24 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> implements C
     }
 
     private void update() {
-        this.next.enabled = true;
-        this.prev.enabled = true;
-        this.edit.enabled = true;
-        this.delete.enabled = true;
+        this.next.setEnabled(true);
+        this.prev.setEnabled(true);
+        this.edit.setEnabled(true);
+        this.delete.setEnabled(true);
 
         int size = getSettings().filters.getValue().size();
 
         if (index >= size - 1) {
-            this.next.enabled = false;
+            this.next.setEnabled(false);
             index = size - 1;
         }
         if (index < 1) {
-            this.prev.enabled = false;
+            this.prev.setEnabled(false);
             index = 0;
         }
         if (size < 1) {
-            this.edit.enabled = false;
-            this.delete.enabled = false;
+            this.edit.setEnabled(false);
+            this.delete.setEnabled(false);
             this.index = 0;
         } else {
             Filter filter = getSettings().filters.getValue().get(index);

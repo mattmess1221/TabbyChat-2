@@ -66,7 +66,7 @@ public class ChatTab extends GuiButton implements GuiMouseAdapter {
         } else {
             setText(channel.getAlias());
         }
-        if (hovered) {
+        if (isHovered()) {
             // Yellow
             fore = 0xffffa0;
             back = 0x7f8052;

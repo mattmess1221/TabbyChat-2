@@ -176,7 +176,7 @@ public class GuiChatTC extends GuiChat {
 
         // Draw the components
         for (GuiComponent component : componentList) {
-            if (component.visible) {
+            if (component.isVisible()) {
                 component.drawComponent(mouseX, mouseY);
             }
         }
