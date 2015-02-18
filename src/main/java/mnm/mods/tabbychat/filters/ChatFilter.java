@@ -1,5 +1,6 @@
 package mnm.mods.tabbychat.filters;
 
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -103,4 +104,9 @@ public class ChatFilter implements Filter {
             }
         }
     }
+
+    public static class FilterList extends ArrayList<ChatFilter> {
+        private static final long serialVersionUID = 1198193126382070630L;
+    }
+
 }

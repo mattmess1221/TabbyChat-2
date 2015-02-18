@@ -64,7 +64,7 @@ public class ChatBox extends GuiPanel implements Chat, GuiMouseAdapter {
     @Override
     public void drawComponent(int mouseX, int mouseY) {
 
-        this.setForeColor(colors.chatTxtColor.getValue().getColor());
+        this.setForeColor(colors.chatTextColor.getValue().getColor());
         this.setBackColor(colors.chatBoxColor.getValue().getColor());
 
         float scale = GuiNewChatTC.getInstance().getChatScale();

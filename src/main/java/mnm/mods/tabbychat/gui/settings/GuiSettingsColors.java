@@ -20,7 +20,7 @@ public class GuiSettingsColors extends SettingPanel<ColorSettings> {
     @Override
     public void initGUI() {
         this.addComponent(new GuiSettingColor(getSettings().chatBoxColor), new int[] { 2, 1, 4, 4 });
-        this.addComponent(new GuiSettingColor(getSettings().chatTxtColor), new int[] { 2, 6, 4, 4 });
+        this.addComponent(new GuiSettingColor(getSettings().chatTextColor), new int[] { 2, 6, 4, 4 });
 
         this.addComponent(new GuiLabel(Translation.COLOR_CHATBOX.translate()), new int[] { 8, 3 });
         this.addComponent(new GuiLabel(Translation.COLOR_CHAT_TEXT.translate()), new int[] { 8, 8 });
