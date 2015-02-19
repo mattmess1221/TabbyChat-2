@@ -32,9 +32,18 @@ tabbychat.settings.server.filters.new=New
 
 tabbychat.filter.title=Edit Filter
 tabbychat.filter.name=Name
+tabbychat.filter.destinations=Destinations
 tabbychat.filter.hideMatches=Hide Matches
 tabbychat.filter.audioNotify=Audio Notification
 tabbychat.filter.expression=Expression
+
+tabbychat.channel.title=Channels
+tabbychat.channel.label=Channel: %s
+tabbychat.channel.alias=Alias
+tabbychat.channel.prefix=Prefix
+tabbychat.channel.hidePrefix=Hide Prefix
+tabbychat.channel.select=Select a channel
+tabbychat.channel.none=No channels discovered
 
 tabbychat.settings.colors.chatbox=Chatbox color
 tabbychat.settings.colors.chattext=Chat text color

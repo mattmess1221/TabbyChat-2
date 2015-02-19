@@ -27,6 +27,7 @@ public class GuiSettingsScreen extends ComponentScreen {
     static {
         registerSetting(GuiSettingsGeneral.class);
         registerSetting(GuiSettingsServer.class);
+        registerSetting(GuiSettingsChannel.class);
         registerSetting(GuiSettingsColors.class);
     }
 
@@ -131,17 +132,19 @@ public class GuiSettingsScreen extends ComponentScreen {
                     + " is not a registered setting category.");
         }
         try {
-            deactivateAll();
-            panel.removeComponent(selectedSetting);
-            selectedSetting = settingClass.newInstance();
-            // if (init) {
-            selectedSetting.initGUI();
-            // }
-            activate(settingClass);
-            panel.addComponent(selectedSetting, BorderLayout.Position.CENTER);
+            selectSetting(settingClass.newInstance());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void selectSetting(SettingPanel setting) {
+        deactivateAll();
+        panel.removeComponent(selectedSetting);
+        selectedSetting = setting;
+        selectedSetting.initGUI();
+        activate(setting.getClass());
+        panel.addComponent(selectedSetting, BorderLayout.Position.CENTER);
     }
 
     public void saveSettings() {

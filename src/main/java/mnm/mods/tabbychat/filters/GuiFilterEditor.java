@@ -57,14 +57,16 @@ public class GuiFilterEditor extends GuiPanel implements GuiKeyboardAdapter {
                 merge(filter.getSettings().getChannels()))), new int[] { 10, 5, 10, 1 });
         txtDestinations.getTextField().setMaxStringLength(1000);
 
+        this.addComponent(new GuiLabel(Translation.FILTER_HIDE.translate()), new int[] { 2, 7 });
         this.addComponent(
-                chkRemove = new GuiSettingBoolean(new SettingValue<Boolean>(settings.isRemove()),
-                        Translation.FILTER_HIDE.translate()), new int[] { 1, 7 });
+                chkRemove = new GuiSettingBoolean(new SettingValue<Boolean>(settings.isRemove())),
+                new int[] { 1, 7 });
 
+        this.addComponent(new GuiLabel(Translation.FILTER_AUDIO_NOTIFY.translate()), new int[] { 2,
+                11 });
         this.addComponent(
                 chkSound = new GuiSettingBoolean(new SettingValue<Boolean>(settings
-                        .isSoundNotification()), Translation.FILTER_AUDIO_NOTIFY.translate()),
-                new int[] { 1, 11 });
+                        .isSoundNotification())), new int[] { 1, 11 });
         this.addComponent(
                 txtSound = new GuiSettingString(new SettingValue<String>(settings.getSoundName())),
                 new int[] { 12, 11, 6, 1 }); // TODO presets

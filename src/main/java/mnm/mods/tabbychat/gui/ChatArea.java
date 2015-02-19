@@ -81,7 +81,7 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, G
 
     private void drawChatLine(Message line, int xPos, int yPos) {
         GlStateManager.enableBlend();
-        String text = line.getMessage().getFormattedText();
+        String text = line.getMessageWithOptionalTimestamp().getFormattedText();
         mc.fontRendererObj.drawStringWithShadow(text, xPos, yPos, (getForeColor())
                 + (getLineOpacity(line) << 24));
         GlStateManager.disableAlpha();
@@ -172,7 +172,7 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, G
                 if (linePos >= 0 && linePos < this.getChat(false).size()) {
                     Message chatline = getChat(false).get(linePos);
                     int l1 = 0;
-                    Iterator<IChatComponent> iterator = chatline.getMessage().iterator();
+                    Iterator<IChatComponent> iterator = chatline.getMessageWithOptionalTimestamp().iterator();
 
                     while (iterator.hasNext() && l1 <= clickX) {
                         IChatComponent ichatcomponent = iterator.next();

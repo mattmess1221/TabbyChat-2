@@ -29,12 +29,12 @@ public class GuiSettingsGeneral extends SettingPanel<GeneralSettings> {
     @Override
     public void initGUI() {
         GeneralSettings sett = getSettings();
-        addComponent(new GuiSettingBoolean(sett.logChat, "Log Chat"),
-                new int[] { 1, 1 });
-        addComponent(new GuiSettingBoolean(sett.splitLog, "Split log"),
-                new int[] { 6, 1 });
-        addComponent(new GuiSettingBoolean(sett.timestampChat, "Timestamp chat"),
-                new int[] { 1, 3 });
+        addComponent(new GuiLabel("Log Chat"), new int[] { 2, 1 });
+        addComponent(new GuiSettingBoolean(sett.logChat), new int[] { 1, 1 });
+        addComponent(new GuiLabel("Split log"), new int[] { 7, 1 });
+        addComponent(new GuiSettingBoolean(sett.splitLog), new int[] { 6, 1 });
+        addComponent(new GuiLabel("Timestamp chat"), new int[] { 2, 3 });
+        addComponent(new GuiSettingBoolean(sett.timestampChat), new int[] { 1, 3 });
         addComponent(new GuiLabel("Style"), new int[] { 3, 5 });
         addComponent(new GuiSettingEnum<TimeStamps>(sett.timestampStyle, TimeStamps.values()),
                 new int[] { 5, 5, 4, 1 });
@@ -42,12 +42,12 @@ public class GuiSettingsGeneral extends SettingPanel<GeneralSettings> {
         addComponent(new GuiSettingEnum<EnumChatFormatting>(sett.timestampColor, getColors(),
                 getColorNames()),
                 new int[] { 5, 7, 4, 1 });
-        addComponent(new GuiSettingBoolean(sett.antiSpam, "Anti spam"),
-                new int[] { 1, 9 });
-        addComponent(new GuiSettingBoolean(sett.unreadFlashing, "Unread flashing"),
-                new int[] { 1, 11 });
-        addComponent(new GuiSettingBoolean(sett.checkUpdates, "Check for updates"),
-                new int[] { 1, 13 });
+        addComponent(new GuiLabel("Anti spam"), new int[] { 2, 9 });
+        addComponent(new GuiSettingBoolean(sett.antiSpam), new int[] { 1, 9 });
+        addComponent(new GuiLabel("Unread flashing"), new int[] { 2, 11 });
+        addComponent(new GuiSettingBoolean(sett.unreadFlashing), new int[] { 1, 11 });
+        addComponent(new GuiLabel("Check for updates"), new int[] { 2, 13 });
+        addComponent(new GuiSettingBoolean(sett.checkUpdates), new int[] { 1, 13 });
     }
 
     private EnumChatFormatting[] getColors() {

@@ -59,6 +59,9 @@ public class GuiChatTC extends GuiChat {
         sentHistoryIndex = chatGui.getSentMessages().size();
         chatbox = chatGui.getChatbox();
         textBox = chatbox.getChatInput().getTextField();
+        if (defaultInputFieldText.isEmpty()) {
+            defaultInputFieldText = chatbox.getActiveChannel().getPrefix();
+        }
     }
 
     @Override

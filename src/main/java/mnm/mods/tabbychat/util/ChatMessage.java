@@ -12,12 +12,18 @@ import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 
-public class ChatMessage extends ChatLine implements Message {
+public class ChatMessage implements Message {
 
+    private IChatComponent message;
+    private int id;
+    private int counter;
     private Date date;
 
     public ChatMessage(int updatedCounter, IChatComponent chat, int id, boolean isNew) {
-        super(updatedCounter, chat, id);
+        // super(updatedCounter, chat, id);
+        this.message = chat;
+        this.id = id;
+        this.counter = updatedCounter;
         if (isNew) {
             this.date = Calendar.getInstance().getTime();
         }
@@ -30,6 +36,11 @@ public class ChatMessage extends ChatLine implements Message {
 
     @Override
     public IChatComponent getMessage() {
+        return this.message;
+    }
+
+    @Override
+    public IChatComponent getMessageWithOptionalTimestamp() {
         IChatComponent chat;
         GeneralSettings settings = TabbyChat.getInstance().generalSettings;
         if (date != null && settings.timestampChat.getValue()) {
@@ -38,21 +49,21 @@ public class ChatMessage extends ChatLine implements Message {
             TimeStamps stamp = settings.timestampStyle.getValue();
             EnumChatFormatting format = settings.timestampColor.getValue();
             chat = new ChatComponentTranslation("%s %s", format + stamp.format(date),
-                    getChatComponent());
+                    getMessage());
         } else {
-            chat = getChatComponent();
+            chat = getMessage();
         }
         return chat;
     }
 
     @Override
     public int getCounter() {
-        return this.getUpdatedCounter();
+        return this.counter;
     }
 
     @Override
     public int getID() {
-        return this.getChatLineID();
+        return this.id;
     }
 
     @Override

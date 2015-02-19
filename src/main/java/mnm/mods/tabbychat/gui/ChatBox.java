@@ -104,7 +104,12 @@ public class ChatBox extends GuiPanel implements Chat, GuiMouseAdapter {
     @Override
     public Channel getChannel(String name) {
         if (!allChannels.containsKey(name)) {
-            allChannels.put(name, new ChatChannel(name, channels.size()));
+            Channel chan = TabbyChat.getInstance().channelSettings.channels.getValue().get(name);
+            if (chan == null) {
+                chan = new ChatChannel(name, channels.size());
+                TabbyChat.getInstance().channelSettings.addChannel(chan);
+            }
+            allChannels.put(name, chan);
         }
         return allChannels.get(name);
     }
@@ -157,6 +162,9 @@ public class ChatBox extends GuiPanel implements Chat, GuiMouseAdapter {
 
     @Override
     public void setActiveChannel(Channel channel) {
+        if (getChatInput().getTextField().getText().equals(active.getPrefix())) {
+            getChatInput().getTextField().setText(channel.getPrefix());
+        }
         active.setActive(false);
         active = channel;
         active.setActive(true);

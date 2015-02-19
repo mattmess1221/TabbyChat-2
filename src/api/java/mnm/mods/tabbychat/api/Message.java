@@ -17,6 +17,13 @@ public interface Message {
     IChatComponent getMessage();
 
     /**
+     * Gets the message with a time stamp if they are enabled.
+     *
+     * @return The time-stamped message
+     */
+    IChatComponent getMessageWithOptionalTimestamp();
+
+    /**
      * Gets the update counter used for this message.
      *
      * @return The counter
@@ -32,9 +39,10 @@ public interface Message {
 
     /**
      * Gets the date that this message was sent.
-     * 
+     *
      * @return The date
      */
     Date getDate();
+
 
 }

@@ -45,6 +45,14 @@ public class Translation implements Translatable {
             FILTER_AUDIO_NOTIFY = new Translation("tabbychat.filter.audioNotify"),
             FILTER_EXPRESSION = new Translation("tabbychat.filter.expression"),
 
+            CHANNEL_TITLE = new Translation("tabbychat.channel.title"),
+            CHANNEL_LABEL = new Translation("tabbychat.channel.label"),
+            CHANNEL_ALIAS = new Translation("tabbychat.channel.alias"),
+            CHANNEL_PREFIX = new Translation("tabbychat.channel.prefix"),
+            CHANNEL_HIDE_PREFIX = new Translation("tabbychat.channel.hidePrefix"),
+            CHANNEL_NONE = new Translation("tabbychat.channel.none"),
+            CHANNEL_SELECT = new Translation("tabbychat.channel.select"),
+
             COLOR_CHATBOX = new Translation("tabbychat.settings.colors.chatbox"),
             COLOR_CHAT_TEXT = new Translation("tabbychat.settings.colors.chattext");
 

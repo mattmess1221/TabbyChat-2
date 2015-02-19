@@ -1,6 +1,7 @@
 package mnm.mods.tabbychat.util;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -8,6 +9,7 @@ import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.Message;
 import mnm.mods.tabbychat.api.listener.events.MessageAddedToChannelEvent;
+import mnm.mods.tabbychat.gui.settings.GuiSettingsChannel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.IChatComponent;
 
@@ -29,7 +31,7 @@ public class ChatChannel implements Channel {
         @Override
         public void openSettings() {
             // There are no settings for this channel
-            TabbyChat.getInstance().openSettings();
+            TabbyChat.getInstance().openSettings(null);
         }
 
         // Locked at 0
@@ -37,7 +39,7 @@ public class ChatChannel implements Channel {
         public void setPosition(int pos) {}
     };
 
-    private List<Message> messages = Lists.newArrayList();
+    private transient List<Message> messages = Lists.newArrayList();
 
     private final String name;
     private String alias;
@@ -45,8 +47,8 @@ public class ChatChannel implements Channel {
     private String prefix = "";
     private boolean prefixHidden = false;
 
-    private boolean active = false;
-    private boolean pending = false;
+    private transient boolean active = false;
+    private transient boolean pending = false;
 
     private int position;
 
@@ -123,8 +125,7 @@ public class ChatChannel implements Channel {
 
     @Override
     public void openSettings() {
-        // TODO Auto-generated method stub
-
+        TabbyChat.getInstance().openSettings(new GuiSettingsChannel(this));
     }
 
     @Override
@@ -178,4 +179,7 @@ public class ChatChannel implements Channel {
         this.messages.clear();
     }
 
+    public static class ChannelMap extends HashMap<String, Channel> {
+        private static final long serialVersionUID = 5235330277084637079L;
+    }
 }
