@@ -10,64 +10,54 @@ buildscript {
             url = "https://oss.sonatype.org/content/repositories/snapshots/"
         }
     }
-    dependencies { // ForgeGradle
-        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'  //
-    }
+    dependencies.classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
 }
 
-allprojects {
-    apply plugin: 'forge'
-    group = "mnm.mods"
+apply plugin: 'forge'
 
-    configurations {
-        compile {
-            exclude group: "org.scala-lang"
-            exclude group: "org.scala-lang.plugins"
-            exclude group: "com.typesafe"
-            exclude group: "com.typesafe.akka"
-        }
-    }
+archivesBaseName = "TabbyChat"
+version = "$versionMajor.$versionMinor.$versionRevision-beta"
+group = "mnm.mods"
 
-    minecraft {
-        version = String.format("%s-%s", mcversion, fmlversion)
-        mappings = "snapshot_20150112"
-        runDir = "run"
-    }
-    reobf{
-        setSrgMcp()
-    }
-    processResources{
-        // this will ensure that this task is redone when the versions change.
-        inputs.property "version", project.version
-        inputs.property "mcversion", project.minecraft.version
-        inputs.property "revision", versionBuild
-
-        // replace stuff in mcmod.info, nothing else
-        from(sourceSets.main.resources.srcDirs) {
-            include 'mcmod.info', 'litemod.json'
-
-            // replace version and mcversion
-            expand 'version':project.version, 'mcversion':project.minecraft.version, 'revision':versionBuild
-        }
-
-        // copy everything else, thats not the mcmod.info
-        from(sourceSets.main.resources.srcDirs) {
-            exclude 'mcmod.info'
-            exclude 'litemod.json'
-        }
-    }
+configurations.compile {
+    exclude group: "org.scala-lang"
+    exclude group: "org.scala-lang.plugins"
+    exclude group: "com.typesafe"
+    exclude group: "com.typesafe.akka"
 }
-
-archivesBaseName = "TabbyChat-2"
-version = String.format("%s.%s.%s-alpha", versionMajor, versionMinor, versionRevision)
 
 minecraft {
+    version = "$mcversion-$fmlversion"
+    mappings = "snapshot_20150112"
+    runDir = "run"
     // Replace the version string
     replace "@VERSION@", project.version
 }
+reobf.setSrgMcp()
+
+processResources{
+    // this will ensure that this task is redone when the versions change.
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+    inputs.property "revision", versionBuild
+
+    // replace stuff in mcmod.info, nothing else
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info', 'litemod.json'
+
+        // replace version and mcversion
+        expand 'version':project.version, 'mcversion':project.minecraft.version, 'revision':versionBuild
+    }
+
+    // copy everything else, thats not the mcmod.info
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+        exclude 'litemod.json'
+    }
+}
 
 System.out.println()
-System.out.println(String.format("%s %s for Minecraft %s", archivesBaseName, version, minecraft.version))
+System.out.println("$archivesBaseName $version for Minecraft ${minecraft.version}")
 System.out.println()
 
 dependencies{
@@ -77,7 +67,6 @@ dependencies{
 jar{
     from sourceSets.api.output
     manifest{
-        attributes "FMLAT":"tabbychat2_at.cfg"
         attributes "ModType":"FML,LiteLoader"
         attributes "ModSide":"CLIENT"
     }
@@ -92,13 +81,7 @@ task jarDev(type:Jar){
 
     classifier "dev"
 }
-task jarSrc(type:Jar){
-    from sourceSets.main.allSource
-    from sourceSets.api.allSource
-
-    classifier "src"
-}
 artifacts{
     archives jarAPI
-    archives jarSrc
+    archives jarDev
 }

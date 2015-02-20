@@ -12,8 +12,7 @@ Feature requests should be directed [here](https://docs.google.com/forms/d/1-BOe
 TabbyChat 2 has an API, which the addons will be built on top of.
 
 ## Building
-To build, simply run the build script (`build.bat` on Windows, or `build.sh` on Linux/Mac).
- If you have trouble, you may want to run each item individually.
+To build, run the following commands. Git is required to be installed.
 ```
 git submodule update --init --recursive
 gradlew setupCIWorkspace
