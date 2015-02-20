@@ -106,7 +106,7 @@ public class ChatBox extends GuiPanel implements Chat, GuiMouseAdapter {
         if (!allChannels.containsKey(name)) {
             Channel chan = TabbyChat.getInstance().channelSettings.channels.getValue().get(name);
             if (chan == null) {
-                chan = new ChatChannel(name, channels.size());
+                chan = new ChatChannel(name);
                 TabbyChat.getInstance().channelSettings.addChannel(chan);
             }
             allChannels.put(name, chan);

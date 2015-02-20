@@ -17,7 +17,7 @@ import com.google.common.collect.Lists;
 
 public class ChatChannel implements Channel {
 
-    public static final Channel DEFAULT_CHANNEL = new ChatChannel("*", 0) {
+    public static final Channel DEFAULT_CHANNEL = new ChatChannel("*") {
         // Don't mess with this channel
         @Override
         public void setAlias(String alias) {}
@@ -33,10 +33,6 @@ public class ChatChannel implements Channel {
             // There are no settings for this channel
             TabbyChat.getInstance().openSettings(null);
         }
-
-        // Locked at 0
-        @Override
-        public void setPosition(int pos) {}
     };
 
     private transient List<Message> messages = Lists.newArrayList();
@@ -50,27 +46,14 @@ public class ChatChannel implements Channel {
     private transient boolean active = false;
     private transient boolean pending = false;
 
-    private int position;
-
-    public ChatChannel(String name, int pos) {
+    public ChatChannel(String name) {
         this.name = name;
         this.alias = this.name;
-        this.position = pos;
     }
 
     @Override
     public String getName() {
         return this.name;
-    }
-
-    @Override
-    public int getPosition() {
-        return this.position;
-    }
-
-    @Override
-    public void setPosition(int pos) {
-        this.position = pos;
     }
 
     @Override

@@ -17,21 +17,6 @@ public interface Channel {
     String getName();
 
     /**
-     * Gets the position of the channel on the tray.
-     *
-     * @return The position
-     */
-    int getPosition();
-
-    /**
-     * Sets the position of the channel on the tray. Out of bounds numbers will
-     * be made so.
-     *
-     * @param pos The new position
-     */
-    void setPosition(int pos);
-
-    /**
      * Gets the alias that is displayed on the channel tab.
      *
      * @return The alias

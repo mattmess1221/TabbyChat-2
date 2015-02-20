@@ -47,7 +47,6 @@ public class ChannelSettings extends AbstractServerSettings {
             obj.addProperty("alias", src.getAlias());
             obj.addProperty("prefix", src.getPrefix());
             obj.addProperty("prefixHidden", src.isPrefixHidden());
-            obj.addProperty("position", src.getPosition());
             return obj;
         }
 
@@ -61,7 +60,7 @@ public class ChannelSettings extends AbstractServerSettings {
             boolean prefixHidden = obj.get("prefixHidden").getAsBoolean();
             int pos = obj.get("position").getAsInt();
 
-            Channel channel = new ChatChannel(name, pos);
+            Channel channel = new ChatChannel(name);
             channel.setAlias(alias);
             channel.setPrefix(prefix);
             channel.setPrefixHidden(prefixHidden);

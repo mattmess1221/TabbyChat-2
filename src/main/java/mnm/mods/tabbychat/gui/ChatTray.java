@@ -47,7 +47,6 @@ public class ChatTray extends GuiPanel {
     }
 
     public void addChannel(Channel channel) {
-        channel.setPosition(count);
         GuiComponent gc = new ChatTab(channel);
         tabList.addComponent(gc);
         count++;
