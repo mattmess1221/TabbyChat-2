@@ -21,6 +21,15 @@ tabbychat.settings.server=Server
 tabbychat.settings.filters=Filters
 tabbychat.settings.colors=Colors
 
+tabbychat.settings.general.logChat=Log Chat
+tabbychat.settings.general.splitLog=Split log
+tabbychat.settings.general.timestamp=Timestamp Chat
+tabbychat.settings.general.timestamp.style=Timestamp Style
+tabbychat.settings.general.timestamp.color=Timestamp Color
+tabbychat.settings.general.antispam=Anti Spam
+tabbychat.settings.general.unreadFlashing=Unread Flashing
+tabbychat.settings.general.checkUpdates=Check for Updates
+
 tabbychat.settings.server.channelsEnabled=Enable Channels
 tabbychat.settings.server.pmEnabled=Enable Messages
 tabbychat.settings.server.channelPattern=Channel Pattern

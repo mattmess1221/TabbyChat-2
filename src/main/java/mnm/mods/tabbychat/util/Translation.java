@@ -29,6 +29,15 @@ public class Translation implements Translatable {
             SETTINGS_FILTERS = new Translation("tabbychat.settings.filters"),
             SETTINGS_COLORS = new Translation("tabbychat.settings.colors"),
 
+            LOG_CHAT = new Translation("tabbychat.settings.general.logChat"),
+            SPLIT_LOG = new Translation("tabbychat.settings.general.splitLog"),
+            TIMESTAMP = new Translation("tabbychat.settings.general.timestamp"),
+            TIMESTAMP_STYLE = new Translation("tabbychat.settings.general.timestamp.style"),
+            TIMESTAMP_COLOR = new Translation("tabbychat.settings.general.timestamp.color"),
+            ANTI_SPAM = new Translation("tabbychat.settings.general.antispam"),
+            UNREAD_FLASHING = new Translation("tabbychat.settings.general.unreadFlashing"),
+            CHECK_UPDATES = new Translation("tabbychat.settings.general.checkUpdates"),
+
             SERVER_CHANNELS_ENABLED = new Translation("tabbychat.settings.server.channelsEnabled"),
             SERVER_PM_ENABLED = new Translation("tabbychat.settings.server.pmEnabled"),
             SERVER_CHANNEL_PATTERN = new Translation("tabbychat.settings.server.channelPattern"),
