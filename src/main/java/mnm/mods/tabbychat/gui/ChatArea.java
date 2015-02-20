@@ -11,6 +11,7 @@ import mnm.mods.tabbychat.api.Message;
 import mnm.mods.tabbychat.api.TabbyAPI;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.util.ChatTextUtils;
+import mnm.mods.util.Color;
 import mnm.mods.util.gui.GuiComponent;
 import mnm.mods.util.gui.events.GuiMouseAdapter;
 import mnm.mods.util.gui.events.GuiMouseEvent;
@@ -132,7 +133,7 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, G
     }
 
     private int getLineOpacity(Message line) {
-        int opacity = (int) (255 * mc.gameSettings.chatOpacity);
+        int opacity = new Color(getForeColor()).getAlpha();
         double age = mc.ingameGUI.getUpdateCounter() - line.getCounter();
         if (!mc.ingameGUI.getChatGUI().getChatOpen()) {
             double opacPerc = age / TabbyChat.getInstance().chatSettings.fadeTime.getValue();
@@ -143,7 +144,7 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, G
             opacPerc = Math.min(1, opacPerc);
 
             opacPerc *= opacPerc;
-            opacity = (int) (255.0D * opacPerc * mc.gameSettings.chatOpacity);
+            opacity = (int) (opacity * opacPerc);
         }
         return opacity;
     }
