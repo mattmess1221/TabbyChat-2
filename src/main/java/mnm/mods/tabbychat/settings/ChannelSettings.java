@@ -58,7 +58,6 @@ public class ChannelSettings extends AbstractServerSettings {
             String alias = obj.get("alias").getAsString();
             String prefix = obj.get("prefix").getAsString();
             boolean prefixHidden = obj.get("prefixHidden").getAsBoolean();
-            int pos = obj.get("position").getAsInt();
 
             Channel channel = new ChatChannel(name);
             channel.setAlias(alias);

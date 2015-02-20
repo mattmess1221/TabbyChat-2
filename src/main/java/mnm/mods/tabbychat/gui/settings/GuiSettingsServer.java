@@ -41,28 +41,28 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> implements C
     public void initGUI() {
         ServerSettings sett = getSettings();
         index = sett.filters.getValue().size() - 1;
-        this.addComponent(new GuiLabel(Translation.SERVER_CHANNELS_ENABLED.translate()),
+        this.addComponent(new GuiLabel(Translation.CHANNELS_ENABLED.translate()),
                 new int[] { 2, 1 });
         this.addComponent(new GuiSettingBoolean(sett.channelsEnabled), new int[] { 1, 1 });
-        this.addComponent(new GuiLabel(Translation.SERVER_PM_ENABLED.translate()),
+        this.addComponent(new GuiLabel(Translation.PM_ENABLED.translate()),
                 new int[] { 2, 2 });
         this.addComponent(new GuiSettingBoolean(sett.pmEnabled), new int[] { 1, 2 });
-        this.addComponent(new GuiLabel(Translation.SERVER_CHANNEL_PATTERN + ""), new int[] { 1, 4 });
+        this.addComponent(new GuiLabel(Translation.CHANNEL_PATTERN + ""), new int[] { 1, 4 });
         this.addComponent(
                 new GuiSettingEnum<ChannelPatterns>(sett.channelPattern, ChannelPatterns.values()),
                 new int[] { 5, 4, 4, 1 });
-        this.addComponent(new GuiLabel(Translation.SERVER_MESSAGE_PATTERN + ""), new int[] { 1, 6 });
+        this.addComponent(new GuiLabel(Translation.MESSAGE_PATTERN + ""), new int[] { 1, 6 });
         this.addComponent(
                 new GuiSettingEnum<MessagePatterns>(sett.messegePattern, MessagePatterns.values()),
                 new int[] { 5, 6, 4, 1 });
-        this.addComponent(new GuiLabel(Translation.SERVER_IGNORED_CHANNELS.translate()),
+        this.addComponent(new GuiLabel(Translation.IGNORED_CHANNELS.translate()),
                 new int[] { 0, 9 });
         this.addComponent(new GuiSettingString(sett.ignoredChannels), new int[] { 5, 9, 5, 1 });
-        this.addComponent(new GuiLabel(Translation.SERVER_DEFAULT_CHANNELS.translate()),
+        this.addComponent(new GuiLabel(Translation.DEFAULT_CHANNELS.translate()),
                 new int[] { 0, 11 });
         this.addComponent(new GuiSettingString(sett.defaultChannels), new int[] { 5, 11, 5, 1 });
         // Filters
-        this.addComponent(new GuiLabel(Translation.SERVER_FILTERS.translate()), new int[] { 0, 12,
+        this.addComponent(new GuiLabel(Translation.FILTERS.translate()), new int[] { 0, 12,
                 1, 2 });
         prev = new GuiButton("<");
         prev.addActionListener(new ActionPerformed() {
@@ -89,7 +89,7 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> implements C
         });
         this.addComponent(next, new int[] { 3, 14, 1, 2 });
         this.addComponent(lblFilter = new GuiLabel(""), new int[] { 4, 14, 1, 2 });
-        GuiButton _new = new GuiButton(Translation.SERVER_FILTERS_NEW.translate());
+        GuiButton _new = new GuiButton(Translation.FILTERS_NEW.translate());
         _new.addActionListener(new ActionPerformed() {
             @Override
             public void action(GuiEvent event) {

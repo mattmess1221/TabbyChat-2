@@ -18,7 +18,6 @@ public class ChatTray extends GuiPanel {
     private GuiPanel tabList = new GuiPanel(new FlowLayout());
     private GuiPanel controls = new GuiPanel(new FlowLayout());
 
-    private int count = 0;
 
     public ChatTray() {
         super(new BorderLayout());
@@ -49,7 +48,6 @@ public class ChatTray extends GuiPanel {
     public void addChannel(Channel channel) {
         GuiComponent gc = new ChatTab(channel);
         tabList.addComponent(gc);
-        count++;
     }
 
     public void removeChannel(Channel channel) {
@@ -62,12 +60,10 @@ public class ChatTray extends GuiPanel {
                 found = true;
             }
         }
-        count--;
     }
 
     public void clear() {
         this.tabList.clearComponents();
-        this.count = 0;
 
         addChannel(ChatChannel.DEFAULT_CHANNEL);
         ChatChannel.DEFAULT_CHANNEL.setActive(true);

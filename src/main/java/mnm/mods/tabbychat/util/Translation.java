@@ -3,71 +3,70 @@ package mnm.mods.tabbychat.util;
 import mnm.mods.util.Translatable;
 import net.minecraft.client.resources.I18n;
 
-public class Translation implements Translatable {
+public enum Translation implements Translatable {
 
-    public static final Translatable
-            TABBYCHAT = new Translation("tabbychat"),
+    TABBYCHAT("tabbychat"),
 
-            FORMAT_MESSAGE_VANILLA = new Translation("tabbychat.formats.messages.vanilla"),
-            FORMAT_MESSAGE_ESSENTIALS = new Translation("tabbychat.formats.messages.essentials"),
-            FORMAT_MESSAGE_HEROCHAT = new Translation("tabbychat.formats.messages.herochat"),
-            FORMAT_MESSAGE_DISABLED = new Translation("tabbychat.formats.messages.disabled"),
+    FORMAT_MESSAGE_VANILLA("tabbychat.formats.messages.vanilla"),
+    FORMAT_MESSAGE_ESSENTIALS("tabbychat.formats.messages.essentials"),
+    FORMAT_MESSAGE_HEROCHAT("tabbychat.formats.messages.herochat"),
+    FORMAT_MESSAGE_DISABLED("tabbychat.formats.messages.disabled"),
 
-            DELIMS_ANGLES = new Translation("tabbychat.delims.angles"),
-            DELIMS_BRACES = new Translation("tabbychat.delims.braces"),
-            DELIMS_BRACKETS = new Translation("tabbychat.delims.brackets"),
-            DELIMS_PARENTHESIS = new Translation("tabbychat.delims.parenthesis"),
-            DELIMS_ANGLES_PARENS = new Translation("tabbychat.delims.anglesparens"),
-            DELIMS_ANGLES_BRAKETS = new Translation("tabbychat.delims.anglesbrackets"),
+    DELIMS_ANGLES("tabbychat.delims.angles"),
+    DELIMS_BRACES("tabbychat.delims.braces"),
+    DELIMS_BRACKETS("tabbychat.delims.brackets"),
+    DELIMS_PARENTHESIS("tabbychat.delims.parenthesis"),
+    DELIMS_ANGLES_PARENS("tabbychat.delims.anglesparens"),
+    DELIMS_ANGLES_BRAKETS("tabbychat.delims.anglesbrackets"),
 
-            SETTINGS_TITLE = new Translation("tabbychat.settings.title"),
-            SETTINGS_SAVE = new Translation("tabbychat.settings.save"),
-            SETTINGS_CLOSE = new Translation("tabbychat.settings.close"),
+    SETTINGS_TITLE("tabbychat.settings.title"),
+    SETTINGS_SAVE("tabbychat.settings.save"),
+    SETTINGS_CLOSE("tabbychat.settings.close"),
 
-            SETTINGS_GENERAL = new Translation("tabbychat.settings.general"),
-            SETTINGS_SERVER = new Translation("tabbychat.settings.server"),
-            SETTINGS_FILTERS = new Translation("tabbychat.settings.filters"),
-            SETTINGS_COLORS = new Translation("tabbychat.settings.colors"),
+    SETTINGS_GENERAL("tabbychat.settings.general"),
+    SETTINGS_SERVER("tabbychat.settings.server"),
+    SETTINGS_FILTERS("tabbychat.settings.filters"),
+    SETTINGS_COLORS("tabbychat.settings.colors"),
 
-            LOG_CHAT = new Translation("tabbychat.settings.general.logChat"),
-            SPLIT_LOG = new Translation("tabbychat.settings.general.splitLog"),
-            TIMESTAMP = new Translation("tabbychat.settings.general.timestamp"),
-            TIMESTAMP_STYLE = new Translation("tabbychat.settings.general.timestamp.style"),
-            TIMESTAMP_COLOR = new Translation("tabbychat.settings.general.timestamp.color"),
-            ANTI_SPAM = new Translation("tabbychat.settings.general.antispam"),
-            UNREAD_FLASHING = new Translation("tabbychat.settings.general.unreadFlashing"),
-            CHECK_UPDATES = new Translation("tabbychat.settings.general.checkUpdates"),
+    LOG_CHAT("tabbychat.settings.general.logChat"),
+    SPLIT_LOG("tabbychat.settings.general.splitLog"),
+    TIMESTAMP("tabbychat.settings.general.timestamp"),
+    TIMESTAMP_STYLE("tabbychat.settings.general.timestamp.style"),
+    TIMESTAMP_COLOR("tabbychat.settings.general.timestamp.color"),
+    ANTI_SPAM("tabbychat.settings.general.antispam"),
+    UNREAD_FLASHING("tabbychat.settings.general.unreadFlashing"),
+    CHECK_UPDATES("tabbychat.settings.general.checkUpdates"),
 
-            SERVER_CHANNELS_ENABLED = new Translation("tabbychat.settings.server.channelsEnabled"),
-            SERVER_PM_ENABLED = new Translation("tabbychat.settings.server.pmEnabled"),
-            SERVER_CHANNEL_PATTERN = new Translation("tabbychat.settings.server.channelPattern"),
-            SERVER_MESSAGE_PATTERN = new Translation("tabbychat.settings.server.messagePattern"),
-            SERVER_IGNORED_CHANNELS = new Translation("tabbychat.settings.server.ignoredChannels"),
-            SERVER_DEFAULT_CHANNELS = new Translation("tabbychat.settings.server.defaultChannels"),
-            SERVER_FILTERS = new Translation("tabbychat.settings.server.filters"),
-            SERVER_FILTERS_NEW = new Translation("tabbychat.settings.server.filters.new"),
+    CHANNELS_ENABLED("tabbychat.settings.server.channelsEnabled"),
+    PM_ENABLED("tabbychat.settings.server.pmEnabled"),
+    CHANNEL_PATTERN("tabbychat.settings.server.channelPattern"),
+    MESSAGE_PATTERN("tabbychat.settings.server.messagePattern"),
+    IGNORED_CHANNELS("tabbychat.settings.server.ignoredChannels"),
+    DEFAULT_CHANNELS("tabbychat.settings.server.defaultChannels"),
+    FILTERS("tabbychat.settings.server.filters"),
+    FILTERS_NEW("tabbychat.settings.server.filters.new"),
 
-            FILTER_TITLE = new Translation("tabbychat.filter.title"),
-            FILTER_NAME = new Translation("tabbychat.filter.name"),
-            FILTER_DESTINATIONS = new Translation("tabbychat.filter.destinations"),
-            FILTER_HIDE = new Translation("tabbychat.filter.hideMatches"),
-            FILTER_AUDIO_NOTIFY = new Translation("tabbychat.filter.audioNotify"),
-            FILTER_EXPRESSION = new Translation("tabbychat.filter.expression"),
+    FILTER_TITLE("tabbychat.filter.title"),
+    FILTER_NAME("tabbychat.filter.name"),
+    FILTER_DESTINATIONS("tabbychat.filter.destinations"),
+    FILTER_HIDE("tabbychat.filter.hideMatches"),
+    FILTER_AUDIO_NOTIFY("tabbychat.filter.audioNotify"),
+    FILTER_EXPRESSION("tabbychat.filter.expression"),
 
-            CHANNEL_TITLE = new Translation("tabbychat.channel.title"),
-            CHANNEL_LABEL = new Translation("tabbychat.channel.label"),
-            CHANNEL_ALIAS = new Translation("tabbychat.channel.alias"),
-            CHANNEL_PREFIX = new Translation("tabbychat.channel.prefix"),
-            CHANNEL_HIDE_PREFIX = new Translation("tabbychat.channel.hidePrefix"),
-            CHANNEL_NONE = new Translation("tabbychat.channel.none"),
-            CHANNEL_SELECT = new Translation("tabbychat.channel.select"),
+    CHANNEL_TITLE("tabbychat.channel.title"),
+    CHANNEL_LABEL("tabbychat.channel.label"),
+    CHANNEL_ALIAS("tabbychat.channel.alias"),
+    CHANNEL_PREFIX("tabbychat.channel.prefix"),
+    CHANNEL_HIDE_PREFIX("tabbychat.channel.hidePrefix"),
+    CHANNEL_NONE("tabbychat.channel.none"),
+    CHANNEL_SELECT("tabbychat.channel.select"),
 
-            COLOR_CHATBOX = new Translation("tabbychat.settings.colors.chatbox"),
-            COLOR_CHAT_TEXT = new Translation("tabbychat.settings.colors.chattext");
+    COLOR_CHATBOX("tabbychat.settings.colors.chatbox"),
+    COLOR_CHAT_TEXT("tabbychat.settings.colors.chattext");
 
     private final String translation;
 
-    public Translation(String trans) {
+    private Translation(String trans) {
         this.translation = trans;
     }
 
