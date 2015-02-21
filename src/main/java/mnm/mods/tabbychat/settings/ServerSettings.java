@@ -4,8 +4,12 @@ import java.net.InetSocketAddress;
 
 import mnm.mods.tabbychat.filters.ChatFilter.FilterList;
 import mnm.mods.tabbychat.util.ChannelPatterns;
+import mnm.mods.tabbychat.util.FormattingSerializer;
 import mnm.mods.tabbychat.util.MessagePatterns;
 import mnm.mods.util.SettingValue;
+import net.minecraft.util.EnumChatFormatting;
+
+import com.google.gson.GsonBuilder;
 
 public class ServerSettings extends AbstractServerSettings {
 
@@ -29,5 +33,10 @@ public class ServerSettings extends AbstractServerSettings {
         registerSetting("ignoredChannels", ignoredChannels);
         registerSetting("defaultChannels", defaultChannels);
         registerSetting("filters", filters);
+    }
+
+    @Override
+    protected void setupGson(GsonBuilder builder) {
+        builder.registerTypeAdapter(EnumChatFormatting.class, new FormattingSerializer());
     }
 }
