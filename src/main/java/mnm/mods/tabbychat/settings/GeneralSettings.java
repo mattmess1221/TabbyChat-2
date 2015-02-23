@@ -1,9 +1,11 @@
 package mnm.mods.tabbychat.settings;
 
+import mnm.mods.tabbychat.util.FormattingSerializer;
 import mnm.mods.tabbychat.util.TimeStamps;
-import mnm.mods.tabbychat.util.Translation;
 import mnm.mods.util.SettingValue;
 import net.minecraft.util.EnumChatFormatting;
+
+import com.google.gson.GsonBuilder;
 
 public class GeneralSettings extends TabbySettings {
 
@@ -16,12 +18,12 @@ public class GeneralSettings extends TabbySettings {
             EnumChatFormatting.WHITE);
     public SettingValue<Boolean> antiSpam = new SettingValue<Boolean>(false);
     public SettingValue<Boolean> antiSpamPartial = new SettingValue<Boolean>(true);
-    public SettingValue<Float> antiSpamPartialAmount = new SettingValue<Float>(0.08f);    
+    public SettingValue<Float> antiSpamPartialAmount = new SettingValue<Float>(0.08f); 
     public SettingValue<Boolean> unreadFlashing = new SettingValue<Boolean>(true);
     public SettingValue<Boolean> checkUpdates = new SettingValue<Boolean>(true);
 
     public GeneralSettings() {
-        super(Translation.SETTINGS_GENERAL.translate());
+        super("general");
 
         registerSetting("logChat", logChat);
         registerSetting("splitLog", splitLog);
@@ -33,5 +35,10 @@ public class GeneralSettings extends TabbySettings {
         registerSetting("antiSpamPartialAmount", antiSpamPartialAmount);
         registerSetting("unreadFlashing", unreadFlashing);
         registerSetting("checkUpdates", checkUpdates);
+    }
+
+    @Override
+    protected void setupGson(GsonBuilder builder) {
+        builder.registerTypeAdapter(EnumChatFormatting.class, new FormattingSerializer());
     }
 }
