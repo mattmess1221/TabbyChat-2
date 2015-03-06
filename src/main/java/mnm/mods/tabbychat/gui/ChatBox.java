@@ -41,6 +41,7 @@ public class ChatBox extends GuiPanel implements Chat, GuiMouseAdapter {
         this.addComponent(pnlTray = new ChatTray(), BorderLayout.Position.NORTH);
         this.addComponent(chatArea = new ChatArea(), BorderLayout.Position.CENTER);
         this.addComponent(txtChatInput = new TextBox(), BorderLayout.Position.SOUTH);
+        this.addComponent(new Scrollbar(chatArea), BorderLayout.Position.EAST);
         this.setBounds(rect);
     }
 

@@ -16,7 +16,7 @@ buildscript {
 apply plugin: 'forge'
 
 archivesBaseName = "TabbyChat"
-version = "$versionMajor.$versionMinor.$versionRevision-beta"
+version = "$versionMajor.$versionMinor.$versionRevision-beta2-SNAPSHOT"
 group = "mnm.mods"
 
 configurations.compile {
@@ -28,7 +28,7 @@ configurations.compile {
 
 minecraft {
     version = "$mcversion-$fmlversion"
-    mappings = "snapshot_20150112"
+    mappings = "stable_15"
     runDir = "run"
     // Replace the version string
     replace "@VERSION@", project.version

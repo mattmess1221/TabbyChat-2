@@ -29,8 +29,7 @@ import com.google.common.collect.Lists;
 
 public class ChatArea extends GuiComponent implements Supplier<List<Message>>, GuiMouseAdapter {
 
-    private Supplier<List<Message>> supplier = Suppliers.memoizeWithExpiration(this, 50,
-            TimeUnit.MILLISECONDS);
+    private Supplier<List<Message>> supplier = Suppliers.memoizeWithExpiration(this, 50, TimeUnit.MILLISECONDS);
     private int scrollPos = 0;
 
     public ChatArea() {
@@ -60,11 +59,10 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, G
     @Override
     public void drawComponent(int mouseX, int mouseY) {
         if (mc.gameSettings.chatVisibility != EnumChatVisibility.HIDDEN) {
-            List<Message> visible = getChat(false);
+            List<Message> visible = getVisibleChat();
             int height = visible.size() * mc.fontRendererObj.FONT_HEIGHT;
             if (GuiNewChatTC.getInstance().getChatOpen()) {
-                Gui.drawRect(0, 0, getBounds().width, getBounds().height,
-                        getBackColor());
+                Gui.drawRect(0, 0, getBounds().width, getBounds().height, getBackColor());
                 drawBorders(0, 0, getBounds().width, getBounds().height);
             } else if (height != 0) {
                 int y = getBounds().height - height;
@@ -83,8 +81,7 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, G
     private void drawChatLine(Message line, int xPos, int yPos) {
         GlStateManager.enableBlend();
         String text = line.getMessageWithOptionalTimestamp().getFormattedText();
-        mc.fontRendererObj.drawStringWithShadow(text, xPos, yPos, (getForeColor())
-                + (getLineOpacity(line) << 24));
+        mc.fontRendererObj.drawStringWithShadow(text, xPos, yPos, (getForeColor()) + (getLineOpacity(line) << 24));
         GlStateManager.disableAlpha();
         GlStateManager.disableBlend();
     }
@@ -103,15 +100,16 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, G
 
     private List<Message> getChat() {
         Channel channel = TabbyAPI.getAPI().getChat().getActiveChannel();
+        return ChatTextUtils.split(channel.getMessages(), getBounds().width);
+    }
+
+    public List<Message> getVisibleChat() {
+        List<Message> lines = getChat(false);
+
         List<Message> messages = Lists.newArrayList();
-        List<Message> lines = ChatTextUtils.split(channel.getMessages(), getBounds().width);
         int length = 0;
 
-        this.scrollPos = Math.min(this.scrollPos, lines.size()
-                - (getBounds().height / mc.fontRendererObj.FONT_HEIGHT));
-        this.scrollPos = Math.max(this.scrollPos, 0);
-
-        int pos = scrollPos;
+        int pos = getScrollPos();
         // TODO Setting
         int div = GuiNewChatTC.getInstance().getChatOpen() ? 1 : 2;
         while (pos < lines.size() && length < getBounds().height / div - 8) {
@@ -150,12 +148,23 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, G
     }
 
     public void scroll(int scr) {
-        this.scrollPos += scr;
+        setScrollPos(getScrollPos() + scr);
+    }
+
+    public void setScrollPos(int scroll) {
+        List<Message> list = getChat(false);
+        scroll = Math.min(scroll, list.size() - (getBounds().height / mc.fontRendererObj.FONT_HEIGHT));
+        scroll = Math.max(scroll, 0);
+
+        this.scrollPos = scroll;
+    }
+
+    public int getScrollPos() {
+        return scrollPos;
     }
 
     public void resetScroll() {
-        this.scrollPos = 0;
-
+        setScrollPos(0);
     }
 
     public IChatComponent getChatComponent(int clickX, int clickY) {
@@ -170,8 +179,8 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, G
                         .abs((clickY - getBounds().height - getActualPosition().y - (bottom % mc.fontRendererObj.FONT_HEIGHT))
                                 / (this.mc.fontRendererObj.FONT_HEIGHT) + 1);
 
-                if (linePos >= 0 && linePos < this.getChat(false).size()) {
-                    Message chatline = getChat(false).get(linePos);
+                if (linePos >= 0 && linePos < this.getVisibleChat().size()) {
+                    Message chatline = getVisibleChat().get(linePos);
                     int l1 = 0;
                     Iterator<IChatComponent> iterator = chatline.getMessageWithOptionalTimestamp().iterator();
 
@@ -179,9 +188,8 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, G
                         IChatComponent ichatcomponent = iterator.next();
 
                         if (ichatcomponent instanceof ChatComponentText) {
-                            l1 += this.mc.fontRendererObj.getStringWidth(GuiUtilRenderComponents
-                                    .func_178909_a(((ChatComponentText) ichatcomponent)
-                                            .getChatComponentText_TextValue(), true));
+                            l1 += this.mc.fontRendererObj.getStringWidth(GuiUtilRenderComponents.func_178909_a(
+                                    ((ChatComponentText) ichatcomponent).getChatComponentText_TextValue(), true));
                             result = ichatcomponent;
                         }
                     }
@@ -194,4 +202,5 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, G
     public float getChatScale() {
         return this.mc.gameSettings.chatScale;
     }
+
 }

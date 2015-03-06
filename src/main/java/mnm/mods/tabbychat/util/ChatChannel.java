@@ -9,6 +9,8 @@ import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.Message;
 import mnm.mods.tabbychat.api.listener.events.MessageAddedToChannelEvent;
+import mnm.mods.tabbychat.gui.ChatArea;
+import mnm.mods.tabbychat.gui.ChatBox;
 import mnm.mods.tabbychat.gui.settings.GuiSettingsChannel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.IChatComponent;
@@ -138,6 +140,12 @@ public class ChatChannel implements Channel {
         int uc = Minecraft.getMinecraft().ingameGUI.getUpdateCounter();
         Message msg = new ChatMessage(uc, event.chat, id, true);
         this.messages.add(0, msg);
+
+        // compensate scrolling
+        ChatArea chatbox = ((ChatBox) TabbyChat.getInstance().getChat()).getChatArea();
+        if (active && chatbox.getScrollPos() > 0 && id == 0) {
+            chatbox.scroll(1);
+        }
 
     }
 
