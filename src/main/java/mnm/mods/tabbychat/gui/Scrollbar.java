@@ -19,11 +19,11 @@ public class Scrollbar extends GuiComponent {
             int max = chat.getBounds().height;
             int lines = max / mc.fontRendererObj.FONT_HEIGHT;
             int total = chat.getChat(false).size();
-            if (total < lines) {
+            if (total <= lines) {
                 return;
             }
             total -= lines;
-            int size = 25;
+            int size = Math.max(max / total, 10);
             float perc = Math.abs((float) scroll / (float) total - 1) * Math.abs((float) size / (float) max - 1);
             int pos = (int) (perc * max);
 
