@@ -67,8 +67,8 @@ public class ChatBox extends GuiPanel implements Chat, GuiMouseAdapter {
 
         this.setForeColor(colors.chatTextColor.getValue().getColor());
         this.setBackColor(colors.chatBoxColor.getValue().getColor());
-
-        float scale = GuiNewChatTC.getInstance().getChatScale();
+        setScale(GuiNewChatTC.getInstance().getChatScale());
+        float scale = getScale();
 
         GlStateManager.pushMatrix();
         // Reset the matrix so we can have a clean slate

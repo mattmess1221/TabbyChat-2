@@ -1,9 +1,9 @@
 {
-	"name": "TabbyChat 2",
+	"name": "tabbychat2",
 	"version": "${version}",
 	"revision": "${revision}",
 	"author": "killjoy1221",
 	"mcversion": "${mcversion}",
 	"description": "Chat overhaul.",
-	"dependsOn": "mnm utils"
+	"dependsOn": ["mnmutils"]
 }
