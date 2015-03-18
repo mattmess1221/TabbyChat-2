@@ -15,6 +15,7 @@ import mnm.mods.util.gui.SettingPanel;
 import mnm.mods.util.gui.VerticalLayout;
 import mnm.mods.util.gui.events.ActionPerformed;
 import mnm.mods.util.gui.events.GuiEvent;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 
 import com.google.common.collect.Lists;
@@ -64,7 +65,7 @@ public class GuiSettingsScreen extends ComponentScreen {
         close.addActionListener(new ActionPerformed() {
             @Override
             public void action(GuiEvent event) {
-                mc.displayGuiScreen(null);
+                Minecraft.getMinecraft().displayGuiScreen(null);
             }
         });
         closeSaveButtons.addComponent(close);
