@@ -92,7 +92,6 @@ public class ChatFilter implements Filter {
 
         @Override
         public void action(Filter filter, FilterEvent event) {
-            // TODO Auto-generated method stub
             FilterSettings settings = filter.getSettings();
             if (settings.isRemove()) {
                 event.channels.clear();

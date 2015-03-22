@@ -8,16 +8,17 @@ import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.Chat;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
+import mnm.mods.tabbychat.settings.AdvancedSettings;
 import mnm.mods.tabbychat.settings.ColorSettings;
 import mnm.mods.tabbychat.util.ChatChannel;
 import mnm.mods.util.gui.BorderLayout;
 import mnm.mods.util.gui.GuiPanel;
 import mnm.mods.util.gui.events.GuiMouseAdapter;
 import mnm.mods.util.gui.events.GuiMouseEvent;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import com.google.common.collect.Maps;
@@ -49,7 +50,7 @@ public class ChatBox extends GuiPanel implements Chat, GuiMouseAdapter {
     public void accept(GuiMouseEvent event) {
         if (event.event == GuiMouseEvent.DRAGGED) {
             if (Mouse.isButtonDown(0)
-                    && (pnlTray.isButtonHeld() || Keyboard.isKeyDown(Keyboard.KEY_LMENU))) {
+                    && (pnlTray.isHovered() || GuiScreen.isAltKeyDown())) {
                 ScaledResolution sr = new ScaledResolution(mc, mc.displayWidth,
                         mc.displayHeight);
                 Rectangle bounds = getBounds();
@@ -58,6 +59,13 @@ public class ChatBox extends GuiPanel implements Chat, GuiMouseAdapter {
                 y = (int) ((double) Mouse.getEventDY() / (double) sr.getScaleFactor());
                 bounds.x += x;
                 bounds.y -= y;
+
+                // save bounds
+                AdvancedSettings sett = TabbyChat.getInstance().advancedSettings;
+                sett.chatX.setValue(bounds.x);
+                sett.chatY.setValue(bounds.y);
+
+                sett.saveSettingsFile();
             }
         }
     }

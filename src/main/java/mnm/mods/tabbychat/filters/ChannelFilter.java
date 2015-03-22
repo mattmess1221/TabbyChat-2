@@ -17,7 +17,6 @@ public class ChannelFilter extends TabFilter {
 
     public ChannelFilter() {
         super(ChannelAction.ID);
-        // TODO Auto-generated constructor stub
     }
 
     @Override

@@ -17,7 +17,7 @@ import mnm.mods.tabbychat.core.api.TabbyEvents;
 import mnm.mods.tabbychat.filters.FilterAddon;
 import mnm.mods.tabbychat.gui.settings.GuiSettingsScreen;
 import mnm.mods.tabbychat.settings.ChannelSettings;
-import mnm.mods.tabbychat.settings.ChatBoxSettings;
+import mnm.mods.tabbychat.settings.AdvancedSettings;
 import mnm.mods.tabbychat.settings.ColorSettings;
 import mnm.mods.tabbychat.settings.GeneralSettings;
 import mnm.mods.tabbychat.settings.ServerSettings;
@@ -40,7 +40,7 @@ public abstract class TabbyChat extends TabbyAPI {
     private TabbyEvents events;
 
     public GeneralSettings generalSettings;
-    public ChatBoxSettings chatSettings;
+    public AdvancedSettings advancedSettings;
     public ColorSettings colorSettings;
     // Server settings
     @Nullable
@@ -111,17 +111,17 @@ public abstract class TabbyChat extends TabbyAPI {
 
         // Set global settings
         generalSettings = new GeneralSettings();
-        chatSettings = new ChatBoxSettings();
+        advancedSettings = new AdvancedSettings();
         colorSettings = new ColorSettings();
 
         // Load settings
         generalSettings.loadSettingsFile();
-        chatSettings.loadSettingsFile();
+        advancedSettings.loadSettingsFile();
         colorSettings.loadSettingsFile();
 
         // Save settings
         generalSettings.saveSettingsFile();
-        chatSettings.saveSettingsFile();
+        advancedSettings.saveSettingsFile();
         colorSettings.saveSettingsFile();
 
         addonManager.registerListener(new ChatAddonAntiSpam());

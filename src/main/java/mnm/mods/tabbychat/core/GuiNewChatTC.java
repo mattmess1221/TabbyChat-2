@@ -7,7 +7,7 @@ import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.listener.events.ChatMessageEvent.ChatRecievedEvent;
 import mnm.mods.tabbychat.gui.ChatBox;
-import mnm.mods.tabbychat.settings.ChatBoxSettings;
+import mnm.mods.tabbychat.settings.AdvancedSettings;
 import mnm.mods.tabbychat.util.ChatChannel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiNewChat;
@@ -26,11 +26,11 @@ public class GuiNewChatTC extends GuiNewChat {
         super(minecraft);
         Rectangle rect = new Rectangle();
 
-        ChatBoxSettings settings = TabbyChat.getInstance().chatSettings;
-        rect.x = settings.xPos.getValue();
-        rect.y = settings.yPos.getValue();
-        rect.width = settings.width.getValue();
-        rect.height = settings.height.getValue();
+        AdvancedSettings settings = TabbyChat.getInstance().advancedSettings;
+        rect.x = settings.chatX.getValue();
+        rect.y = settings.chatY.getValue();
+        rect.width = settings.chatW.getValue();
+        rect.height = settings.chatH.getValue();
 
         chatbox = new ChatBox(rect);
     }

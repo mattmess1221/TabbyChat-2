@@ -147,6 +147,19 @@ public class ChatChannel implements Channel {
             chatbox.scroll(1);
         }
 
+        trim(TabbyChat.getInstance().advancedSettings.historyLen.getValue());
+
+    }
+
+    public void trim(int size) {
+        Iterator<Message> iter = this.messages.iterator();
+
+        for (int i = 0; iter.hasNext(); i++) {
+            iter.next();
+            if (i > size) {
+                iter.remove();
+            }
+        }
     }
 
     @Override
