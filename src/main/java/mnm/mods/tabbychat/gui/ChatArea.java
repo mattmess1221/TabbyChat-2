@@ -1,6 +1,7 @@
 package mnm.mods.tabbychat.gui;
 
 import java.awt.Dimension;
+import java.awt.Point;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -168,35 +169,51 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, G
     }
 
     public IChatComponent getChatComponent(int clickX, int clickY) {
-        IChatComponent result = null;
         if (GuiNewChatTC.getInstance().getChatOpen()) {
-            if (clickX >= getActualPosition().x && clickY >= getActualPosition().y
-                    && clickX <= getActualPosition().x + getBounds().width
-                    && clickY <= getActualPosition().y + getBounds().height) {
+            final float scale = getActualScale();
+            Point actual = getActualPosition();
+            // check that cursor is in bounds.
+            if (clickX >= actual.x && clickY >= actual.y
+                    && clickX <= actual.x + getBounds().width * scale
+                    && clickY <= actual.y + getBounds().height * scale) {
 
-                int bottom = getActualPosition().y + getBounds().height;
-                int linePos = Math
-                        .abs((clickY - getBounds().height - getActualPosition().y - (bottom % mc.fontRendererObj.FONT_HEIGHT))
-                                / (this.mc.fontRendererObj.FONT_HEIGHT) + 1);
+                final int size = (int) (mc.fontRendererObj.FONT_HEIGHT * scale);
 
-                if (linePos >= 0 && linePos < this.getVisibleChat().size()) {
-                    Message chatline = getVisibleChat().get(linePos);
-                    int l1 = 0;
+                int bottom = actual.y + (int) (getBounds().height * scale);
+                // The line to get
+                int linePos = (int) (Math.abs((clickY - (getBounds().height * scale) - actual.y
+                                + (bottom % size)) / (size + scale)));
+
+                // Iterate through the chat component, stopping when the desired
+                // x is reached.
+                List<Message> list = this.getVisibleChat();
+                if (linePos >= 0 && linePos < list.size()) {
+                    Message chatline = list.get(linePos);
+                    int x = actual.x;
                     Iterator<IChatComponent> iterator = chatline.getMessageWithOptionalTimestamp().iterator();
 
-                    while (iterator.hasNext() && l1 <= clickX) {
+                    while (iterator.hasNext()) {
                         IChatComponent ichatcomponent = iterator.next();
 
                         if (ichatcomponent instanceof ChatComponentText) {
-                            l1 += this.mc.fontRendererObj.getStringWidth(GuiUtilRenderComponents.func_178909_a(
-                                    ((ChatComponentText) ichatcomponent).getChatComponentText_TextValue(), true));
-                            result = ichatcomponent;
+
+                            // get the text of the component, no children.
+                            String text = ((ChatComponentText) ichatcomponent).getChatComponentText_TextValue();
+                            // clean it up
+                            String clean = GuiUtilRenderComponents.func_178909_a(text, false);
+                            // get it's width, then scale it.
+                            int width = (int) (this.mc.fontRendererObj.getStringWidth(clean) * scale);
+                            x += width;
+
+                            if (x > clickX) {
+                                return ichatcomponent;
+                            }
                         }
                     }
                 }
             }
         }
-        return result;
+        return null;
     }
 
     public float getChatScale() {
