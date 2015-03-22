@@ -49,7 +49,7 @@ public abstract class TabbyChat extends TabbyAPI {
     public ServerSettings serverSettings;
 
     private File dataFolder;
-    private SocketAddress currentServer;
+    private InetSocketAddress currentServer;
 
     protected static void setInstance(TabbyChat inst) {
         instance = inst;
@@ -86,7 +86,7 @@ public abstract class TabbyChat extends TabbyAPI {
         }
     }
 
-    public SocketAddress getCurrentServer() {
+    public InetSocketAddress getCurrentServer() {
         return this.currentServer;
     }
 
@@ -126,6 +126,7 @@ public abstract class TabbyChat extends TabbyAPI {
 
         addonManager.registerListener(new ChatAddonAntiSpam());
         addonManager.registerListener(new FilterAddon());
+        addonManager.registerListener(new ChatLogging(new File("logs/chat")));
     }
 
     protected void onRender(GuiScreen currentScreen) {
@@ -146,10 +147,13 @@ public abstract class TabbyChat extends TabbyAPI {
     }
 
     protected void onJoin(SocketAddress address) {
-        this.currentServer = address;
+        if (address instanceof InetSocketAddress) {
+            this.currentServer = (InetSocketAddress) address;
+        }
+
         // Set server settings
-        channelSettings = new ChannelSettings((InetSocketAddress) currentServer);
-        serverSettings = new ServerSettings((InetSocketAddress) currentServer);
+        channelSettings = new ChannelSettings(currentServer);
+        serverSettings = new ServerSettings(currentServer);
         channelSettings.loadSettingsFile();
         serverSettings.loadSettingsFile();
         channelSettings.saveSettingsFile();
