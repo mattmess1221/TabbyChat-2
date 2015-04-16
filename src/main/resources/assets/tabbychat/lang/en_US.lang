@@ -20,6 +20,7 @@ tabbychat.settings.general=General
 tabbychat.settings.server=Server
 tabbychat.settings.filters=Filters
 tabbychat.settings.colors=Colors
+tabbychat.settings.advanced=Advanced
 
 tabbychat.settings.general.logChat=Log Chat
 tabbychat.settings.general.splitLog=Split log
@@ -27,6 +28,8 @@ tabbychat.settings.general.timestamp=Timestamp Chat
 tabbychat.settings.general.timestamp.style=Style
 tabbychat.settings.general.timestamp.color=Color
 tabbychat.settings.general.antispam=Anti Spam
+tabbychat.settings.general.antispam.tolerance=Tolerance
+
 tabbychat.settings.general.unreadFlashing=Unread Flashing
 tabbychat.settings.general.checkUpdates=Check for Updates
 

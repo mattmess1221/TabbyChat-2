@@ -1,11 +1,12 @@
 package mnm.mods.tabbychat;
 
 import java.util.Map;
-import org.apache.commons.lang3.StringUtils;
 
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.listener.ChannelListener;
 import mnm.mods.tabbychat.api.listener.events.MessageAddedToChannelEvent;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.collect.Maps;
 
@@ -16,11 +17,11 @@ public class ChatAddonAntiSpam implements ChannelListener {
     @Override
     public void onMessageAdded(MessageAddedToChannelEvent event) {
 
-        boolean prefEnableAntiSpam = TabbyChat.getInstance().generalSettings.antiSpam.getValue();
-        boolean prefPartialMatching = TabbyChat.getInstance().generalSettings.antiSpamPartial.getValue();
-        float   prefPartialMatchAmount = TabbyChat.getInstance().generalSettings.antiSpamPartialAmount.getValue();
+        boolean enabled = TabbyChat.getInstance().generalSettings.antiSpam.getValue();
+        float tolerance = TabbyChat.getInstance().generalSettings.antiSpamTolerance.getValue();
+        tolerance = Math.abs(tolerance - 1);
 
-        if (prefEnableAntiSpam && event.id == 0) {
+        if (enabled && event.id == 0) {
             Channel channel = event.channel;
             Counter counter = this.messageMap.get(channel);
             if (counter == null) {
@@ -28,7 +29,8 @@ public class ChatAddonAntiSpam implements ChannelListener {
                 messageMap.put(channel, counter);
             }
             String chat = event.chat.getUnformattedText();
-            if ((!prefPartialMatching && chat.equals(counter.lastMessage)) || (prefPartialMatching &&  getDifference(chat, counter.lastMessage) <= (prefPartialMatchAmount))) {
+
+            if (getDifference(chat, counter.lastMessage) <= tolerance) {
                 counter.spamCounter++;
                 event.chat.appendText(" [" + counter.spamCounter + "x]");
                 channel.removeMessageAt(0);
@@ -48,7 +50,8 @@ public class ChatAddonAntiSpam implements ChannelListener {
         }
     }
 
-    private float getDifference(String s1, String s2){
-        return StringUtils.getLevenshteinDistance(s1.toLowerCase(), s2.toLowerCase())*100/s1.length();
+    private float getDifference(String s1, String s2) {
+        float avgLen = (s1.length() + s2.length()) / 2F;
+        return StringUtils.getLevenshteinDistance(s1.toLowerCase(), s2.toLowerCase()) / avgLen;
     }
 }

@@ -1,5 +1,6 @@
 package mnm.mods.tabbychat.gui.settings;
 
+import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import mnm.mods.util.gui.GuiGridLayout;
 import mnm.mods.util.gui.GuiLabel;
 import mnm.mods.util.gui.GuiSettingBoolean;
 import mnm.mods.util.gui.GuiSettingEnum;
+import mnm.mods.util.gui.GuiSettingFloat;
 import mnm.mods.util.gui.SettingPanel;
 import net.minecraft.util.EnumChatFormatting;
 
@@ -44,10 +46,19 @@ public class GuiSettingsGeneral extends SettingPanel<GeneralSettings> {
                 new int[] { 5, 7, 4, 1 });
         addComponent(new GuiLabel(Translation.ANTI_SPAM.toString()), new int[] { 2, 9 });
         addComponent(new GuiSettingBoolean(sett.antiSpam), new int[] { 1, 9 });
-        addComponent(new GuiLabel(Translation.UNREAD_FLASHING.toString()), new int[] { 2, 11 });
-        addComponent(new GuiSettingBoolean(sett.unreadFlashing), new int[] { 1, 11 });
-        addComponent(new GuiLabel(Translation.CHECK_UPDATES.toString()), new int[] { 2, 13 });
-        addComponent(new GuiSettingBoolean(sett.checkUpdates), new int[] { 1, 13 });
+
+        addComponent(new GuiLabel(Translation.SPAM_TOLERANCE.toString()), new int[] { 3, 11 });
+        GuiSettingFloat nud = new GuiSettingFloat(sett.antiSpamTolerance);
+        nud.getNumUpDown().setMin(0);
+        nud.getNumUpDown().setMax(1);
+        nud.getNumUpDown().setInterval(0.05);
+        nud.getNumUpDown().setFormat(NumberFormat.getPercentInstance());
+        addComponent(nud, new int[] { 6, 11, 2, 1 });
+
+        addComponent(new GuiLabel(Translation.UNREAD_FLASHING.toString()), new int[] { 2, 13 });
+        addComponent(new GuiSettingBoolean(sett.unreadFlashing), new int[] { 1, 13 });
+        addComponent(new GuiLabel(Translation.CHECK_UPDATES.toString()), new int[] { 2, 15 });
+        addComponent(new GuiSettingBoolean(sett.checkUpdates), new int[] { 1, 15 });
     }
 
     private EnumChatFormatting[] getColors() {

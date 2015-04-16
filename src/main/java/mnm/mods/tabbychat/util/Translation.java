@@ -27,6 +27,7 @@ public enum Translation implements Translatable {
     SETTINGS_SERVER("tabbychat.settings.server"),
     SETTINGS_FILTERS("tabbychat.settings.filters"),
     SETTINGS_COLORS("tabbychat.settings.colors"),
+    SETTINGS_ADVANCED("tabbychat.settings.advanced"),
 
     LOG_CHAT("tabbychat.settings.general.logChat"),
     SPLIT_LOG("tabbychat.settings.general.splitLog"),
@@ -34,6 +35,7 @@ public enum Translation implements Translatable {
     TIMESTAMP_STYLE("tabbychat.settings.general.timestamp.style"),
     TIMESTAMP_COLOR("tabbychat.settings.general.timestamp.color"),
     ANTI_SPAM("tabbychat.settings.general.antispam"),
+    SPAM_TOLERANCE("tabbychat.settings.general.antispam.tolerance"),
     UNREAD_FLASHING("tabbychat.settings.general.unreadFlashing"),
     CHECK_UPDATES("tabbychat.settings.general.checkUpdates"),
 
