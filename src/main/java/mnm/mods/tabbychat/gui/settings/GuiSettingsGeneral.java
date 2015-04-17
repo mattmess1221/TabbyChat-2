@@ -13,7 +13,7 @@ import mnm.mods.util.gui.GuiGridLayout;
 import mnm.mods.util.gui.GuiLabel;
 import mnm.mods.util.gui.GuiSettingBoolean;
 import mnm.mods.util.gui.GuiSettingEnum;
-import mnm.mods.util.gui.GuiSettingFloat;
+import mnm.mods.util.gui.GuiSettingNumber.GuiSettingDouble;
 import mnm.mods.util.gui.SettingPanel;
 import net.minecraft.util.EnumChatFormatting;
 
@@ -48,7 +48,7 @@ public class GuiSettingsGeneral extends SettingPanel<GeneralSettings> {
         addComponent(new GuiSettingBoolean(sett.antiSpam), new int[] { 1, 9 });
 
         addComponent(new GuiLabel(Translation.SPAM_TOLERANCE.toString()), new int[] { 3, 11 });
-        GuiSettingFloat nud = new GuiSettingFloat(sett.antiSpamTolerance);
+        GuiSettingDouble nud = new GuiSettingDouble(sett.antiSpamTolerance);
         nud.getNumUpDown().setMin(0);
         nud.getNumUpDown().setMax(1);
         nud.getNumUpDown().setInterval(0.05);

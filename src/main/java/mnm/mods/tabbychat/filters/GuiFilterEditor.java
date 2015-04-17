@@ -9,13 +9,12 @@ import mnm.mods.tabbychat.api.filters.Filter;
 import mnm.mods.tabbychat.api.filters.FilterSettings;
 import mnm.mods.tabbychat.util.Translation;
 import mnm.mods.util.Consumer;
-import mnm.mods.util.SettingValue;
 import mnm.mods.util.gui.GuiButton;
+import mnm.mods.util.gui.GuiCheckbox;
 import mnm.mods.util.gui.GuiGridLayout;
 import mnm.mods.util.gui.GuiLabel;
 import mnm.mods.util.gui.GuiPanel;
-import mnm.mods.util.gui.GuiSettingBoolean;
-import mnm.mods.util.gui.GuiSettingString;
+import mnm.mods.util.gui.GuiText;
 import mnm.mods.util.gui.events.ActionPerformed;
 import mnm.mods.util.gui.events.GuiEvent;
 import mnm.mods.util.gui.events.GuiKeyboardAdapter;
@@ -27,12 +26,12 @@ public class GuiFilterEditor extends GuiPanel implements GuiKeyboardAdapter {
     private Filter filter;
     private Consumer<Filter> consumer;
 
-    private GuiSettingString txtName;
-    private GuiSettingBoolean chkRemove;
-    private GuiSettingString txtDestinations;
-    private GuiSettingBoolean chkSound;
-    private GuiSettingString txtSound;
-    private GuiSettingString txtPattern;
+    private GuiText txtName;
+    private GuiCheckbox chkRemove;
+    private GuiText txtDestinations;
+    private GuiCheckbox chkSound;
+    private GuiText txtSound;
+    private GuiText txtPattern;
     private GuiLabel lblError;
 
     public GuiFilterEditor(Filter filter, Consumer<Filter> consumer) {
@@ -47,34 +46,33 @@ public class GuiFilterEditor extends GuiPanel implements GuiKeyboardAdapter {
                 new int[] { 8, 0, 1, 2 });
 
         this.addComponent(new GuiLabel(Translation.FILTER_NAME.translate()), new int[] { 1, 2, });
-        this.addComponent(
-                txtName = new GuiSettingString(new SettingValue<String>(filter.getName())),
-                new int[] { 5, 2, 10, 1 });
+        this.addComponent(txtName = new GuiText(), new int[] { 5, 2, 10, 1 });
+        txtName.setValue(filter.getName());
 
         this.addComponent(new GuiLabel(Translation.FILTER_DESTINATIONS.translate()),
                 new int[] { 1, 5 });
-        this.addComponent(txtDestinations = new GuiSettingString(new SettingValue<String>(
-                merge(filter.getSettings().getChannels()))), new int[] { 10, 5, 10, 1 });
+        this.addComponent(txtDestinations = new GuiText(), new int[] { 10, 5, 10, 1 });
+        txtDestinations.setValue(merge(filter.getSettings().getChannels()));
         txtDestinations.getTextField().setMaxStringLength(1000);
 
         this.addComponent(new GuiLabel(Translation.FILTER_HIDE.translate()), new int[] { 2, 7 });
-        this.addComponent(
-                chkRemove = new GuiSettingBoolean(new SettingValue<Boolean>(settings.isRemove())),
-                new int[] { 1, 7 });
+        this.addComponent(chkRemove = new GuiCheckbox(), new int[] { 1, 7 });
+        chkRemove.setValue(settings.isRemove());
 
         this.addComponent(new GuiLabel(Translation.FILTER_AUDIO_NOTIFY.translate()), new int[] { 2,
                 11 });
-        this.addComponent(
-                chkSound = new GuiSettingBoolean(new SettingValue<Boolean>(settings
-                        .isSoundNotification())), new int[] { 1, 11 });
-        this.addComponent(
-                txtSound = new GuiSettingString(new SettingValue<String>(settings.getSoundName())),
-                new int[] { 12, 11, 6, 1 }); // TODO presets
+        this.addComponent(chkSound = new GuiCheckbox(), new int[] { 1, 11 });
+        chkSound.setValue(settings.isSoundNotification());
+
+        // TODO presets
+        this.addComponent(txtSound = new GuiText(), new int[] { 12, 11, 6, 1 });
+        txtSound.setValue(settings.getSoundName());
 
         this.addComponent(new GuiLabel(Translation.FILTER_EXPRESSION.translate()),
                 new int[] { 1, 13 });
-        this.addComponent(txtPattern = new GuiSettingString(new SettingValue<String>(
-                pattern == null ? "" : pattern.toString())), new int[] { 8, 13, 12, 1 });
+        this.addComponent(txtPattern = new GuiText(), new int[] { 8, 13, 12, 1 });
+        txtPattern.setValue(pattern == null ? "" : pattern.toString());
+
         this.addComponent(lblError = new GuiLabel(""), new int[] { 6, 14 });
 
         GuiButton accept = new GuiButton(I18n.format("gui.done"));
