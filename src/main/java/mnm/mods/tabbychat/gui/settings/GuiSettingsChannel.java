@@ -112,7 +112,7 @@ public class GuiSettingsChannel extends SettingPanel<ChannelSettings> {
         return TabbyChat.getInstance().channelSettings;
     }
 
-    public class ChannelButton extends GuiButton {
+    public class ChannelButton extends GuiButton implements ActionPerformed {
 
         private Channel channel;
 
@@ -124,7 +124,6 @@ public class GuiSettingsChannel extends SettingPanel<ChannelSettings> {
 
         @Override
         public void action(GuiEvent event) {
-            super.action(event);
             select(channel);
         }
 

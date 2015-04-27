@@ -3,8 +3,6 @@ package mnm.mods.tabbychat.settings;
 import mnm.mods.util.Color;
 import mnm.mods.util.SettingValue;
 
-import com.google.gson.GsonBuilder;
-
 public class ColorSettings extends TabbySettings {
 
     public SettingValue<Color> chatBoxColor = new SettingValue<Color>(new Color(0, 0, 0, 127));
@@ -15,10 +13,5 @@ public class ColorSettings extends TabbySettings {
 
         registerSetting("chatBoxColor", chatBoxColor);
         registerSetting("chatTextColor", chatTextColor);
-    }
-
-    @Override
-    protected void setupGson(GsonBuilder builder) {
-        builder.registerTypeAdapter(Color.class, new Color.ColorAdapter());
     }
 }
