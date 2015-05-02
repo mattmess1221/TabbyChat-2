@@ -6,6 +6,7 @@ import java.util.List;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.util.Color;
 import mnm.mods.util.gui.GuiComponent;
+import mnm.mods.util.gui.GuiText;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiTextField;
@@ -14,19 +15,19 @@ public class TextBox extends GuiComponent {
 
     private FontRenderer fr = mc.fontRendererObj;
     // Dummy textField
-    private GuiTextField textField = new GuiTextField(0, fr, 0, 0, 0, 0);
+    private GuiText textField = new GuiText();
     private int cursorCounter;
 
     public TextBox() {
         super();
-        textField.setMaxStringLength(100);
+        textField.getTextField().setMaxStringLength(100);
         textField.setFocused(true);
-        textField.setCanLoseFocus(false);
+        textField.getTextField().setCanLoseFocus(false);
     }
 
     @Override
     public void onClosed() {
-        this.textField.setText("");
+        this.textField.setValue("");
         super.onClosed();
     }
 
@@ -48,6 +49,7 @@ public class TextBox extends GuiComponent {
             int yPos = 2;
             int counter = -1;
             List<String> list = getWrappedLines();
+            GuiTextField textField = this.textField.getTextField();
             int size = textField.getSelectedText().length();
             if (textField.getSelectionEnd() < textField.getCursorPosition()) {
                 size *= -1;
@@ -67,7 +69,7 @@ public class TextBox extends GuiComponent {
             }
 
             if (textField.getCursorPosition() + size < this.textField
-                    .getText().length()) {
+                    .getValue().length()) {
                 marker = '|';
             } else {
                 marker = '_';
@@ -81,6 +83,7 @@ public class TextBox extends GuiComponent {
         // selection
         boolean started = false;
         boolean ended = false;
+        GuiTextField textField = this.textField.getTextField();
 
         int yPos = 2;
         int pos = 0;
@@ -134,7 +137,7 @@ public class TextBox extends GuiComponent {
     }
 
     public List<String> getWrappedLines() {
-        return fr.listFormattedStringToWidth(textField.getText(), getBounds().width);
+        return fr.listFormattedStringToWidth(textField.getValue(), getBounds().width);
     }
 
     @Override
@@ -142,7 +145,7 @@ public class TextBox extends GuiComponent {
         return new Dimension(100, (fr.FONT_HEIGHT + 2) * getWrappedLines().size());
     }
 
-    public GuiTextField getTextField() {
+    public GuiText getTextField() {
         return textField;
     }
 
@@ -163,7 +166,7 @@ public class TextBox extends GuiComponent {
                 index += lines.get(i).length();
             }
             index += fr.trimStringToWidth(lines.get(row), col).length();
-            textField.setCursorPosition(index + 1);
+            textField.getTextField().setCursorPosition(index + 1);
         }
     }
 

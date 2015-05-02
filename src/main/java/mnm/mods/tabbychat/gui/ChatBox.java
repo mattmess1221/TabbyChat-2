@@ -171,8 +171,8 @@ public class ChatBox extends GuiPanel implements Chat, GuiMouseAdapter {
 
     @Override
     public void setActiveChannel(Channel channel) {
-        if (getChatInput().getTextField().getText().equals(active.getPrefix())) {
-            getChatInput().getTextField().setText(channel.getPrefix());
+        if (getChatInput().getTextField().getValue().equals(active.getPrefix())) {
+            getChatInput().getTextField().setValue(channel.getPrefix());
         }
         active.setActive(false);
         active = channel;

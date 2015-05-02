@@ -105,7 +105,12 @@ public class GuiNewChatTC extends GuiNewChat {
     }
 
     @Override
+    public int getChatHeight() {
+        return chatbox.getChatArea().getBounds().height;
+    }
+
+    @Override
     public int getChatWidth() {
-        return chatbox.getWidth();
+        return chatbox.getChatArea().getBounds().width;
     }
 }

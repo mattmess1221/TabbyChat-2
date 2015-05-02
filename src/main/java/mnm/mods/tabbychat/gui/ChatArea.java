@@ -43,11 +43,19 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, G
             // Scrolling
             int scroll = event.scroll;
             // One tick = 120
-            int div = 60;
-            if (GuiScreen.isShiftKeyDown()) {
-                div *= 3;
+            if (scroll != 0) {
+                if (scroll > 1) {
+                    scroll = 1;
+                }
+                if (scroll < -1) {
+                    scroll = -1;
+                }
+                if (GuiScreen.isShiftKeyDown()) {
+                    scroll *= 7;
+                }
+                scroll(scroll);
+
             }
-            scroll(scroll / div);
         }
     }
 
@@ -154,7 +162,7 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, G
 
     public void setScrollPos(int scroll) {
         List<Message> list = getChat(false);
-        scroll = Math.min(scroll, list.size() - (getBounds().height / mc.fontRendererObj.FONT_HEIGHT));
+        scroll = Math.min(scroll, list.size() - GuiNewChatTC.getInstance().getLineCount());
         scroll = Math.max(scroll, 0);
 
         this.scrollPos = scroll;
@@ -182,7 +190,7 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, G
                 int bottom = actual.y + (int) (getBounds().height * scale);
                 // The line to get
                 int linePos = (int) (Math.abs((clickY - (getBounds().height * scale) - actual.y
-                                + (bottom % size)) / (size + scale)));
+                        + (bottom % size)) / (size + scale)));
 
                 // Iterate through the chat component, stopping when the desired
                 // x is reached.
