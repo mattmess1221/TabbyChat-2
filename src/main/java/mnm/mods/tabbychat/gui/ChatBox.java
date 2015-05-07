@@ -1,5 +1,6 @@
 package mnm.mods.tabbychat.gui;
 
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.Map;
 import java.util.Set;
@@ -36,6 +37,9 @@ public class ChatBox extends GuiPanel implements Chat, GuiMouseAdapter {
     private Set<Channel> channels = Sets.newHashSet(ChatChannel.DEFAULT_CHANNEL);
     private Channel active = ChatChannel.DEFAULT_CHANNEL;
 
+    private Point drag;
+    private Rectangle tempbox;
+
     public ChatBox(Rectangle rect) {
         super();
         this.setLayout(new BorderLayout());
@@ -48,24 +52,32 @@ public class ChatBox extends GuiPanel implements Chat, GuiMouseAdapter {
 
     @Override
     public void accept(GuiMouseEvent event) {
-        if (event.event == GuiMouseEvent.DRAGGED) {
-            if (Mouse.isButtonDown(0)
-                    && (pnlTray.isHovered() || GuiScreen.isAltKeyDown())) {
-                ScaledResolution sr = new ScaledResolution(mc, mc.displayWidth,
-                        mc.displayHeight);
-                Rectangle bounds = getBounds();
-                int x, y;
-                x = (int) ((double) Mouse.getEventDX() / (double) sr.getScaleFactor());
-                y = (int) ((double) Mouse.getEventDY() / (double) sr.getScaleFactor());
-                bounds.x += x;
-                bounds.y -= y;
+        Rectangle bounds = getBounds();
+        float scale = getActualScale();
 
+        // divide by scale because smaller scales make the point movement larger
+        int x = (int) (event.position.x / scale);
+        int y = (int) (event.position.y / scale);
+
+        if (event.event == GuiMouseEvent.PRESSED) {
+            if (Mouse.isButtonDown(0) && (pnlTray.isHovered() || (GuiScreen.isAltKeyDown() && isHovered()))) {
+                drag = new Point(x, y);
+                tempbox = new Rectangle(bounds);
+            }
+        }
+
+        if (drag != null) {
+            if (event.event == GuiMouseEvent.RELEASED) {
                 // save bounds
                 AdvancedSettings sett = TabbyChat.getInstance().advancedSettings;
                 sett.chatX.setValue(bounds.x);
                 sett.chatY.setValue(bounds.y);
 
                 sett.saveSettingsFile();
+                drag = null;
+                tempbox = null;
+            } else if (event.event == GuiMouseEvent.DRAGGED) {
+                bounds.setLocation(tempbox.x + x - drag.x, tempbox.y + y - drag.y);
             }
         }
     }
@@ -92,6 +104,28 @@ public class ChatBox extends GuiPanel implements Chat, GuiMouseAdapter {
 
         GlStateManager.popMatrix();
 
+    }
+
+    @Override
+    public void updateComponent() {
+        Rectangle bounds = getBounds();
+        Point point = getActualPosition();
+        float scale = getActualScale();
+        ScaledResolution sr = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
+
+        int x = point.x;
+        int y = point.y;
+        int w = (int) (bounds.width * scale);
+        int h = (int) (bounds.height * scale);
+
+        x = Math.max(0, x);
+        x = Math.min(x, sr.getScaledWidth() - w);
+        y = Math.max(0, y);
+        y = Math.min(y, sr.getScaledHeight() - h);
+
+        bounds.x = (int) (x / scale);
+        bounds.y = (int) (y / scale);
+        super.updateComponent();
     }
 
     public int getWidth() {
@@ -136,6 +170,9 @@ public class ChatBox extends GuiPanel implements Chat, GuiMouseAdapter {
         if (channels.contains(channel) && !channel.equals(ChatChannel.DEFAULT_CHANNEL)) {
             channels.remove(channel);
             pnlTray.removeChannel(channel);
+        }
+        if (getActiveChannel() == channel) {
+            setActiveChannel(ChatChannel.DEFAULT_CHANNEL);
         }
     }
 

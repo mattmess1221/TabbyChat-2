@@ -18,7 +18,6 @@ public class ChatTray extends GuiPanel {
     private GuiPanel tabList = new GuiPanel(new FlowLayout());
     private GuiPanel controls = new GuiPanel(new FlowLayout());
 
-
     public ChatTray() {
         super(new BorderLayout());
         this.addComponent(tabList, BorderLayout.Position.WEST);

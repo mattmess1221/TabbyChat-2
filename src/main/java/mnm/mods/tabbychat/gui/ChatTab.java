@@ -36,6 +36,9 @@ public class ChatTab extends GuiButton implements GuiMouseAdapter {
             } else if (event.button == 1) {
                 // Open channel options
                 comp.getChannel().openSettings();
+            } else if (event.button == 2) {
+                // middle click
+                TabbyChat.getInstance().getChat().removeChannel(comp.getChannel());
             }
         }
     }
