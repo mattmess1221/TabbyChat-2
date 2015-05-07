@@ -3,9 +3,9 @@ package mnm.mods.tabbychat.gui;
 import java.awt.Dimension;
 import java.util.Iterator;
 
+import mnm.mods.tabbychat.ChatChannel;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
-import mnm.mods.tabbychat.util.ChatChannel;
 import mnm.mods.util.Color;
 import mnm.mods.util.gui.BorderLayout;
 import mnm.mods.util.gui.FlowLayout;

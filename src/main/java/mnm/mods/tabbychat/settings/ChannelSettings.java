@@ -3,9 +3,9 @@ package mnm.mods.tabbychat.settings;
 import java.lang.reflect.Type;
 import java.net.InetSocketAddress;
 
+import mnm.mods.tabbychat.ChatChannel;
+import mnm.mods.tabbychat.ChatChannel.ChannelMap;
 import mnm.mods.tabbychat.api.Channel;
-import mnm.mods.tabbychat.util.ChatChannel;
-import mnm.mods.tabbychat.util.ChatChannel.ChannelMap;
 import mnm.mods.util.SettingValue;
 
 import com.google.gson.GsonBuilder;

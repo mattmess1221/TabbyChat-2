@@ -19,7 +19,6 @@ public class ChatAddonAntiSpam implements ChannelListener {
 
         boolean enabled = TabbyChat.getInstance().generalSettings.antiSpam.getValue();
         double tolerance = TabbyChat.getInstance().generalSettings.antiSpamTolerance.getValue();
-        tolerance = Math.abs(tolerance - 1);
 
         if (enabled && event.id == 0) {
             Channel channel = event.channel;

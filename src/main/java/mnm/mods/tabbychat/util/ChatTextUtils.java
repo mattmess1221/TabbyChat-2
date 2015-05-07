@@ -3,6 +3,7 @@ package mnm.mods.tabbychat.util;
 import java.util.Iterator;
 import java.util.List;
 
+import mnm.mods.tabbychat.ChatMessage;
 import mnm.mods.tabbychat.api.Message;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;

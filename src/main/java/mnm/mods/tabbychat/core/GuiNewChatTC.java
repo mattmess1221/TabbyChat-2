@@ -3,12 +3,12 @@ package mnm.mods.tabbychat.core;
 import java.awt.Rectangle;
 import java.util.List;
 
+import mnm.mods.tabbychat.ChatChannel;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.listener.events.ChatMessageEvent.ChatRecievedEvent;
 import mnm.mods.tabbychat.gui.ChatBox;
 import mnm.mods.tabbychat.settings.AdvancedSettings;
-import mnm.mods.tabbychat.util.ChatChannel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiNewChat;
 import net.minecraft.util.IChatComponent;

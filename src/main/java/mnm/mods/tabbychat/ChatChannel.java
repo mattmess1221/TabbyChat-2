@@ -1,11 +1,10 @@
-package mnm.mods.tabbychat.util;
+package mnm.mods.tabbychat;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.Message;
 import mnm.mods.tabbychat.api.listener.events.MessageAddedToChannelEvent;

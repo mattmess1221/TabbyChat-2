@@ -1,11 +1,11 @@
-package mnm.mods.tabbychat.util;
+package mnm.mods.tabbychat;
 
 import java.util.Calendar;
 import java.util.Date;
 
-import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Message;
 import mnm.mods.tabbychat.settings.GeneralSettings;
+import mnm.mods.tabbychat.util.TimeStamps;
 import net.minecraft.client.gui.ChatLine;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;

@@ -4,13 +4,13 @@ import java.awt.Rectangle;
 import java.util.Map;
 import java.util.Set;
 
+import mnm.mods.tabbychat.ChatChannel;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.Chat;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.settings.AdvancedSettings;
 import mnm.mods.tabbychat.settings.ColorSettings;
-import mnm.mods.tabbychat.util.ChatChannel;
 import mnm.mods.util.gui.BorderLayout;
 import mnm.mods.util.gui.GuiPanel;
 import mnm.mods.util.gui.events.GuiMouseAdapter;
