@@ -16,8 +16,8 @@ import mnm.mods.tabbychat.core.api.TabbyAddonManager;
 import mnm.mods.tabbychat.core.api.TabbyEvents;
 import mnm.mods.tabbychat.filters.FilterAddon;
 import mnm.mods.tabbychat.gui.settings.GuiSettingsScreen;
-import mnm.mods.tabbychat.settings.ChannelSettings;
 import mnm.mods.tabbychat.settings.AdvancedSettings;
+import mnm.mods.tabbychat.settings.ChannelSettings;
 import mnm.mods.tabbychat.settings.ColorSettings;
 import mnm.mods.tabbychat.settings.GeneralSettings;
 import mnm.mods.tabbychat.settings.ServerSettings;
@@ -164,7 +164,6 @@ public abstract class TabbyChat extends TabbyAPI {
         } catch (Exception e) {
             LOGGER.fatal("Unable to hook into chat.  This is bad.", e);
         }
-        events.onJoinGame(address);
     }
 
     private void hookIntoChat(GuiIngame guiIngame) throws Exception {

@@ -1,6 +1,5 @@
 package mnm.mods.tabbychat.core.api;
 
-import java.net.SocketAddress;
 import java.util.List;
 
 import mnm.mods.tabbychat.api.AddonManager;
@@ -12,7 +11,6 @@ import mnm.mods.tabbychat.api.listener.events.ChatInitEvent;
 import mnm.mods.tabbychat.api.listener.events.ChatMessageEvent.ChatRecievedEvent;
 import mnm.mods.tabbychat.api.listener.events.ChatMessageEvent.ChatSentEvent;
 import mnm.mods.tabbychat.api.listener.events.MessageAddedToChannelEvent;
-import mnm.mods.tabbychat.api.listener.events.PostLoginEvent;
 import mnm.mods.util.gui.GuiComponent;
 import net.minecraft.client.gui.GuiButton;
 
@@ -59,14 +57,6 @@ public class TabbyEvents {
         List<ChatScreenListener> listeners = manager.getListenersOfType(ChatScreenListener.class);
         for (ChatScreenListener screen : listeners) {
             screen.actionPreformed(button);
-        }
-    }
-
-    public void onJoinGame(SocketAddress address) {
-        List<JoinGameListener> listeners = manager.getListenersOfType(JoinGameListener.class);
-        PostLoginEvent loginEvent = new PostLoginEvent(address);
-        for (JoinGameListener join : listeners) {
-            join.onJoinGame(loginEvent);
         }
     }
 
