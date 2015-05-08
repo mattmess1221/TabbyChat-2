@@ -19,6 +19,7 @@ import mnm.mods.util.gui.events.GuiMouseEvent;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.util.MathHelper;
 
 import org.lwjgl.input.Mouse;
 
@@ -118,13 +119,18 @@ public class ChatBox extends GuiPanel implements Chat, GuiMouseAdapter {
         int w = (int) (bounds.width * scale);
         int h = (int) (bounds.height * scale);
 
-        x = Math.max(0, x);
-        x = Math.min(x, sr.getScaledWidth() - w);
-        y = Math.max(0, y);
-        y = Math.min(y, sr.getScaledHeight() - h);
+        int x1 = x;
+        int y1 = y;
 
-        bounds.x = (int) (x / scale);
-        bounds.y = (int) (y / scale);
+        x1 = Math.max(0, x1);
+        x1 = Math.min(x1, sr.getScaledWidth() - w);
+        y1 = Math.max(0, y1);
+        y1 = Math.min(y1, sr.getScaledHeight() - h);
+
+        if (x1 != x || y1 != y) {
+            bounds.x = MathHelper.ceiling_double_int(x1 / scale);
+            bounds.y = MathHelper.ceiling_double_int(y1 / scale);
+        }
         super.updateComponent();
     }
 
