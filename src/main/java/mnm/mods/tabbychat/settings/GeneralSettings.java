@@ -17,7 +17,7 @@ public class GeneralSettings extends TabbySettings {
     public SettingValue<EnumChatFormatting> timestampColor = new SettingValue<EnumChatFormatting>(
             EnumChatFormatting.WHITE);
     public SettingValue<Boolean> antiSpam = new SettingValue<Boolean>(false);
-    public SettingValue<Double> antiSpamTolerance = new SettingValue<Double>(0.05);
+    public SettingValue<Double> antiSpamPrejudice = new SettingValue<Double>(0D);
     public SettingValue<Boolean> unreadFlashing = new SettingValue<Boolean>(true);
     public SettingValue<Boolean> checkUpdates = new SettingValue<Boolean>(true);
 
@@ -30,7 +30,7 @@ public class GeneralSettings extends TabbySettings {
         registerSetting("timestampStyle", timestampStyle);
         registerSetting("timestampColor", timestampColor);
         registerSetting("antiSpam", antiSpam);
-        registerSetting("spamTolerance", antiSpamTolerance);
+        registerSetting("spamPrejudice", antiSpamPrejudice);
         registerSetting("unreadFlashing", unreadFlashing);
         registerSetting("checkUpdates", checkUpdates);
     }

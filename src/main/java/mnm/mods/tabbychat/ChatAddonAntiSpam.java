@@ -18,7 +18,7 @@ public class ChatAddonAntiSpam implements ChannelListener {
     public void onMessageAdded(MessageAddedToChannelEvent event) {
 
         boolean enabled = TabbyChat.getInstance().generalSettings.antiSpam.getValue();
-        double tolerance = TabbyChat.getInstance().generalSettings.antiSpamTolerance.getValue();
+        double prejudice = TabbyChat.getInstance().generalSettings.antiSpamPrejudice.getValue();
 
         if (enabled && event.id == 0) {
             Channel channel = event.channel;
@@ -29,7 +29,7 @@ public class ChatAddonAntiSpam implements ChannelListener {
             }
             String chat = event.chat.getUnformattedText();
 
-            if (getDifference(chat, counter.lastMessage) <= tolerance) {
+            if (getDifference(chat, counter.lastMessage) <= prejudice) {
                 counter.spamCounter++;
                 event.chat.appendText(" [" + counter.spamCounter + "x]");
                 channel.removeMessageAt(0);
@@ -51,6 +51,9 @@ public class ChatAddonAntiSpam implements ChannelListener {
 
     private double getDifference(String s1, String s2) {
         double avgLen = (s1.length() + s2.length()) / 2D;
+        if (avgLen == 0) {
+            return 0;
+        }
         return StringUtils.getLevenshteinDistance(s1.toLowerCase(), s2.toLowerCase()) / avgLen;
     }
 }

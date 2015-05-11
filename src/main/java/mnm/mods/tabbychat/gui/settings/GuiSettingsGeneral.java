@@ -48,7 +48,7 @@ public class GuiSettingsGeneral extends SettingPanel<GeneralSettings> {
         addComponent(new GuiSettingBoolean(sett.antiSpam), new int[] { 1, 9 });
 
         addComponent(new GuiLabel(Translation.SPAM_TOLERANCE.toString()), new int[] { 3, 11 });
-        GuiSettingDouble nud = new GuiSettingDouble(sett.antiSpamTolerance);
+        GuiSettingDouble nud = new GuiSettingDouble(sett.antiSpamPrejudice);
         nud.getNumUpDown().setMin(0);
         nud.getNumUpDown().setMax(1);
         nud.getNumUpDown().setInterval(0.05);
