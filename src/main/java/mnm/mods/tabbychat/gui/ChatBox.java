@@ -84,18 +84,32 @@ public class ChatBox extends GuiPanel implements Chat, GuiMouseAdapter {
     }
 
     @Override
+    public int getForeColor() {
+        return colors.chatTextColor.getValue().getColor();
+    }
+
+    @Override
+    public int getBackColor() {
+        return colors.chatBoxColor.getValue().getColor();
+    }
+
+    @Override
+    public float getScale() {
+        return GuiNewChatTC.getInstance().getChatScale();
+    }
+
+    @Override
     public void drawComponent(int mouseX, int mouseY) {
 
-        this.setForeColor(colors.chatTextColor.getValue().getColor());
-        this.setBackColor(colors.chatBoxColor.getValue().getColor());
-        setScale(GuiNewChatTC.getInstance().getChatScale());
         float scale = getScale();
 
         GlStateManager.pushMatrix();
-        // Reset the matrix so we can have a clean slate
+        // Reset the matrix so it can have a clean slate
         GlStateManager.loadIdentity();
         // Translate it so everything's drawn correctly
         GlStateManager.translate(0f, 0f, -2000f);
+        // Go up some more so it's in front of the hotbar.
+        GlStateManager.translate(0, 0, 0x97);
         // Scale it accordingly
         GlStateManager.scale(scale, scale, 1.0F);
 
