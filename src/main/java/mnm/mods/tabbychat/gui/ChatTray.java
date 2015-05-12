@@ -20,7 +20,7 @@ public class ChatTray extends GuiPanel {
 
     public ChatTray() {
         super(new BorderLayout());
-        this.addComponent(tabList, BorderLayout.Position.WEST);
+        this.addComponent(tabList, BorderLayout.Position.CENTER);
         this.addComponent(controls, BorderLayout.Position.EAST);
         addChannel(ChatChannel.DEFAULT_CHANNEL);
         ChatChannel.DEFAULT_CHANNEL.setActive(true);
@@ -70,6 +70,6 @@ public class ChatTray extends GuiPanel {
 
     @Override
     public Dimension getMinimumSize() {
-        return new Dimension(getParent().getBounds().width, 15);
+        return tabList.getLayout().getLayoutSize();
     }
 }
