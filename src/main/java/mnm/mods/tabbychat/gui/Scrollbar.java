@@ -28,6 +28,7 @@ public class Scrollbar extends GuiComponent {
             int pos = (int) (perc * max);
 
             Gui.drawRect(0, pos, 1, pos + size, -1);
+            super.drawComponent(mouseX, mouseY);
         }
     }
 

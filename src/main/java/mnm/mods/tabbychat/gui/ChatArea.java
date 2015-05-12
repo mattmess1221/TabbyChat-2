@@ -85,6 +85,7 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, G
                 drawChatLine(line, xPos, yPos);
             }
         }
+        super.drawComponent(mouseX, mouseY);
     }
 
     private void drawChatLine(Message line, int xPos, int yPos) {

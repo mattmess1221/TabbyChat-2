@@ -38,6 +38,7 @@ public class TextBox extends GuiComponent {
             drawText();
             drawCursor();
             drawBorders(0, 0, getBounds().width, getBounds().height);
+            super.drawComponent(mouseX, mouseY);
         }
     }
 

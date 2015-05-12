@@ -23,22 +23,31 @@ tabbychat.settings.colors=Colors
 tabbychat.settings.advanced=Advanced
 
 tabbychat.settings.general.logChat=Log Chat
+tabbychat.settings.general.logChat.desc=Logs incoming chat to the logs
 tabbychat.settings.general.splitLog=Split log
+tabbychat.settings.general.splitLog.desc=Splits the log by channel. Has no\neffect if chat logging is disabled.
 tabbychat.settings.general.timestamp=Timestamp Chat
 tabbychat.settings.general.timestamp.style=Style
 tabbychat.settings.general.timestamp.color=Color
 tabbychat.settings.general.antispam=Anti Spam
-tabbychat.settings.general.antispam.tolerance=Tolerance
-
+tabbychat.settings.general.antispam.desc=Suppresses spammed chat
+tabbychat.settings.general.antispam.prejudice=Prejudice
+tabbychat.settings.general.antispam.prejudice.desc=How different 2 messages can be to count as spam.
 tabbychat.settings.general.unreadFlashing=Unread Flashing
 tabbychat.settings.general.checkUpdates=Check for Updates
 
 tabbychat.settings.server.channelsEnabled=Enable Channels
+tabbychat.settings.server.channelsEnabled.desc=Parse chat for new channels
 tabbychat.settings.server.pmEnabled=Enable Messages
+tabbychat.settings.server.pmEnabled.desc=Parse chat for new PMs
 tabbychat.settings.server.channelPattern=Channel Pattern
+tabbychat.settings.server.channelPattern.desc=Preset or custom patterns to match channels
 tabbychat.settings.server.messagePattern=Message Pattern
+tabbychat.settings.server.messagePattern.desc=Preset or custom patterns to match PMs
 tabbychat.settings.server.ignoredChannels=Ignored Channels
+tabbychat.settings.server.ignoredChannels.desc=Channels to ignore. Unimplemented
 tabbychat.settings.server.defaultChannels=Default Channels
+tabbychat.settings.server.defaultChannels.desc=Channels to start with. Unimplemented
 tabbychat.settings.server.filters=Filters
 tabbychat.settings.server.filters.new=New
 
