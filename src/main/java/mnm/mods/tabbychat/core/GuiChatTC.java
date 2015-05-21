@@ -291,7 +291,7 @@ public class GuiChatTC extends GuiChat {
     private void sendAutocompleteRequest(String word, String s1) {
         if (word.length() >= 1) {
             // Forge auto complete
-            ForgeClientCommands.autoComplete(word, s1);
+            ForgeClientCommands.getInstance().autoComplete(word, s1);
 
             BlockPos blockpos = null;
             if (this.mc.objectMouseOver != null
@@ -311,7 +311,7 @@ public class GuiChatTC extends GuiChat {
             this.foundPlayerNames.clear();
 
             // Forge auto complete
-            String[] complete = ForgeClientCommands.getLatestAutoComplete();
+            String[] complete = ForgeClientCommands.getInstance().getLatestAutoComplete();
             if (complete != null) {
                 array = ObjectArrays.concat(complete, array, String.class);
             }

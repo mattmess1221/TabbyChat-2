@@ -1,1 +1,3 @@
 include 'MnM-Utils'
+include 'TabbyChat-API'
+include 'TabbyChat-Forge'

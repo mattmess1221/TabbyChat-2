@@ -1,4 +1,4 @@
-package mnm.mods.tabbychat.fml;
+package mnm.mods.tabbychat.forge;
 
 import java.io.File;
 import java.net.SocketAddress;
@@ -24,6 +24,7 @@ public class FMLTabbyChat extends TabbyChat {
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         tempDir = event.getModConfigurationDirectory();
+        ForgeCommandsImpl.setInstance();
     }
 
     @EventHandler

@@ -1,0 +1,15 @@
+apply plugin: 'net.minecrell.vanilla.base'
+apply from: project(':MnM-Utils').file('gradle/minecraft.gradle')
+
+version = project(':').version
+group = "mnm.mods"
+
+// disable reobfuscation
+reobf.onlyIf { false }
+
+dependencies{
+    // Add util library
+    compile project(":MnM-Utils")
+}
+jar.classifier "api"
+
