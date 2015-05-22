@@ -53,6 +53,5 @@ task jarDev(type:Jar) {
     classifier "dev"
 }
 artifacts.archives jarDev
-reobf.setSrgMcp()
 // disable eclipse
 tasks.findAll{task -> task.name.contains('eclipse')}.each {task -> task.enabled = false}
