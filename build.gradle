@@ -16,7 +16,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecrell:VanillaGradle:1.0.1-SNAPSHOT'
+        classpath 'net.minecrell:VanillaGradle:1.0.2-SNAPSHOT'
     }
 }
 allprojects {
