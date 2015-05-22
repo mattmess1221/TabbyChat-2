@@ -19,40 +19,40 @@ buildscript {
         classpath 'net.minecrell:VanillaGradle:1.0.1-SNAPSHOT'
     }
 }
+allprojects {
+    apply plugin: 'java' // make sure all the projects have their tasks
+    version = "$versionMajor.$versionMinor.$versionRevision-beta2-SNAPSHOT"
+    group = "mnm.mods"
+}
+
+ext.utils = rootProject.project(':MnM-Utils')
+ext.api = rootProject.project(':TabbyChat-API')
+ext.forge = rootProject.project(':TabbyChat-Forge')
+ext.common = rootProject.project(':TabbyChat-Common')
 
 apply plugin: 'net.minecrell.vanilla.base'
-
-apply from: project(':MnM-Utils').file('gradle/minecraft.gradle')
+apply from: utils.file('gradle/minecraft.gradle')
 
 archivesBaseName = "TabbyChat"
-version = "$versionMajor.$versionMinor.$versionRevision-beta2-SNAPSHOT"
-group = "mnm.mods"
 
-// Replace the version string
-minecraft.replace "@VERSION@", project.version
-
-System.out.println()
-System.out.println("$archivesBaseName $version for Minecraft ${minecraft.version}")
-System.out.println()
-
-dependencies {
-    // Add util library
-    compile project(':TabbyChat-API')
-}
 jar {
-    from project(':TabbyChat-API').sourceSets.main.output
-    from project(':TabbyChat-Forge').sourceSets.main.output
+    from api.sourceSets.main.output
+    from common.sourceSets.main.output
+    from forge.sourceSets.main.output
+
     manifest {
         attributes "ModType":"FML,LiteLoader"
         attributes "ModSide":"CLIENT"
     }
 }
 task jarDev(type:Jar) {
-    from sourceSets.main.output
-    from project(':TabbyChat-API').sourceSets.main.output
-    from project(':TabbyChat-Forge').sourceSets.main.output
+    from api.sourceSets.main.output
+    from common.sourceSets.main.output
+    from forge.sourceSets.main.output
 
     classifier "dev"
 }
-
 artifacts.archives jarDev
+reobf.setSrgMcp()
+// disable eclipse
+tasks.findAll{task -> task.name.contains('eclipse')}.each {task -> task.enabled = false}

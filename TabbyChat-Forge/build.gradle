@@ -1,9 +1,5 @@
 apply plugin: 'forge'
-apply from: project(':MnM-Utils').file('gradle/minecraft.gradle')
-
-version = project(':').version
-group = "mnm.mods"
-
+apply from: utils.file('gradle/minecraft.gradle')
 configurations.compile {
 	exclude group: "org.scala-lang"
 	exclude group: "org.scala-lang.plugins"
@@ -12,5 +8,5 @@ configurations.compile {
 }
 dependencies{
     // root project
-    compile project(':')
+    compile common
 }

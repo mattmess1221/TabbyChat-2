@@ -1,10 +1,10 @@
 apply plugin: 'net.minecrell.vanilla.base'
 apply from: utils.file('gradle/minecraft.gradle')
-// disable reobfuscation
-reobf.onlyIf { false }
 
-dependencies{
+// Replace the version string
+minecraft.replace "@VERSION@", project.version
+
+dependencies {
     // Add util library
-    compile utils
+    compile api
 }
-jar.classifier "api"
