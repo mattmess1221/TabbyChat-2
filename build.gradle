@@ -35,6 +35,9 @@ apply from: utils.file('gradle/minecraft.gradle')
 
 archivesBaseName = "TabbyChat"
 
+// troublesome. SpecialSource thinks drawCenteredString belongs to ChatTab
+minecraft.srgExtra "MD: mnm/mods/tabbychat/gui/ChatTab/drawCenteredString (Lnet/minecraft/client/gui/FontRenderer;Ljava/lang/String;III)V bub/a (Lbty;Ljava/lang/String;III)V"
+
 jar {
     from api.sourceSets.main.output
     from common.sourceSets.main.output
