@@ -1,4 +1,4 @@
-package mnm.mods.tabbychat;
+package mnm.mods.tabbychat.extra;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
 
+import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.listener.ChatRecievedListener;
 import mnm.mods.tabbychat.api.listener.events.ChatMessageEvent.ChatRecievedEvent;
 import mnm.mods.util.IPUtils;

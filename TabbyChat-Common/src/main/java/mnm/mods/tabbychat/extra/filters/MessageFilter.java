@@ -1,4 +1,4 @@
-package mnm.mods.tabbychat.filters;
+package mnm.mods.tabbychat.extra.filters;
 
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;

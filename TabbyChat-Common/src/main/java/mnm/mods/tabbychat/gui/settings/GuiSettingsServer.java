@@ -2,8 +2,8 @@ package mnm.mods.tabbychat.gui.settings;
 
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.filters.Filter;
-import mnm.mods.tabbychat.filters.ChatFilter;
-import mnm.mods.tabbychat.filters.GuiFilterEditor;
+import mnm.mods.tabbychat.extra.filters.ChatFilter;
+import mnm.mods.tabbychat.extra.filters.GuiFilterEditor;
 import mnm.mods.tabbychat.settings.ServerSettings;
 import mnm.mods.tabbychat.util.ChannelPatterns;
 import mnm.mods.tabbychat.util.MessagePatterns;

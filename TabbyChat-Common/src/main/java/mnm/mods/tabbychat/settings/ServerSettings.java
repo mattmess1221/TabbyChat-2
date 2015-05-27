@@ -2,7 +2,7 @@ package mnm.mods.tabbychat.settings;
 
 import java.net.InetSocketAddress;
 
-import mnm.mods.tabbychat.filters.ChatFilter.FilterList;
+import mnm.mods.tabbychat.extra.filters.ChatFilter.FilterList;
 import mnm.mods.tabbychat.util.ChannelPatterns;
 import mnm.mods.tabbychat.util.FormattingSerializer;
 import mnm.mods.tabbychat.util.MessagePatterns;

@@ -1,7 +1,8 @@
-package mnm.mods.tabbychat;
+package mnm.mods.tabbychat.extra;
 
 import java.util.Map;
 
+import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.listener.ChannelListener;
 import mnm.mods.tabbychat.api.listener.events.MessageAddedToChannelEvent;

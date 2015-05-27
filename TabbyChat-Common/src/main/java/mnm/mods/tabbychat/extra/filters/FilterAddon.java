@@ -1,4 +1,4 @@
-package mnm.mods.tabbychat.filters;
+package mnm.mods.tabbychat.extra.filters;
 
 import java.util.List;
 
@@ -7,9 +7,9 @@ import mnm.mods.tabbychat.api.AddonManager;
 import mnm.mods.tabbychat.api.TabbyAPI;
 import mnm.mods.tabbychat.api.listener.ChatRecievedListener;
 import mnm.mods.tabbychat.api.listener.events.ChatMessageEvent.ChatRecievedEvent;
-import mnm.mods.tabbychat.filters.ChannelFilter.ChannelAction;
-import mnm.mods.tabbychat.filters.ChatFilter.DefaultAction;
-import mnm.mods.tabbychat.filters.MessageFilter.MessageAction;
+import mnm.mods.tabbychat.extra.filters.ChannelFilter.ChannelAction;
+import mnm.mods.tabbychat.extra.filters.ChatFilter.DefaultAction;
+import mnm.mods.tabbychat.extra.filters.MessageFilter.MessageAction;
 import mnm.mods.tabbychat.settings.ServerSettings;
 
 public class FilterAddon implements ChatRecievedListener {
