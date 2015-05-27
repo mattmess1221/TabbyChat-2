@@ -1,0 +1,11 @@
+apply plugin: 'net.minecrell.vanilla.base'
+apply from: utils.file('gradle/minecraft.gradle')
+
+// Replace the version string
+minecraft.replace "@VERSION@", project.version
+
+dependencies {
+    // Add util library
+    compile utils
+    compile api
+}

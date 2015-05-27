@@ -1,0 +1,13 @@
+apply plugin: 'forge'
+apply from: utils.file('gradle/minecraft.gradle')
+configurations.compile {
+	exclude group: "org.scala-lang"
+	exclude group: "org.scala-lang.plugins"
+	exclude group: "com.typesafe"
+	exclude group: "com.typesafe.akka"
+}
+dependencies {
+    compile utils
+    compile api
+    compile common
+}

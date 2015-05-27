@@ -9,79 +9,56 @@ buildscript {
             name = "sonatype"
             url = "https://oss.sonatype.org/content/repositories/snapshots/"
         }
+        maven {
+            // for the vanilla plugin
+            name = "minecrell"
+            url = "http://repo.minecrell.net/snapshots"
+        }
     }
-    dependencies.classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+    dependencies {
+        classpath 'net.minecrell:VanillaGradle:1.0.2-SNAPSHOT'
+    }
+}
+ext.utils = rootProject.project(':MnM-Utils')
+ext.api = rootProject.project(':TabbyChat-API')
+ext.forge = rootProject.project(':TabbyChat-Forge')
+ext.common = rootProject.project(':TabbyChat-Common')
+
+evaluationDependsOnChildren()
+allprojects {
+    version = "$versionMajor.$versionMinor.$versionRevision-beta2-SNAPSHOT"
+    group = "mnm.mods"
 }
 
-apply plugin: 'forge'
+apply plugin: 'net.minecrell.vanilla.base'
+apply from: utils.file('gradle/minecraft.gradle')
 
 archivesBaseName = "TabbyChat"
-version = "$versionMajor.$versionMinor.$versionRevision-beta2-SNAPSHOT"
-group = "mnm.mods"
 
-configurations.compile {
-    exclude group: "org.scala-lang"
-    exclude group: "org.scala-lang.plugins"
-    exclude group: "com.typesafe"
-    exclude group: "com.typesafe.akka"
+minecraft{
+    // troublesome. SpecialSource is getting owners wrong
+    srgExtra "MD: mnm/mods/tabbychat/gui/ChatTab/drawCenteredString (Lnet/minecraft/client/gui/FontRenderer;Ljava/lang/String;III)V bub/a (Lbty;Ljava/lang/String;III)V"
+    srgExtra "MD: mnm/mods/tabbychat/gui/settings/GuiSettingsScreen/drawScreen (IIF)V bxf/a (IIF)V"
+    srgExtra "MD: mnm/mods/tabbychat/gui/settings/GuiSettingsScreen/initGui ()V bxf/b ()V"
+    srgExtra "MD: mnm/mods/util/gui/ComponentScreen/drawScreen (IIF)V bxf/a (IIF)V"
 }
+jar {
+    from api.sourceSets.main.output
+    from common.sourceSets.main.output
+    from forge.sourceSets.main.output
 
-minecraft {
-    version = "$mcversion-$fmlversion"
-    mappings = "stable_15"
-    runDir = "run"
-    // Replace the version string
-    replace "@VERSION@", project.version
-}
-reobf.setSrgMcp()
-
-processResources{
-    // this will ensure that this task is redone when the versions change.
-    inputs.property "version", project.version
-    inputs.property "mcversion", project.minecraft.version
-    inputs.property "revision", versionBuild
-
-    // replace stuff in mcmod.info, nothing else
-    from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info', 'litemod.json'
-
-        // replace version and mcversion
-        expand 'version':project.version, 'mcversion':project.minecraft.version, 'revision':versionBuild
-    }
-
-    // copy everything else, thats not the mcmod.info
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
-        exclude 'litemod.json'
-    }
-}
-
-System.out.println()
-System.out.println("$archivesBaseName $version for Minecraft ${minecraft.version}")
-System.out.println()
-
-dependencies{
-    // Add util library
-    compile project(":MnM-Utils")
-}
-jar{
-    from sourceSets.api.output
-    manifest{
+    manifest {
         attributes "ModType":"FML,LiteLoader"
         attributes "ModSide":"CLIENT"
     }
 }
-task jarAPI(type:Jar){
-    from sourceSets.api.output
-    classifier "api"
-}
-task jarDev(type:Jar){
-    from sourceSets.main.output
-    from sourceSets.api.output
+task jarDev(type:Jar) {
+    from api.sourceSets.main.output
+    from common.sourceSets.main.output
+    from forge.sourceSets.main.output
 
     classifier "dev"
 }
-artifacts{
-    archives jarAPI
-    archives jarDev
-}
+artifacts.archives jarDev
+// disable eclipse
+tasks.findAll{task -> task.name.contains('eclipse')}.each {task -> task.enabled = false}

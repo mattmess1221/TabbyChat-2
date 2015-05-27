@@ -8,6 +8,7 @@
 .settings/
 
 # IntelliJ
+.idea/
 *.iml
 *.ipr
 *.iws

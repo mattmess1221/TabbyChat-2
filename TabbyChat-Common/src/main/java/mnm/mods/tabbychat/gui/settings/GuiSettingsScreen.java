@@ -17,6 +17,7 @@ import mnm.mods.util.gui.events.ActionPerformed;
 import mnm.mods.util.gui.events.GuiEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiScreen;
 
 import com.google.common.collect.Lists;
 
@@ -42,7 +43,8 @@ public class GuiSettingsScreen extends ComponentScreen {
         getPanel().addComponent(panel = new GuiPanel());
         panel.setLayout(new BorderLayout());
         panel.setSize(300, 200);
-        panel.setPosition(width / 2 - panel.getBounds().width / 2, height / 2
+        // redundant casting for reobfuscation
+        panel.setPosition(((GuiScreen) this).width / 2 - panel.getBounds().width / 2, ((GuiScreen) this).height / 2
                 - panel.getBounds().height / 2);
         panel.addComponent(settingsList = new GuiPanel(new VerticalLayout()),
                 BorderLayout.Position.WEST);
@@ -160,10 +162,5 @@ public class GuiSettingsScreen extends ComponentScreen {
         if (!GuiSettingsScreen.settings.contains(settings)) {
             GuiSettingsScreen.settings.add(settings);
         }
-    }
-
-    @Override
-    public boolean doesGuiPauseGame() {
-        return true;
     }
 }
