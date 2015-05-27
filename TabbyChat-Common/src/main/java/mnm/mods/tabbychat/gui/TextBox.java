@@ -10,6 +10,7 @@ import mnm.mods.util.gui.GuiText;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.util.MathHelper;
 
 public class TextBox extends GuiComponent {
 
@@ -20,7 +21,7 @@ public class TextBox extends GuiComponent {
 
     public TextBox() {
         super();
-        textField.getTextField().setMaxStringLength(100);
+        textField.getTextField().setMaxStringLength(300);
         textField.setFocused(true);
         textField.getTextField().setCanLoseFocus(false);
     }
@@ -118,6 +119,12 @@ public class TextBox extends GuiComponent {
                 pos++;
             }
             yPos += fr.FONT_HEIGHT + 2;
+        }
+        // write the num of sends
+        int size = MathHelper.ceiling_double_int(textField.getText().length() / 100D);
+        if (size > 0) {
+            int sizeW = fr.getStringWidth(size + "");
+            fr.drawString(size + "", getBounds().width - sizeW, 2, 0x666666);
         }
     }
 

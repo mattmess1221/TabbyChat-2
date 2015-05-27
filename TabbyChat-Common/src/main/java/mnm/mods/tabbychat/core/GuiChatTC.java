@@ -6,6 +6,7 @@ import java.util.List;
 
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.gui.ChatBox;
+import mnm.mods.tabbychat.util.BackgroundChatThread;
 import mnm.mods.tabbychat.util.ForgeClientCommands;
 import mnm.mods.util.gui.GuiComponent;
 import mnm.mods.util.gui.GuiText;
@@ -21,6 +22,7 @@ import net.minecraft.util.IChatComponent;
 import net.minecraft.util.MovingObjectPosition;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.input.Keyboard;
 
 import com.google.common.collect.Lists;
@@ -213,11 +215,15 @@ public class GuiChatTC extends GuiChat {
         // send the outbound message to ChatSent modules.
         message = tc.getEventManager().onChatSent(message);
 
-        if (message != null && !message.isEmpty()) {
-            this.sendChatMessage(message);
-            this.sentHistoryIndex = chatGui.getSentMessages().size();
-            this.sentHistoryBuffer = "";
-        }
+        String[] toSend = processSends(message);
+        long wait = 500; // wait half a second TODO configure
+        new BackgroundChatThread(this, toSend, wait).start();
+
+        // add to sent chat manually
+        chatGui.addToSentMessages(message);
+        this.sentHistoryIndex = chatGui.getSentMessages().size();
+        this.sentHistoryBuffer = "";
+
         chatGui.resetScroll();
         textBox.setValue("");
 
@@ -226,6 +232,35 @@ public class GuiChatTC extends GuiChat {
         } else {
             this.textBox.setValue("");
         }
+    }
+
+    private String[] processSends(String msg) {
+        if (StringUtils.isEmpty(msg)) {
+            return null;
+        }
+        String prefix = chatbox.getActiveChannel().getPrefix();
+        boolean hidden = chatbox.getActiveChannel().isPrefixHidden();
+        String[] sends = WordUtils.wrap(msg, 100).split("\n");
+
+        // limit commands to 1 send.
+        if (sends[0].startsWith("/")
+                && !StringUtils.isEmpty(prefix)
+                && !sends[0].startsWith(prefix)) {
+            return new String[] { sends[0] };
+        }
+        if (StringUtils.isEmpty(prefix)) {
+            return sends;
+        }
+
+        for (int i = 0; i < sends.length; i++) {
+            if (i == 0 && !hidden) {
+                continue;
+            }
+            sends[i] = prefix + " " + sends[i];
+        }
+
+        return sends;
+
     }
 
     private String getCleanText(String dirty) {
