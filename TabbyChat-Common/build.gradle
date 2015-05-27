@@ -6,5 +6,6 @@ minecraft.replace "@VERSION@", project.version
 
 dependencies {
     // Add util library
+    compile utils
     compile api
 }

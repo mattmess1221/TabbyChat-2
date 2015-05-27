@@ -6,7 +6,8 @@ configurations.compile {
 	exclude group: "com.typesafe"
 	exclude group: "com.typesafe.akka"
 }
-dependencies{
-    // root project
+dependencies {
+    compile utils
+    compile api
     compile common
 }

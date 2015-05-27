@@ -19,16 +19,16 @@ buildscript {
         classpath 'net.minecrell:VanillaGradle:1.0.2-SNAPSHOT'
     }
 }
-allprojects {
-    apply plugin: 'java' // make sure all the projects have their tasks
-    version = "$versionMajor.$versionMinor.$versionRevision-beta2-SNAPSHOT"
-    group = "mnm.mods"
-}
-
 ext.utils = rootProject.project(':MnM-Utils')
 ext.api = rootProject.project(':TabbyChat-API')
 ext.forge = rootProject.project(':TabbyChat-Forge')
 ext.common = rootProject.project(':TabbyChat-Common')
+
+evaluationDependsOnChildren()
+allprojects {
+    version = "$versionMajor.$versionMinor.$versionRevision-beta2-SNAPSHOT"
+    group = "mnm.mods"
+}
 
 apply plugin: 'net.minecrell.vanilla.base'
 apply from: utils.file('gradle/minecraft.gradle')
