@@ -1,4 +1,5 @@
 apply plugin: 'net.minecrell.vanilla.base'
+version = rootProject.version
 apply from: utils.file('gradle/minecraft.gradle')
 
 // Replace the version string

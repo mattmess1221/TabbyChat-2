@@ -24,23 +24,19 @@ ext.api = rootProject.project(':TabbyChat-API')
 ext.forge = rootProject.project(':TabbyChat-Forge')
 ext.common = rootProject.project(':TabbyChat-Common')
 
-evaluationDependsOnChildren()
-allprojects {
-    version = "$versionMajor.$versionMinor.$versionRevision-beta2-SNAPSHOT"
-    group = "mnm.mods"
-}
-
-apply plugin: 'net.minecrell.vanilla.base'
+apply plugin: 'forge'
+version = "$versionMajor.$versionMinor.$versionRevision-beta2-SNAPSHOT"
 apply from: utils.file('gradle/minecraft.gradle')
+
+group = "mnm.mods"
+
+evaluationDependsOnChildren()
 
 archivesBaseName = "TabbyChat"
 
-minecraft{
-    // troublesome. SpecialSource is getting owners wrong
-    srgExtra "MD: mnm/mods/tabbychat/gui/ChatTab/drawCenteredString (Lnet/minecraft/client/gui/FontRenderer;Ljava/lang/String;III)V bub/a (Lbty;Ljava/lang/String;III)V"
-    srgExtra "MD: mnm/mods/tabbychat/gui/settings/GuiSettingsScreen/drawScreen (IIF)V bxf/a (IIF)V"
-    srgExtra "MD: mnm/mods/tabbychat/gui/settings/GuiSettingsScreen/initGui ()V bxf/b ()V"
-    srgExtra "MD: mnm/mods/util/gui/ComponentScreen/drawScreen (IIF)V bxf/a (IIF)V"
+dependencies {
+    // for the runClient
+    compile utils
 }
 jar {
     from api.sourceSets.main.output
@@ -62,3 +58,5 @@ task jarDev(type:Jar) {
 artifacts.archives jarDev
 // disable eclipse
 tasks.findAll{task -> task.name.contains('eclipse')}.each {task -> task.enabled = false}
+// disable runs in subprojects
+subprojects {tasks.findAll {it.name.startsWith 'run'}.each {it.enabled = false}}

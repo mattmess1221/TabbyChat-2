@@ -8,12 +8,18 @@ import mnm.mods.tabbychat.util.TabbyRef;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.network.NetHandlerPlayClient;
+import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.client.resources.IResourcePack;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.play.server.S01PacketJoinGame;
 
 import com.mojang.realmsclient.dto.RealmsServer;
 import com.mumfrey.liteloader.JoinGameListener;
 import com.mumfrey.liteloader.RenderListener;
+import com.mumfrey.liteloader.common.Resources;
+import com.mumfrey.liteloader.core.LiteLoader;
+import com.mumfrey.liteloader.resources.ModResourcePack;
+import com.mumfrey.liteloader.resources.ModResourcePackDir;
 
 public class LiteModTabbyChat extends TabbyChat implements RenderListener, JoinGameListener {
 
@@ -50,6 +56,23 @@ public class LiteModTabbyChat extends TabbyChat implements RenderListener, JoinG
             addr = play.getNetworkManager().getRemoteAddress();
         }
         onJoin(addr);
+    }
+
+    @Override
+    protected void loadResourcePack(File source, String name) {
+        IResourcePack pack;
+        if (source.isFile()) {
+            pack = new ModResourcePack(name, source);
+        } else if (source.isDirectory()) {
+            pack = new ModResourcePackDir(name, source);
+        } else {
+            // probably doesn't exist :(
+            return;
+        }
+        @SuppressWarnings("unchecked")
+        Resources<IResourceManager, IResourcePack> resources = (Resources<IResourceManager, IResourcePack>) LiteLoader
+                .getGameEngine().getResources();
+        resources.registerResourcePack(pack);
     }
 
     // Unused

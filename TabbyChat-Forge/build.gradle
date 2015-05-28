@@ -1,4 +1,5 @@
 apply plugin: 'forge'
+version = rootProject.version
 apply from: utils.file('gradle/minecraft.gradle')
 configurations.compile {
 	exclude group: "org.scala-lang"

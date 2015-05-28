@@ -8,8 +8,10 @@ import mnm.mods.tabbychat.util.TabbyRef;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.InjectedModContainer;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -25,6 +27,20 @@ public class FMLTabbyChat extends TabbyChat {
     public void preInit(FMLPreInitializationEvent event) {
         tempDir = event.getModConfigurationDirectory();
         ForgeCommandsImpl.setInstance();
+    }
+
+    @Override
+    protected void loadResourcePack(File file, final String name) {
+        ModContainer thisCont = FMLCommonHandler.instance().findContainerFor(this);
+        ModContainer container = new InjectedModContainer(thisCont, file) {
+            @Override
+            public String getName() {
+                return name;
+            }
+        };
+
+        FMLCommonHandler.instance().addModToResourcePack(container);
+
     }
 
     @EventHandler

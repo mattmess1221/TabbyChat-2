@@ -24,6 +24,7 @@ import mnm.mods.tabbychat.settings.ColorSettings;
 import mnm.mods.tabbychat.settings.GeneralSettings;
 import mnm.mods.tabbychat.settings.ServerSettings;
 import mnm.mods.tabbychat.util.TabbyRef;
+import mnm.mods.util.Color;
 import mnm.mods.util.LogHelper;
 import mnm.mods.util.ReflectionHelper;
 import mnm.mods.util.gui.SettingPanel;
@@ -103,11 +104,15 @@ public abstract class TabbyChat extends TabbyAPI {
 
     // Protected methods
 
+    protected abstract void loadResourcePack(File source, String name);
+
     protected void setConfigFolder(File config) {
         this.dataFolder = new File(config, TabbyRef.MOD_ID);
     }
 
     protected void init() {
+        loadUtils();
+
         addonManager = new TabbyAddonManager();
         events = new TabbyEvents(addonManager);
 
@@ -166,6 +171,34 @@ public abstract class TabbyChat extends TabbyAPI {
         } catch (Exception e) {
             LOGGER.fatal("Unable to hook into chat.  This is bad.", e);
         }
+    }
+
+    private void loadUtils() {
+        File source = findClasspathRoot(Color.class);
+        loadResourcePack(source, "Mnm Utils");
+        try {
+            Minecraft.class.getMethod("getMinecraft");
+            // I'm in dev, fix things.
+            loadResourcePack(findClasspathRoot(TabbyChat.class), "TabbyChat-Common");
+        } catch (Exception e) {
+            // unimportant
+        }
+    }
+
+    private File findClasspathRoot(Class<?> clas) {
+        String str = clas.getProtectionDomain().getCodeSource().getLocation().toString();
+        str = str.replace("/" + clas.getCanonicalName().replace('.', '/').concat(".class"), "");
+        str = str.replace('\\', '/');
+        if (str.endsWith("!")) {
+            str = str.substring(0, str.length() - 1);
+        }
+        if (str.startsWith("jar:")) {
+            str = str.substring(4);
+        }
+        if (str.startsWith("file:/")) {
+            str = str.substring(6);
+        }
+        return new File(str);
     }
 
     private void hookIntoChat(GuiIngame guiIngame) throws Exception {
