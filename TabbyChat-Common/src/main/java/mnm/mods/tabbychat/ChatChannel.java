@@ -104,7 +104,9 @@ public class ChatChannel implements Channel {
 
     @Override
     public void setPending(boolean pending) {
-        this.pending = pending;
+        if (!pending || !isActive()) {
+            this.pending = pending;
+        }
     }
 
     @Override

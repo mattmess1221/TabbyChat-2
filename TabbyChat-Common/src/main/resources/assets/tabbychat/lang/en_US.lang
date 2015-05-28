@@ -65,6 +65,7 @@ tabbychat.channel.prefix=Prefix
 tabbychat.channel.hidePrefix=Hide Prefix
 tabbychat.channel.select=Select a channel
 tabbychat.channel.none=No channels discovered
+tabbychat.channel.forget=Forget
 
 tabbychat.settings.colors.chatbox=Chatbox color
 tabbychat.settings.colors.chattext=Chat text color

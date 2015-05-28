@@ -14,6 +14,7 @@ import mnm.mods.tabbychat.settings.AdvancedSettings;
 import mnm.mods.tabbychat.settings.ColorSettings;
 import mnm.mods.util.gui.BorderLayout;
 import mnm.mods.util.gui.GuiPanel;
+import mnm.mods.util.gui.GuiText;
 import mnm.mods.util.gui.events.GuiMouseAdapter;
 import mnm.mods.util.gui.events.GuiMouseEvent;
 import net.minecraft.client.gui.GuiScreen;
@@ -228,8 +229,16 @@ public class ChatBox extends GuiPanel implements Chat, GuiMouseAdapter {
 
     @Override
     public void setActiveChannel(Channel channel) {
-        if (getChatInput().getTextField().getValue().equals(active.getPrefix())) {
-            getChatInput().getTextField().setValue(channel.getPrefix());
+        GuiText text = getChatInput().getTextField();
+        if (active.isPrefixHidden()
+                ? text.getValue().trim().isEmpty()
+                : text.getValue().trim().equals(active.getPrefix())) {
+            // text is the prefix, so remove it.
+            text.setValue("");
+            if (!channel.isPrefixHidden() && !channel.getPrefix().isEmpty()) {
+                // target has prefix visible
+                text.setValue(channel.getPrefix() + " ");
+            }
         }
         active.setActive(false);
         active = channel;

@@ -24,6 +24,9 @@ public class BackgroundChatThread extends Thread {
     @Override
     public void run() {
         lock.lock();
+        if (messages == null) {
+            return;
+        }
         for (String msg : messages) {
             if (!StringUtils.isEmpty(msg)) {
 

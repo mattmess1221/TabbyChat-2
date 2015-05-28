@@ -61,7 +61,7 @@ public class GuiChatTC extends GuiChat {
         sentHistoryIndex = chatGui.getSentMessages().size();
         chatbox = chatGui.getChatbox();
         textBox = chatbox.getChatInput().getTextField();
-        if (defaultInputFieldText.isEmpty()) {
+        if (defaultInputFieldText.isEmpty() && !chatbox.getActiveChannel().isPrefixHidden()) {
             defaultInputFieldText = chatbox.getActiveChannel().getPrefix();
         }
     }
@@ -304,7 +304,11 @@ public class GuiChatTC extends GuiChat {
             this.foundPlayerNames.clear();
             this.autocompleteIndex = 0;
             String s = this.textBox.getValue().substring(i).toLowerCase();
+
             s1 = this.textBox.getValue().substring(0, this.textBox.getTextField().getCursorPosition());
+            if (chatbox.getActiveChannel().isPrefixHidden() && s1.startsWith("/")) {
+                s1 = chatbox.getActiveChannel().getPrefix() + " " + s1;
+            }
             this.sendAutocompleteRequest(s1, s);
 
             if (foundPlayerNames.isEmpty()) {

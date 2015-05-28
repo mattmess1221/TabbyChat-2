@@ -77,6 +77,7 @@ public enum Translation implements Translatable {
     CHANNEL_HIDE_PREFIX("tabbychat.channel.hidePrefix"),
     CHANNEL_NONE("tabbychat.channel.none"),
     CHANNEL_SELECT("tabbychat.channel.select"),
+    CHANNEL_FORGET("tabbychat.channel.forget"),
 
     // color stuff
     COLOR_CHATBOX("tabbychat.settings.colors.chatbox"),

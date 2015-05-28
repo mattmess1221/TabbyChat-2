@@ -68,6 +68,11 @@ public class GuiNewChatTC extends GuiNewChat {
             if (!chatevent.channels.contains(chatbox.getActiveChannel())) {
                 msg = true;
             }
+            if (id != 0) {
+                // send removable msg to current channel
+                chatevent.channels.clear();
+                chatevent.channels.add(chatbox.getActiveChannel());
+            }
             for (Channel channel : chatevent.channels) {
                 channel.addMessage(chat, id);
                 if (msg) {
