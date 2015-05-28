@@ -58,5 +58,12 @@ task jarDev(type:Jar) {
 artifacts.archives jarDev
 // disable eclipse
 tasks.findAll{task -> task.name.contains('eclipse')}.each {task -> task.enabled = false}
-// disable runs in subprojects
-subprojects {tasks.findAll {it.name.startsWith 'run'}.each {it.enabled = false}}
+subprojects {
+    repositories {
+        flatDir  {
+            dirs rootProject.file('libs')
+        }
+    }
+    // disable runs in subprojects
+    tasks.findAll {it.name.startsWith 'run'}.each {it.enabled = false}
+}
