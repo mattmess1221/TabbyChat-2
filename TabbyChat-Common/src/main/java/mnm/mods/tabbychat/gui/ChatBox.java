@@ -240,6 +240,11 @@ public class ChatBox extends GuiPanel implements Chat, GuiMouseAdapter {
                 text.setValue(channel.getPrefix() + " ");
             }
         }
+        // reset scroll
+        // TODO per-channel scroll settings?
+        if (channel != active) {
+            getChatArea().resetScroll();
+        }
         active.setActive(false);
         active = channel;
         active.setActive(true);
