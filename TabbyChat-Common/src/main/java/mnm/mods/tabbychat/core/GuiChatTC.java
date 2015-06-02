@@ -107,7 +107,7 @@ public class GuiChatTC extends GuiChat {
 
     @Override
     public void handleMouseInput() throws IOException {
-        // super.handleMouseInput();
+        super.handleMouseInput();
         this.chatbox.handleMouseInput();
         for (GuiComponent comp : this.componentList) {
             comp.handleMouseInput();
