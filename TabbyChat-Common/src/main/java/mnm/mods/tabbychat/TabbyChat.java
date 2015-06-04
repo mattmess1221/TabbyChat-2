@@ -23,6 +23,8 @@ import mnm.mods.tabbychat.settings.ChannelSettings;
 import mnm.mods.tabbychat.settings.ColorSettings;
 import mnm.mods.tabbychat.settings.GeneralSettings;
 import mnm.mods.tabbychat.settings.ServerSettings;
+import mnm.mods.tabbychat.update.UpdateChecker;
+import mnm.mods.tabbychat.update.UpdateRequest;
 import mnm.mods.tabbychat.util.TabbyRef;
 import mnm.mods.util.Color;
 import mnm.mods.util.LogHelper;
@@ -53,6 +55,8 @@ public abstract class TabbyChat extends TabbyAPI {
 
     private File dataFolder;
     private InetSocketAddress currentServer;
+
+    private boolean updateChecked;
 
     protected static void setInstance(TabbyChat inst) {
         instance = inst;
@@ -170,6 +174,19 @@ public abstract class TabbyChat extends TabbyAPI {
             hookIntoChat(Minecraft.getMinecraft().ingameGUI);
         } catch (Exception e) {
             LOGGER.fatal("Unable to hook into chat.  This is bad.", e);
+        }
+
+        // update check
+        updateCheck();
+    }
+
+    private void updateCheck() {
+        if (generalSettings.checkUpdates.getValue() && !updateChecked) {
+            String url = "https://raw.githubusercontent.com/killjoy1221/Version/master";
+            UpdateRequest request = new UpdateRequest(url, TabbyRef.MOD_ID);
+            UpdateChecker checker = new UpdateChecker(request, TabbyRef.MOD_REVISION);
+            checker.start();
+            updateChecked = true;
         }
     }
 

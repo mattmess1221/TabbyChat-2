@@ -2,7 +2,7 @@ package mnm.mods.tabbychat.api.filters;
 
 /**
  * Used to create actions for a {@link Filter}. Implement and invoke
- * {@link Filter#setAction(IFilterAction)} to use.
+ * {@link Filter#setAction(String)} to use.
  */
 public interface IFilterAction {
 

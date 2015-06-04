@@ -25,7 +25,7 @@ ext.forge = rootProject.project(':TabbyChat-Forge')
 ext.common = rootProject.project(':TabbyChat-Common')
 
 apply plugin: 'forge'
-version = "$versionMajor.$versionMinor.$versionRevision-beta2"
+version = "$versionMajor.$versionMinor.$versionRevision-beta2a"
 apply from: utils.file('gradle/minecraft.gradle')
 
 group = "mnm.mods"

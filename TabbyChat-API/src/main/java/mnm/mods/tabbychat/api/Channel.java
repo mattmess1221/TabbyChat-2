@@ -103,7 +103,6 @@ public interface Channel {
     /**
      * Adds a message to the channel.
      *
-     * @param channels The channels
      * @param chat The message
      */
     void addMessage(IChatComponent chat);
@@ -112,7 +111,6 @@ public interface Channel {
      * Adds a message to the channel with optional deletion. Any messages
      * previously added with the same id will be removed.
      *
-     * @param channel The channel to send to
      * @param chat The message to send
      * @param id The id of the message
      */
