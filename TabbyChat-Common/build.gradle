@@ -5,6 +5,7 @@ apply from: utils.file('gradle/minecraft.gradle')
 // Replace the version string
 minecraft.replace([
     "@VERSION@": project.version,
+    "@REVISION@": project.versionBuild,
     "@MCVERSION@": project.minecraft.version
 ])
 
