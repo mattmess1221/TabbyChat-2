@@ -2,6 +2,7 @@ package mnm.mods.tabbychat.gui.settings;
 
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
+import mnm.mods.tabbychat.api.TabbyAPI;
 import mnm.mods.tabbychat.settings.ChannelSettings;
 import mnm.mods.tabbychat.util.Translation;
 import mnm.mods.util.Color;
@@ -103,14 +104,17 @@ public class GuiSettingsChannel extends SettingPanel<ChannelSettings> {
         forget.addActionListener(new ActionPerformed() {
             @Override
             public void action(GuiEvent event) {
-                getSettings().channels.getValue().remove(GuiSettingsChannel.this.channel.getName());
+                Channel channel = GuiSettingsChannel.this.channel;
+                // remove from chat
+                TabbyAPI.getAPI().getChat().removeChannel(channel);
+                // remove from settings file
+                getSettings().channels.getValue().remove(channel.getName());
+                // remove from settings gui
                 for (GuiComponent comp : channels) {
-                    if (comp instanceof ChannelButton
-                            && ((ChannelButton) comp).channel == GuiSettingsChannel.this.channel) {
+                    if (comp instanceof ChannelButton && ((ChannelButton) comp).channel == channel) {
                         channels.removeComponent(comp);
                         break;
                     }
-
                 }
                 select(null);
             }
