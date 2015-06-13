@@ -15,7 +15,7 @@ public enum MessagePatterns implements Translatable {
             "^You whisper to " + getPlayerPattern() + ":"),
     DISABLED(Translation.FORMAT_MESSAGE_DISABLED, "a^", "a^");
 
-    private static final String PLAYER_PATTERN = "([\\p{L}\\p{N}_]{3,16})";
+    private static final String PLAYER_PATTERN = "([\\p{L}\\p{N}_]{3,30})";
 
     private final Translatable translation;
     private final String incoming;
