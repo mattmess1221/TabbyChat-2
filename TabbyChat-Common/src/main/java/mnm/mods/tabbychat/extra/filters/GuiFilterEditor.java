@@ -1,12 +1,14 @@
 package mnm.mods.tabbychat.extra.filters;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import mnm.mods.tabbychat.api.filters.Filter;
 import mnm.mods.tabbychat.api.filters.FilterSettings;
+import mnm.mods.tabbychat.util.SoundHelper;
 import mnm.mods.tabbychat.util.Translation;
 import mnm.mods.util.Consumer;
 import mnm.mods.util.gui.GuiButton;
@@ -20,6 +22,12 @@ import mnm.mods.util.gui.events.GuiEvent;
 import mnm.mods.util.gui.events.GuiKeyboardAdapter;
 import mnm.mods.util.gui.events.GuiKeyboardEvent;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.util.ResourceLocation;
+
+import org.lwjgl.input.Keyboard;
+
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 
 public class GuiFilterEditor extends GuiPanel implements GuiKeyboardAdapter {
 
@@ -59,14 +67,54 @@ public class GuiFilterEditor extends GuiPanel implements GuiKeyboardAdapter {
         this.addComponent(chkRemove = new GuiCheckbox(), new int[] { 1, 7 });
         chkRemove.setValue(settings.isRemove());
 
-        this.addComponent(new GuiLabel(Translation.FILTER_AUDIO_NOTIFY.translate()), new int[] { 2,
-                11 });
-        this.addComponent(chkSound = new GuiCheckbox(), new int[] { 1, 11 });
+        this.addComponent(new GuiLabel(Translation.FILTER_AUDIO_NOTIFY.translate()), new int[] { 2, 9 });
+        this.addComponent(chkSound = new GuiCheckbox(), new int[] { 1, 9 });
         chkSound.setValue(settings.isSoundNotification());
 
-        // TODO presets
-        this.addComponent(txtSound = new GuiText(), new int[] { 12, 11, 6, 1 });
+        this.addComponent(txtSound = new GuiText(), new int[] { 3, 10, 14, 1 });
         txtSound.setValue(settings.getSoundName());
+        txtSound.addKeyboardAdapter(new GuiKeyboardAdapter() {
+            private int pos;
+            @Override
+            public void accept(GuiKeyboardEvent event) {
+                final int max = 10;
+                if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
+                    pos++;
+                } else if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {
+                    pos--;
+                }
+
+                // suggest sounds
+                String val = txtSound.getValue().toLowerCase()
+                        .substring(0, txtSound.getTextField().getCursorPosition());
+                List<String> list = Lists.newArrayList();
+                List<SoundHelper> sounds = SoundHelper.getSounds();
+                for (SoundHelper s : sounds) {
+                    if (s.getResource().toString().contains(val)) {
+                        list.add(s.getResource().toString());
+                    }
+                }
+                pos = Math.min(pos, list.size() - max);
+                pos = Math.max(pos, 0);
+                if (list.size() > max) {
+                    list = list.subList(pos, pos + max);
+                }
+                txtSound.setHint(Joiner.on('\n').join(list));
+                if ((Keyboard.isKeyDown(Keyboard.KEY_RETURN) || Keyboard.isKeyDown(Keyboard.KEY_NUMPADENTER))
+                        && !list.isEmpty()) {
+                    txtSound.setValue(list.get(0));
+                    txtSound.setFocused(false);
+                }
+            }
+        });
+
+        GuiButton play = new GuiButton("\u25b6") {
+            @Override
+            public ResourceLocation getSound() {
+                return new ResourceLocation(txtSound.getValue());
+            }
+        };
+        this.addComponent(play, new int[] { 18, 10, 2, 1 });
 
         this.addComponent(new GuiLabel(Translation.FILTER_EXPRESSION.translate()),
                 new int[] { 1, 13 });

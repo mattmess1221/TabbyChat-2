@@ -12,7 +12,11 @@ import mnm.mods.tabbychat.api.filters.FilterEvent;
 import mnm.mods.tabbychat.api.filters.FilterSettings;
 import mnm.mods.tabbychat.api.filters.IFilterAction;
 import mnm.mods.tabbychat.api.listener.events.ChatMessageEvent.ChatRecievedEvent;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.ISound;
+import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringUtils;
 
 public class ChatFilter implements Filter {
@@ -100,6 +104,12 @@ public class ChatFilter implements Filter {
                 // TODO groups
                 Channel channel = TabbyAPI.getAPI().getChat().getChannel(name);
                 event.channels.add(channel);
+            }
+            if (filter.getSettings().isSoundNotification()) {
+                String sname = filter.getSettings().getSoundName();
+                ResourceLocation loc = new ResourceLocation(sname);
+                ISound sound = PositionedSoundRecord.create(loc);
+                Minecraft.getMinecraft().getSoundHandler().playSound(sound);
             }
         }
     }

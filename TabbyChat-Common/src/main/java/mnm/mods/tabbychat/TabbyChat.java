@@ -149,7 +149,7 @@ public abstract class TabbyChat extends TabbyAPI {
             String inputBuffer = "";
             try {
                 inputBuffer = (String) ReflectionHelper.getFieldValue(GuiChat.class, currentScreen,
-                        new String[] { "u", "field_146409_v", "defaultInputFieldText" });
+                        TabbyRef.DEFAULT_INPUT_FIELD_TEXT);
             } catch (Exception e) {}
             if (currentScreen instanceof GuiSleepMP) {
                 mc.displayGuiScreen(new GuiSleepTC());
@@ -223,7 +223,7 @@ public abstract class TabbyChat extends TabbyAPI {
         if (!GuiNewChatTC.class.isAssignableFrom(guiIngame.getChatGUI().getClass())) {
             // guiIngame.persistantChatGUI = GuiNewChatTC.getInstance();
             ReflectionHelper.setFieldValue(GuiIngame.class, guiIngame, GuiNewChatTC.getInstance(),
-                    new String[] { "l", "field_73840_e", "persistantChatGUI" });
+                    TabbyRef.PERSISTANT_CHAT_GUI);
             LOGGER.info("Successfully hooked into chat.");
         }
     }
