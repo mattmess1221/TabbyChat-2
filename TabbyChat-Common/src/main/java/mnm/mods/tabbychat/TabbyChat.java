@@ -23,13 +23,13 @@ import mnm.mods.tabbychat.settings.ChannelSettings;
 import mnm.mods.tabbychat.settings.ColorSettings;
 import mnm.mods.tabbychat.settings.GeneralSettings;
 import mnm.mods.tabbychat.settings.ServerSettings;
-import mnm.mods.tabbychat.update.UpdateChecker;
-import mnm.mods.tabbychat.update.UpdateRequest;
 import mnm.mods.tabbychat.util.TabbyRef;
-import mnm.mods.util.Color;
 import mnm.mods.util.LogHelper;
+import mnm.mods.util.MnmUtils;
 import mnm.mods.util.ReflectionHelper;
 import mnm.mods.util.gui.SettingPanel;
+import mnm.mods.util.update.UpdateChecker;
+import mnm.mods.util.update.UpdateRequest;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiIngame;
@@ -138,6 +138,8 @@ public abstract class TabbyChat extends TabbyAPI {
         addonManager.registerListener(new ChatAddonAntiSpam());
         addonManager.registerListener(new FilterAddon());
         addonManager.registerListener(new ChatLogging(new File("logs/chat")));
+
+        MnmUtils.getInstance().setChatProxy(new TabbedChatProxy());
     }
 
     protected void onRender(GuiScreen currentScreen) {
@@ -182,8 +184,7 @@ public abstract class TabbyChat extends TabbyAPI {
 
     private void updateCheck() {
         if (generalSettings.checkUpdates.getValue() && !updateChecked) {
-            String url = "https://raw.githubusercontent.com/killjoy1221/Version/master";
-            UpdateRequest request = new UpdateRequest(url, TabbyRef.MOD_ID);
+            UpdateRequest request = new UpdateRequest(TabbyRef.MOD_ID);
             UpdateChecker checker = new UpdateChecker(request, TabbyRef.MOD_REVISION);
             checker.start();
             updateChecked = true;
@@ -191,7 +192,7 @@ public abstract class TabbyChat extends TabbyAPI {
     }
 
     private void loadUtils() {
-        File source = findClasspathRoot(Color.class);
+        File source = findClasspathRoot(MnmUtils.class);
         loadResourcePack(source, "Mnm Utils");
         try {
             Minecraft.class.getMethod("getMinecraft");
@@ -226,5 +227,4 @@ public abstract class TabbyChat extends TabbyAPI {
             LOGGER.info("Successfully hooked into chat.");
         }
     }
-
 }
