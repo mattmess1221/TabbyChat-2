@@ -30,8 +30,7 @@ public class ChatMessage implements Message {
     }
 
     public ChatMessage(ChatLine chatline) {
-        this(chatline.getUpdatedCounter(), chatline.getChatComponent(), chatline.getChatLineID(),
-                true);
+        this(chatline.getUpdatedCounter(), chatline.getChatComponent(), chatline.getChatLineID(), true);
     }
 
     @Override

@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import mnm.mods.tabbychat.ChatChannel;
 import mnm.mods.tabbychat.api.Channel;
+import mnm.mods.tabbychat.api.ChannelStatus;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.util.Color;
 import mnm.mods.util.gui.BorderLayout;
@@ -23,7 +24,7 @@ public class ChatTray extends GuiPanel {
         this.addComponent(tabList, BorderLayout.Position.CENTER);
         this.addComponent(controls, BorderLayout.Position.EAST);
         addChannel(ChatChannel.DEFAULT_CHANNEL);
-        ChatChannel.DEFAULT_CHANNEL.setActive(true);
+        ChatChannel.DEFAULT_CHANNEL.setStatus(ChannelStatus.ACTIVE);
     }
 
     @Override
@@ -65,7 +66,7 @@ public class ChatTray extends GuiPanel {
         this.tabList.clearComponents();
 
         addChannel(ChatChannel.DEFAULT_CHANNEL);
-        ChatChannel.DEFAULT_CHANNEL.setActive(true);
+        ChatChannel.DEFAULT_CHANNEL.setStatus(ChannelStatus.ACTIVE);
     }
 
     @Override

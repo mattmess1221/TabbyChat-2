@@ -1,14 +1,18 @@
 package mnm.mods.tabbychat;
 
+import static mnm.mods.tabbychat.api.ChannelStatus.ACTIVE;
+import static mnm.mods.tabbychat.api.ChannelStatus.PINGED;
+import static mnm.mods.tabbychat.api.ChannelStatus.UNREAD;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
 import mnm.mods.tabbychat.api.Channel;
+import mnm.mods.tabbychat.api.ChannelStatus;
 import mnm.mods.tabbychat.api.Message;
 import mnm.mods.tabbychat.api.listener.events.MessageAddedToChannelEvent;
-import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.gui.ChatArea;
 import mnm.mods.tabbychat.gui.ChatBox;
 import mnm.mods.tabbychat.gui.settings.GuiSettingsChannel;
@@ -45,8 +49,7 @@ public class ChatChannel implements Channel {
     private String prefix = "";
     private boolean prefixHidden = false;
 
-    private transient boolean active = false;
-    private transient boolean pending = false;
+    private transient ChannelStatus status;
 
     public ChatChannel(String name) {
         this.name = name;
@@ -90,24 +93,35 @@ public class ChatChannel implements Channel {
 
     @Override
     public boolean isActive() {
-        return this.active;
+        return getStatus() == ACTIVE;
     }
 
     @Override
     public void setActive(boolean selected) {
-        this.active = selected;
+        setStatus(selected ? ACTIVE : null);
     }
 
     @Override
     public boolean isPending() {
-        return this.pending;
+        return getStatus() == UNREAD || getStatus() == PINGED;
     }
 
     @Override
     public void setPending(boolean pending) {
-        if (!pending || !isActive()) {
-            this.pending = pending;
-            GuiNewChatTC.getInstance().refreshChat();
+        setStatus(pending ? UNREAD : null);
+    }
+
+    @Override
+    public ChannelStatus getStatus() {
+        return status;
+    }
+
+    @Override
+    public void setStatus(ChannelStatus status) {
+        // priorities
+        if (status == null || this.status == null
+                || status.ordinal() < this.status.ordinal()) {
+            this.status = status;
         }
     }
 
@@ -140,13 +154,17 @@ public class ChatChannel implements Channel {
         if (event.chat == null) {
             return;
         }
+        String player = Minecraft.getMinecraft().thePlayer.getCommandSenderName();
+        if (event.chat.getUnformattedText().contains(player)) {
+            setStatus(PINGED);
+        }
         int uc = Minecraft.getMinecraft().ingameGUI.getUpdateCounter();
         Message msg = new ChatMessage(uc, event.chat, id, true);
         this.messages.add(0, msg);
 
         // compensate scrolling
         ChatArea chatbox = ((ChatBox) TabbyChat.getInstance().getChat()).getChatArea();
-        if (active && chatbox.getScrollPos() > 0 && id == 0) {
+        if (getStatus() == ACTIVE && chatbox.getScrollPos() > 0 && id == 0) {
             chatbox.scroll(1);
         }
 

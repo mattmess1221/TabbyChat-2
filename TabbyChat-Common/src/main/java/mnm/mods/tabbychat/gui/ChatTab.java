@@ -4,6 +4,7 @@ import java.awt.Dimension;
 
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
+import mnm.mods.tabbychat.api.ChannelStatus;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.util.Color;
 import mnm.mods.util.gui.GuiButton;
@@ -27,7 +28,6 @@ public class ChatTab extends GuiButton implements GuiMouseAdapter {
         if (event.event == GuiMouseEvent.CLICKED) {
             ChatTab comp = (ChatTab) event.component;
             if (event.button == 0) {
-                channel.setPending(false);
                 if (GuiScreen.isShiftKeyDown()) {
                     // Remove channel
                     TabbyChat.getInstance().getChat().removeChannel(comp.getChannel());
@@ -47,7 +47,7 @@ public class ChatTab extends GuiButton implements GuiMouseAdapter {
 
     @Override
     public void drawComponent(int mouseX, int mouseY) {
-        if (GuiNewChatTC.getInstance().getChatOpen() || channel.isPending()) {
+        if (GuiNewChatTC.getInstance().getChatOpen() || channel.getStatus() == ChannelStatus.PINGED) {
             GlStateManager.pushMatrix();
             GlStateManager.translate(0, 0, 1);
             Gui.drawRect(0, 0, getBounds().width, getBounds().height, getBackColor());
@@ -62,16 +62,31 @@ public class ChatTab extends GuiButton implements GuiMouseAdapter {
     public void updateComponent() {
         int fore = 0xfff0f0f0;
         int back = 0x010101;
-        if (channel.isActive()) {
-            setText("[" + channel.getAlias() + "]");
-            // Cyan
-            back = 0xff5b7c7b;
-            fore = 0xffa5e7e4;
-        } else if (channel.isPending()) {
-            setText("<" + channel.getAlias() + ">");
-            // Red
-            back = 0xff720000;
-            fore = 0xffff0000;
+        if (channel.getStatus() != null) {
+            switch (channel.getStatus()) {
+            case ACTIVE:
+                setText("[" + channel.getAlias() + "]");
+                // Cyan
+                back = 0xff5b7c7b;
+                fore = 0xffa5e7e4;
+                break;
+            case UNREAD:
+                setText("<" + channel.getAlias() + ">");
+                // Red
+                back = 0xff720000;
+                fore = 0xffff0000;
+                break;
+            case PINGED:
+                // green
+                fore = 0xff55ff55;
+                back = 0xff00aa00;
+                break;
+            case JOINED:
+                // aqua
+                fore = 0xff55ffff;
+                back = 0xff00aaaa;
+                break;
+            }
         } else {
             setText(channel.getAlias());
         }

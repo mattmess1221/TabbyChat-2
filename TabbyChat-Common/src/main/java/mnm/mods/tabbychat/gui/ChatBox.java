@@ -8,6 +8,7 @@ import java.util.Set;
 import mnm.mods.tabbychat.ChatChannel;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
+import mnm.mods.tabbychat.api.ChannelStatus;
 import mnm.mods.tabbychat.api.Chat;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.settings.AdvancedSettings;
@@ -251,8 +252,8 @@ public class ChatBox extends GuiPanel implements Chat, GuiMouseAdapter {
         if (channel != active) {
             getChatArea().resetScroll();
         }
-        active.setActive(false);
+        active.setStatus(null);
         active = channel;
-        active.setActive(true);
+        active.setStatus(ChannelStatus.ACTIVE);
     }
 }

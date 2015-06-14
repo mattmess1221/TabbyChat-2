@@ -2,6 +2,8 @@ package mnm.mods.tabbychat.api;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.util.IChatComponent;
 
 /**
@@ -64,29 +66,53 @@ public interface Channel {
      * Gets whether this channel should be drawn as active.
      *
      * @return Whether active or not
+     * @deprecated Use getStatus() == ChannelStatus.ACTIVE
      */
+    @Deprecated
     boolean isActive();
 
     /**
      * Sets whether this channel should be drawn as active.
      *
      * @param active
+     * @deprecated Use setStatus(ChannelStatus.ACTIVE)
      */
+    @Deprecated
     void setActive(boolean active);
 
     /**
      * Gets whether this channel is pending.
      *
      * @return True if pending
+     * @deprecated Use getStatus() == ChannelStatus.UNREAD
      */
+    @Deprecated
     boolean isPending();
 
     /**
      * Sets whether this channel is pending.
      *
      * @param pending The new pending
+     * @deprecated Use setStatus(ChannelStatus.UNREAD)
      */
+    @Deprecated
     void setPending(boolean pending);
+
+    /**
+     * Gets the channel's current status. A null indicates that there is no
+     * status.
+     *
+     * @return The status or null
+     */
+    @Nullable
+    ChannelStatus getStatus();
+
+    /**
+     * Sets the channel's current status.
+     *
+     * @param status The new status
+     */
+    void setStatus(@Nullable ChannelStatus status);
 
     /**
      * Opens the settings panel for this channel.

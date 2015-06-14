@@ -6,6 +6,7 @@ import java.util.List;
 import mnm.mods.tabbychat.ChatChannel;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
+import mnm.mods.tabbychat.api.ChannelStatus;
 import mnm.mods.tabbychat.api.listener.events.ChatMessageEvent.ChatRecievedEvent;
 import mnm.mods.tabbychat.gui.ChatBox;
 import mnm.mods.tabbychat.settings.AdvancedSettings;
@@ -64,10 +65,7 @@ public class GuiNewChatTC extends GuiNewChat {
         chat = chatevent.chat;
         id = chatevent.id;
         if (chat != null && !chat.getUnformattedText().isEmpty()) {
-            boolean msg = false;
-            if (!chatevent.channels.contains(chatbox.getActiveChannel())) {
-                msg = true;
-            }
+            boolean msg = !chatevent.channels.contains(chatbox.getActiveChannel());
             if (id != 0) {
                 // send removable msg to current channel
                 chatevent.channels.clear();
@@ -76,10 +74,11 @@ public class GuiNewChatTC extends GuiNewChat {
             for (Channel channel : chatevent.channels) {
                 channel.addMessage(chat, id);
                 if (msg) {
-                    channel.setPending(true);
+                    channel.setStatus(ChannelStatus.UNREAD);
                 }
             }
             TabbyChat.getLogger().info("[CHAT] " + chat.getUnformattedText());
+            chatbox.updateComponent();
         }
     }
 
