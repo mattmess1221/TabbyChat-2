@@ -17,6 +17,7 @@ import mnm.mods.tabbychat.gui.ChatArea;
 import mnm.mods.tabbychat.gui.ChatBox;
 import mnm.mods.tabbychat.gui.settings.GuiSettingsChannel;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.IChatComponent;
 
 import com.google.common.collect.Lists;
@@ -91,21 +92,25 @@ public class ChatChannel implements Channel {
         this.prefixHidden = hidden;
     }
 
+    @Deprecated
     @Override
     public boolean isActive() {
         return getStatus() == ACTIVE;
     }
 
+    @Deprecated
     @Override
     public void setActive(boolean selected) {
         setStatus(selected ? ACTIVE : null);
     }
 
+    @Deprecated
     @Override
     public boolean isPending() {
         return getStatus() == UNREAD || getStatus() == PINGED;
     }
 
+    @Deprecated
     @Override
     public void setPending(boolean pending) {
         setStatus(pending ? UNREAD : null);
@@ -155,7 +160,7 @@ public class ChatChannel implements Channel {
             return;
         }
         String player = Minecraft.getMinecraft().thePlayer.getCommandSenderName();
-        if (event.chat.getUnformattedText().contains(player)) {
+        if (chatContains(event.chat, player, 1)) {
             setStatus(PINGED);
         }
         int uc = Minecraft.getMinecraft().ingameGUI.getUpdateCounter();
@@ -170,6 +175,26 @@ public class ChatChannel implements Channel {
 
         trim(TabbyChat.getInstance().advancedSettings.historyLen.getValue());
 
+    }
+
+    private boolean chatContains(IChatComponent chat, String word, int start) {
+        if (chat instanceof ChatComponentTranslation) {
+            Object[] args = ((ChatComponentTranslation) chat).getFormatArgs();
+            for (int i = start; i < args.length; i++) {
+                boolean has = false;
+                if (args[i] instanceof IChatComponent) {
+                    has = chatContains((IChatComponent) args[i], word, 0);
+                } else {
+                    has = args[i].toString().contains(word);
+                }
+                if (has) {
+                    return true;
+                }
+            }
+        } else {
+            return chat.getUnformattedText().contains(word);
+        }
+        return false;
     }
 
     public void trim(int size) {
