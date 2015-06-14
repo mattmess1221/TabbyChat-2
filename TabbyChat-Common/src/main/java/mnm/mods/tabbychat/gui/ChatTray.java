@@ -28,11 +28,11 @@ public class ChatTray extends GuiPanel {
 
     @Override
     public void drawComponent(int mouseX, int mouseY) {
-        super.drawComponent(mouseX, mouseY);
         if (GuiNewChatTC.getInstance().getChatOpen()) {
             Gui.drawRect(0, 0, getBounds().width, getBounds().height, getBackColor());
             drawBorders(0, 0, getBounds().width, getBounds().height);
         }
+        super.drawComponent(mouseX, mouseY);
     }
 
     @Override

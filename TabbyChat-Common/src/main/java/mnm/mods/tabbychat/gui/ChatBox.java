@@ -149,6 +149,12 @@ public class ChatBox extends GuiPanel implements Chat, GuiMouseAdapter {
         super.updateComponent();
     }
 
+    @Override
+    public void onClosed() {
+        super.onClosed();
+        updateComponent();
+    }
+
     public int getWidth() {
         return getBounds().width;
     }

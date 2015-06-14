@@ -8,6 +8,7 @@ import java.util.List;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.Message;
 import mnm.mods.tabbychat.api.listener.events.MessageAddedToChannelEvent;
+import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.gui.ChatArea;
 import mnm.mods.tabbychat.gui.ChatBox;
 import mnm.mods.tabbychat.gui.settings.GuiSettingsChannel;
@@ -106,6 +107,7 @@ public class ChatChannel implements Channel {
     public void setPending(boolean pending) {
         if (!pending || !isActive()) {
             this.pending = pending;
+            GuiNewChatTC.getInstance().refreshChat();
         }
     }
 
