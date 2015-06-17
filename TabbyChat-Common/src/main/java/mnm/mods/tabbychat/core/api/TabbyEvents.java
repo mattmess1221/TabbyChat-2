@@ -12,7 +12,6 @@ import mnm.mods.tabbychat.api.listener.events.ChatMessageEvent.ChatRecievedEvent
 import mnm.mods.tabbychat.api.listener.events.ChatMessageEvent.ChatSentEvent;
 import mnm.mods.tabbychat.api.listener.events.MessageAddedToChannelEvent;
 import mnm.mods.util.gui.GuiComponent;
-import net.minecraft.client.gui.GuiButton;
 
 public class TabbyEvents {
 
@@ -50,13 +49,6 @@ public class TabbyEvents {
         List<ChatScreenListener> listeners = manager.getListenersOfType(ChatScreenListener.class);
         for (ChatScreenListener screen : listeners) {
             screen.onCloseScreen();
-        }
-    }
-
-    public void onActionPerformed(GuiButton button) {
-        List<ChatScreenListener> listeners = manager.getListenersOfType(ChatScreenListener.class);
-        for (ChatScreenListener screen : listeners) {
-            screen.actionPreformed(button);
         }
     }
 

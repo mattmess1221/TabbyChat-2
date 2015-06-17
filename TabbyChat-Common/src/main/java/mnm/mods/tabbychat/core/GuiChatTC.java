@@ -11,9 +11,8 @@ import mnm.mods.tabbychat.util.ForgeClientCommands;
 import mnm.mods.util.gui.GuiComponent;
 import mnm.mods.util.gui.GuiText;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiChat;
-import net.minecraft.client.gui.GuiLabel;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.network.play.client.C14PacketTabComplete;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
@@ -97,12 +96,6 @@ public class GuiChatTC extends GuiChat {
         this.sentHistoryBuffer = "";
         this.chatbox.onClosed();
         super.onGuiClosed();
-    }
-
-    @Override
-    protected void actionPerformed(GuiButton button) throws IOException {
-        super.actionPerformed(button);
-        tc.getEventManager().onActionPerformed(button);
     }
 
     @Override
@@ -196,18 +189,13 @@ public class GuiChatTC extends GuiChat {
         // Draw the components
         for (GuiComponent component : componentList) {
             if (component.isVisible()) {
+                GlStateManager.pushMatrix();
+                GlStateManager.translate(component.getBounds().x, component.getBounds().y, 0);
                 component.drawComponent(mouseX, mouseY);
+                GlStateManager.popMatrix();
             }
         }
-
-        // Draw buttons
-        for (Object button : this.buttonList) {
-            ((GuiButton) button).drawButton(mc, mouseX, mouseY);
-        }
-        // Draw labels
-        for (Object label : this.labelList) {
-            ((GuiLabel) label).drawLabel(mc, mouseX, mouseY);
-        }
+        tc.getEventManager().onRenderChatScreen(mouseX, mouseY, tick);
     }
 
     protected void sendCurrentChat(boolean keepOpen) {

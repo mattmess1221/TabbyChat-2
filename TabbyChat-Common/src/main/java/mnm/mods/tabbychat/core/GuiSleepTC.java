@@ -1,21 +1,23 @@
 package mnm.mods.tabbychat.core;
 
-import java.io.IOException;
-
-import net.minecraft.client.gui.GuiButton;
+import mnm.mods.util.gui.GuiButton;
+import mnm.mods.util.gui.events.ActionPerformed;
+import mnm.mods.util.gui.events.GuiEvent;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
 
 import org.lwjgl.input.Keyboard;
 
-public class GuiSleepTC extends GuiChatTC {
+public class GuiSleepTC extends GuiChatTC implements ActionPerformed {
 
     @Override
     public void initGui() {
         super.initGui();
-        this.buttonList.add(new GuiButton(1, this.width / 2 - 100, this.height - 30, I18n.format(
-                "multiplayer.stopSleeping", new Object[0])));
+        GuiButton button = new GuiButton(I18n.format("multiplayer.stopSleeping"));
+        button.setBounds(width / 2 - 100, height - 30, 200, 20);
+        button.addActionListener(this);
+        this.componentList.add(button);
     }
 
     @Override
@@ -43,12 +45,8 @@ public class GuiSleepTC extends GuiChatTC {
     }
 
     @Override
-    protected void actionPerformed(GuiButton button) throws IOException {
-        if (button.id == 1) {
-            this.wakeFromSleep();
-        } else {
-            super.actionPerformed(button);
-        }
+    public void action(GuiEvent event) {
+        this.wakeFromSleep();
     }
 
     private void wakeFromSleep() {
