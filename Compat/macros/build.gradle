@@ -1,0 +1,15 @@
+apply plugin: 'net.minecrell.vanilla.base'
+apply from: utils.file('gradle/minecraft.gradle')
+
+archivesBaseName = 'TabbyChat-2-macros-compat'
+version = '1.0'
+
+minecraft.replace '@VERSION':project.version
+
+dependencies {
+    compile api
+    compile ':liteloader:1.8-SNAPSHOT-mcpnames'
+}
+jar {
+    extension 'litemod'
+}

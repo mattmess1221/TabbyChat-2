@@ -68,7 +68,7 @@ public class GuiChatTC extends GuiChat {
     @Override
     public void initGui() {
         super.initGui();
-        tc.getEventManager().onInitScreen(componentList);
+        tc.getEventManager().onInitScreen(this, componentList);
         if (!opened) {
             textBox.setValue("");
             textBox.getTextField().writeText(defaultInputFieldText);
@@ -118,6 +118,9 @@ public class GuiChatTC extends GuiChat {
 
     @Override
     protected void keyTyped(char key, int code) {
+        if (tc.getEventManager().onKeyTyped(key, code)) {
+            return;
+        }
         this.waitingOnAutocomplete = false;
         if (code != Keyboard.KEY_TAB) {
             this.playerNamesFound = false;
@@ -173,6 +176,9 @@ public class GuiChatTC extends GuiChat {
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+        if (tc.getEventManager().onMouseClicked(mouseX, mouseY, mouseButton)) {
+            return;
+        }
         if (mouseButton == 0) {
             IChatComponent chat = chatGui.getChatComponent(mouseX, mouseY);
             this.handleComponentClick(chat);

@@ -1,0 +1,9 @@
+{
+    "name": "tabbychat-macros-compat",
+    "mcversion": "${mcversion}",
+    "version": "1.0",
+    "revision": 1,
+    "author": "killjoy1221",
+    "description": "Adds compatibility with Macros/Keybind mod by Mumfrey to TabbyChat 2",
+    "dependsOn": [ "tabbychat2", "macros" ]
+}
