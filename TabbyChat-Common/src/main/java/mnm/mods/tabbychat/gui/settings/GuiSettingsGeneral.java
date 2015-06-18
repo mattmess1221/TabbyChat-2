@@ -23,7 +23,7 @@ import com.google.common.collect.Lists;
 public class GuiSettingsGeneral extends SettingPanel<GeneralSettings> {
 
     public GuiSettingsGeneral() {
-        setLayout(new GuiGridLayout(10, 15));
+        setLayout(new GuiGridLayout(10, 20));
         setDisplayString(Translation.SETTINGS_GENERAL.translate());
         setBackColor(Color.getColor(255, 0, 255, 64));
     }
@@ -31,47 +31,56 @@ public class GuiSettingsGeneral extends SettingPanel<GeneralSettings> {
     @Override
     public void initGUI() {
         GeneralSettings sett = getSettings();
-        addComponent(new GuiLabel(Translation.LOG_CHAT.toString()), new int[] { 2, 1 });
+
+        int pos = 1;
+        addComponent(new GuiLabel(Translation.LOG_CHAT.toString()), new int[] { 2, pos });
         GuiSettingBoolean chkLogChat = new GuiSettingBoolean(sett.logChat);
         chkLogChat.setCaption(Translation.LOG_CHAT_DESC.toString());
-        addComponent(chkLogChat, new int[] { 1, 1 });
+        addComponent(chkLogChat, new int[] { 1, pos });
 
-        addComponent(new GuiLabel(Translation.SPLIT_LOG.toString()), new int[] { 7, 1 });
+        addComponent(new GuiLabel(Translation.SPLIT_LOG.toString()), new int[] { 7, pos });
         GuiSettingBoolean chkSplitLog = new GuiSettingBoolean(sett.splitLog);
         chkSplitLog.setCaption(Translation.SPLIT_LOG_DESC.toString());
-        addComponent(chkSplitLog, new int[] { 6, 1 });
+        addComponent(chkSplitLog, new int[] { 6, pos });
 
-        addComponent(new GuiLabel(Translation.TIMESTAMP.toString()), new int[] { 2, 3 });
-        addComponent(new GuiSettingBoolean(sett.timestampChat), new int[] { 1, 3 });
+        pos += 2;
+        addComponent(new GuiLabel(Translation.TIMESTAMP.toString()), new int[] { 2, pos });
+        addComponent(new GuiSettingBoolean(sett.timestampChat), new int[] { 1, pos });
 
-        addComponent(new GuiLabel(Translation.TIMESTAMP_STYLE.toString()), new int[] { 3, 5 });
+        pos += 2;
+        addComponent(new GuiLabel(Translation.TIMESTAMP_STYLE.toString()), new int[] { 3, pos });
         addComponent(new GuiSettingEnum<TimeStamps>(sett.timestampStyle, TimeStamps.values()),
-                new int[] { 5, 5, 4, 1 });
+                new int[] { 5, pos, 4, 1 });
 
-        addComponent(new GuiLabel(Translation.TIMESTAMP_COLOR.toString()), new int[] { 3, 7 });
+        pos += 2;
+        addComponent(new GuiLabel(Translation.TIMESTAMP_COLOR.toString()), new int[] { 3, pos });
         addComponent(new GuiSettingEnum<EnumChatFormatting>(sett.timestampColor, getColors(),
                 getColorNames()),
-                new int[] { 5, 7, 4, 1 });
+                new int[] { 5, pos, 4, 1 });
 
-        addComponent(new GuiLabel(Translation.ANTI_SPAM.toString()), new int[] { 2, 9 });
+        pos += 2;
+        addComponent(new GuiLabel(Translation.ANTI_SPAM.toString()), new int[] { 2, pos });
         GuiSettingBoolean chkSpam = new GuiSettingBoolean(sett.antiSpam);
         chkSpam.setCaption(Translation.ANTI_SPAM_DESC.toString());
-        addComponent(chkSpam, new int[] { 1, 9 });
+        addComponent(chkSpam, new int[] { 1, pos });
 
-        addComponent(new GuiLabel(Translation.SPAM_PREJUDICE.toString()), new int[] { 3, 11 });
+        pos += 2;
+        addComponent(new GuiLabel(Translation.SPAM_PREJUDICE.toString()), new int[] { 3, pos });
         GuiSettingDouble nud = new GuiSettingDouble(sett.antiSpamPrejudice);
         nud.getNumUpDown().setMin(0);
         nud.getNumUpDown().setMax(1);
         nud.getNumUpDown().setInterval(0.05);
         nud.getNumUpDown().setFormat(NumberFormat.getPercentInstance());
         nud.setCaption(Translation.SPAM_PREJUDICE_DESC.toString());
-        addComponent(nud, new int[] { 6, 11, 2, 1 });
+        addComponent(nud, new int[] { 6, pos, 2, 1 });
 
-        addComponent(new GuiLabel(Translation.UNREAD_FLASHING.toString()), new int[] { 2, 13 });
-        addComponent(new GuiSettingBoolean(sett.unreadFlashing), new int[] { 1, 13 });
+        pos += 2;
+        addComponent(new GuiLabel(Translation.UNREAD_FLASHING.toString()), new int[] { 2, pos });
+        addComponent(new GuiSettingBoolean(sett.unreadFlashing), new int[] { 1, pos });
 
-        addComponent(new GuiLabel(Translation.CHECK_UPDATES.toString()), new int[] { 2, 15 });
-        addComponent(new GuiSettingBoolean(sett.checkUpdates), new int[] { 1, 15 });
+        pos += 2;
+        addComponent(new GuiLabel(Translation.CHECK_UPDATES.toString()), new int[] { 2, pos });
+        addComponent(new GuiSettingBoolean(sett.checkUpdates), new int[] { 1, pos });
     }
 
     private EnumChatFormatting[] getColors() {

@@ -46,6 +46,8 @@ public class GuiSettingsScreen extends ComponentScreen {
         // redundant casting for reobfuscation
         panel.setPosition(((GuiScreen) this).width / 2 - panel.getBounds().width / 2, ((GuiScreen) this).height / 2
                 - panel.getBounds().height / 2);
+        GuiPanel panel = new GuiPanel(new BorderLayout());
+        this.panel.addComponent(panel, BorderLayout.Position.WEST);
         panel.addComponent(settingsList = new GuiPanel(new VerticalLayout()),
                 BorderLayout.Position.WEST);
         panel.addComponent(closeSaveButtons = new GuiPanel(new FlowLayout()),
@@ -58,6 +60,7 @@ public class GuiSettingsScreen extends ComponentScreen {
             public void action(GuiEvent event) {
                 selectedSetting.saveSettings();
                 selectedSetting.getSettings().saveSettingsFile();
+                Minecraft.getMinecraft().displayGuiScreen(null);
             }
         });
         closeSaveButtons.addComponent(save);

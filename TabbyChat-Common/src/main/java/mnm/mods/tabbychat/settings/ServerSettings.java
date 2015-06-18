@@ -19,6 +19,7 @@ public class ServerSettings extends AbstractServerSettings {
             ChannelPatterns.BRACKETS);
     public SettingValue<MessagePatterns> messegePattern = new SettingValue<MessagePatterns>(
             MessagePatterns.VANILLA);
+    public SettingValue<Boolean> useDefaultTab = new SettingValue<Boolean>(true);
     public SettingValue<String> ignoredChannels = new SettingValue<String>("");
     public SettingValue<String> defaultChannels = new SettingValue<String>("");
     public SettingValue<FilterList> filters = new SettingValue<FilterList>(new FilterList());
@@ -30,6 +31,7 @@ public class ServerSettings extends AbstractServerSettings {
         registerSetting("pmEnabled", pmEnabled);
         registerSetting("channelPattern", channelPattern);
         registerSetting("messagePattern", messegePattern);
+        registerSetting("useDefaultTab", useDefaultTab);
         registerSetting("ignoredChannels", ignoredChannels);
         registerSetting("defaultChannels", defaultChannels);
         registerSetting("filters", filters);

@@ -50,28 +50,35 @@ public class GuiFilterEditor extends GuiPanel implements GuiKeyboardAdapter {
         Pattern pattern = filter.getPattern();
         FilterSettings settings = filter.getSettings();
 
-        this.addComponent(new GuiLabel(Translation.FILTER_TITLE.translate()),
-                new int[] { 8, 0, 1, 2 });
+        int pos = 0;
 
-        this.addComponent(new GuiLabel(Translation.FILTER_NAME.translate()), new int[] { 1, 2, });
-        this.addComponent(txtName = new GuiText(), new int[] { 5, 2, 10, 1 });
+        this.addComponent(new GuiLabel(Translation.FILTER_TITLE.translate()),
+                new int[] { 8, pos, 1, 2 });
+
+        pos += 2;
+        this.addComponent(new GuiLabel(Translation.FILTER_NAME.translate()), new int[] { 1, pos });
+        this.addComponent(txtName = new GuiText(), new int[] { 5, pos, 10, 1 });
         txtName.setValue(filter.getName());
 
+        pos += 2;
         this.addComponent(new GuiLabel(Translation.FILTER_DESTINATIONS.translate()),
-                new int[] { 1, 5 });
-        this.addComponent(txtDestinations = new GuiText(), new int[] { 10, 5, 10, 1 });
+                new int[] { 1, pos });
+        this.addComponent(txtDestinations = new GuiText(), new int[] { 10, pos, 10, 1 });
         txtDestinations.setValue(merge(filter.getSettings().getChannels()));
         txtDestinations.getTextField().setMaxStringLength(1000);
 
-        this.addComponent(new GuiLabel(Translation.FILTER_HIDE.translate()), new int[] { 2, 7 });
-        this.addComponent(chkRemove = new GuiCheckbox(), new int[] { 1, 7 });
+        pos += 2;
+        this.addComponent(new GuiLabel(Translation.FILTER_HIDE.translate()), new int[] { 2, pos });
+        this.addComponent(chkRemove = new GuiCheckbox(), new int[] { 1, pos });
         chkRemove.setValue(settings.isRemove());
 
-        this.addComponent(new GuiLabel(Translation.FILTER_AUDIO_NOTIFY.translate()), new int[] { 2, 9 });
-        this.addComponent(chkSound = new GuiCheckbox(), new int[] { 1, 9 });
+        pos += 2;
+        this.addComponent(new GuiLabel(Translation.FILTER_AUDIO_NOTIFY.translate()), new int[] { 2, pos });
+        this.addComponent(chkSound = new GuiCheckbox(), new int[] { 1, pos });
         chkSound.setValue(settings.isSoundNotification());
 
-        this.addComponent(txtSound = new GuiText(), new int[] { 3, 10, 14, 1 });
+        pos += 1;
+        this.addComponent(txtSound = new GuiText(), new int[] { 3, pos, 14, 1 });
         txtSound.setValue(settings.getSoundName());
         txtSound.addKeyboardAdapter(new GuiKeyboardAdapter() {
             private int pos;
@@ -114,14 +121,16 @@ public class GuiFilterEditor extends GuiPanel implements GuiKeyboardAdapter {
                 return new ResourceLocation(txtSound.getValue());
             }
         };
-        this.addComponent(play, new int[] { 18, 10, 2, 1 });
+        this.addComponent(play, new int[] { 18, pos, 2, 1 });
 
+        pos += 2;
         this.addComponent(new GuiLabel(Translation.FILTER_EXPRESSION.translate()),
-                new int[] { 1, 13 });
-        this.addComponent(txtPattern = new GuiText(), new int[] { 8, 13, 12, 1 });
+                new int[] { 1, pos });
+        this.addComponent(txtPattern = new GuiText(), new int[] { 8, pos, 12, 1 });
         txtPattern.setValue(pattern == null ? "" : pattern.toString());
 
-        this.addComponent(lblError = new GuiLabel(""), new int[] { 6, 14 });
+        pos++;
+        this.addComponent(lblError = new GuiLabel(""), new int[] { 6, pos });
 
         GuiButton accept = new GuiButton(I18n.format("gui.done"));
         accept.addActionListener(new ActionPerformed() {
@@ -130,7 +139,7 @@ public class GuiFilterEditor extends GuiPanel implements GuiKeyboardAdapter {
                 accept();
             }
         });
-        this.addComponent(accept, new int[] { 1, 14, 4, 1 });
+        this.addComponent(accept, new int[] { 5, 14, 4, 1 });
 
         GuiButton cancel = new GuiButton(I18n.format("gui.cancel"));
         cancel.addActionListener(new ActionPerformed() {
@@ -139,7 +148,7 @@ public class GuiFilterEditor extends GuiPanel implements GuiKeyboardAdapter {
                 cancel();
             }
         });
-        this.addComponent(cancel, new int[] { 1, 15, 4, 1 });
+        this.addComponent(cancel, new int[] { 1, 14, 4, 1 });
     }
 
     private String merge(Set<String> set) {

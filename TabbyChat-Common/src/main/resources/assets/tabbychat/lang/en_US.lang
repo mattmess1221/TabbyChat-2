@@ -44,6 +44,7 @@ tabbychat.settings.server.channelPattern=Channel Pattern
 tabbychat.settings.server.channelPattern.desc=Preset or custom patterns to match channels
 tabbychat.settings.server.messagePattern=Message Pattern
 tabbychat.settings.server.messagePattern.desc=Preset or custom patterns to match PMs
+tabbychat.settings.server.useDefault=Use default channel
 tabbychat.settings.server.ignoredChannels=Ignored Channels
 tabbychat.settings.server.ignoredChannels.desc=Channels to ignore. Unimplemented
 tabbychat.settings.server.defaultChannels=Default Channels

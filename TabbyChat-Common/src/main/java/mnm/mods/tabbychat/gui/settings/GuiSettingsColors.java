@@ -14,7 +14,7 @@ public class GuiSettingsColors extends SettingPanel<ColorSettings> {
     public GuiSettingsColors() {
         setDisplayString(Translation.SETTINGS_COLORS.translate());
         setBackColor(Color.getColor(0, 255, 0, 64));
-        this.setLayout(new GuiGridLayout(50, 40));
+        this.setLayout(new GuiGridLayout(50, 50));
     }
 
     @Override

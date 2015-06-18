@@ -43,7 +43,7 @@ public class GuiSettingsChannel extends SettingPanel<ChannelSettings> {
         }
         this.addComponent(channels, BorderLayout.Position.WEST);
         panel = new GuiPanel();
-        panel.setLayout(new GuiGridLayout(8, 15));
+        panel.setLayout(new GuiGridLayout(8, 20));
         this.addComponent(panel, BorderLayout.Position.CENTER);
 
         this.select(null);
@@ -64,32 +64,37 @@ public class GuiSettingsChannel extends SettingPanel<ChannelSettings> {
             }
         }
 
+        int pos = 1;
+
         this.channel = channel;
         this.panel.clearComponents();
         if (channel == null) {
             if (channels.getComponentCount() > 0) {
-                this.panel.addComponent(new GuiLabel(Translation.CHANNEL_SELECT.toString()),
-                        new int[] { 1, 1 });
+                this.panel.addComponent(new GuiLabel(Translation.CHANNEL_SELECT.toString()), new int[] { 1, pos });
             } else {
-                this.panel.addComponent(new GuiLabel(Translation.CHANNEL_NONE.toString()),
-                        new int[] { 1, 1 });
+                this.panel.addComponent(new GuiLabel(Translation.CHANNEL_NONE.toString()), new int[] { 1, pos });
             }
             return;
         }
         this.panel.addComponent(
                 new GuiLabel(Translation.CHANNEL_LABEL.translate(channel.getName())),
-                new int[] { 1, 1 });
+                new int[] { 1, pos });
+
+        pos += 3;
         this.panel.addComponent(new GuiLabel(Translation.CHANNEL_ALIAS.toString()),
-                new int[] { 1, 4 });
-        this.panel.addComponent(alias = new GuiText(), new int[] { 3, 4, 4, 1 });
+                new int[] { 1, pos });
+        this.panel.addComponent(alias = new GuiText(), new int[] { 3, pos, 4, 1 });
         alias.setValue(channel.getAlias());
-        this.panel.addComponent(new GuiLabel(Translation.CHANNEL_PREFIX.toString()), new int[] { 1, 6 });
-        this.panel.addComponent(prefix = new GuiText(), new int[] { 3, 6, 4, 1 });
+
+        pos += 2;
+        this.panel.addComponent(new GuiLabel(Translation.CHANNEL_PREFIX.toString()), new int[] { 1, pos });
+        this.panel.addComponent(prefix = new GuiText(), new int[] { 3, pos, 4, 1 });
         prefix.setValue(channel.getPrefix());
-        this.panel.addComponent(hidePrefix = new GuiCheckbox(), new int[] { 1, 8 });
+
+        pos += 2;
+        this.panel.addComponent(hidePrefix = new GuiCheckbox(), new int[] { 1, pos });
         hidePrefix.setValue(channel.isPrefixHidden());
-        this.panel.addComponent(new GuiLabel(Translation.CHANNEL_HIDE_PREFIX.toString()),
-                new int[] { 2, 8 });
+        this.panel.addComponent(new GuiLabel(Translation.CHANNEL_HIDE_PREFIX.toString()), new int[] { 2, pos });
 
         GuiButton accept = new GuiButton(I18n.format("gui.done"));
         accept.addActionListener(new ActionPerformed() {
@@ -98,7 +103,7 @@ public class GuiSettingsChannel extends SettingPanel<ChannelSettings> {
                 save();
             }
         });
-        this.panel.addComponent(accept, new int[] { 1, 10, 3, 2 });
+        this.panel.addComponent(accept, new int[] { 2, 15, 4, 2 });
 
         GuiButton forget = new GuiButton(Translation.CHANNEL_FORGET.toString());
         forget.addActionListener(new ActionPerformed() {
@@ -119,7 +124,7 @@ public class GuiSettingsChannel extends SettingPanel<ChannelSettings> {
                 select(null);
             }
         });
-        this.panel.addComponent(forget, new int[] { 4, 10, 3, 2 });
+        this.panel.addComponent(forget, new int[] { 2, 17, 4, 2 });
     }
 
     private void save() {
