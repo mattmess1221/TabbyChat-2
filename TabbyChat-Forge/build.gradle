@@ -12,3 +12,10 @@ dependencies {
     compile api
     compile common
 }
+eclipse.classpath.file {
+    whenMerged { classpath ->
+        def refs = classpath.entries.findAll{ it.kind == 'src' && it.path.startsWith('/') }
+        classpath.entries.removeAll refs
+        classpath.entries.addAll refs
+    }
+}

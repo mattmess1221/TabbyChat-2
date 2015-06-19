@@ -1,7 +1,5 @@
 package mnm.mods.tabbychat.extra.filters;
 
-import java.util.List;
-
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.AddonManager;
 import mnm.mods.tabbychat.api.TabbyAPI;
@@ -31,7 +29,6 @@ public class FilterAddon implements ChatRecievedListener {
             // We're possibly not in game.
             return;
         }
-        List<ChatFilter> filters = settings.filters.getValue();
 
         channelFilter.applyFilter(message);
         messageFilter.applyFilter(message);
