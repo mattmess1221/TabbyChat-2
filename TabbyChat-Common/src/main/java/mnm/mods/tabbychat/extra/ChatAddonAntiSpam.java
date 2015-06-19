@@ -18,8 +18,8 @@ public class ChatAddonAntiSpam implements ChannelListener {
     @Override
     public void onMessageAdded(MessageAddedToChannelEvent event) {
 
-        boolean enabled = TabbyChat.getInstance().generalSettings.antiSpam.getValue();
-        double prejudice = TabbyChat.getInstance().generalSettings.antiSpamPrejudice.getValue();
+        boolean enabled = TabbyChat.getInstance().settings.general.antiSpam.getValue();
+        double prejudice = TabbyChat.getInstance().settings.general.antiSpamPrejudice.getValue();
 
         if (enabled && event.id == 0) {
             Channel channel = event.channel;

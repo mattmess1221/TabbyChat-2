@@ -11,8 +11,8 @@ import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.ChannelStatus;
 import mnm.mods.tabbychat.api.Chat;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
-import mnm.mods.tabbychat.settings.AdvancedSettings;
 import mnm.mods.tabbychat.settings.ColorSettings;
+import mnm.mods.tabbychat.settings.TabbySettings;
 import mnm.mods.util.gui.BorderLayout;
 import mnm.mods.util.gui.GuiPanel;
 import mnm.mods.util.gui.GuiText;
@@ -30,7 +30,7 @@ import com.google.common.collect.Sets;
 
 public class ChatBox extends GuiPanel implements Chat, GuiMouseAdapter {
 
-    private static ColorSettings colors = TabbyChat.getInstance().colorSettings;
+    private static ColorSettings colors = TabbyChat.getInstance().settings.colors;
 
     private ChatArea chatArea;
     private ChatTray pnlTray;
@@ -72,9 +72,9 @@ public class ChatBox extends GuiPanel implements Chat, GuiMouseAdapter {
         if (drag != null) {
             if (event.event == GuiMouseEvent.RELEASED) {
                 // save bounds
-                AdvancedSettings sett = TabbyChat.getInstance().advancedSettings;
-                sett.chatX.setValue(bounds.x);
-                sett.chatY.setValue(bounds.y);
+                TabbySettings sett = TabbyChat.getInstance().settings;
+                sett.advanced.chatX.setValue(bounds.x);
+                sett.advanced.chatY.setValue(bounds.y);
 
                 sett.saveSettingsFile();
                 drag = null;
@@ -175,10 +175,11 @@ public class ChatBox extends GuiPanel implements Chat, GuiMouseAdapter {
     @Override
     public Channel getChannel(String name) {
         if (!allChannels.containsKey(name)) {
-            Channel chan = TabbyChat.getInstance().channelSettings.channels.getValue().get(name);
+            // fetch from settings
+            Channel chan = TabbyChat.getInstance().serverSettings.channels.getValue().get(name);
             if (chan == null) {
                 chan = new ChatChannel(name);
-                TabbyChat.getInstance().channelSettings.addChannel(chan);
+                TabbyChat.getInstance().serverSettings.channels.put(chan.getName(), chan);
             }
             allChannels.put(name, chan);
         }

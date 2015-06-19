@@ -40,7 +40,7 @@ public class ChatLogging implements ChatRecievedListener {
 
     @Override
     public void onChatRecieved(ChatRecievedEvent message) {
-        if (TabbyChat.getInstance().generalSettings.logChat.getValue()) {
+        if (TabbyChat.getInstance().settings.general.logChat.getValue()) {
 
             checkLog();
             if (out == null) {

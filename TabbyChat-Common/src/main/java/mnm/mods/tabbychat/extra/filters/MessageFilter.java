@@ -25,7 +25,7 @@ public class MessageFilter extends TabFilter {
         try {
             // Quickly update the pattern
             MessagePatterns messege =
-                    TabbyChat.getInstance().serverSettings.messegePattern.getValue();
+                    TabbyChat.getInstance().serverSettings.general.messegePattern.getValue();
             String pattern =
                     String.format("(?:%s|%s)", messege.getOutgoing(), messege.getIncoming());
             setPattern(pattern);

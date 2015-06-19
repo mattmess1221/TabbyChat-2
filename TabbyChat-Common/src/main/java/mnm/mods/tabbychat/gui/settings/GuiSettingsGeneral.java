@@ -6,21 +6,22 @@ import java.util.List;
 
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.settings.GeneralSettings;
+import mnm.mods.tabbychat.settings.TabbySettings;
 import mnm.mods.tabbychat.util.TimeStamps;
 import mnm.mods.tabbychat.util.Translation;
 import mnm.mods.util.Color;
 import mnm.mods.util.gui.GuiGridLayout;
 import mnm.mods.util.gui.GuiLabel;
-import mnm.mods.util.gui.GuiSettingBoolean;
-import mnm.mods.util.gui.GuiSettingEnum;
-import mnm.mods.util.gui.GuiSettingNumber.GuiSettingDouble;
-import mnm.mods.util.gui.SettingPanel;
+import mnm.mods.util.gui.config.GuiSettingBoolean;
+import mnm.mods.util.gui.config.GuiSettingEnum;
+import mnm.mods.util.gui.config.GuiSettingNumber.GuiSettingDouble;
+import mnm.mods.util.gui.config.SettingPanel;
 import net.minecraft.util.EnumChatFormatting;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
-public class GuiSettingsGeneral extends SettingPanel<GeneralSettings> {
+public class GuiSettingsGeneral extends SettingPanel<TabbySettings> {
 
     public GuiSettingsGeneral() {
         setLayout(new GuiGridLayout(10, 20));
@@ -30,7 +31,7 @@ public class GuiSettingsGeneral extends SettingPanel<GeneralSettings> {
 
     @Override
     public void initGUI() {
-        GeneralSettings sett = getSettings();
+        GeneralSettings sett = getSettings().general;
 
         int pos = 1;
         addComponent(new GuiLabel(Translation.LOG_CHAT.toString()), new int[] { 2, pos });
@@ -103,8 +104,8 @@ public class GuiSettingsGeneral extends SettingPanel<GeneralSettings> {
     }
 
     @Override
-    public GeneralSettings getSettings() {
-        return TabbyChat.getInstance().generalSettings;
+    public TabbySettings getSettings() {
+        return TabbyChat.getInstance().settings;
     }
 
 }

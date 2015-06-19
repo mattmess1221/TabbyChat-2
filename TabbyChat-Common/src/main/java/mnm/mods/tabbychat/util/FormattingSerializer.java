@@ -21,7 +21,8 @@ public class FormattingSerializer implements JsonSerializer<EnumChatFormatting>,
     @Override
     public EnumChatFormatting deserialize(JsonElement json, Type typeOfT,
             JsonDeserializationContext context) throws JsonParseException {
-        return EnumChatFormatting.getValueByName(json.getAsString());
+        EnumChatFormatting color = EnumChatFormatting.getValueByName(json.getAsString());
+        return color != null ? color : EnumChatFormatting.WHITE;
     }
 
     @Override

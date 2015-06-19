@@ -27,7 +27,7 @@ public class GuiNewChatTC extends GuiNewChat {
         super(minecraft);
         Rectangle rect = new Rectangle();
 
-        AdvancedSettings settings = TabbyChat.getInstance().advancedSettings;
+        AdvancedSettings settings = TabbyChat.getInstance().settings.advanced;
         rect.x = settings.chatX.getValue();
         rect.y = settings.chatY.getValue();
         rect.width = settings.chatW.getValue();
@@ -71,7 +71,7 @@ public class GuiNewChatTC extends GuiNewChat {
                 chatevent.channels.add(chatbox.getActiveChannel());
             }
             if (chatevent.channels.contains(ChatChannel.DEFAULT_CHANNEL) && chatevent.channels.size() > 1
-                    && !tc.serverSettings.useDefaultTab.getValue()) {
+                    && !tc.serverSettings.general.useDefaultTab.getValue()) {
                 chatevent.channels.remove(ChatChannel.DEFAULT_CHANNEL);
             }
             boolean msg = !chatevent.channels.contains(chatbox.getActiveChannel());

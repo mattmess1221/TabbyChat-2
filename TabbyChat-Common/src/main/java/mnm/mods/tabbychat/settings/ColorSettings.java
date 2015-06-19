@@ -1,17 +1,14 @@
 package mnm.mods.tabbychat.settings;
 
 import mnm.mods.util.Color;
-import mnm.mods.util.SettingValue;
+import mnm.mods.util.config.Setting;
+import mnm.mods.util.config.SettingObject;
+import mnm.mods.util.config.SettingValue;
 
-public class ColorSettings extends TabbySettings {
+public class ColorSettings extends SettingObject<ColorSettings> {
 
-    public SettingValue<Color> chatBoxColor = new SettingValue<Color>(new Color(0, 0, 0, 127));
-    public SettingValue<Color> chatTextColor = new SettingValue<Color>(new Color(255, 255, 255, 255));
-
-    public ColorSettings() {
-        super("colors");
-
-        registerSetting("chatBoxColor", chatBoxColor);
-        registerSetting("chatTextColor", chatTextColor);
-    }
+    @Setting
+    public SettingValue<Color> chatBoxColor = value(new Color(0, 0, 0, 127));
+    @Setting
+    public SettingValue<Color> chatTextColor = value(new Color(255, 255, 255, 255));
 }

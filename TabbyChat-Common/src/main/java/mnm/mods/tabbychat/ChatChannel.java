@@ -5,7 +5,6 @@ import static mnm.mods.tabbychat.api.ChannelStatus.PINGED;
 import static mnm.mods.tabbychat.api.ChannelStatus.UNREAD;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -173,7 +172,7 @@ public class ChatChannel implements Channel {
             chatbox.scroll(1);
         }
 
-        trim(TabbyChat.getInstance().advancedSettings.historyLen.getValue());
+        trim(TabbyChat.getInstance().settings.advanced.historyLen.getValue());
 
     }
 
@@ -227,9 +226,5 @@ public class ChatChannel implements Channel {
     @Override
     public void clear() {
         this.messages.clear();
-    }
-
-    public static class ChannelMap extends HashMap<String, Channel> {
-        private static final long serialVersionUID = 5235330277084637079L;
     }
 }

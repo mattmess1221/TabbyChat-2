@@ -3,7 +3,7 @@ package mnm.mods.tabbychat.gui.settings;
 import java.awt.Dimension;
 
 import mnm.mods.util.gui.GuiButton;
-import mnm.mods.util.gui.SettingPanel;
+import mnm.mods.util.gui.config.SettingPanel;
 import net.minecraft.client.gui.Gui;
 
 public class SettingsButton extends GuiButton {

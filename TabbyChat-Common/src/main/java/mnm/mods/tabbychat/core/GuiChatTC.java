@@ -181,7 +181,9 @@ public class GuiChatTC extends GuiChat {
         }
         if (mouseButton == 0) {
             IChatComponent chat = chatGui.getChatComponent(mouseX, mouseY);
-            this.handleComponentClick(chat);
+            if (this.handleComponentClick(chat)) {
+                return;
+            }
         }
         chatbox.getChatInput().mouseClicked(mouseX, mouseY, mouseButton);
     }
@@ -210,7 +212,8 @@ public class GuiChatTC extends GuiChat {
         message = tc.getEventManager().onChatSent(message);
 
         String[] toSend = processSends(message);
-        long wait = 500; // wait half a second TODO configure
+        // time to wait between each send
+        long wait = tc.settings.advanced.msgDelay.getValue();
         new BackgroundChatThread(this, toSend, wait).start();
 
         // add to sent chat manually

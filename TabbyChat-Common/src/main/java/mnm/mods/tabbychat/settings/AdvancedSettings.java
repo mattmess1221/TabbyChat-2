@@ -1,28 +1,26 @@
 package mnm.mods.tabbychat.settings;
 
-import mnm.mods.util.SettingValue;
+import mnm.mods.util.config.Setting;
+import mnm.mods.util.config.SettingObject;
+import mnm.mods.util.config.SettingValue;
 
-public class AdvancedSettings extends TabbySettings {
+public class AdvancedSettings extends SettingObject<AdvancedSettings> {
 
-    public SettingValue<Integer> chatX = new SettingValue<Integer>(5);
-    public SettingValue<Integer> chatY = new SettingValue<Integer>(17);
-    public SettingValue<Integer> chatW = new SettingValue<Integer>(300);
-    public SettingValue<Integer> chatH = new SettingValue<Integer>(160);
-    public SettingValue<Float> unfocHeight = new SettingValue<Float>(0.5F);
-    public SettingValue<Integer> fadeTime = new SettingValue<Integer>(200);
-    public SettingValue<Integer> historyLen = new SettingValue<Integer>(100);
-    public SettingValue<Integer> msgDelay = new SettingValue<Integer>(500);
+    @Setting
+    public SettingValue<Integer> chatX = value(5);
+    @Setting
+    public SettingValue<Integer> chatY = value(17);
+    @Setting
+    public SettingValue<Integer> chatW = value(300);
+    @Setting
+    public SettingValue<Integer> chatH = value(160);
+    @Setting
+    public SettingValue<Float> unfocHeight = value(0.5F);
+    @Setting
+    public SettingValue<Integer> fadeTime = value(200);
+    @Setting
+    public SettingValue<Integer> historyLen = value(100);
+    @Setting
+    public SettingValue<Integer> msgDelay = value(500);
 
-    public AdvancedSettings() {
-        super("advanced");
-
-        registerSetting("chatX", chatX);
-        registerSetting("chatY", chatY);
-        registerSetting("chatW", chatW);
-        registerSetting("chatH", chatH);
-        registerSetting("unfocHeight", unfocHeight);
-        registerSetting("fadeTime", fadeTime);
-        registerSetting("historyLen", historyLen);
-        registerSetting("msgDelay", msgDelay);
-    }
 }

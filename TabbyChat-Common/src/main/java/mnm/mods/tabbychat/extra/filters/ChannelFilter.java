@@ -24,7 +24,7 @@ public class ChannelFilter extends TabFilter {
         try {
             // Quickly update the pattern
             ChannelPatterns delims =
-                    TabbyChat.getInstance().serverSettings.channelPattern.getValue();
+                    TabbyChat.getInstance().serverSettings.general.channelPattern.getValue();
             String pattern = String.format(PATTERN_FORMAT, delims.getOpen(), delims.getClose());
             setPattern(pattern);
         } catch (PatternSyntaxException e) {

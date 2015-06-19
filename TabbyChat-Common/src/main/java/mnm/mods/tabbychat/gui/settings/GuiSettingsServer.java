@@ -4,6 +4,7 @@ import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.filters.Filter;
 import mnm.mods.tabbychat.extra.filters.ChatFilter;
 import mnm.mods.tabbychat.extra.filters.GuiFilterEditor;
+import mnm.mods.tabbychat.settings.GeneralServerSettings;
 import mnm.mods.tabbychat.settings.ServerSettings;
 import mnm.mods.tabbychat.util.ChannelPatterns;
 import mnm.mods.tabbychat.util.MessagePatterns;
@@ -13,10 +14,10 @@ import mnm.mods.util.Consumer;
 import mnm.mods.util.gui.GuiButton;
 import mnm.mods.util.gui.GuiGridLayout;
 import mnm.mods.util.gui.GuiLabel;
-import mnm.mods.util.gui.GuiSettingBoolean;
-import mnm.mods.util.gui.GuiSettingEnum;
-import mnm.mods.util.gui.GuiSettingString;
-import mnm.mods.util.gui.SettingPanel;
+import mnm.mods.util.gui.config.GuiSettingBoolean;
+import mnm.mods.util.gui.config.GuiSettingEnum;
+import mnm.mods.util.gui.config.GuiSettingString;
+import mnm.mods.util.gui.config.SettingPanel;
 import mnm.mods.util.gui.events.ActionPerformed;
 import mnm.mods.util.gui.events.GuiEvent;
 import net.minecraft.client.resources.I18n;
@@ -39,8 +40,8 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> implements C
 
     @Override
     public void initGUI() {
-        ServerSettings sett = getSettings();
-        index = sett.filters.getValue().size() - 1;
+        GeneralServerSettings sett = getSettings().general;
+        index = getSettings().filters.getValue().size() - 1;
 
         int pos = 0;
         this.addComponent(new GuiLabel(Translation.CHANNELS_ENABLED.toString()), new int[] { 2, pos });
@@ -164,13 +165,13 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> implements C
 
     private void delete(int i) {
         // deletes a filter
-        getSettings().filters.getValue().remove(i);
+        getSettings().filters.remove(i);
         update();
     }
 
     private void add() {
         // creates a new filter, adds it to the list, and selects it.
-        getSettings().filters.getValue().add(new ChatFilter());
+        getSettings().filters.add(new ChatFilter());
         select(getSettings().filters.getValue().size() - 1);
         update();
     }
@@ -196,13 +197,13 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> implements C
             this.delete.setEnabled(false);
             this.index = 0;
         } else {
-            Filter filter = getSettings().filters.getValue().get(index);
+            Filter filter = getSettings().filters.get(index);
             this.lblFilter.setString(filter.getName());
         }
     }
 
     private void edit(int i) {
-        Filter filter = getSettings().filters.getValue().get(i);
+        Filter filter = getSettings().filters.get(i);
         setOverlay(new GuiFilterEditor(filter, this));
     }
 }

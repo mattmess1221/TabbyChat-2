@@ -3,7 +3,7 @@ package mnm.mods.tabbychat.gui.settings;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.TabbyAPI;
-import mnm.mods.tabbychat.settings.ChannelSettings;
+import mnm.mods.tabbychat.settings.ServerSettings;
 import mnm.mods.tabbychat.util.Translation;
 import mnm.mods.util.Color;
 import mnm.mods.util.gui.BorderLayout;
@@ -14,13 +14,13 @@ import mnm.mods.util.gui.GuiGridLayout;
 import mnm.mods.util.gui.GuiLabel;
 import mnm.mods.util.gui.GuiPanel;
 import mnm.mods.util.gui.GuiText;
-import mnm.mods.util.gui.SettingPanel;
 import mnm.mods.util.gui.VerticalLayout;
+import mnm.mods.util.gui.config.SettingPanel;
 import mnm.mods.util.gui.events.ActionPerformed;
 import mnm.mods.util.gui.events.GuiEvent;
 import net.minecraft.client.resources.I18n;
 
-public class GuiSettingsChannel extends SettingPanel<ChannelSettings> {
+public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
 
     private Channel channel;
 
@@ -135,8 +135,8 @@ public class GuiSettingsChannel extends SettingPanel<ChannelSettings> {
     }
 
     @Override
-    public ChannelSettings getSettings() {
-        return TabbyChat.getInstance().channelSettings;
+    public ServerSettings getSettings() {
+        return TabbyChat.getInstance().serverSettings;
     }
 
     public class ChannelButton extends GuiButton implements ActionPerformed {

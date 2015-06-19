@@ -18,16 +18,13 @@ import mnm.mods.tabbychat.extra.ChatAddonAntiSpam;
 import mnm.mods.tabbychat.extra.ChatLogging;
 import mnm.mods.tabbychat.extra.filters.FilterAddon;
 import mnm.mods.tabbychat.gui.settings.GuiSettingsScreen;
-import mnm.mods.tabbychat.settings.AdvancedSettings;
-import mnm.mods.tabbychat.settings.ChannelSettings;
-import mnm.mods.tabbychat.settings.ColorSettings;
-import mnm.mods.tabbychat.settings.GeneralSettings;
 import mnm.mods.tabbychat.settings.ServerSettings;
+import mnm.mods.tabbychat.settings.TabbySettings;
 import mnm.mods.tabbychat.util.TabbyRef;
 import mnm.mods.util.LogHelper;
 import mnm.mods.util.MnmUtils;
 import mnm.mods.util.ReflectionHelper;
-import mnm.mods.util.gui.SettingPanel;
+import mnm.mods.util.gui.config.SettingPanel;
 import mnm.mods.util.update.UpdateChecker;
 import mnm.mods.util.update.UpdateRequest;
 import net.minecraft.client.Minecraft;
@@ -44,12 +41,7 @@ public abstract class TabbyChat extends TabbyAPI {
     private AddonManager addonManager;
     private TabbyEvents events;
 
-    public GeneralSettings generalSettings;
-    public AdvancedSettings advancedSettings;
-    public ColorSettings colorSettings;
-    // Server settings
-    @Nullable
-    public ChannelSettings channelSettings;
+    public TabbySettings settings;
     @Nullable
     public ServerSettings serverSettings;
 
@@ -121,19 +113,11 @@ public abstract class TabbyChat extends TabbyAPI {
         events = new TabbyEvents(addonManager);
 
         // Set global settings
-        generalSettings = new GeneralSettings();
-        advancedSettings = new AdvancedSettings();
-        colorSettings = new ColorSettings();
-
+        settings = new TabbySettings();
         // Load settings
-        generalSettings.loadSettingsFile();
-        advancedSettings.loadSettingsFile();
-        colorSettings.loadSettingsFile();
-
+        settings.loadSettingsFile();
         // Save settings
-        generalSettings.saveSettingsFile();
-        advancedSettings.saveSettingsFile();
-        colorSettings.saveSettingsFile();
+        settings.saveSettingsFile();
 
         addonManager.registerListener(new ChatAddonAntiSpam());
         addonManager.registerListener(new FilterAddon());
@@ -165,11 +149,8 @@ public abstract class TabbyChat extends TabbyAPI {
         }
 
         // Set server settings
-        channelSettings = new ChannelSettings(currentServer);
         serverSettings = new ServerSettings(currentServer);
-        channelSettings.loadSettingsFile();
         serverSettings.loadSettingsFile();
-        channelSettings.saveSettingsFile();
         serverSettings.saveSettingsFile();
 
         try {
@@ -183,7 +164,7 @@ public abstract class TabbyChat extends TabbyAPI {
     }
 
     private void updateCheck() {
-        if (generalSettings.checkUpdates.getValue() && !updateChecked) {
+        if (settings.general.checkUpdates.getValue() && !updateChecked) {
             UpdateRequest request = new UpdateRequest(TabbyRef.MOD_ID);
             UpdateChecker checker = new UpdateChecker(request, TabbyRef.MOD_REVISION);
             checker.start();

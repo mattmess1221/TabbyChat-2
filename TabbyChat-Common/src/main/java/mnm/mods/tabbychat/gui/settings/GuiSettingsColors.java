@@ -1,15 +1,15 @@
 package mnm.mods.tabbychat.gui.settings;
 
 import mnm.mods.tabbychat.TabbyChat;
-import mnm.mods.tabbychat.settings.ColorSettings;
+import mnm.mods.tabbychat.settings.TabbySettings;
 import mnm.mods.tabbychat.util.Translation;
 import mnm.mods.util.Color;
 import mnm.mods.util.gui.GuiGridLayout;
 import mnm.mods.util.gui.GuiLabel;
-import mnm.mods.util.gui.GuiSettingColor;
-import mnm.mods.util.gui.SettingPanel;
+import mnm.mods.util.gui.config.GuiSettingColor;
+import mnm.mods.util.gui.config.SettingPanel;
 
-public class GuiSettingsColors extends SettingPanel<ColorSettings> {
+public class GuiSettingsColors extends SettingPanel<TabbySettings> {
 
     public GuiSettingsColors() {
         setDisplayString(Translation.SETTINGS_COLORS.translate());
@@ -19,16 +19,16 @@ public class GuiSettingsColors extends SettingPanel<ColorSettings> {
 
     @Override
     public void initGUI() {
-        this.addComponent(new GuiSettingColor(getSettings().chatBoxColor), new int[] { 2, 1, 4, 4 });
-        this.addComponent(new GuiSettingColor(getSettings().chatTextColor), new int[] { 2, 6, 4, 4 });
+        this.addComponent(new GuiSettingColor(getSettings().colors.chatBoxColor), new int[] { 2, 1, 4, 4 });
+        this.addComponent(new GuiSettingColor(getSettings().colors.chatTextColor), new int[] { 2, 6, 4, 4 });
 
         this.addComponent(new GuiLabel(Translation.COLOR_CHATBOX.translate()), new int[] { 8, 3 });
         this.addComponent(new GuiLabel(Translation.COLOR_CHAT_TEXT.translate()), new int[] { 8, 8 });
     }
 
     @Override
-    public ColorSettings getSettings() {
-        return TabbyChat.getInstance().colorSettings;
+    public TabbySettings getSettings() {
+        return TabbyChat.getInstance().settings;
     }
 
 }

@@ -120,7 +120,7 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, G
         int length = 0;
 
         int pos = getScrollPos();
-        float unfoc = TabbyChat.getInstance().advancedSettings.unfocHeight.getValue();
+        float unfoc = TabbyChat.getInstance().settings.advanced.unfocHeight.getValue();
         float div = GuiNewChatTC.getInstance().getChatOpen() ? 1 : unfoc;
         while (pos < lines.size() && length < getBounds().height * div - 8) {
             Message line = lines.get(pos);
@@ -144,7 +144,7 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, G
         int opacity = new Color(getForeColor()).getAlpha();
         double age = mc.ingameGUI.getUpdateCounter() - line.getCounter();
         if (!mc.ingameGUI.getChatGUI().getChatOpen()) {
-            double opacPerc = age / TabbyChat.getInstance().advancedSettings.fadeTime.getValue();
+            double opacPerc = age / TabbyChat.getInstance().settings.advanced.fadeTime.getValue();
             opacPerc = 1.0D - opacPerc;
             opacPerc *= 10.0D;
 

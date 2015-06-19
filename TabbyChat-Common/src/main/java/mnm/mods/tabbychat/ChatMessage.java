@@ -41,7 +41,7 @@ public class ChatMessage implements Message {
     @Override
     public IChatComponent getMessageWithOptionalTimestamp() {
         IChatComponent chat;
-        GeneralSettings settings = TabbyChat.getInstance().generalSettings;
+        GeneralSettings settings = TabbyChat.getInstance().settings.general;
         if (date != null && settings.timestampChat.getValue()) {
             chat = new ChatComponentText("");
 

@@ -35,7 +35,7 @@ public class FilterAddon implements ChatRecievedListener {
 
         channelFilter.applyFilter(message);
         messageFilter.applyFilter(message);
-        for (ChatFilter filter : filters) {
+        for (ChatFilter filter : settings.filters) {
             filter.applyFilter(message);
         }
     }
