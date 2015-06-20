@@ -29,9 +29,9 @@ public class ServerSettings extends SettingsFile<ServerSettings> {
     @Setting
     public GeneralServerSettings general = new GeneralServerSettings();
     @Setting
-    public SettingList<ChatFilter> filters = list();
+    public SettingList<ChatFilter> filters = list(ChatFilter.class);
     @Setting
-    public SettingMap<Channel> channels = map();
+    public SettingMap<Channel> channels = map(Channel.class);
 
     private final InetSocketAddress ip;
 
