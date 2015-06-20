@@ -19,6 +19,13 @@ public interface Channel {
     String getName();
 
     /**
+     * Gets whether this channel is used for a personal message.
+     *
+     * @return PM status
+     */
+    boolean isPm();
+
+    /**
      * Gets the alias that is displayed on the channel tab.
      *
      * @return The alias

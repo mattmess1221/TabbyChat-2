@@ -47,7 +47,8 @@ public class ChatTab extends GuiButton implements GuiMouseAdapter {
 
     @Override
     public void drawComponent(int mouseX, int mouseY) {
-        if (GuiNewChatTC.getInstance().getChatOpen() || channel.getStatus() == ChannelStatus.PINGED) {
+        if (GuiNewChatTC.getInstance().getChatOpen() || channel.getStatus() == ChannelStatus.PINGED
+                || (channel.getStatus() == ChannelStatus.UNREAD && channel.isPm())) {
             GlStateManager.pushMatrix();
             GlStateManager.translate(0, 0, 1);
             Gui.drawRect(0, 0, getBounds().width, getBounds().height, getBackColor());
@@ -62,16 +63,21 @@ public class ChatTab extends GuiButton implements GuiMouseAdapter {
     public void updateComponent() {
         int fore = 0xfff0f0f0;
         int back = 0x010101;
+        String alias = channel.getAlias();
+
+        if (channel.isPm()) {
+            alias = "@" + alias;
+        }
         if (channel.getStatus() != null) {
             switch (channel.getStatus()) {
             case ACTIVE:
-                setText("[" + channel.getAlias() + "]");
+                alias = "[" + alias + "]";
                 // Cyan
                 back = 0xff5b7c7b;
                 fore = 0xffa5e7e4;
                 break;
             case UNREAD:
-                setText("<" + channel.getAlias() + ">");
+                alias = "<" + alias + ">";
                 // Red
                 back = 0xff720000;
                 fore = 0xffff0000;
@@ -87,9 +93,9 @@ public class ChatTab extends GuiButton implements GuiMouseAdapter {
                 back = 0xff00aaaa;
                 break;
             }
-        } else {
-            setText(channel.getAlias());
         }
+        setText(alias);
+
         if (isHovered()) {
             // Yellow
             fore = 0xffffffa0;
@@ -122,7 +128,10 @@ public class ChatTab extends GuiButton implements GuiMouseAdapter {
 
     @Override
     public Dimension getMinimumSize() {
-        return new Dimension(mc.fontRendererObj.getStringWidth("<" + channel.getAlias() + ">") + 8,
-                15);
+        String alias = channel.getAlias();
+        if (channel.isPm()) {
+            alias = "@" + alias;
+        }
+        return new Dimension(mc.fontRendererObj.getStringWidth("<" + alias + ">") + 8, 15);
     }
 }

@@ -13,6 +13,7 @@ import mnm.mods.tabbychat.api.Chat;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.settings.ColorSettings;
 import mnm.mods.tabbychat.settings.TabbySettings;
+import mnm.mods.util.config.SettingMap;
 import mnm.mods.util.gui.BorderLayout;
 import mnm.mods.util.gui.GuiPanel;
 import mnm.mods.util.gui.GuiText;
@@ -37,6 +38,7 @@ public class ChatBox extends GuiPanel implements Chat, GuiMouseAdapter {
     private TextBox txtChatInput;
 
     private Map<String, Channel> allChannels = Maps.newHashMap();
+    private Map<String, Channel> allPms = Maps.newHashMap();
     private Set<Channel> channels = Sets.newHashSet(ChatChannel.DEFAULT_CHANNEL);
     private Channel active = ChatChannel.DEFAULT_CHANNEL;
 
@@ -174,16 +176,33 @@ public class ChatBox extends GuiPanel implements Chat, GuiMouseAdapter {
 
     @Override
     public Channel getChannel(String name) {
-        if (!allChannels.containsKey(name)) {
+        return getChannel(name, false);
+    }
+
+    @Override
+    public Channel getChannel(String name, boolean pm) {
+        return pm ? getPmChannel(name) : getChatChannel(name);
+    }
+
+    private Channel getChatChannel(String name) {
+        return getChannel(name, false, this.allChannels, TabbyChat.getInstance().serverSettings.channels);
+    }
+
+    private Channel getPmChannel(String name) {
+        return getChannel(name, true, this.allPms, TabbyChat.getInstance().serverSettings.pms);
+    }
+
+    private Channel getChannel(String name, boolean pm, Map<String, Channel> from, SettingMap<Channel> setting) {
+        if (!from.containsKey(name)) {
             // fetch from settings
-            Channel chan = TabbyChat.getInstance().serverSettings.channels.getValue().get(name);
+            Channel chan = setting.get(name);
             if (chan == null) {
-                chan = new ChatChannel(name);
-                TabbyChat.getInstance().serverSettings.channels.put(chan.getName(), chan);
+                chan = new ChatChannel(name, pm);
+                setting.put(chan.getName(), chan);
             }
-            allChannels.put(name, chan);
+            from.put(name, chan);
         }
-        return allChannels.get(name);
+        return from.get(name);
     }
 
     @Override

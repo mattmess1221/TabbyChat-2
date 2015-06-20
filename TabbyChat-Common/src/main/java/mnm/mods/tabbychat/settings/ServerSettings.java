@@ -32,6 +32,8 @@ public class ServerSettings extends SettingsFile<ServerSettings> {
     public SettingList<ChatFilter> filters = list(ChatFilter.class);
     @Setting
     public SettingMap<Channel> channels = map(Channel.class);
+    @Setting
+    public SettingMap<Channel> pms = map(Channel.class);
 
     private final InetSocketAddress ip;
 

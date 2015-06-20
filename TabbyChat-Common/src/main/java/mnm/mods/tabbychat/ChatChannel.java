@@ -44,6 +44,7 @@ public class ChatChannel implements Channel {
     private transient List<Message> messages = Lists.newArrayList();
 
     private final String name;
+    private final boolean isPm;
     private String alias;
 
     private String prefix = "";
@@ -52,13 +53,23 @@ public class ChatChannel implements Channel {
     private transient ChannelStatus status;
 
     public ChatChannel(String name) {
+        this(name, false);
+    }
+
+    public ChatChannel(String name, boolean pm) {
         this.name = name;
+        this.isPm = pm;
         this.alias = this.name;
     }
 
     @Override
     public String getName() {
         return this.name;
+    }
+
+    @Override
+    public boolean isPm() {
+        return isPm;
     }
 
     @Override

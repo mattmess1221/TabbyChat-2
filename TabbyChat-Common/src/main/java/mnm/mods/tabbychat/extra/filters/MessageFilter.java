@@ -47,7 +47,7 @@ public class MessageFilter extends TabFilter {
             if (player == null) {
                 player = event.matcher.group(2);
             }
-            Channel dest = TabbyAPI.getAPI().getChat().getChannel(player);
+            Channel dest = TabbyAPI.getAPI().getChat().getChannel(player, true);
             if (dest.getPrefix().isEmpty()) {
                 dest.setPrefix("/msg " + player);
             }
