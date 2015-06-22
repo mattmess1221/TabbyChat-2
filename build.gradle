@@ -56,13 +56,28 @@ task jarDev(type:Jar) {
     classifier "dev"
 }
 artifacts.archives jarDev
-// disable eclipse
+
+// copy MnmUtils into the libs folder
+task copyUtils(type:Copy) {
+    from utils.jar.archivePath
+    into jar.destinationDir
+}
+task copyUtilsDev(type:Copy) {
+    from utils.jarDev.archivePath
+    into jar.destinationDir
+}
+build.dependsOn copyUtils, copyUtilsDev
+
+// disable things
 tasks.findAll{task -> task.name.contains('eclipse')}.each {task -> task.enabled = false}
 subprojects {
     repositories {
         flatDir  {
             dirs rootProject.file('libs')
         }
+    }
+    if (it != utils) {
+	reobf.enabled = false
     }
     // disable runs in subprojects
     tasks.findAll {it.name.startsWith 'run'}.each {it.enabled = false}
