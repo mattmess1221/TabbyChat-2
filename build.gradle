@@ -26,6 +26,11 @@ ext.common = rootProject.project(':TabbyChat-Common')
 
 apply plugin: 'forge'
 version = "$versionMajor.$versionMinor.$versionRevision-beta2a"
+def bnum = System.env.BUILD_ID
+if (bnum != null) {
+  version += "-SNAPSHOT-$bnum"
+}
+
 apply from: utils.file('gradle/minecraft.gradle')
 
 group = "mnm.mods"
@@ -59,10 +64,12 @@ artifacts.archives jarDev
 
 // copy MnmUtils into the libs folder
 task copyUtils(type:Copy) {
+    dependsOn utils.jar
     from utils.jar.archivePath
     into jar.destinationDir
 }
 task copyUtilsDev(type:Copy) {
+    dependsOn utils.jarDev
     from utils.jarDev.archivePath
     into jar.destinationDir
 }
@@ -76,9 +83,10 @@ subprojects {
             dirs rootProject.file('libs')
         }
     }
-    if (it != utils) {
-	reobf.enabled = false
+    if ([api, common, forge].contains(it)) {
+	    reobf.enabled = false
     }
     // disable runs in subprojects
     tasks.findAll {it.name.startsWith 'run'}.each {it.enabled = false}
 }
+
