@@ -2,15 +2,15 @@ package mnm.mods.tabbychat.util;
 
 import mnm.mods.util.Translatable;
 
-public enum MessagePatterns implements Translatable {
+public enum MessagePatterns {
 
-    ESSENTIALS(Translation.FORMAT_MESSAGE_ESSENTIALS,
+    ARROW(Translation.FORMAT_MESSAGE_ARROW,
             "^\\[" + getPlayerPattern() + "[ ]?\\-\\>[ ]?me\\]",
             "^\\[me[ ]?\\-\\>[ ]?" + getPlayerPattern() + "\\]"),
-    HEROCHAT(Translation.FORMAT_MESSAGE_HEROCHAT,
+    TO_FROM(Translation.FORMAT_MESSAGE_TO_FROM,
             "^From " + getPlayerPattern() + "[ ]?:",
             "^To " + getPlayerPattern() + "[ ]?:"),
-    VANILLA(Translation.FORMAT_MESSAGE_VANILLA,
+    WHISPERS(Translation.FORMAT_MESSAGE_WHISPER,
             "^" + getPlayerPattern() + " whispers to you:",
             "^You whisper to " + getPlayerPattern() + ":"),
     DISABLED(Translation.FORMAT_MESSAGE_DISABLED, "a^", "a^");
@@ -41,12 +41,7 @@ public enum MessagePatterns implements Translatable {
     }
 
     @Override
-    public String getUnlocalized() {
-        return translation.getUnlocalized();
-    }
-
-    @Override
-    public String translate(Object... params) {
-        return translation.translate(params);
+    public String toString() {
+        return translation.toString();
     }
 }

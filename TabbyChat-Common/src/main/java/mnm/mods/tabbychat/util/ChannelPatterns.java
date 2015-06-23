@@ -2,7 +2,7 @@ package mnm.mods.tabbychat.util;
 
 import mnm.mods.util.Translatable;
 
-public enum ChannelPatterns implements Translatable {
+public enum ChannelPatterns {
 
     ANGLES(Translation.DELIMS_ANGLES, "<", ">"),
     BRACES(Translation.DELIMS_BRACES, "{", "}"),
@@ -30,12 +30,7 @@ public enum ChannelPatterns implements Translatable {
     }
 
     @Override
-    public String getUnlocalized() {
-        return translation.getUnlocalized();
-    }
-
-    @Override
-    public String translate(Object... params) {
-        return translation.translate(params);
+    public String toString() {
+        return translation.toString();
     }
 }

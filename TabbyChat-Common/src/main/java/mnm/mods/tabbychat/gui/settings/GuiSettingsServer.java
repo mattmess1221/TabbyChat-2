@@ -43,7 +43,7 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> implements C
         GeneralServerSettings sett = getSettings().general;
         index = getSettings().filters.getValue().size() - 1;
 
-        int pos = 0;
+        int pos = 1;
         this.addComponent(new GuiLabel(Translation.CHANNELS_ENABLED.toString()), new int[] { 2, pos });
         GuiSettingBoolean chkChannels = new GuiSettingBoolean(sett.channelsEnabled);
         chkChannels.setCaption(Translation.CHANNELS_ENABLED_DESC.toString());
@@ -68,6 +68,9 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> implements C
 
         pos += 2;
         this.addComponent(new GuiLabel(Translation.MESSAGE_PATTERN.toString()), new int[] { 1, pos });
+        if (sett.messegePattern.getValue() == null) {
+            sett.messegePattern.setValue(MessagePatterns.WHISPERS);
+        }
         GuiSettingEnum<MessagePatterns> enmMsg = new GuiSettingEnum<MessagePatterns>(sett.messegePattern,
                 MessagePatterns.values());
         enmMsg.setCaption(Translation.MESSAGE_PATTERN_DESC.toString());

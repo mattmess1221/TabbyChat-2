@@ -15,7 +15,7 @@ public class GeneralServerSettings extends SettingObject<GeneralServerSettings> 
     @Setting
     public SettingValue<ChannelPatterns> channelPattern = value(ChannelPatterns.BRACKETS);
     @Setting
-    public SettingValue<MessagePatterns> messegePattern = value(MessagePatterns.VANILLA);
+    public SettingValue<MessagePatterns> messegePattern = value(MessagePatterns.WHISPERS);
     @Setting
     public SettingValue<Boolean> useDefaultTab = value(true);
     @Setting

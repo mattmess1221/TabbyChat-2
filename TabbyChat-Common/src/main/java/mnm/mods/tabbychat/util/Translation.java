@@ -7,9 +7,9 @@ public enum Translation implements Translatable {
 
     TABBYCHAT("tabbychat"),
 
-    FORMAT_MESSAGE_VANILLA("tabbychat.formats.messages.vanilla"),
-    FORMAT_MESSAGE_ESSENTIALS("tabbychat.formats.messages.essentials"),
-    FORMAT_MESSAGE_HEROCHAT("tabbychat.formats.messages.herochat"),
+    FORMAT_MESSAGE_WHISPER("tabbychat.formats.messages.whisper"),
+    FORMAT_MESSAGE_ARROW("tabbychat.formats.messages.arrow"),
+    FORMAT_MESSAGE_TO_FROM("tabbychat.formats.messages.toFrom"),
     FORMAT_MESSAGE_DISABLED("tabbychat.formats.messages.disabled"),
 
     DELIMS_ANGLES("tabbychat.delims.angles"),

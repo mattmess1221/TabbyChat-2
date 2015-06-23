@@ -1,8 +1,8 @@
 tabbychat=TabbyChat
 
-tabbychat.formats.messages.vanilla=Vanilla
-tabbychat.formats.messages.essentials=Essentials
-tabbychat.formats.messages.herochat=HeroChat
+tabbychat.formats.messages.whisper=Whispers
+tabbychat.formats.messages.arrow=S -> R
+tabbychat.formats.messages.toFrom=To/From
 tabbychat.formats.messages.disabled=Disabled
 
 tabbychat.delims.angles=<Angles>
