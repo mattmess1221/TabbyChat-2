@@ -2,9 +2,11 @@ package mnm.mods.tabbychat.gui.settings;
 
 import java.awt.Rectangle;
 import java.util.List;
+import java.util.Set;
 
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.util.Color;
+import mnm.mods.util.config.SettingsFile;
 import mnm.mods.util.gui.BorderLayout;
 import mnm.mods.util.gui.ComponentScreen;
 import mnm.mods.util.gui.FlowLayout;
@@ -20,11 +22,11 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
-@SuppressWarnings("rawtypes")
 public class GuiSettingsScreen extends ComponentScreen {
 
-    private static List<Class<? extends SettingPanel>> settings = Lists.newArrayList();
+    private static List<Class<? extends SettingPanel<?>>> settings = Lists.newArrayList();
 
     static {
         registerSetting(GuiSettingsGeneral.class);
@@ -33,13 +35,32 @@ public class GuiSettingsScreen extends ComponentScreen {
         registerSetting(GuiSettingsColors.class);
     }
 
+    private List<SettingPanel<?>> panels = Lists.newArrayList();
+
     private GuiPanel panel;
     private GuiPanel settingsList;
     private GuiPanel closeSaveButtons;
-    private SettingPanel selectedSetting;
+    private SettingPanel<?> selectedSetting;
+
+    public GuiSettingsScreen(SettingPanel<?> setting) {
+        this.selectedSetting = setting;
+
+        for (Class<? extends SettingPanel<?>> sett : settings) {
+            try {
+                if (setting != null && setting.getClass() == sett) {
+                    panels.add(setting);
+                } else {
+                    panels.add(sett.newInstance());
+                }
+            } catch (Exception e) {
+                TabbyChat.getLogger().error("Unable to add " + sett.getName() + " as a setting.", e);
+            }
+        }
+    }
 
     @Override
     public void initGui() {
+
         getPanel().addComponent(panel = new GuiPanel());
         panel.setLayout(new BorderLayout());
         panel.setSize(300, 200);
@@ -58,8 +79,14 @@ public class GuiSettingsScreen extends ComponentScreen {
         save.addActionListener(new ActionPerformed() {
             @Override
             public void action(GuiEvent event) {
-                selectedSetting.saveSettings();
-                selectedSetting.getSettings().saveSettingsFile();
+                Set<SettingsFile<?>> files = Sets.newHashSet();
+                for (SettingPanel<?> sett : panels) {
+                    sett.saveSettings();
+                    files.add(sett.getSettings());
+                }
+                for (SettingsFile<?> file : files) {
+                    file.saveSettingsFile();
+                }
                 Minecraft.getMinecraft().displayGuiScreen(null);
             }
         });
@@ -77,33 +104,25 @@ public class GuiSettingsScreen extends ComponentScreen {
 
         {
             // Populate the settings
-            for (Class<? extends SettingPanel> sett : settings) {
-                try {
-                    SettingsButton button = new SettingsButton(sett.newInstance());
-                    button.addActionListener(new ActionPerformed() {
-                        @Override
-                        public void action(GuiEvent event) {
-                            selectSetting(((SettingsButton) event.component).getSettings()
-                                    .getClass(), true);
-                        }
-                    });
-                    settingsList.addComponent(button);
-                } catch (Exception e) {
-                    TabbyChat.getLogger().error(
-                            "Unable to add " + sett.getName() + " as a setting.", e);
-                }
+            for (SettingPanel<?> sett : panels) {
+                SettingsButton button = new SettingsButton(sett);
+                button.addActionListener(new ActionPerformed() {
+                    @Override
+                    public void action(GuiEvent event) {
+                        selectSetting(((SettingsButton) event.component).getSettings());
+                    }
+                });
+                settingsList.addComponent(button);
+                sett.initGUI();
             }
         }
-        boolean init;
-        Class<? extends SettingPanel> panelClass;
+        SettingPanel<?> panelClass;
         if (selectedSetting == null) {
-            init = true;
-            panelClass = settings.get(0);
+            panelClass = panels.get(0);
         } else {
-            init = false;
-            panelClass = selectedSetting.getClass();
+            panelClass = selectedSetting;
         }
-        selectSetting(panelClass, init);
+        selectSetting(panelClass);
     }
 
     private void deactivateAll() {
@@ -114,7 +133,7 @@ public class GuiSettingsScreen extends ComponentScreen {
         }
     }
 
-    private void activate(Class<? extends SettingPanel> settingClass) {
+    private <T extends SettingPanel<?>> void activate(Class<T> settingClass) {
         for (GuiComponent comp : settingsList) {
             if (comp instanceof SettingsButton
                     && ((SettingsButton) comp).getSettings().getClass().equals(settingClass)) {
@@ -132,23 +151,12 @@ public class GuiSettingsScreen extends ComponentScreen {
         super.drawScreen(mouseX, mouseY, tick);
     }
 
-    private void selectSetting(Class<? extends SettingPanel> settingClass, boolean init) {
-        if (!settings.contains(settingClass)) {
-            throw new IllegalArgumentException(settingClass.getName()
-                    + " is not a registered setting category.");
-        }
-        try {
-            selectSetting(settingClass.newInstance());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void selectSetting(SettingPanel setting) {
+    public void selectSetting(SettingPanel<?> setting) {
+        // setting.clearComponents();
         deactivateAll();
         panel.removeComponent(selectedSetting);
         selectedSetting = setting;
-        selectedSetting.initGUI();
+        // selectedSetting.initGUI();
         activate(setting.getClass());
         panel.addComponent(selectedSetting, BorderLayout.Position.CENTER);
     }
@@ -156,14 +164,15 @@ public class GuiSettingsScreen extends ComponentScreen {
     public void saveSettings() {
         for (GuiComponent comp : settingsList) {
             if (comp instanceof SettingPanel) {
-                ((SettingPanel) comp).getSettings().saveSettingsFile();
+                ((SettingPanel<?>) comp).getSettings().saveSettingsFile();
             }
         }
     }
 
-    public static void registerSetting(Class<? extends SettingPanel> settings) {
+    public static void registerSetting(Class<? extends SettingPanel<?>> settings) {
         if (!GuiSettingsScreen.settings.contains(settings)) {
             GuiSettingsScreen.settings.add(settings);
         }
     }
+
 }

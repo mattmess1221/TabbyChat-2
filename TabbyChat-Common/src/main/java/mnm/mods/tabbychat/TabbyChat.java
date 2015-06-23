@@ -78,11 +78,8 @@ public abstract class TabbyChat extends TabbyAPI {
     }
 
     public void openSettings(SettingPanel<?> setting) {
-        GuiSettingsScreen screen = new GuiSettingsScreen();
+        GuiSettingsScreen screen = new GuiSettingsScreen(setting);
         Minecraft.getMinecraft().displayGuiScreen(screen);
-        if (setting != null) {
-            screen.selectSetting(setting);
-        }
     }
 
     public InetSocketAddress getCurrentServer() {

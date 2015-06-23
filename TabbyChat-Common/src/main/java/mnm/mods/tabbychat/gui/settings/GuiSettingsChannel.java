@@ -32,10 +32,19 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
     private GuiCheckbox hidePrefix;
 
     public GuiSettingsChannel() {
+        this(null);
+    }
+
+    public GuiSettingsChannel(Channel channel) {
+        this.channel = channel;
         this.setLayout(new BorderLayout());
         this.setDisplayString(Translation.CHANNEL_TITLE.toString());
         this.setBackColor(Color.getColor(0, 15, 100, 65));
 
+    }
+
+    @Override
+    public void initGUI() {
         channels = new GuiPanel();
         channels.setLayout(new VerticalLayout());
         for (Channel channel : getSettings().channels.getValue().values()) {
@@ -46,11 +55,6 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
         panel.setLayout(new GuiGridLayout(8, 20));
         this.addComponent(panel, BorderLayout.Position.CENTER);
 
-        this.select(null);
-    }
-
-    public GuiSettingsChannel(Channel channel) {
-        this();
         this.select(channel);
     }
 
