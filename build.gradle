@@ -64,7 +64,7 @@ artifacts.archives jarDev
 
 // copy MnmUtils into the libs folder
 task copyUtils(type:Copy) {
-    dependsOn utils.jar
+    dependsOn utils.reobf
     from utils.jar.archivePath
     into jar.destinationDir
 }
