@@ -37,6 +37,20 @@ public interface FilterSettings {
     void setRemove(boolean value);
 
     /**
+     * Returns true if the destination channel should be a PM.
+     *
+     * @return pm
+     */
+    boolean isDestinationPm();
+
+    /**
+     * Sets whether the destination channel should be a PM.
+     *
+     * @param isDestinationPm pm
+     */
+    void setDestinationPm(boolean isDestinationPm);
+
+    /**
      * Returns whether highlighting should be enabled for this filter.
      *
      * @return True if highlighting is enabled

@@ -66,6 +66,8 @@ public enum Translation implements Translatable {
     FILTER_TITLE("tabbychat.filter.title"),
     FILTER_NAME("tabbychat.filter.name"),
     FILTER_DESTINATIONS("tabbychat.filter.destinations"),
+    FILTER_DESTIONATIONS_DESC("tabbychat.filter.destinations.desc"),
+    FILTER_IS_PM("tabbychat.filter.destinationIsPm"),
     FILTER_HIDE("tabbychat.filter.hideMatches"),
     FILTER_AUDIO_NOTIFY("tabbychat.filter.audioNotify"),
     FILTER_EXPRESSION("tabbychat.filter.expression"),

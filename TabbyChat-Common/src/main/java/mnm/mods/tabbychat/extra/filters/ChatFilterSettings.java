@@ -14,6 +14,7 @@ public class ChatFilterSettings implements FilterSettings {
     // destinations
     private final Set<String> channels = new HashSet<String>();
     private boolean remove;
+    private boolean isDestinationPm;
     // highlighting
     private boolean highlight = false;
     private EnumChatFormatting color;
@@ -35,6 +36,16 @@ public class ChatFilterSettings implements FilterSettings {
     @Override
     public void setRemove(boolean value) {
         this.remove = value;
+    }
+
+    @Override
+    public boolean isDestinationPm() {
+        return isDestinationPm;
+    }
+
+    @Override
+    public void setDestinationPm(boolean isDestinationPm) {
+        this.isDestinationPm = isDestinationPm;
     }
 
     @Override

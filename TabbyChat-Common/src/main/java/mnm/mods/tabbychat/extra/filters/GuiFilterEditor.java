@@ -37,6 +37,7 @@ public class GuiFilterEditor extends GuiPanel implements GuiKeyboardAdapter {
     private GuiText txtName;
     private GuiCheckbox chkRemove;
     private GuiText txtDestinations;
+    private GuiCheckbox chkPm;
     private GuiCheckbox chkSound;
     private GuiText txtSound;
     private GuiText txtPattern;
@@ -63,16 +64,22 @@ public class GuiFilterEditor extends GuiPanel implements GuiKeyboardAdapter {
         pos += 2;
         this.addComponent(new GuiLabel(Translation.FILTER_DESTINATIONS.translate()),
                 new int[] { 1, pos });
-        this.addComponent(txtDestinations = new GuiText(), new int[] { 10, pos, 10, 1 });
+        this.addComponent(txtDestinations = new GuiText(), new int[] { 8, pos, 10, 1 });
         txtDestinations.setValue(merge(filter.getSettings().getChannels()));
         txtDestinations.getTextField().setMaxStringLength(1000);
+        txtDestinations.setCaption(Translation.FILTER_DESTIONATIONS_DESC.toString());
 
-        pos += 2;
+        pos += 1;
+        this.addComponent(new GuiLabel(Translation.FILTER_IS_PM.toString()), new int[] { 2, pos });
+        this.addComponent(chkPm = new GuiCheckbox(), new int[] { 1, pos });
+        chkPm.setValue(filter.getSettings().isDestinationPm());
+
+        pos += 1;
         this.addComponent(new GuiLabel(Translation.FILTER_HIDE.translate()), new int[] { 2, pos });
         this.addComponent(chkRemove = new GuiCheckbox(), new int[] { 1, pos });
         chkRemove.setValue(settings.isRemove());
 
-        pos += 2;
+        pos += 1;
         this.addComponent(new GuiLabel(Translation.FILTER_AUDIO_NOTIFY.translate()), new int[] { 2, pos });
         this.addComponent(chkSound = new GuiCheckbox(), new int[] { 1, pos });
         chkSound.setValue(settings.isSoundNotification());
@@ -82,6 +89,7 @@ public class GuiFilterEditor extends GuiPanel implements GuiKeyboardAdapter {
         txtSound.setValue(settings.getSoundName());
         txtSound.addKeyboardAdapter(new GuiKeyboardAdapter() {
             private int pos;
+
             @Override
             public void accept(GuiKeyboardEvent event) {
                 final int max = 10;
@@ -178,7 +186,9 @@ public class GuiFilterEditor extends GuiPanel implements GuiKeyboardAdapter {
         filter.setName(txtName.getValue());
         filter.setPattern(txtPattern.getValue());
         FilterSettings sett = filter.getSettings();
+        sett.getChannels().clear();
         sett.getChannels().addAll(split(txtDestinations.getValue()));
+        sett.setDestinationPm(chkPm.getValue());
         sett.setRemove(chkRemove.getValue());
 
         sett.setSoundNotification(chkSound.getValue());

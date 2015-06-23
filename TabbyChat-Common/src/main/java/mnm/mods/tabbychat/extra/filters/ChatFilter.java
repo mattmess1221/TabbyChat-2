@@ -1,6 +1,5 @@
 package mnm.mods.tabbychat.extra.filters;
 
-import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -97,25 +96,35 @@ public class ChatFilter implements Filter {
         @Override
         public void action(Filter filter, FilterEvent event) {
             FilterSettings settings = filter.getSettings();
+
+            for (String name : settings.getChannels()) {
+                // find groups
+                Matcher matcher = Pattern.compile("^\\$(\\d+)$").matcher(name);
+                if (matcher.find()) {
+                    int group = Integer.parseInt(matcher.group(1));
+                    if (group > 0 && event.matcher.groupCount() <= group) {
+                        name = event.matcher.group(group);
+                    } else {
+                        break;
+                    }
+                }
+
+                boolean pm = settings.isDestinationPm();
+                Channel channel = TabbyAPI.getAPI().getChat().getChannel(name, pm);
+                event.channels.add(channel);
+            }
+            // remove
             if (settings.isRemove()) {
                 event.channels.clear();
             }
-            for (String name : settings.getChannels()) {
-                // TODO groups
-                Channel channel = TabbyAPI.getAPI().getChat().getChannel(name);
-                event.channels.add(channel);
-            }
-            if (filter.getSettings().isSoundNotification()) {
-                String sname = filter.getSettings().getSoundName();
+            // play sound
+            if (settings.isSoundNotification()) {
+                String sname = settings.getSoundName();
                 ResourceLocation loc = new ResourceLocation(sname);
                 ISound sound = PositionedSoundRecord.create(loc);
                 Minecraft.getMinecraft().getSoundHandler().playSound(sound);
             }
         }
-    }
-
-    public static class FilterList extends ArrayList<ChatFilter> {
-        private static final long serialVersionUID = 1198193126382070630L;
     }
 
 }

@@ -189,7 +189,11 @@ public class ChatBox extends GuiPanel implements Chat, GuiMouseAdapter {
     }
 
     private Channel getPmChannel(String name) {
-        return getChannel(name, true, this.allPms, TabbyChat.getInstance().serverSettings.pms);
+        Channel channel = getChannel(name, true, this.allPms, TabbyChat.getInstance().serverSettings.pms);
+        if (channel.getPrefix().isEmpty()) {
+            channel.setPrefix("/msg " + name);
+        }
+        return channel;
     }
 
     private Channel getChannel(String name, boolean pm, Map<String, Channel> from, SettingMap<Channel> setting) {
