@@ -1,12 +1,14 @@
 package mnm.mods.tabbychat.forge;
 
 import mnm.mods.tabbychat.util.ForgeClientCommands;
-import mnm.mods.util.LogHelper;
 import net.minecraftforge.client.ClientCommandHandler;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ForgeCommandsImpl extends ForgeClientCommands {
 
-    private static final LogHelper logger = LogHelper.getLogger();
+    private static final Logger logger = LogManager.getLogger();
 
     @Override
     public void autoComplete(String word, String s1) {

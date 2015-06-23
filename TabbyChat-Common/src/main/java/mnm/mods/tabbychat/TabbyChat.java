@@ -21,7 +21,6 @@ import mnm.mods.tabbychat.gui.settings.GuiSettingsScreen;
 import mnm.mods.tabbychat.settings.ServerSettings;
 import mnm.mods.tabbychat.settings.TabbySettings;
 import mnm.mods.tabbychat.util.TabbyRef;
-import mnm.mods.util.LogHelper;
 import mnm.mods.util.MnmUtils;
 import mnm.mods.util.ReflectionHelper;
 import mnm.mods.util.gui.config.SettingPanel;
@@ -33,9 +32,12 @@ import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiSleepMP;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public abstract class TabbyChat extends TabbyAPI {
 
-    private static final LogHelper LOGGER = LogHelper.getLogger(TabbyRef.MOD_ID);
+    private static final Logger LOGGER = LogManager.getLogger(TabbyRef.MOD_ID);
     private static TabbyChat instance;
 
     private AddonManager addonManager;
@@ -59,7 +61,7 @@ public abstract class TabbyChat extends TabbyAPI {
         return instance;
     }
 
-    public static LogHelper getLogger() {
+    public static Logger getLogger() {
         return LOGGER;
     }
 
