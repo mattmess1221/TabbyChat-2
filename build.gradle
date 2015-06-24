@@ -19,74 +19,75 @@ buildscript {
         classpath 'net.minecrell:VanillaGradle:1.0.2-SNAPSHOT'
     }
 }
+
 ext.utils = rootProject.project(':MnM-Utils')
 ext.api = rootProject.project(':TabbyChat-API')
 ext.forge = rootProject.project(':TabbyChat-Forge')
 ext.common = rootProject.project(':TabbyChat-Common')
+ext.rev = '0.21'
 
 apply plugin: 'forge'
-version = "$versionMajor.$versionMinor.$versionRevision-beta2a"
+apply from: utils.file('gradle/minecraft.gradle')
+
+group = 'mnm.mods'
+archivesBaseName = 'TabbyChat'
+version = '2.0.0-beta2a'
 def bnum = System.env.BUILD_ID
 if (bnum != null) {
   version += "-SNAPSHOT-$bnum"
 }
-
-apply from: utils.file('gradle/minecraft.gradle')
-
-group = "mnm.mods"
-
-evaluationDependsOnChildren()
-
-archivesBaseName = "TabbyChat"
 
 dependencies {
     // for the runClient
     compile utils
 }
 jar {
-    from api.sourceSets.main.output
-    from common.sourceSets.main.output
-    from forge.sourceSets.main.output
-
     manifest {
         attributes "ModType":"FML,LiteLoader"
         attributes "ModSide":"CLIENT"
     }
 }
 task jarDev(type:Jar) {
-    from api.sourceSets.main.output
-    from common.sourceSets.main.output
-    from forge.sourceSets.main.output
-
     classifier "dev"
 }
 artifacts.archives jarDev
-
-// copy MnmUtils into the libs folder
-task copyUtils(type:Copy) {
-    dependsOn utils.reobf
-    from utils.jar.archivePath
-    into jar.destinationDir
+afterEvaluate {
+    evaluationDependsOnChildren()
+    // add content to jars
+    [jar, jarDev]*.with {
+       from([api, common, forge].collect { it.sourceSets.main.output })
+    }
 }
-task copyUtilsDev(type:Copy) {
-    dependsOn utils.jarDev
-    from utils.jarDev.archivePath
-    into jar.destinationDir
-}
-build.dependsOn copyUtils, copyUtilsDev
-
 // disable things
-tasks.findAll{task -> task.name.contains('eclipse')}.each {task -> task.enabled = false}
+tasks.findAll{task -> task.name.contains('eclipse')}*.enabled = false
 subprojects {
     repositories {
         flatDir  {
             dirs rootProject.file('libs')
         }
     }
-    if ([api, common, forge].contains(it)) {
-	    reobf.enabled = false
-    }
-    // disable runs in subprojects
-    tasks.findAll {it.name.startsWith 'run'}.each {it.enabled = false}
-}
+    afterEvaluate {
+        if (it in [api, common, forge]) {
+            reobf.enabled = false
+        }
+        // disable runs in subprojects
+        tasks.findAll {it.name.startsWith 'run'}*.enabled = false
+}}
 
+allprojects.findAll {!(it in [project, api, forge, common])}.each { project ->
+    project.afterEvaluate {
+        project.tasks.withType(Jar) { jar ->
+            if (jar.name == 'repackMinecraft') return; // exclude minecraft
+
+            def pname = project.name.capitalize()
+            def jname = jar.name.capitalize()
+            def copy = task "copy$pname$jname"(type: Copy) {
+                dependsOn project.build
+                from jar.archivePath
+                into rootProject.jar.destinationDir
+                outputs.upToDateWhen {false}
+            }
+            rootProject.build.dependsOn copy
+        }
+    }
+}
