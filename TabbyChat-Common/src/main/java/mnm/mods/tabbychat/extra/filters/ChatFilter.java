@@ -104,6 +104,9 @@ public class ChatFilter implements Filter {
                     int group = Integer.parseInt(matcher.group(1));
                     if (group > 0 && event.matcher.groupCount() <= group) {
                         name = event.matcher.group(group);
+                        if (name == null) {
+                            break;
+                        }
                     } else {
                         break;
                     }
