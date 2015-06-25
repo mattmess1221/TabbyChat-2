@@ -136,6 +136,12 @@ public class GuiFilterEditor extends GuiPanel implements GuiKeyboardAdapter {
                 new int[] { 1, pos });
         this.addComponent(txtPattern = new GuiText(), new int[] { 8, pos, 12, 1 });
         txtPattern.setValue(pattern == null ? "" : pattern.toString());
+        // This text field must not be calibrated for someone of your...
+        // generous..ness
+        // I'll add a few 0s to the maximum length...
+        txtPattern.getTextField().setMaxStringLength(1000);
+
+        // you look great, by the way.
 
         pos++;
         this.addComponent(lblError = new GuiLabel(""), new int[] { 6, pos });
