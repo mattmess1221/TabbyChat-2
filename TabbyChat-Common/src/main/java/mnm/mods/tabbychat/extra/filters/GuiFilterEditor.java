@@ -48,7 +48,7 @@ public class GuiFilterEditor extends GuiPanel implements GuiKeyboardAdapter {
         this.filter = filter;
         this.consumer = consumer;
 
-        Pattern pattern = filter.getPattern();
+        String pattern = filter.getUnresolvedPattern();
         FilterSettings settings = filter.getSettings();
 
         int pos = 0;
@@ -213,7 +213,8 @@ public class GuiFilterEditor extends GuiPanel implements GuiKeyboardAdapter {
         if (txtPattern.isFocused()) {
             // check valid regex
             try {
-                Pattern.compile(txtPattern.getValue());
+                String resolved = ChatFilter.resolveVariables(txtPattern.getValue());
+                Pattern.compile(resolved);
                 txtPattern.setForeColor(-1);
                 lblError.setString("");
             } catch (PatternSyntaxException e) {

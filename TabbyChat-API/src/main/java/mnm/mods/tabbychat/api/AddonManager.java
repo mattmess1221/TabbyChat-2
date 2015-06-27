@@ -5,6 +5,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import mnm.mods.tabbychat.api.filters.FilterVariable;
 import mnm.mods.tabbychat.api.filters.IFilterAction;
 import mnm.mods.tabbychat.api.listener.TabbyListener;
 
@@ -50,5 +51,33 @@ public interface AddonManager {
      */
     @Nullable
     IFilterAction getFilterAction(String action);
+
+    /**
+     * Sets a {@link FilterVariable}.
+     *
+     * @param var
+     * @param val
+     */
+    void setFilterVariable(String var, FilterVariable val);
+
+    /**
+     * Sets a constant {@link FilterVariable}.
+     * <p>
+     * Convenience method for <code>setFilterVariable(var, new
+     * FilterVariable.FilterConstant(val));
+     *
+     * @param var
+     * @param val
+     */
+    void setFilterConstant(String var, String val);
+
+    /**
+     * Gets a {@link FilterVariable} with the given name. If one does not exist,
+     * returns {@link FilterVariable#NULL}.
+     *
+     * @param var The variable name
+     * @return The variable
+     */
+    FilterVariable getFilterVariable(String var);
 
 }

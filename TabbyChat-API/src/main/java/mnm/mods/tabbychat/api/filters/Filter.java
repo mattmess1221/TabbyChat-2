@@ -45,6 +45,13 @@ public interface Filter {
     Pattern getPattern();
 
     /**
+     * Gets the unresolved pattern with the raw variables.
+     *
+     * @return The unresolved pattern
+     */
+    String getUnresolvedPattern();
+
+    /**
      * Sets the action that this filter does when it matches.
      *
      * @param action The action id

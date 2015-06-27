@@ -3,12 +3,22 @@ package mnm.mods.tabbychat;
 import java.io.File;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.google.common.base.Function;
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 
 import mnm.mods.tabbychat.api.AddonManager;
 import mnm.mods.tabbychat.api.Chat;
 import mnm.mods.tabbychat.api.TabbyAPI;
+import mnm.mods.tabbychat.api.filters.FilterVariable;
 import mnm.mods.tabbychat.core.GuiChatTC;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.core.GuiSleepTC;
@@ -31,9 +41,7 @@ import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiSleepMP;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import net.minecraft.entity.player.EntityPlayer;
 
 public abstract class TabbyChat extends TabbyAPI {
 
@@ -122,7 +130,27 @@ public abstract class TabbyChat extends TabbyAPI {
         addonManager.registerListener(new FilterAddon());
         addonManager.registerListener(new ChatLogging(new File("logs/chat")));
 
+        addFilterVariables();
         MnmUtils.getInstance().setChatProxy(new TabbedChatProxy());
+    }
+
+    private void addFilterVariables() {
+        final Minecraft mc = Minecraft.getMinecraft();
+        addonManager.setFilterConstant("player", mc.getSession().getUsername());
+        final Function<EntityPlayer, String> names = new Function<EntityPlayer, String>() {
+            @Override
+            public String apply(EntityPlayer player) {
+                return Pattern.quote(player.getCommandSenderName());
+            }
+        };
+        addonManager.setFilterVariable("onlineplayer", new FilterVariable() {
+            @Override
+            public String getVar() {
+                @SuppressWarnings("unchecked")
+                List<String> playerNames = Lists.transform(mc.theWorld.playerEntities, names);
+                return Joiner.on('|').appendTo(new StringBuilder("(?:"), playerNames).append(')').toString();
+            }
+        });
     }
 
     protected void onRender(GuiScreen currentScreen) {

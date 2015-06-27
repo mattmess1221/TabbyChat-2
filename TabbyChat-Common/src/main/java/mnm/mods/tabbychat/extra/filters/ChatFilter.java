@@ -9,6 +9,7 @@ import mnm.mods.tabbychat.api.TabbyAPI;
 import mnm.mods.tabbychat.api.filters.Filter;
 import mnm.mods.tabbychat.api.filters.FilterEvent;
 import mnm.mods.tabbychat.api.filters.FilterSettings;
+import mnm.mods.tabbychat.api.filters.FilterVariable;
 import mnm.mods.tabbychat.api.filters.IFilterAction;
 import mnm.mods.tabbychat.api.listener.events.ChatMessageEvent.ChatRecievedEvent;
 import net.minecraft.client.Minecraft;
@@ -22,7 +23,7 @@ public class ChatFilter implements Filter {
 
     private String name = "New Filter";
     private ChatFilterSettings settings = new ChatFilterSettings();
-    private Pattern pattern = Pattern.compile("a^");
+    private String pattern = "a^";
     private String action = DefaultAction.ID;
 
     @Override
@@ -38,7 +39,8 @@ public class ChatFilter implements Filter {
     @Override
     public void setPattern(String pattern) {
         try {
-            this.pattern = Pattern.compile(pattern);
+            Pattern.compile(resolveVariables(pattern));
+            this.pattern = pattern;
         } catch (PatternSyntaxException e) {
             e.printStackTrace();
             TabbyAPI.getAPI().getChat().getChannel("TabbyChat")
@@ -48,7 +50,23 @@ public class ChatFilter implements Filter {
 
     @Override
     public Pattern getPattern() {
-        return this.pattern;
+        return Pattern.compile(resolveVariables(pattern));
+    }
+
+    @Override
+    public String getUnresolvedPattern() {
+        return pattern;
+    }
+
+    static String resolveVariables(String pattern) {
+        Matcher matcher = Pattern.compile("\\$\\{([\\w\\d]+)\\}").matcher(pattern);
+        while (matcher.find()) {
+            String key = matcher.group(1);
+            FilterVariable var = TabbyAPI.getAPI().getAddonManager().getFilterVariable(key);
+            pattern = pattern.replace("${" + key + "}", var.getVar());
+        }
+
+        return pattern;
     }
 
     @Override
