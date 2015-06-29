@@ -190,8 +190,7 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, G
 
                 int bottom = actual.y + (int) (getBounds().height * scale);
                 // The line to get
-                int linePos = (int) (Math.abs((clickY - (getBounds().height * scale) - actual.y
-                        + (bottom % size)) / (size + scale)));
+                int linePos = (int) (clickY - (getBounds().height * scale) - actual.y + (bottom % size)) / -size;
 
                 // Iterate through the chat component, stopping when the desired
                 // x is reached.
