@@ -4,17 +4,17 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import mnm.mods.tabbychat.util.ChatUtils;
+import mnm.mods.tabbychat.util.ChatTextUtils;
 import net.minecraft.event.ClickEvent;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 
-public class ChatUtilsTest {
+public class ChatTextUtilsTest {
 
     @Test
     public void testSubChat() {
-        assertEquals(makeChat(false), ChatUtils.subChat(makeChat(true), 7));
+        assertEquals(makeChat(false), ChatTextUtils.subChat(makeChat(true), 7));
     }
 
     private static IChatComponent makeChat(boolean tag) {

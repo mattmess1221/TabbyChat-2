@@ -20,7 +20,7 @@ import mnm.mods.tabbychat.gui.ChatArea;
 import mnm.mods.tabbychat.gui.ChatBox;
 import mnm.mods.tabbychat.gui.settings.GuiSettingsChannel;
 import mnm.mods.tabbychat.util.ChannelPatterns;
-import mnm.mods.tabbychat.util.ChatUtils;
+import mnm.mods.tabbychat.util.ChatTextUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.IChatComponent;
@@ -178,7 +178,7 @@ public class ChatChannel implements Channel {
             String regex = String.format("^\\%s([\\p{L}0-9_]{1,16})\\%s ?", pattern.getOpen(), pattern.getClose());
             Matcher matcher = Pattern.compile(regex).matcher(event.chat.getUnformattedText());
             if (matcher.find()) {
-                event.chat = ChatUtils.subChat(event.chat, matcher.end());
+                event.chat = ChatTextUtils.subChat(event.chat, matcher.end());
             }
         }
         String player = Minecraft.getMinecraft().thePlayer.getCommandSenderName();
