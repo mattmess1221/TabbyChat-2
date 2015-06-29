@@ -7,6 +7,10 @@ import static mnm.mods.tabbychat.api.ChannelStatus.UNREAD;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import com.google.common.collect.Lists;
 
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.ChannelStatus;
@@ -15,11 +19,11 @@ import mnm.mods.tabbychat.api.listener.events.MessageAddedToChannelEvent;
 import mnm.mods.tabbychat.gui.ChatArea;
 import mnm.mods.tabbychat.gui.ChatBox;
 import mnm.mods.tabbychat.gui.settings.GuiSettingsChannel;
+import mnm.mods.tabbychat.util.ChannelPatterns;
+import mnm.mods.tabbychat.util.ChatUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.IChatComponent;
-
-import com.google.common.collect.Lists;
 
 public class ChatChannel implements Channel {
 
@@ -164,10 +168,18 @@ public class ChatChannel implements Channel {
         if (id != 0) {
             removeMessages(id);
         }
-        MessageAddedToChannelEvent event = new MessageAddedToChannelEvent(chat, id, this);
+        MessageAddedToChannelEvent event = new MessageAddedToChannelEvent(chat.createCopy(), id, this);
         TabbyChat.getInstance().getEventManager().onMessageAddedToChannel(event);
         if (event.chat == null) {
             return;
+        }
+        if (TabbyChat.getInstance().settings.advanced.hideTag.getValue()) {
+            ChannelPatterns pattern = TabbyChat.getInstance().serverSettings.general.channelPattern.getValue();
+            String regex = String.format("^\\%s([\\p{L}0-9_]{1,16})\\%s ?", pattern.getOpen(), pattern.getClose());
+            Matcher matcher = Pattern.compile(regex).matcher(event.chat.getUnformattedText());
+            if (matcher.find()) {
+                event.chat = ChatUtils.subChat(event.chat, matcher.end());
+            }
         }
         String player = Minecraft.getMinecraft().thePlayer.getCommandSenderName();
         if (chatContains(event.chat, player, 1)) {

@@ -22,5 +22,7 @@ public class AdvancedSettings extends SettingObject<AdvancedSettings> {
     public SettingValue<Integer> historyLen = value(100);
     @Setting
     public SettingValue<Integer> msgDelay = value(500);
+    @Setting
+    public SettingValue<Boolean> hideTag = value(false);
 
 }

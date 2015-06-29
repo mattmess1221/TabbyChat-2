@@ -14,4 +14,6 @@ dependencies {
     compile utils
     compile api
     compile ':liteloader:1.8-SNAPSHOT-mcpnames'
+
+    testCompile 'junit:junit:4.12'
 }
