@@ -1,11 +1,11 @@
 package mnm.mods.tabbychat.settings;
 
 import java.io.File;
-import java.lang.reflect.Type;
 import java.net.InetSocketAddress;
 
+import com.google.gson.GsonBuilder;
+
 import mnm.mods.tabbychat.ChatChannel;
-import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.extra.filters.ChatFilter;
 import mnm.mods.tabbychat.util.FormattingSerializer;
 import mnm.mods.util.IPUtils;
@@ -15,9 +15,6 @@ import mnm.mods.util.config.SettingMap;
 import mnm.mods.util.config.SettingsFile;
 import net.minecraft.util.EnumChatFormatting;
 
-import com.google.gson.GsonBuilder;
-import com.google.gson.InstanceCreator;
-
 public class ServerSettings extends SettingsFile<ServerSettings> {
 
     @Setting
@@ -25,9 +22,9 @@ public class ServerSettings extends SettingsFile<ServerSettings> {
     @Setting
     public SettingList<ChatFilter> filters = list(ChatFilter.class);
     @Setting
-    public SettingMap<Channel> channels = map(Channel.class);
+    public SettingMap<ChatChannel> channels = map(ChatChannel.class);
     @Setting
-    public SettingMap<Channel> pms = map(Channel.class);
+    public SettingMap<ChatChannel> pms = map(ChatChannel.class);
 
     private final InetSocketAddress ip;
 
@@ -54,12 +51,7 @@ public class ServerSettings extends SettingsFile<ServerSettings> {
     @Override
     protected void setupGson(GsonBuilder builder) {
         builder.registerTypeAdapter(EnumChatFormatting.class, new FormattingSerializer());
-        builder.registerTypeAdapter(Channel.class, new InstanceCreator<Channel>() {
-            @Override
-            public Channel createInstance(Type type) {
-                return new ChatChannel(null);
-            }
-        });
+
     }
 
 }

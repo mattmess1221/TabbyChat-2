@@ -196,13 +196,14 @@ public class ChatBox extends GuiPanel implements Chat, GuiMouseAdapter {
         return channel;
     }
 
-    private Channel getChannel(String name, boolean pm, Map<String, Channel> from, SettingMap<Channel> setting) {
+    private Channel getChannel(String name, boolean pm, Map<String, Channel> from, SettingMap<ChatChannel> setting) {
         if (!from.containsKey(name)) {
             // fetch from settings
-            Channel chan = setting.get(name);
-            if (chan == null) {
+            ChatChannel chan = setting.get(name);
+            if (chan == null || chan.getName() == null) {
                 chan = new ChatChannel(name, pm);
                 setting.put(chan.getName(), chan);
+                TabbyChat.getInstance().serverSettings.saveSettingsFile();
             }
             from.put(name, chan);
         }
