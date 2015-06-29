@@ -35,7 +35,6 @@ public class BackgroundChatThread extends Thread {
 
                 try {
                     // wait a bit so we don't get kicked for spam.
-                    // TODO configure
                     Thread.sleep(waitMilis);
                 } catch (InterruptedException e) {
                     e.printStackTrace();

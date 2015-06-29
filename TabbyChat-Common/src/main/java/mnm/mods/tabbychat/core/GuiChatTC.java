@@ -4,6 +4,13 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.WordUtils;
+import org.lwjgl.input.Keyboard;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.ObjectArrays;
+
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.gui.ChatBox;
 import mnm.mods.tabbychat.util.BackgroundChatThread;
@@ -19,13 +26,6 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.MovingObjectPosition;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.WordUtils;
-import org.lwjgl.input.Keyboard;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.ObjectArrays;
 
 public class GuiChatTC extends GuiChat {
 
@@ -239,10 +239,9 @@ public class GuiChatTC extends GuiChat {
         boolean hidden = chatbox.getActiveChannel().isPrefixHidden();
         String[] sends = WordUtils.wrap(msg, 100).split("\n");
 
-        // limit commands to 1 send.
-        if (sends[0].startsWith("/")
-                && !StringUtils.isEmpty(prefix)
-                && !sends[0].startsWith(prefix)) {
+        // is command && (no prefix || not right prefix)
+        if (sends[0].startsWith("/") && (StringUtils.isEmpty(prefix) || !sends[0].startsWith(prefix))) {
+            // limit commands to 1 send.
             return new String[] { sends[0] };
         }
         if (StringUtils.isEmpty(prefix)) {
