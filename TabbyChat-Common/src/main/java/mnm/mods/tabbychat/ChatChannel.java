@@ -151,6 +151,10 @@ public class ChatChannel implements Channel {
 
     @Override
     public List<Message> getMessages() {
+        if (messages == null) {
+            // dumb gson
+            messages = Lists.newArrayList();
+        }
         return messages;
     }
 
@@ -187,7 +191,7 @@ public class ChatChannel implements Channel {
         }
         int uc = Minecraft.getMinecraft().ingameGUI.getUpdateCounter();
         Message msg = new ChatMessage(uc, event.chat, id, true);
-        this.messages.add(0, msg);
+        this.getMessages().add(0, msg);
 
         // compensate scrolling
         ChatArea chatbox = ((ChatBox) TabbyChat.getInstance().getChat()).getChatArea();
@@ -220,7 +224,7 @@ public class ChatChannel implements Channel {
     }
 
     public void trim(int size) {
-        Iterator<Message> iter = this.messages.iterator();
+        Iterator<Message> iter = this.getMessages().iterator();
 
         for (int i = 0; iter.hasNext(); i++) {
             iter.next();
@@ -232,12 +236,12 @@ public class ChatChannel implements Channel {
 
     @Override
     public void removeMessageAt(int pos) {
-        this.messages.remove(pos);
+        this.getMessages().remove(pos);
     }
 
     @Override
     public void removeMessages(int id) {
-        Iterator<Message> iter = this.messages.iterator();
+        Iterator<Message> iter = this.getMessages().iterator();
         while (iter.hasNext()) {
             Message msg = iter.next();
             if (msg.getID() == id) {
@@ -248,6 +252,6 @@ public class ChatChannel implements Channel {
 
     @Override
     public void clear() {
-        this.messages.clear();
+        this.getMessages().clear();
     }
 }
