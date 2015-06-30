@@ -11,8 +11,8 @@ import org.lwjgl.input.Keyboard;
 import com.google.common.collect.Lists;
 import com.google.common.collect.ObjectArrays;
 
+import mnm.mods.tabbychat.ChatManager;
 import mnm.mods.tabbychat.TabbyChat;
-import mnm.mods.tabbychat.gui.ChatBox;
 import mnm.mods.tabbychat.util.BackgroundChatThread;
 import mnm.mods.tabbychat.util.ForgeClientCommands;
 import mnm.mods.util.gui.GuiComponent;
@@ -32,7 +32,7 @@ public class GuiChatTC extends GuiChat {
     protected Minecraft mc = Minecraft.getMinecraft();
     protected List<GuiComponent> componentList = Lists.newArrayList();
     protected GuiNewChatTC chatGui = GuiNewChatTC.getInstance();
-    protected ChatBox chatbox;
+    protected ChatManager chat;
 
     private String defaultInputFieldText;
     private int sentHistoryIndex;
@@ -58,10 +58,10 @@ public class GuiChatTC extends GuiChat {
         super(text);
         this.defaultInputFieldText = text;
         sentHistoryIndex = chatGui.getSentMessages().size();
-        chatbox = chatGui.getChatbox();
-        textBox = chatbox.getChatInput().getTextField();
-        if (defaultInputFieldText.isEmpty() && !chatbox.getActiveChannel().isPrefixHidden()) {
-            defaultInputFieldText = chatbox.getActiveChannel().getPrefix();
+        chat = chatGui.getChatManager();
+        textBox = chat.getChatBox().getChatInput().getTextField();
+        if (defaultInputFieldText.isEmpty() && !chat.getActiveChannel().isPrefixHidden()) {
+            defaultInputFieldText = chat.getActiveChannel().getPrefix();
         }
     }
 
@@ -79,7 +79,7 @@ public class GuiChatTC extends GuiChat {
     @Override
     public void updateScreen() {
         super.updateScreen();
-        chatbox.updateComponent();
+        chat.getChatBox().updateComponent();
         for (GuiComponent comp : this.componentList) {
             comp.updateComponent();
         }
@@ -94,14 +94,14 @@ public class GuiChatTC extends GuiChat {
     public void onGuiClosed() {
         tc.getEventManager().onCloseScreen();
         this.sentHistoryBuffer = "";
-        this.chatbox.onClosed();
+        this.chat.getChatBox().onClosed();
         super.onGuiClosed();
     }
 
     @Override
     public void handleMouseInput() throws IOException {
         super.handleMouseInput();
-        this.chatbox.handleMouseInput();
+        this.chat.getChatBox().handleMouseInput();
         for (GuiComponent comp : this.componentList) {
             comp.handleMouseInput();
         }
@@ -110,7 +110,7 @@ public class GuiChatTC extends GuiChat {
     @Override
     public void handleKeyboardInput() throws IOException {
         super.handleKeyboardInput();
-        this.chatbox.handleKeyboardInput();
+        this.chat.getChatBox().handleKeyboardInput();
         for (GuiComponent comp : this.componentList) {
             comp.handleKeyboardInput();
         }
@@ -158,11 +158,11 @@ public class GuiChatTC extends GuiChat {
             break;
         case Keyboard.KEY_PRIOR:
             // Page up
-            this.chatGui.getChatbox().getChatArea().scroll(chatGui.getLineCount() + 1);
+            this.chatGui.getChatManager().getChatBox().getChatArea().scroll(chatGui.getLineCount() + 1);
             break;
         case Keyboard.KEY_NEXT:
             // Page down
-            this.chatGui.getChatbox().getChatArea().scroll(-chatGui.getLineCount() - 1);
+            this.chatGui.getChatManager().getChatBox().getChatArea().scroll(-chatGui.getLineCount() - 1);
             break;
         default:
             // type
@@ -185,7 +185,7 @@ public class GuiChatTC extends GuiChat {
                 return;
             }
         }
-        chatbox.getChatInput().mouseClicked(mouseX, mouseY, mouseButton);
+        chat.getChatBox().getChatInput().mouseClicked(mouseX, mouseY, mouseButton);
     }
 
     @Override
@@ -235,8 +235,8 @@ public class GuiChatTC extends GuiChat {
         if (StringUtils.isEmpty(msg)) {
             return null;
         }
-        String prefix = chatbox.getActiveChannel().getPrefix();
-        boolean hidden = chatbox.getActiveChannel().isPrefixHidden();
+        String prefix = chat.getActiveChannel().getPrefix();
+        boolean hidden = chat.getActiveChannel().isPrefixHidden();
         String[] sends = WordUtils.wrap(msg, 100).split("\n");
 
         // is command && (no prefix || not right prefix)
@@ -302,8 +302,8 @@ public class GuiChatTC extends GuiChat {
             String s = this.textBox.getValue().substring(i).toLowerCase();
 
             s1 = this.textBox.getValue().substring(0, this.textBox.getTextField().getCursorPosition());
-            if (chatbox.getActiveChannel().isPrefixHidden() && s1.startsWith("/")) {
-                s1 = chatbox.getActiveChannel().getPrefix() + " " + s1;
+            if (chat.getActiveChannel().isPrefixHidden() && s1.startsWith("/")) {
+                s1 = chat.getActiveChannel().getPrefix() + " " + s1;
             }
             this.sendAutocompleteRequest(s1, s);
 

@@ -17,7 +17,6 @@ import mnm.mods.tabbychat.api.ChannelStatus;
 import mnm.mods.tabbychat.api.Message;
 import mnm.mods.tabbychat.api.listener.events.MessageAddedToChannelEvent;
 import mnm.mods.tabbychat.gui.ChatArea;
-import mnm.mods.tabbychat.gui.ChatBox;
 import mnm.mods.tabbychat.gui.settings.GuiSettingsChannel;
 import mnm.mods.tabbychat.util.ChannelPatterns;
 import mnm.mods.tabbychat.util.ChatTextUtils;
@@ -45,7 +44,7 @@ public class ChatChannel implements Channel {
         }
     };
 
-    private transient List<Message> messages = Lists.newArrayList();
+    private transient List<Message> messages;
 
     private final String name;
     private final boolean isPm;
@@ -194,7 +193,7 @@ public class ChatChannel implements Channel {
         this.getMessages().add(0, msg);
 
         // compensate scrolling
-        ChatArea chatbox = ((ChatBox) TabbyChat.getInstance().getChat()).getChatArea();
+        ChatArea chatbox = ((ChatManager) TabbyChat.getInstance().getChat()).getChatBox().getChatArea();
         if (getStatus() == ACTIVE && chatbox.getScrollPos() > 0 && id == 0) {
             chatbox.scroll(1);
         }

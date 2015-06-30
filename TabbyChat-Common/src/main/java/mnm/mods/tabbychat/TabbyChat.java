@@ -75,7 +75,7 @@ public abstract class TabbyChat extends TabbyAPI {
 
     @Override
     public Chat getChat() {
-        return GuiNewChatTC.getInstance().getChatbox();
+        return GuiNewChatTC.getInstance().getChatManager();
     }
 
     @Override
