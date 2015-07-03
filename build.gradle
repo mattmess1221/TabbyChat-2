@@ -59,7 +59,7 @@ afterEvaluate {
     }
 }
 // disable things
-tasks.findAll{task -> task.name.contains('eclipse')}*.enabled = false
+//tasks.findAll{task -> task.name.contains('eclipse')}*.enabled = false
 subprojects {
     repositories {
         flatDir  {

@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.google.common.collect.Lists;
 
@@ -178,8 +177,7 @@ public class ChatChannel implements Channel {
         }
         if (TabbyChat.getInstance().settings.advanced.hideTag.getValue()) {
             ChannelPatterns pattern = TabbyChat.getInstance().serverSettings.general.channelPattern.getValue();
-            String regex = String.format("^\\%s([\\p{L}0-9_]{1,16})\\%s ?", pattern.getOpen(), pattern.getClose());
-            Matcher matcher = Pattern.compile(regex).matcher(event.chat.getUnformattedText());
+            Matcher matcher = pattern.getPattern().matcher(event.chat.getUnformattedText());
             if (matcher.find()) {
                 event.chat = ChatTextUtils.subChat(event.chat, matcher.end());
             }

@@ -1,32 +1,28 @@
 package mnm.mods.tabbychat.util;
 
+import java.util.regex.Pattern;
+
 import mnm.mods.util.Translatable;
 
 public enum ChannelPatterns {
 
-    ANGLES(Translation.DELIMS_ANGLES, "<", ">"),
-    BRACES(Translation.DELIMS_BRACES, "{", "}"),
-    BRACKETS(Translation.DELIMS_BRACKETS, "[", "]"),
-    PARENS(Translation.DELIMS_PARENTHESIS, "(", ")"),
-    ANGLESPARENS(Translation.DELIMS_ANGLES_PARENS, "<(", ")(?: )?[A-Za-z0-9_]{1-16}>"),
-    ANGLESBRACKETS(Translation.DELIMS_ANGLES_BRAKETS, "<\\[", "](?: )?[A-Za-z0-9_]{1-16}>");
+    ANGLES(Translation.DELIMS_ANGLES, "\\<%s\\>"),
+    BRACES(Translation.DELIMS_BRACES, "\\{%s\\}"),
+    BRACKETS(Translation.DELIMS_BRACKETS, "\\[%s\\]"),
+    PARENS(Translation.DELIMS_PARENTHESIS, "\\(%s\\)"),
+    ANGLESPARENS(Translation.DELIMS_ANGLES_PARENS, "<\\(%s\\)(?: )?[\\w\\d]{3,30}>"),
+    ANGLESBRACKETS(Translation.DELIMS_ANGLES_BRAKETS, "<\\[%s\\](?: )?[\\w\\d]{3,30}>");
 
     private final Translatable translation;
-    private final String open;
-    private final String close;
+    private final Pattern pattern;
 
-    private ChannelPatterns(Translatable title, String open, String close) {
+    private ChannelPatterns(Translatable title, String pattern) {
         this.translation = title;
-        this.open = open;
-        this.close = close;
+        this.pattern = Pattern.compile(String.format(pattern, "([\\p{L}0-9_]{1,16})"));
     }
 
-    public String getOpen() {
-        return open;
-    }
-
-    public String getClose() {
-        return close;
+    public Pattern getPattern() {
+        return pattern;
     }
 
     @Override

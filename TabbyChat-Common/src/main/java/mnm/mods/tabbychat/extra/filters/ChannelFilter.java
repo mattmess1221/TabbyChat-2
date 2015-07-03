@@ -13,8 +13,6 @@ import mnm.mods.tabbychat.util.ChannelPatterns;
 
 public class ChannelFilter extends TabFilter {
 
-    private static final String PATTERN_FORMAT = "^\\%s([\\p{L}0-9_]{1,16})\\%s";
-
     public ChannelFilter() {
         super(ChannelAction.ID);
     }
@@ -23,10 +21,8 @@ public class ChannelFilter extends TabFilter {
     public Pattern getPattern() {
         try {
             // Quickly update the pattern
-            ChannelPatterns delims =
-                    TabbyChat.getInstance().serverSettings.general.channelPattern.getValue();
-            String pattern = String.format(PATTERN_FORMAT, delims.getOpen(), delims.getClose());
-            setPattern(pattern);
+            ChannelPatterns delims = TabbyChat.getInstance().serverSettings.general.channelPattern.getValue();
+            setPattern(delims.getPattern().pattern());
         } catch (PatternSyntaxException e) {
             e.printStackTrace();
         }

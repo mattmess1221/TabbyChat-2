@@ -1,4 +1,4 @@
-rootProject.name = 'TabbyChat'
+rootProject.name = 'TabbyChat-2'
 include 'MnM-Utils', 'TabbyChat-API', 'TabbyChat-Common', 'TabbyChat-Forge'
 
 // compat stuff
