@@ -26,6 +26,7 @@ public class ChatBox extends GuiPanel implements GuiMouseAdapter {
     private ChatTray pnlTray;
     private TextBox txtChatInput;
 
+    private boolean dragMode;
     private Point drag;
     private Rectangle tempbox;
 
@@ -50,6 +51,7 @@ public class ChatBox extends GuiPanel implements GuiMouseAdapter {
 
         if (event.event == GuiMouseEvent.PRESSED) {
             if (Mouse.isButtonDown(0) && (pnlTray.isHovered() || (GuiScreen.isAltKeyDown() && isHovered()))) {
+                dragMode = !pnlTray.isHandleHovered();
                 drag = new Point(x, y);
                 tempbox = new Rectangle(bounds);
             }
@@ -66,7 +68,12 @@ public class ChatBox extends GuiPanel implements GuiMouseAdapter {
                 drag = null;
                 tempbox = null;
             } else if (event.event == GuiMouseEvent.DRAGGED) {
-                bounds.setLocation(tempbox.x + x - drag.x, tempbox.y + y - drag.y);
+                if (!dragMode) {
+                    bounds.setSize(tempbox.width + x - drag.x, tempbox.height - y + drag.y);
+                    bounds.setLocation(tempbox.x, tempbox.y + y - drag.y);
+                } else {
+                    bounds.setLocation(tempbox.x + x - drag.x, tempbox.y + y - drag.y);
+                }
             }
         }
     }
@@ -88,7 +95,6 @@ public class ChatBox extends GuiPanel implements GuiMouseAdapter {
 
     @Override
     public void drawComponent(int mouseX, int mouseY) {
-
         float scale = getScale();
 
         GlStateManager.pushMatrix();
@@ -121,17 +127,26 @@ public class ChatBox extends GuiPanel implements GuiMouseAdapter {
         int w = (int) (bounds.width * scale);
         int h = (int) (bounds.height * scale);
 
+        int w1 = w;
+        int h1 = h;
         int x1 = x;
         int y1 = y;
 
-        x1 = Math.max(0, x1);
-        x1 = Math.min(x1, sr.getScaledWidth() - w);
-        y1 = Math.max(0, y1);
-        y1 = Math.min(y1, sr.getScaledHeight() - h);
+        w1 = Math.min(sr.getScaledWidth(), w);
+        h1 = Math.min(sr.getScaledHeight(), h);
+        w1 = Math.max(50, w1);
+        h1 = Math.max(50, h1);
 
-        if (x1 != x || y1 != y) {
+        x1 = Math.max(0, x1);
+        x1 = Math.min(x1, sr.getScaledWidth() - w1);
+        y1 = Math.max(0, y1);
+        y1 = Math.min(y1, sr.getScaledHeight() - h1);
+
+        if (x1 != x || y1 != y || w1 != w || h1 != h) {
             bounds.x = MathHelper.ceiling_double_int(x1 / scale);
             bounds.y = MathHelper.ceiling_double_int(y1 / scale);
+            bounds.width = MathHelper.ceiling_double_int(w1 / scale);
+            bounds.height = MathHelper.ceiling_double_int(h1 / scale);
         }
         super.updateComponent();
     }

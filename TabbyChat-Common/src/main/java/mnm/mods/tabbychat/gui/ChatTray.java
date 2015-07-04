@@ -17,12 +17,15 @@ import net.minecraft.client.gui.Gui;
 public class ChatTray extends GuiPanel {
 
     private GuiPanel tabList = new GuiPanel(new FlowLayout());
-    private GuiPanel controls = new GuiPanel(new FlowLayout());
+    private ChatPanel controls = new ChatPanel(new FlowLayout());
+    private GuiComponent handle = new ChatHandle();
 
     public ChatTray() {
         super(new BorderLayout());
         this.addComponent(tabList, BorderLayout.Position.CENTER);
+        controls.addComponent(handle);
         this.addComponent(controls, BorderLayout.Position.EAST);
+
         addChannel(ChatChannel.DEFAULT_CHANNEL);
         ChatChannel.DEFAULT_CHANNEL.setStatus(ChannelStatus.ACTIVE);
     }
@@ -72,5 +75,9 @@ public class ChatTray extends GuiPanel {
     @Override
     public Dimension getMinimumSize() {
         return tabList.getLayout().getLayoutSize();
+    }
+
+    public boolean isHandleHovered() {
+        return handle.isHovered();
     }
 }

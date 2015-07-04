@@ -3,16 +3,14 @@ package mnm.mods.tabbychat.gui;
 import java.awt.Dimension;
 import java.util.List;
 
-import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.util.Color;
-import mnm.mods.util.gui.GuiComponent;
 import mnm.mods.util.gui.GuiText;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.util.MathHelper;
 
-public class TextBox extends GuiComponent {
+public class TextBox extends ChatGui {
 
     private FontRenderer fr = mc.fontRendererObj;
     // Dummy textField
@@ -34,13 +32,12 @@ public class TextBox extends GuiComponent {
 
     @Override
     public void drawComponent(int mouseX, int mouseY) {
-        if (GuiNewChatTC.getInstance().getChatOpen()) {
-            Gui.drawRect(0, 0, getBounds().width, getBounds().height, getBackColor());
-            drawText();
-            drawCursor();
-            drawBorders(0, 0, getBounds().width, getBounds().height);
-            super.drawComponent(mouseX, mouseY);
-        }
+        Gui.drawRect(0, 0, getBounds().width, getBounds().height, getBackColor());
+        drawText();
+        drawCursor();
+        drawBorders(0, 0, getBounds().width, getBounds().height);
+        super.drawComponent(mouseX, mouseY);
+
     }
 
     private void drawCursor() {
