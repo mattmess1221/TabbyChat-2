@@ -35,9 +35,11 @@ public class ChannelFilter extends TabFilter {
 
         @Override
         public void action(Filter filter, FilterEvent event) {
-            String chan = event.matcher.group(1);
-            Channel dest = TabbyAPI.getAPI().getChat().getChannel(chan);
-            event.channels.add(dest);
+            if (TabbyChat.getInstance().serverSettings.general.channelsEnabled.getValue()) {
+                String chan = event.matcher.group(1);
+                Channel dest = TabbyAPI.getAPI().getChat().getChannel(chan);
+                event.channels.add(dest);
+            }
         }
     }
 }
