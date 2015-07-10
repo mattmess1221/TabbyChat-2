@@ -16,7 +16,7 @@ import mnm.mods.util.gui.GuiGridLayout;
 import mnm.mods.util.gui.GuiLabel;
 import mnm.mods.util.gui.config.GuiSettingBoolean;
 import mnm.mods.util.gui.config.GuiSettingEnum;
-import mnm.mods.util.gui.config.GuiSettingString;
+import mnm.mods.util.gui.config.GuiSettingStringList;
 import mnm.mods.util.gui.config.SettingPanel;
 import mnm.mods.util.gui.events.ActionPerformed;
 import mnm.mods.util.gui.events.GuiEvent;
@@ -78,13 +78,13 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> implements C
 
         pos += 2;
         this.addComponent(new GuiLabel(Translation.IGNORED_CHANNELS.toString()), new int[] { 0, pos });
-        GuiSettingString strIgnored = new GuiSettingString(sett.ignoredChannels);
+        GuiSettingStringList strIgnored = new GuiSettingStringList(sett.ignoredChannels);
         strIgnored.setCaption(Translation.IGNORED_CHANNELS_DESC.toString());
         this.addComponent(strIgnored, new int[] { 5, pos, 5, 1 });
 
         pos += 2;
         this.addComponent(new GuiLabel(Translation.DEFAULT_CHANNELS.toString()), new int[] { 0, pos });
-        GuiSettingString strDefaults = new GuiSettingString(sett.defaultChannels);
+        GuiSettingStringList strDefaults = new GuiSettingStringList(sett.defaultChannels);
         strDefaults.setCaption(Translation.DEFAULT_CHANNELS_DESC.toString());
         this.addComponent(strDefaults, new int[] { 5, pos, 5, 1 });
 

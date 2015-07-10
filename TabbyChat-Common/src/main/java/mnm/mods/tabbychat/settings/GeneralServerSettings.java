@@ -3,6 +3,7 @@ package mnm.mods.tabbychat.settings;
 import mnm.mods.tabbychat.util.ChannelPatterns;
 import mnm.mods.tabbychat.util.MessagePatterns;
 import mnm.mods.util.config.Setting;
+import mnm.mods.util.config.SettingList;
 import mnm.mods.util.config.SettingObject;
 import mnm.mods.util.config.SettingValue;
 
@@ -19,7 +20,7 @@ public class GeneralServerSettings extends SettingObject<GeneralServerSettings> 
     @Setting
     public SettingValue<Boolean> useDefaultTab = value(true);
     @Setting
-    public SettingValue<String> ignoredChannels = value("");
+    public SettingList<String> ignoredChannels = list(String.class);
     @Setting
-    public SettingValue<String> defaultChannels = value("");
+    public SettingList<String> defaultChannels = list(String.class);
 }

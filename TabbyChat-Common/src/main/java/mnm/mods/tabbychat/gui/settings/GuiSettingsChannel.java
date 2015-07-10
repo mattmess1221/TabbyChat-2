@@ -118,6 +118,11 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
                 TabbyAPI.getAPI().getChat().removeChannel(channel);
                 // remove from settings file
                 getSettings().channels.getValue().remove(channel.getName());
+                if (!channel.isPm()) {
+                    // don't add this channel again.
+                    getSettings().general.ignoredChannels.add(channel.getName());
+                    getSettings().saveSettingsFile();
+                }
                 // remove from settings gui
                 for (GuiComponent comp : channels) {
                     if (comp instanceof ChannelButton && ((ChannelButton) comp).channel == channel) {

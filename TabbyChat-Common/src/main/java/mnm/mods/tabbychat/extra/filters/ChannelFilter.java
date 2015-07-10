@@ -9,6 +9,7 @@ import mnm.mods.tabbychat.api.TabbyAPI;
 import mnm.mods.tabbychat.api.filters.Filter;
 import mnm.mods.tabbychat.api.filters.FilterEvent;
 import mnm.mods.tabbychat.api.filters.IFilterAction;
+import mnm.mods.tabbychat.settings.GeneralServerSettings;
 import mnm.mods.tabbychat.util.ChannelPatterns;
 
 public class ChannelFilter extends TabFilter {
@@ -35,10 +36,14 @@ public class ChannelFilter extends TabFilter {
 
         @Override
         public void action(Filter filter, FilterEvent event) {
-            if (TabbyChat.getInstance().serverSettings.general.channelsEnabled.getValue()) {
+            GeneralServerSettings general = TabbyChat.getInstance().serverSettings.general;
+            if (general.channelsEnabled.getValue()) {
                 String chan = event.matcher.group(1);
-                Channel dest = TabbyAPI.getAPI().getChat().getChannel(chan);
-                event.channels.add(dest);
+                if (!general.ignoredChannels.getValue().contains(chan)) {
+                    // not ignoring
+                    Channel dest = TabbyAPI.getAPI().getChat().getChannel(chan);
+                    event.channels.add(dest);
+                }
             }
         }
     }

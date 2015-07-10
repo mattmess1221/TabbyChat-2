@@ -175,7 +175,7 @@ public class ChatChannel implements Channel {
         if (event.chat == null) {
             return;
         }
-        if (TabbyChat.getInstance().settings.advanced.hideTag.getValue()) {
+        if (TabbyChat.getInstance().settings.advanced.hideTag.getValue() && this != DEFAULT_CHANNEL) {
             ChannelPatterns pattern = TabbyChat.getInstance().serverSettings.general.channelPattern.getValue();
             Matcher matcher = pattern.getPattern().matcher(event.chat.getUnformattedText());
             if (matcher.find()) {
