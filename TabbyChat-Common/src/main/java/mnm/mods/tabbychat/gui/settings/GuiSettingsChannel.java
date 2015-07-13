@@ -13,6 +13,7 @@ import mnm.mods.util.gui.GuiComponent;
 import mnm.mods.util.gui.GuiGridLayout;
 import mnm.mods.util.gui.GuiLabel;
 import mnm.mods.util.gui.GuiPanel;
+import mnm.mods.util.gui.GuiScrollingPanel;
 import mnm.mods.util.gui.GuiText;
 import mnm.mods.util.gui.VerticalLayout;
 import mnm.mods.util.gui.config.SettingPanel;
@@ -24,7 +25,7 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
 
     private Channel channel;
 
-    private GuiPanel channels;
+    private GuiScrollingPanel channels;
     private GuiPanel panel;
 
     private GuiText alias;
@@ -45,10 +46,11 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
 
     @Override
     public void initGUI() {
-        channels = new GuiPanel();
-        channels.setLayout(new VerticalLayout());
+        channels = new GuiScrollingPanel();
+        channels.setSize(60, 200);
+        channels.getContentPanel().setLayout(new VerticalLayout());
         for (Channel channel : getSettings().channels.getValue().values()) {
-            channels.addComponent(new ChannelButton(channel));
+            channels.getContentPanel().addComponent(new ChannelButton(channel));
         }
         this.addComponent(channels, BorderLayout.Position.WEST);
         panel = new GuiPanel();
@@ -60,7 +62,7 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
 
     private void select(Channel channel) {
 
-        for (GuiComponent comp : channels) {
+        for (GuiComponent comp : channels.getContentPanel()) {
             if (((ChannelButton) comp).channel == channel) {
                 comp.setEnabled(false);
             } else {
@@ -73,7 +75,7 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
         this.channel = channel;
         this.panel.clearComponents();
         if (channel == null) {
-            if (channels.getComponentCount() > 0) {
+            if (channels.getContentPanel().getComponentCount() > 0) {
                 this.panel.addComponent(new GuiLabel(Translation.CHANNEL_SELECT.toString()), new int[] { 1, pos });
             } else {
                 this.panel.addComponent(new GuiLabel(Translation.CHANNEL_NONE.toString()), new int[] { 1, pos });
@@ -124,9 +126,9 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
                     getSettings().saveSettingsFile();
                 }
                 // remove from settings gui
-                for (GuiComponent comp : channels) {
+                for (GuiComponent comp : channels.getContentPanel()) {
                     if (comp instanceof ChannelButton && ((ChannelButton) comp).channel == channel) {
-                        channels.removeComponent(comp);
+                        channels.getContentPanel().removeComponent(comp);
                         break;
                     }
                 }
