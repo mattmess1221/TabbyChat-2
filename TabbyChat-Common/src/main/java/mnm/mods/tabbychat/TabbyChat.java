@@ -1,6 +1,7 @@
 package mnm.mods.tabbychat;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.List;
@@ -185,9 +186,25 @@ public abstract class TabbyChat extends TabbyAPI {
         } catch (Exception e) {
             LOGGER.fatal("Unable to hook into chat.  This is bad.", e);
         }
-
+        // load chat
+        File conf = serverSettings.getFile().getParentFile();
+        try {
+            GuiNewChatTC.getInstance().getChatManager().loadFrom(conf);
+        } catch (IOException e) {
+            LOGGER.warn("Unable to load chat data.", e);
+        }
         // update check
         updateCheck();
+    }
+
+    protected void onDisconnect() {
+        File conf = serverSettings.getFile().getParentFile();
+        try {
+            GuiNewChatTC.getInstance().getChatManager().saveTo(conf);
+        } catch (IOException e) {
+            LOGGER.warn("Unable to save chat data.", e);
+        }
+        serverSettings = null;
     }
 
     private void updateCheck() {

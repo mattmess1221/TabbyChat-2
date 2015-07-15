@@ -1,21 +1,48 @@
 package mnm.mods.tabbychat;
 
 import java.awt.Rectangle;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
+import org.apache.commons.io.Charsets;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.reflect.TypeUtils;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.ChannelStatus;
 import mnm.mods.tabbychat.api.Chat;
+import mnm.mods.tabbychat.api.Message;
 import mnm.mods.tabbychat.gui.ChatBox;
 import mnm.mods.tabbychat.settings.AdvancedSettings;
 import mnm.mods.util.config.SettingMap;
 import mnm.mods.util.gui.GuiText;
+import net.minecraft.util.IChatComponent;
 
 public class ChatManager implements Chat {
+
+    private Gson gson = new GsonBuilder()
+            .registerTypeAdapter(IChatComponent.class, new IChatComponent.Serializer())
+            .create();
 
     private ChatBox chatbox;
 
@@ -23,6 +50,8 @@ public class ChatManager implements Chat {
     private Map<String, Channel> allPms = Maps.newHashMap();
     private Set<Channel> channels = Sets.newHashSet(ChatChannel.DEFAULT_CHANNEL);
     private Channel active = ChatChannel.DEFAULT_CHANNEL;
+
+    private Map<Channel, List<Message>> messages = Maps.newHashMap();
 
     public ChatManager() {
         Rectangle rect = new Rectangle();
@@ -68,6 +97,7 @@ public class ChatManager implements Chat {
                 TabbyChat.getInstance().serverSettings.saveSettingsFile();
             }
             from.put(name, chan);
+            messages.put(chan, chan.getMessages());
         }
         return from.get(name);
     }
@@ -142,6 +172,108 @@ public class ChatManager implements Chat {
         active.setStatus(null);
         active = channel;
         active.setStatus(ChannelStatus.ACTIVE);
+    }
+
+    public void loadFrom(File dir) throws IOException {
+        File file = new File(dir, "data.gz");
+        if (!file.exists()) {
+            return;
+        }
+        InputStream fin = null;
+        InputStream gzin = null;
+        String data;
+        try {
+            fin = new FileInputStream(file);
+            gzin = new GzipCompressorInputStream(fin);
+            data = IOUtils.toString(gzin, Charsets.UTF_8);
+        } finally {
+            IOUtils.closeQuietly(fin);
+            IOUtils.closeQuietly(gzin);
+        }
+
+        clearMessages();
+        allChannels.clear();
+        allPms.clear();
+
+        JsonObject root = gson.fromJson(data, JsonObject.class);
+        Type type = TypeUtils.parameterize(List.class, ChatMessage.class);
+
+        List<Message> def = gson.fromJson(root.get("default"), type);
+        ChatChannel.DEFAULT_CHANNEL.getMessages().addAll(def);
+
+        JsonObject chans = root.get("chans").getAsJsonObject();
+        readJson(chans, false);
+        JsonObject pms = root.get("pms").getAsJsonObject();
+        readJson(pms, true);
+
+        // active channels
+        JsonObject active = root.get("active").getAsJsonObject();
+        JsonArray achans = active.get("chans").getAsJsonArray();
+        for (JsonElement e : achans) {
+            addChannel(getChannel(e.getAsString(), false));
+        }
+        JsonArray apms = active.get("pms").getAsJsonArray();
+        for (JsonElement e : apms) {
+            addChannel(getChannel(e.getAsString(), true));
+        }
+
+    }
+
+    private void readJson(JsonObject obj, boolean pm) {
+        for (Entry<String, JsonElement> entry : obj.entrySet()) {
+            Channel chan = getChannel(entry.getKey(), pm);
+            Type type = TypeUtils.parameterize(List.class, ChatMessage.class);
+            List<Message> list = gson.fromJson(entry.getValue(), type);
+            chan.getMessages().addAll(list);
+        }
+    }
+
+    public void saveTo(File dir) throws IOException {
+        JsonObject root = new JsonObject();
+        root.add("default", gson.toJsonTree(ChatChannel.DEFAULT_CHANNEL.getMessages()));
+
+        JsonObject chans = new JsonObject();
+        root.add("chans", chans);
+        JsonObject pms = new JsonObject();
+        root.add("pms", pms);
+
+        for (Entry<Channel, List<Message>> entry : messages.entrySet()) {
+            Channel c = entry.getKey();
+            JsonObject obj = c.isPm() ? pms : chans;
+            obj.add(c.getName(), gson.toJsonTree(entry.getKey().getMessages()));
+        }
+
+        // active channels
+        JsonObject active = new JsonObject();
+        root.add("active", active);
+
+        JsonArray apms = new JsonArray();
+        JsonArray achans = new JsonArray();
+        active.add("chans", achans);
+        active.add("pms", apms);
+
+        for (Channel c : channels) {
+            if (c == ChatChannel.DEFAULT_CHANNEL) {
+                continue;
+            }
+            JsonArray array = c.isPm() ? apms : achans;
+            array.add(new JsonPrimitive(c.getName()));
+        }
+
+        OutputStream fout = null;
+        GzipCompressorOutputStream gzout = null;
+        try {
+            File file = new File(dir, "data.gz");
+            file.getParentFile().mkdirs();
+            fout = new FileOutputStream(file);
+            gzout = new GzipCompressorOutputStream(fout);
+            String data = gson.toJson(root);
+            IOUtils.write(data, gzout, Charsets.UTF_8);
+            gzout.finish();
+        } finally {
+            IOUtils.closeQuietly(fout);
+            IOUtils.closeQuietly(gzout);
+        }
     }
 
     public ChatBox getChatBox() {

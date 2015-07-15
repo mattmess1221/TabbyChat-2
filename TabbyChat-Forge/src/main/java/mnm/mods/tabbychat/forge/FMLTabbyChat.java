@@ -17,6 +17,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
+import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
 
 @Mod(modid = TabbyRef.MOD_ID, name = TabbyRef.MOD_NAME, version = TabbyRef.MOD_VERSION)
 public class FMLTabbyChat extends TabbyChat {
@@ -68,5 +69,10 @@ public class FMLTabbyChat extends TabbyChat {
         } else {
             onJoin(event.manager.getRemoteAddress());
         }
+    }
+
+    @SubscribeEvent
+    public void onDisconnect(ClientDisconnectionFromServerEvent event) {
+        onDisconnect();
     }
 }

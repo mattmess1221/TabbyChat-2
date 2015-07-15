@@ -16,7 +16,7 @@ public class ChatMessage implements Message {
 
     private IChatComponent message;
     private int id;
-    private int counter;
+    private transient int counter;
     private Date date;
 
     public ChatMessage(int updatedCounter, IChatComponent chat, int id, boolean isNew) {
