@@ -21,17 +21,20 @@ public class ChatTextUtils {
     }
 
     public static List<Message> split(List<Message> list, int width) {
-        List<Message> result = Lists.newArrayList();
-        Iterator<Message> iter = list.iterator();
-        while (iter.hasNext() && result.size() <= 100) {
-            Message line = iter.next();
-            List<IChatComponent> chatlist = split(line.getMessageWithOptionalTimestamp(), width);
-            for (int i = chatlist.size() - 1; i >= 0; i--) {
-                IChatComponent chat = chatlist.get(i);
-                result.add(new ChatMessage(line.getCounter(), chat, line.getID(), false));
+        // prevent concurrent modification caused by chat thread
+        synchronized (list) {
+            List<Message> result = Lists.newArrayList();
+            Iterator<Message> iter = list.iterator();
+            while (iter.hasNext() && result.size() <= 100) {
+                Message line = iter.next();
+                List<IChatComponent> chatlist = split(line.getMessageWithOptionalTimestamp(), width);
+                for (int i = chatlist.size() - 1; i >= 0; i--) {
+                    IChatComponent chat = chatlist.get(i);
+                    result.add(new ChatMessage(line.getCounter(), chat, line.getID(), false));
+                }
             }
+            return result;
         }
-        return result;
     }
 
     /**
