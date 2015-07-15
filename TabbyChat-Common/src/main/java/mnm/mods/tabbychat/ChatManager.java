@@ -135,7 +135,6 @@ public class ChatManager implements Chat {
 
     @Override
     public void clearMessages() {
-        // TODO save messages somewhere
         for (Channel channel : channels) {
             channel.clear();
         }
