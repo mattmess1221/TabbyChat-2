@@ -46,7 +46,7 @@ public class GuiNewChatTC extends GuiNewChat {
     }
 
     @Override
-    public void printChatMessageWithOptionalDeletion(IChatComponent ichat, int id) {
+    public synchronized void printChatMessageWithOptionalDeletion(IChatComponent ichat, int id) {
         // chat listeners
         ChatRecievedEvent chatevent = new ChatRecievedEvent(ichat, id);
         chatevent.channels.add(ChatChannel.DEFAULT_CHANNEL);

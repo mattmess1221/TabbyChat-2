@@ -5,6 +5,7 @@ import static mnm.mods.tabbychat.api.ChannelStatus.PINGED;
 import static mnm.mods.tabbychat.api.ChannelStatus.UNREAD;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -151,7 +152,7 @@ public class ChatChannel implements Channel {
     public List<Message> getMessages() {
         if (messages == null) {
             // dumb gson
-            messages = Lists.newArrayList();
+            messages = Collections.synchronizedList(Lists.<Message> newArrayList());
         }
         return messages;
     }
