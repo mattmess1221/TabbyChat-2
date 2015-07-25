@@ -24,18 +24,18 @@ ext.utils = rootProject.project(':MnM-Utils')
 ext.api = rootProject.project(':TabbyChat-API')
 ext.forge = rootProject.project(':TabbyChat-Forge')
 ext.common = rootProject.project(':TabbyChat-Common')
-ext.rev = '0.21'
+ext.rev = '0.3'
 
 apply plugin: 'forge'
-apply from: utils.file('gradle/minecraft.gradle')
 
 group = 'mnm.mods'
 archivesBaseName = 'TabbyChat'
-version = '2.0.0-beta2a'
+version = '2.0.0-beta3'
 def bnum = System.env.BUILD_ID
 if (bnum != null) {
   version += "-SNAPSHOT-$bnum"
 }
+apply from: utils.file('gradle/minecraft.gradle')
 
 dependencies {
     // for the runClient
