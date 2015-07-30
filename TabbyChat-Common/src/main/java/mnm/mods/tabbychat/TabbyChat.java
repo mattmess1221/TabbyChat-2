@@ -198,6 +198,9 @@ public abstract class TabbyChat extends TabbyAPI {
     }
 
     protected void onDisconnect() {
+        if (serverSettings == null) {
+            return;
+        }
         File conf = serverSettings.getFile().getParentFile();
         try {
             GuiNewChatTC.getInstance().getChatManager().saveTo(conf);
