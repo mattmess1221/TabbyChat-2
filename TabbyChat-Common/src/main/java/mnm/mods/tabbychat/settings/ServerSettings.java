@@ -7,13 +7,12 @@ import com.google.gson.GsonBuilder;
 
 import mnm.mods.tabbychat.ChatChannel;
 import mnm.mods.tabbychat.extra.filters.ChatFilter;
-import mnm.mods.tabbychat.util.FormattingSerializer;
 import mnm.mods.util.IPUtils;
 import mnm.mods.util.config.Setting;
 import mnm.mods.util.config.SettingList;
 import mnm.mods.util.config.SettingMap;
 import mnm.mods.util.config.SettingsFile;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.EnumTypeAdapterFactory;
 
 public class ServerSettings extends SettingsFile<ServerSettings> {
 
@@ -50,8 +49,7 @@ public class ServerSettings extends SettingsFile<ServerSettings> {
 
     @Override
     protected void setupGson(GsonBuilder builder) {
-        builder.registerTypeAdapter(EnumChatFormatting.class, new FormattingSerializer());
-
+        builder.registerTypeAdapterFactory(new EnumTypeAdapterFactory());
     }
 
 }

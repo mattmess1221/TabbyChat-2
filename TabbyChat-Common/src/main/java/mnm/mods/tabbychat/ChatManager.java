@@ -36,12 +36,16 @@ import mnm.mods.tabbychat.gui.ChatBox;
 import mnm.mods.tabbychat.settings.AdvancedSettings;
 import mnm.mods.util.config.SettingMap;
 import mnm.mods.util.gui.GuiText;
+import net.minecraft.util.ChatStyle;
+import net.minecraft.util.EnumTypeAdapterFactory;
 import net.minecraft.util.IChatComponent;
 
 public class ChatManager implements Chat {
 
     private Gson gson = new GsonBuilder()
             .registerTypeAdapter(IChatComponent.class, new IChatComponent.Serializer())
+            .registerTypeAdapter(ChatStyle.class, new ChatStyle.Serializer())
+            .registerTypeAdapterFactory(new EnumTypeAdapterFactory())
             .create();
 
     private ChatBox chatbox;

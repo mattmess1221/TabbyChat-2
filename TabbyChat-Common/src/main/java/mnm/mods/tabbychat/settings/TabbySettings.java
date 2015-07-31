@@ -2,13 +2,12 @@ package mnm.mods.tabbychat.settings;
 
 import java.io.File;
 
+import com.google.gson.GsonBuilder;
+
 import mnm.mods.tabbychat.TabbyChat;
-import mnm.mods.tabbychat.util.FormattingSerializer;
 import mnm.mods.util.config.Setting;
 import mnm.mods.util.config.SettingsFile;
-import net.minecraft.util.EnumChatFormatting;
-
-import com.google.gson.GsonBuilder;
+import net.minecraft.util.EnumTypeAdapterFactory;
 
 public class TabbySettings extends SettingsFile<TabbySettings> {
 
@@ -27,6 +26,6 @@ public class TabbySettings extends SettingsFile<TabbySettings> {
 
     @Override
     protected void setupGson(GsonBuilder builder) {
-        builder.registerTypeAdapter(EnumChatFormatting.class, new FormattingSerializer());
+        builder.registerTypeAdapterFactory(new EnumTypeAdapterFactory());
     }
 }
