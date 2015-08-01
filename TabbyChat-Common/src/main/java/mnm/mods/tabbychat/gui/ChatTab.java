@@ -12,7 +12,6 @@ import mnm.mods.util.gui.events.GuiMouseAdapter;
 import mnm.mods.util.gui.events.GuiMouseEvent;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.GlStateManager;
 
 public class ChatTab extends GuiButton implements GuiMouseAdapter {
 
@@ -49,13 +48,10 @@ public class ChatTab extends GuiButton implements GuiMouseAdapter {
     public void drawComponent(int mouseX, int mouseY) {
         if (GuiNewChatTC.getInstance().getChatOpen() || channel.getStatus() == ChannelStatus.PINGED
                 || (channel.getStatus() == ChannelStatus.UNREAD && channel.isPm())) {
-            GlStateManager.pushMatrix();
-            GlStateManager.translate(0, 0, 1);
             Gui.drawRect(0, 0, getBounds().width, getBounds().height, getBackColor());
             this.drawCenteredString(mc.fontRendererObj, this.getText(), this.getBounds().width / 2,
                     (this.getBounds().height - 8) / 2, getForeColor());
             this.drawBorders(0, 0, getBounds().width - 1, getBounds().height, getForeColor());
-            GlStateManager.popMatrix();
         }
     }
 

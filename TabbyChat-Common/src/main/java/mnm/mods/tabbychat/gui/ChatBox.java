@@ -97,13 +97,8 @@ public class ChatBox extends GuiPanel implements GuiMouseAdapter {
     public void drawComponent(int mouseX, int mouseY) {
         float scale = getScale();
 
+        GlStateManager.popMatrix(); // ignore what GuiIngame did.
         GlStateManager.pushMatrix();
-        // Reset the matrix so it can have a clean slate
-        GlStateManager.loadIdentity();
-        // Translate it so everything's drawn correctly
-        GlStateManager.translate(0f, 0f, -2000f);
-        // Go up some more so it's in front of the hotbar.
-        GlStateManager.translate(0, 0, 0x97);
         // Scale it accordingly
         GlStateManager.scale(scale, scale, 1.0F);
 
@@ -112,6 +107,7 @@ public class ChatBox extends GuiPanel implements GuiMouseAdapter {
         super.drawComponent(mouseX, mouseY);
 
         GlStateManager.popMatrix();
+        GlStateManager.pushMatrix(); // push to avoid gl errors
 
     }
 
