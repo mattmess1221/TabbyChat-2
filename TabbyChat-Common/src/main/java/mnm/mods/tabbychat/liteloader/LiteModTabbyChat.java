@@ -13,8 +13,6 @@ import com.mumfrey.liteloader.resources.ModResourcePackDir;
 
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.util.TabbyRef;
-import net.minecraft.client.gui.GuiDisconnected;
-import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.network.NetHandlerPlayClient;
@@ -45,19 +43,6 @@ public class LiteModTabbyChat extends TabbyChat implements RenderListener, JoinG
     @Override
     public void onRenderGui(GuiScreen currentScreen) {
         onRender(currentScreen);
-
-        // workaround for lack of disconnect interface
-        if (serverSettings != null) {
-            // test for disconnect
-            Class<?>[] screens = { GuiDisconnected.class, GuiMainMenu.class };
-            for (Class<?> c : screens) {
-                if (c.isInstance(currentScreen)) {
-                    onDisconnect();
-                    return;
-                }
-            }
-
-        }
     }
 
     @Override
