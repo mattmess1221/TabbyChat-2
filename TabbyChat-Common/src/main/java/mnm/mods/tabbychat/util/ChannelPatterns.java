@@ -6,12 +6,12 @@ import mnm.mods.util.Translatable;
 
 public enum ChannelPatterns {
 
-    ANGLES(Translation.DELIMS_ANGLES, "\\<%s\\>"),
-    BRACES(Translation.DELIMS_BRACES, "\\{%s\\}"),
-    BRACKETS(Translation.DELIMS_BRACKETS, "\\[%s\\]"),
-    PARENS(Translation.DELIMS_PARENTHESIS, "\\(%s\\)"),
-    ANGLESPARENS(Translation.DELIMS_ANGLES_PARENS, "<\\(%s\\)(?: )?[\\w\\d]{3,30}>"),
-    ANGLESBRACKETS(Translation.DELIMS_ANGLES_BRAKETS, "<\\[%s\\](?: )?[\\w\\d]{3,30}>");
+    ANGLES(Translation.DELIMS_ANGLES, "^\\<%s\\>"),
+    BRACES(Translation.DELIMS_BRACES, "^\\{%s\\}"),
+    BRACKETS(Translation.DELIMS_BRACKETS, "^\\[%s\\]"),
+    PARENS(Translation.DELIMS_PARENTHESIS, "^\\(%s\\)"),
+    ANGLESPARENS(Translation.DELIMS_ANGLES_PARENS, "^<\\(%s\\) ?[\\w\\d]{3,30}>"),
+    ANGLESBRACKETS(Translation.DELIMS_ANGLES_BRAKETS, "^<\\[%s\\](?: )?[\\w\\d]{3,30}>");
 
     private final Translatable translation;
     private final Pattern pattern;
