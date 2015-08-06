@@ -24,13 +24,13 @@ ext.utils = rootProject.project(':MnM-Utils')
 ext.api = rootProject.project(':TabbyChat-API')
 ext.forge = rootProject.project(':TabbyChat-Forge')
 ext.common = rootProject.project(':TabbyChat-Common')
-ext.rev = '0.3'
+ext.rev = '0.31'
 
 apply plugin: 'forge'
 
 group = 'mnm.mods'
 archivesBaseName = 'TabbyChat'
-version = '2.0.0-beta3'
+version = '2.0.0-beta3.1'
 def bnum = System.env.BUILD_ID
 if (bnum != null) {
   version += "-SNAPSHOT-$bnum"
