@@ -13,6 +13,7 @@ import com.google.common.collect.ObjectArrays;
 
 import mnm.mods.tabbychat.ChatManager;
 import mnm.mods.tabbychat.TabbyChat;
+import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.util.BackgroundChatThread;
 import mnm.mods.tabbychat.util.ForgeClientCommands;
 import mnm.mods.util.gui.GuiComponent;
@@ -212,8 +213,8 @@ public class GuiChatTC extends GuiChat {
         String message = this.textBox.getValue().trim();
         // send the outbound message to ChatSent modules.
         message = tc.getEventManager().onChatSent(message);
-
-        String[] toSend = processSends(message);
+        Channel active = chat.getActiveChannel();
+        String[] toSend = processSends(message, active.getPrefix(), active.isPrefixHidden());
         // time to wait between each send
         long wait = tc.settings.advanced.msgDelay.getValue();
         new BackgroundChatThread(this, toSend, wait).start();
@@ -233,13 +234,15 @@ public class GuiChatTC extends GuiChat {
         }
     }
 
-    private String[] processSends(String msg) {
+    public static String[] processSends(String msg, String prefix, boolean hidden) {
         if (StringUtils.isEmpty(msg)) {
             return null;
         }
-        String prefix = chat.getActiveChannel().getPrefix();
-        boolean hidden = chat.getActiveChannel().isPrefixHidden();
-        String[] sends = WordUtils.wrap(msg, 100).split("\n");
+        int len = 100 - prefix.length();
+        if (msg.startsWith(prefix)) {
+            msg = msg.substring(prefix.length());
+        }
+        String[] sends = WordUtils.wrap(msg, len).split("\r?\n");
 
         // is command && (no prefix || not right prefix)
         if (sends[0].startsWith("/") && (StringUtils.isEmpty(prefix) || !sends[0].startsWith(prefix))) {

@@ -3,12 +3,14 @@ package mnm.mods.tabbychat.gui;
 import java.awt.Dimension;
 import java.util.List;
 
+import mnm.mods.tabbychat.api.Channel;
+import mnm.mods.tabbychat.api.TabbyAPI;
+import mnm.mods.tabbychat.core.GuiChatTC;
 import mnm.mods.util.Color;
 import mnm.mods.util.gui.GuiText;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiTextField;
-import net.minecraft.util.MathHelper;
 
 public class TextBox extends ChatGui {
 
@@ -118,10 +120,17 @@ public class TextBox extends ChatGui {
             yPos += fr.FONT_HEIGHT + 2;
         }
         // write the num of sends
-        int size = MathHelper.ceiling_double_int(textField.getText().length() / 100D);
+        Channel active = TabbyAPI.getAPI().getChat().getActiveChannel();
+        String[] msg = GuiChatTC.processSends(textField.getText(), active.getPrefix(), active.isPrefixHidden());
+        int size = msg != null ? msg.length : 0;
         if (size > 0) {
+            int color = 0x666666;
+            if (!textField.getText().endsWith(msg[size - 1])) {
+                // WARNING! Message will get cut off!
+                color = 0xff6666;
+            }
             int sizeW = fr.getStringWidth(size + "");
-            fr.drawString(size + "", getBounds().width - sizeW, 2, 0x666666);
+            fr.drawString(size + "", getBounds().width - sizeW, 2, color);
         }
     }
 
