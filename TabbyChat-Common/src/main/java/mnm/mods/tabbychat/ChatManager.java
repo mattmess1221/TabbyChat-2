@@ -43,6 +43,7 @@ import net.minecraft.util.IChatComponent;
 public class ChatManager implements Chat {
 
     private Gson gson = new GsonBuilder()
+            .excludeFieldsWithoutExposeAnnotation()
             .registerTypeAdapter(IChatComponent.class, new IChatComponent.Serializer())
             .registerTypeAdapter(ChatStyle.class, new ChatStyle.Serializer())
             .registerTypeAdapterFactory(new EnumTypeAdapterFactory())
@@ -177,7 +178,7 @@ public class ChatManager implements Chat {
         active.setStatus(ChannelStatus.ACTIVE);
     }
 
-    public void loadFrom(File dir) throws IOException {
+    void loadFrom(File dir) throws IOException {
         File file = new File(dir, "data.gz");
         if (!file.exists()) {
             return;
@@ -231,7 +232,7 @@ public class ChatManager implements Chat {
         }
     }
 
-    public void saveTo(File dir) throws IOException {
+    void saveTo(File dir) throws IOException {
         JsonObject root = new JsonObject();
         root.add("default", gson.toJsonTree(ChatChannel.DEFAULT_CHANNEL.getMessages()));
 

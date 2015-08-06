@@ -3,6 +3,8 @@ package mnm.mods.tabbychat;
 import java.util.Calendar;
 import java.util.Date;
 
+import com.google.gson.annotations.Expose;
+
 import mnm.mods.tabbychat.api.Message;
 import mnm.mods.tabbychat.settings.GeneralSettings;
 import mnm.mods.tabbychat.util.TimeStamps;
@@ -14,9 +16,12 @@ import net.minecraft.util.IChatComponent;
 
 public class ChatMessage implements Message {
 
+    @Expose
     private IChatComponent message;
+    @Expose
     private int id;
     private transient int counter;
+    @Expose
     private Date date;
 
     public ChatMessage(int updatedCounter, IChatComponent chat, int id, boolean isNew) {

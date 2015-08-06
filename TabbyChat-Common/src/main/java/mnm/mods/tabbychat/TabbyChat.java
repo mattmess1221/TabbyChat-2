@@ -198,6 +198,7 @@ public abstract class TabbyChat extends TabbyAPI {
     }
 
     protected void onDisconnect() {
+        currentServer = null;
         if (serverSettings == null) {
             return;
         }
@@ -207,7 +208,6 @@ public abstract class TabbyChat extends TabbyAPI {
         } catch (IOException e) {
             LOGGER.warn("Unable to save chat data.", e);
         }
-        serverSettings = null;
     }
 
     private void updateCheck() {

@@ -14,7 +14,7 @@ public class ForgeCommandsImpl extends ForgeClientCommands {
     public void autoComplete(String word, String s1) {
         try {
             ClientCommandHandler.instance.autoComplete(word, s1);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             // in case not initialized
             logger.error(e);
         }
@@ -25,7 +25,7 @@ public class ForgeCommandsImpl extends ForgeClientCommands {
         String[] result = new String[0];
         try {
             return ClientCommandHandler.instance.latestAutoComplete;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             // in case not initialized
             logger.error(e);
         }
