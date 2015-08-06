@@ -120,13 +120,13 @@ public class ChatFilter implements Filter {
                 Matcher matcher = Pattern.compile("^\\$(\\d+)$").matcher(name);
                 if (matcher.find()) {
                     int group = Integer.parseInt(matcher.group(1));
-                    if (group > 0 && event.matcher.groupCount() <= group) {
+                    if (group > 0 && event.matcher.groupCount() >= group) {
                         name = event.matcher.group(group);
                         if (name == null) {
-                            break;
+                            continue;
                         }
                     } else {
-                        break;
+                        continue;
                     }
                 }
 
