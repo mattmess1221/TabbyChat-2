@@ -61,7 +61,7 @@ public class GuiChatTC extends GuiChat {
         chat = chatGui.getChatManager();
         textBox = chat.getChatBox().getChatInput().getTextField();
         if (defaultInputFieldText.isEmpty() && !chat.getActiveChannel().isPrefixHidden()) {
-            defaultInputFieldText = chat.getActiveChannel().getPrefix();
+            defaultInputFieldText = chat.getActiveChannel().getPrefix() + " ";
         }
     }
 
