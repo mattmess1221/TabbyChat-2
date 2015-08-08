@@ -132,7 +132,7 @@ public class ChatLogging implements ChatRecievedListener {
 
     private String getLogFolder() {
         String ip;
-        if (Minecraft.getMinecraft().isSingleplayer()) {
+        if (Minecraft.getMinecraft().isSingleplayer() || server == null) {
             ip = "singleplayer";
         } else {
             String url = server.getHostName();
