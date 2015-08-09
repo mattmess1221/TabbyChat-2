@@ -10,8 +10,10 @@ import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.ChannelStatus;
 import mnm.mods.tabbychat.api.listener.events.ChatMessageEvent.ChatRecievedEvent;
+import mnm.mods.tabbychat.gui.ChatBox;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiNewChat;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.IChatComponent;
 
 public class GuiNewChatTC extends GuiNewChat {
@@ -40,9 +42,27 @@ public class GuiNewChatTC extends GuiNewChat {
 
     @Override
     public void drawChat(int i) {
+        ChatBox chatbox = chat.getChatBox();
+        float scale = chatbox.getScale();
+
+        GlStateManager.popMatrix(); // ignore what GuiIngame did.
+        // translate to above the itemrenderer
+        // before push so it effects the tab list too.
+        GlStateManager.translate(0, 0, 150.5);
+        GlStateManager.pushMatrix();
+
+        // Scale it accordingly
+        GlStateManager.scale(scale, scale, 1.0F);
+
+        // Make the upper left corner of the panel (0,0).
+        GlStateManager.translate(chatbox.getBounds().x, chatbox.getBounds().y, 0.0F);
+
         int mouseX = Mouse.getEventX();
         int mouseY = -Mouse.getEventY() - 1;
-        chat.getChatBox().drawComponent(mouseX, mouseY);
+        chatbox.drawComponent(mouseX, mouseY);
+
+        GlStateManager.popMatrix();
+        GlStateManager.pushMatrix(); // push to avoid gl errors
     }
 
     @Override

@@ -15,7 +15,6 @@ import mnm.mods.util.gui.events.GuiMouseAdapter;
 import mnm.mods.util.gui.events.GuiMouseEvent;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.MathHelper;
 
 public class ChatBox extends GuiPanel implements GuiMouseAdapter {
@@ -91,24 +90,6 @@ public class ChatBox extends GuiPanel implements GuiMouseAdapter {
     @Override
     public float getScale() {
         return GuiNewChatTC.getInstance().getChatScale();
-    }
-
-    @Override
-    public void drawComponent(int mouseX, int mouseY) {
-        float scale = getScale();
-
-        GlStateManager.popMatrix(); // ignore what GuiIngame did.
-        GlStateManager.pushMatrix();
-        // Scale it accordingly
-        GlStateManager.scale(scale, scale, 1.0F);
-
-        // Make the upper left corner of the panel (0,0).
-        GlStateManager.translate(this.getBounds().x, this.getBounds().y, 0.0F);
-        super.drawComponent(mouseX, mouseY);
-
-        GlStateManager.popMatrix();
-        GlStateManager.pushMatrix(); // push to avoid gl errors
-
     }
 
     @Override
