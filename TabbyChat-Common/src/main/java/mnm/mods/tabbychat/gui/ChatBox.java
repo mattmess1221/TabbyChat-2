@@ -62,6 +62,8 @@ public class ChatBox extends GuiPanel implements GuiMouseAdapter {
                 TabbySettings sett = TabbyChat.getInstance().settings;
                 sett.advanced.chatX.setValue(bounds.x);
                 sett.advanced.chatY.setValue(bounds.y);
+                sett.advanced.chatW.setValue(bounds.width);
+                sett.advanced.chatH.setValue(bounds.height);
 
                 sett.saveSettingsFile();
                 drag = null;
