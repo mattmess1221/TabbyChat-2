@@ -5,17 +5,17 @@ import mnm.mods.util.Translatable;
 public enum MessagePatterns {
 
     ARROW(Translation.FORMAT_MESSAGE_ARROW,
-            "^\\[" + getPlayerPattern() + "[ ]?\\-\\>[ ]?me\\]",
-            "^\\[me[ ]?\\-\\>[ ]?" + getPlayerPattern() + "\\]"),
+            "^\\[" + MessagePatterns.PLAYER_PATTERN + "[ ]?\\-\\>[ ]?me\\]",
+            "^\\[me[ ]?\\-\\>[ ]?" + MessagePatterns.PLAYER_PATTERN + "\\]"),
     TO_FROM(Translation.FORMAT_MESSAGE_TO_FROM,
-            "^From " + getPlayerPattern() + "[ ]?:",
-            "^To " + getPlayerPattern() + "[ ]?:"),
+            "^From " + MessagePatterns.PLAYER_PATTERN + "[ ]?:",
+            "^To " + MessagePatterns.PLAYER_PATTERN + "[ ]?:"),
     WHISPERS(Translation.FORMAT_MESSAGE_WHISPER,
-            "^" + getPlayerPattern() + " whispers to you:",
-            "^You whisper to " + getPlayerPattern() + ":"),
+            "^" + MessagePatterns.PLAYER_PATTERN + " whispers to you:",
+            "^You whisper to " + MessagePatterns.PLAYER_PATTERN + ":"),
     DISABLED(Translation.FORMAT_MESSAGE_DISABLED, "a^", "a^");
 
-    private static final String PLAYER_PATTERN = "([\\p{L}\\p{N}_]{3,30})";
+    private static final String PLAYER_PATTERN = "([\\w\\d_]{3,30})";
 
     private final Translatable translation;
     private final String incoming;
@@ -25,11 +25,6 @@ public enum MessagePatterns {
         this.translation = translation;
         this.incoming = incoming;
         this.outgoing = outgoing;
-    }
-
-    private static String getPlayerPattern() {
-        // Workaround for not being able to use local constants in enums.
-        return PLAYER_PATTERN;
     }
 
     public String getIncoming() {
