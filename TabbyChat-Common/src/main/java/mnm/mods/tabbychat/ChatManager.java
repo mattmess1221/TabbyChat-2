@@ -34,9 +34,11 @@ import mnm.mods.tabbychat.api.Chat;
 import mnm.mods.tabbychat.api.Message;
 import mnm.mods.tabbychat.gui.ChatBox;
 import mnm.mods.tabbychat.settings.AdvancedSettings;
+import mnm.mods.util.ChatBuilder;
 import mnm.mods.util.config.SettingMap;
 import mnm.mods.util.gui.GuiText;
 import net.minecraft.util.ChatStyle;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.EnumTypeAdapterFactory;
 import net.minecraft.util.IChatComponent;
 
@@ -219,6 +221,14 @@ public class ChatManager implements Chat {
         JsonArray apms = active.get("pms").getAsJsonArray();
         for (JsonElement e : apms) {
             addChannel(getChannel(e.getAsString(), true));
+        }
+
+        IChatComponent chat = new ChatBuilder()
+                .text("-- Previously --")
+                .format(EnumChatFormatting.GRAY)
+                .build();
+        for (Channel c : getChannels()) {
+            c.addMessage(chat);
         }
 
     }
