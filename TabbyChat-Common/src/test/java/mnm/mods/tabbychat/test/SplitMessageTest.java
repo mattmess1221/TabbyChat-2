@@ -37,6 +37,15 @@ public class SplitMessageTest {
                 "/msg JoyJoy This command has multiple arguments and the prefix is not set. Because TabbyChat does"
         };
         assertArrayEquals(GuiChatTC.processSends(msg, "", false), target);
+
+        // one line, prefix hidden
+        msg = "/msg JoyJoy This one is shorter, so it won't be split.";
+        target = new String[] { "/msg JoyJoy This one is shorter, so it won't be split." };
+        assertArrayEquals(GuiChatTC.processSends(msg, "/msg JoyJoy", false), target);
+
+        msg = "This message is also short, but the prefix is hidden.";
+        target = new String[] { "/g This message is also short, but the prefix is hidden." };
+        assertArrayEquals(GuiChatTC.processSends(msg, "/g", true), target);
     }
 
 }

@@ -240,7 +240,7 @@ public class GuiChatTC extends GuiChat {
         }
         int len = 100 - prefix.length();
         if (msg.startsWith(prefix)) {
-            msg = msg.substring(prefix.length());
+            msg = msg.substring(prefix.length()).trim();
         }
         String[] sends = WordUtils.wrap(msg, len).split("\r?\n");
 
@@ -254,9 +254,6 @@ public class GuiChatTC extends GuiChat {
         }
 
         for (int i = 0; i < sends.length; i++) {
-            if (i == 0 && !hidden) {
-                continue;
-            }
             sends[i] = prefix + " " + sends[i];
         }
 
