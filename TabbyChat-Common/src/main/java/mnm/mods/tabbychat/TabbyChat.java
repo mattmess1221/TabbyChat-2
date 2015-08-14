@@ -133,6 +133,15 @@ public abstract class TabbyChat extends TabbyAPI {
 
         addFilterVariables();
         MnmUtils.getInstance().setChatProxy(new TabbedChatProxy());
+        // add shutdown hook for saving chat
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                if (currentServer != null) {
+                    onDisconnect();
+                }
+            }
+        });
     }
 
     private void addFilterVariables() {
@@ -204,7 +213,7 @@ public abstract class TabbyChat extends TabbyAPI {
         }
         File conf = serverSettings.getFile().getParentFile();
         try {
-            GuiNewChatTC.getInstance().getChatManager().saveTo(conf);
+            ((ChatManager) getChat()).saveTo(conf);
         } catch (IOException e) {
             LOGGER.warn("Unable to save chat data.", e);
         }

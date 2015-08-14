@@ -178,7 +178,7 @@ public class ChatManager implements Chat {
         active.setStatus(ChannelStatus.ACTIVE);
     }
 
-    void loadFrom(File dir) throws IOException {
+    public void loadFrom(File dir) throws IOException {
         File file = new File(dir, "data.gz");
         if (!file.exists()) {
             return;
@@ -232,7 +232,7 @@ public class ChatManager implements Chat {
         }
     }
 
-    void saveTo(File dir) throws IOException {
+    public void saveTo(File dir) throws IOException {
         JsonObject root = new JsonObject();
         root.add("default", gson.toJsonTree(ChatChannel.DEFAULT_CHANNEL.getMessages()));
 
