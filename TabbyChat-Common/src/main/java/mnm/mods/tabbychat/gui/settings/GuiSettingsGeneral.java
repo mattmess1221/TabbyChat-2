@@ -68,10 +68,10 @@ public class GuiSettingsGeneral extends SettingPanel<TabbySettings> {
         pos += 2;
         addComponent(new GuiLabel(Translation.SPAM_PREJUDICE.toString()), new int[] { 3, pos });
         GuiSettingDouble nud = new GuiSettingDouble(sett.antiSpamPrejudice);
-        nud.getNumUpDown().setMin(0);
-        nud.getNumUpDown().setMax(1);
-        nud.getNumUpDown().setInterval(0.05);
-        nud.getNumUpDown().setFormat(NumberFormat.getPercentInstance());
+        nud.getInput().setMin(0);
+        nud.getInput().setMax(1);
+        nud.getInput().setInterval(0.05);
+        nud.getInput().setFormat(NumberFormat.getPercentInstance());
         nud.setCaption(Translation.SPAM_PREJUDICE_DESC.toString());
         addComponent(nud, new int[] { 6, pos, 2, 1 });
 

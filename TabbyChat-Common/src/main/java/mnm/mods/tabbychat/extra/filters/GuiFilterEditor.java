@@ -66,7 +66,6 @@ public class GuiFilterEditor extends GuiPanel implements GuiKeyboardAdapter {
                 new int[] { 1, pos });
         this.addComponent(txtDestinations = new GuiText(), new int[] { 8, pos, 10, 1 });
         txtDestinations.setValue(merge(filter.getSettings().getChannels()));
-        txtDestinations.getTextField().setMaxStringLength(1000);
         txtDestinations.setCaption(Translation.FILTER_DESTIONATIONS_DESC.toString());
 
         pos += 1;
@@ -134,12 +133,7 @@ public class GuiFilterEditor extends GuiPanel implements GuiKeyboardAdapter {
         pos += 2;
         this.addComponent(new GuiLabel(Translation.FILTER_EXPRESSION.translate()), new int[] { 1, pos });
         this.addComponent(txtPattern = new GuiText(), new int[] { 8, pos, 12, 1 });
-        // This text field must not be calibrated for someone of your...
-        // generous..ness
-        // I'll add a few 0s to the maximum length...
-        txtPattern.getTextField().setMaxStringLength(10000);
 
-        // you look great, by the way.
         txtPattern.setValue(pattern == null ? "" : pattern);
 
         pos++;
