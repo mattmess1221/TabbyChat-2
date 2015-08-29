@@ -84,7 +84,7 @@ public class GuiSettingsGeneral extends SettingPanel<TabbySettings> {
         addComponent(new GuiSettingBoolean(sett.checkUpdates), new int[] { 1, pos });
     }
 
-    private EnumChatFormatting[] getColors() {
+    private static EnumChatFormatting[] getColors() {
         Collection<String> colors = EnumChatFormatting.getValidValues(true, false);
         List<EnumChatFormatting> list = Lists.newArrayList();
         for (String color : colors) {
@@ -93,7 +93,7 @@ public class GuiSettingsGeneral extends SettingPanel<TabbySettings> {
         return Iterables.toArray(list, EnumChatFormatting.class);
     }
 
-    private String[] getColorNames() {
+    private static String[] getColorNames() {
         Collection<String> colors = EnumChatFormatting.getValidValues(true, false);
         List<String> list = Lists.newArrayList();
         for (String color : colors) {

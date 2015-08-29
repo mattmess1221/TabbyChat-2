@@ -15,6 +15,7 @@ import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
@@ -45,7 +46,7 @@ public class FMLTabbyChat extends TabbyChat {
     }
 
     @EventHandler
-    public void init(FMLInitializationEvent event) {
+    public void init(@SuppressWarnings("unused") FMLInitializationEvent event) {
         if (getAPI() == null) {
             setInstance(this);
             this.setConfigFolder(tempDir);
@@ -58,8 +59,10 @@ public class FMLTabbyChat extends TabbyChat {
 
     @SubscribeEvent
     public void onRender(RenderTickEvent event) {
-        GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
-        onRender(currentScreen);
+        if (event.phase == Phase.START) {
+            GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
+            onRender(currentScreen);
+        }
     }
 
     @SubscribeEvent

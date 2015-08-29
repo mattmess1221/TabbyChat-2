@@ -239,7 +239,7 @@ public class GuiChatTC extends GuiChat {
             return null;
         }
         int len = 100 - prefix.length();
-        if (msg.startsWith(prefix)) {
+        if (!hidden && msg.startsWith(prefix)) {
             msg = msg.substring(prefix.length()).trim();
         }
         String[] sends = WordUtils.wrap(msg, len).split("\r?\n");
@@ -261,7 +261,7 @@ public class GuiChatTC extends GuiChat {
 
     }
 
-    private String getCleanText(String dirty) {
+    private static String getCleanText(String dirty) {
         return EnumChatFormatting.getTextWithoutFormattingCodes(dirty);
     }
 

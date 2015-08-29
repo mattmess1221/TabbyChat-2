@@ -106,7 +106,9 @@ public class GuiNewChatTC extends GuiNewChat {
     @Override
     public void clearChatMessages() {
         try {
-            chat.saveTo(TabbyChat.getInstance().serverSettings.getFile().getParentFile());
+            if (TabbyChat.getInstance().serverSettings != null) {
+                chat.saveTo(TabbyChat.getInstance().serverSettings.getFile().getParentFile());
+            }
         } catch (IOException e) {
             TabbyChat.getLogger().warn("Error while saving chat data", e);
         }

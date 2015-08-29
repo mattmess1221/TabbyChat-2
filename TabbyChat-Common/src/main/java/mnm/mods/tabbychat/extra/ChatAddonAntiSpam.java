@@ -50,7 +50,7 @@ public class ChatAddonAntiSpam implements ChannelListener {
         }
     }
 
-    private double getDifference(String s1, String s2) {
+    private static double getDifference(String s1, String s2) {
         double avgLen = (s1.length() + s2.length()) / 2D;
         if (avgLen == 0) {
             return 0;

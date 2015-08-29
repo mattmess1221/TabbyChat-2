@@ -240,7 +240,7 @@ public abstract class TabbyChat extends TabbyAPI {
         }
     }
 
-    private File findClasspathRoot(Class<?> clas) {
+    private static File findClasspathRoot(Class<?> clas) {
         String str = clas.getProtectionDomain().getCodeSource().getLocation().toString();
         str = str.replace("/" + clas.getCanonicalName().replace('.', '/').concat(".class"), "");
         str = str.replace('\\', '/');
@@ -256,11 +256,10 @@ public abstract class TabbyChat extends TabbyAPI {
         return new File(str);
     }
 
-    private void hookIntoChat(GuiIngame guiIngame) throws Exception {
+    private static void hookIntoChat(GuiIngame guiIngame) throws Exception {
         if (!GuiNewChatTC.class.isAssignableFrom(guiIngame.getChatGUI().getClass())) {
             // guiIngame.persistantChatGUI = GuiNewChatTC.getInstance();
-            ReflectionHelper.setFieldValue(GuiIngame.class, guiIngame, GuiNewChatTC.getInstance(),
-                    TabbyRef.PERSISTANT_CHAT_GUI);
+            ReflectionHelper.setFieldValue(GuiIngame.class, guiIngame, GuiNewChatTC.getInstance(), TabbyRef.PERSISTANT_CHAT_GUI);
             LOGGER.info("Successfully hooked into chat.");
         }
     }

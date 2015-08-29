@@ -15,6 +15,7 @@ public class ForgeClientCommands {
         ForgeClientCommands.instance = instance;
     }
 
+    @SuppressWarnings("unused")
     public void autoComplete(String word, String s1) {}
 
     public String[] getLatestAutoComplete() {

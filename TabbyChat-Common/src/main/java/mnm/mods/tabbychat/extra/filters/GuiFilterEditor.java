@@ -1,10 +1,14 @@
 package mnm.mods.tabbychat.extra.filters;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+
+import org.lwjgl.input.Keyboard;
+
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 
 import mnm.mods.tabbychat.api.filters.Filter;
 import mnm.mods.tabbychat.api.filters.FilterSettings;
@@ -23,11 +27,6 @@ import mnm.mods.util.gui.events.GuiKeyboardAdapter;
 import mnm.mods.util.gui.events.GuiKeyboardEvent;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
-
-import org.lwjgl.input.Keyboard;
-
-import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
 
 public class GuiFilterEditor extends GuiPanel implements GuiKeyboardAdapter {
 
@@ -65,7 +64,7 @@ public class GuiFilterEditor extends GuiPanel implements GuiKeyboardAdapter {
         this.addComponent(new GuiLabel(Translation.FILTER_DESTINATIONS.translate()),
                 new int[] { 1, pos });
         this.addComponent(txtDestinations = new GuiText(), new int[] { 8, pos, 10, 1 });
-        txtDestinations.setValue(merge(filter.getSettings().getChannels()));
+        txtDestinations.setValue(Joiner.on(", ").join(filter.getSettings().getChannels()));
         txtDestinations.setCaption(Translation.FILTER_DESTIONATIONS_DESC.toString());
 
         pos += 1;
@@ -158,35 +157,12 @@ public class GuiFilterEditor extends GuiPanel implements GuiKeyboardAdapter {
         this.addComponent(cancel, new int[] { 1, 14, 4, 1 });
     }
 
-    private String merge(Set<String> set) {
-        StringBuilder sb = new StringBuilder();
-        for (String s : set) {
-            if (sb.length() > 0) {
-                sb.append(", ");
-            }
-            sb.append(s);
-        }
-        return sb.toString();
-    }
-
-    private Set<String> split(String s) {
-        Set<String> set = new HashSet<String>();
-        String[] split = s.split(",");
-        for (String sp : split) {
-            sp = sp.trim();
-            if (!sp.isEmpty()) {
-                set.add(sp);
-            }
-        }
-        return set;
-    }
-
     private void accept() {
         filter.setName(txtName.getValue());
         filter.setPattern(txtPattern.getValue());
         FilterSettings sett = filter.getSettings();
         sett.getChannels().clear();
-        sett.getChannels().addAll(split(txtDestinations.getValue()));
+        sett.getChannels().addAll(Splitter.on(",").splitToList(txtDestinations.getValue()));
         sett.setDestinationPm(chkPm.getValue());
         sett.setRemove(chkRemove.getValue());
 

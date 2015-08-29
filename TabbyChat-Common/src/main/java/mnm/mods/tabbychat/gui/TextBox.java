@@ -122,8 +122,8 @@ public class TextBox extends ChatGui {
         // write the num of sends
         Channel active = TabbyAPI.getAPI().getChat().getActiveChannel();
         String[] msg = GuiChatTC.processSends(textField.getText(), active.getPrefix(), active.isPrefixHidden());
-        int size = msg != null ? msg.length : 0;
-        if (size > 0) {
+        if (msg != null && msg.length > 0) {
+            int size = msg.length;
             int color = 0x666666;
             if (!textField.getText().endsWith(msg[size - 1])) {
                 // WARNING! Message will get cut off!

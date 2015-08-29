@@ -108,7 +108,7 @@ public class ChatLogging implements ChatRecievedListener {
         }
     }
 
-    private void gzipFile(File file) throws IOException {
+    private static void gzipFile(File file) throws IOException {
         if (file == null) {
             return;
         }
@@ -141,7 +141,7 @@ public class ChatLogging implements ChatRecievedListener {
         return ip;
     }
 
-    private File findFile(File dir) {
+    private static File findFile(File dir) {
         String date = LOG_NAME_FORMAT.format(Calendar.getInstance().getTime());
         File file = new File(dir, date + ".log");
         int i = 0;
@@ -153,7 +153,7 @@ public class ChatLogging implements ChatRecievedListener {
         return file;
     }
 
-    private boolean fileExists(File file) {
+    private static boolean fileExists(File file) {
         if (!file.exists()) {
             String gzip = GzipUtils.getCompressedFilename(file.getName());
             file = new File(file.getParentFile(), gzip);
