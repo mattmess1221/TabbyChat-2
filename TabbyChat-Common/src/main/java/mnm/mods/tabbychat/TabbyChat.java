@@ -20,6 +20,7 @@ import mnm.mods.tabbychat.api.AddonManager;
 import mnm.mods.tabbychat.api.Chat;
 import mnm.mods.tabbychat.api.TabbyAPI;
 import mnm.mods.tabbychat.api.filters.FilterVariable;
+import mnm.mods.tabbychat.api.gui.ChatGui;
 import mnm.mods.tabbychat.core.GuiChatTC;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.core.GuiSleepTC;
@@ -86,6 +87,11 @@ public abstract class TabbyChat extends TabbyAPI {
 
     public TabbyEvents getEventManager() {
         return this.events;
+    }
+
+    @Override
+    public ChatGui getGui() {
+        return GuiNewChatTC.getInstance().getChatManager().getChatBox();
     }
 
     public void openSettings(SettingPanel<?> setting) {
