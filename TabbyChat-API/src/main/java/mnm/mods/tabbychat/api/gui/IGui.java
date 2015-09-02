@@ -1,8 +1,10 @@
 package mnm.mods.tabbychat.api.gui;
 
+import java.awt.Rectangle;
+
 import mnm.mods.util.gui.GuiComponent;
 
-interface IGui<Gui extends GuiComponent> {
+public interface IGui<Gui extends GuiComponent> {
 
     /**
      * Gets this gui as its underlying gui type. Convenience method for casting
@@ -18,4 +20,18 @@ interface IGui<Gui extends GuiComponent> {
      * @return
      */
     Gui asGui();
+
+    /**
+     * Gets the bounds of this gui relative to the parent.
+     *
+     * @return The size and position
+     */
+    Rectangle getBounds();
+
+    /**
+     * Gets the scale of this gui.
+     *
+     * @return The scale
+     */
+    float getScale();
 }
