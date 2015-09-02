@@ -6,10 +6,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
+import com.google.common.collect.Lists;
+
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.Message;
 import mnm.mods.tabbychat.api.TabbyAPI;
+import mnm.mods.tabbychat.api.gui.ReceivedChat;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.util.ChatTextUtils;
 import mnm.mods.util.Color;
@@ -24,11 +29,7 @@ import net.minecraft.entity.player.EntityPlayer.EnumChatVisibility;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IChatComponent;
 
-import com.google.common.base.Supplier;
-import com.google.common.base.Suppliers;
-import com.google.common.collect.Lists;
-
-public class ChatArea extends GuiComponent implements Supplier<List<Message>>, GuiMouseAdapter {
+public class ChatArea extends GuiComponent implements Supplier<List<Message>>, GuiMouseAdapter, ReceivedChat {
 
     private Supplier<List<Message>> supplier = Suppliers.memoizeWithExpiration(this, 50, TimeUnit.MILLISECONDS);
     private int scrollPos = 0;
@@ -157,10 +158,12 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, G
         return opacity;
     }
 
+    @Override
     public void scroll(int scr) {
         setScrollPos(getScrollPos() + scr);
     }
 
+    @Override
     public void setScrollPos(int scroll) {
         List<Message> list = getChat(false);
         scroll = Math.min(scroll, list.size() - GuiNewChatTC.getInstance().getLineCount());
@@ -169,14 +172,17 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, G
         this.scrollPos = scroll;
     }
 
+    @Override
     public int getScrollPos() {
         return scrollPos;
     }
 
+    @Override
     public void resetScroll() {
         setScrollPos(0);
     }
 
+    @Override
     public IChatComponent getChatComponent(int clickX, int clickY) {
         if (GuiNewChatTC.getInstance().getChatOpen()) {
             final float scale = getActualScale();
@@ -228,4 +234,8 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, G
         return this.mc.gameSettings.chatScale;
     }
 
+    @Override
+    public GuiComponent asGui() {
+        return this;
+    }
 }

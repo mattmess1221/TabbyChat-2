@@ -5,14 +5,16 @@ import java.util.List;
 
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.TabbyAPI;
+import mnm.mods.tabbychat.api.gui.ChatInput;
 import mnm.mods.tabbychat.core.GuiChatTC;
 import mnm.mods.util.Color;
+import mnm.mods.util.gui.GuiComponent;
 import mnm.mods.util.gui.GuiText;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiTextField;
 
-public class TextBox extends ChatGui {
+public class TextBox extends ChatGui implements ChatInput {
 
     private FontRenderer fr = mc.fontRendererObj;
     // Dummy textField
@@ -150,6 +152,7 @@ public class TextBox extends ChatGui {
         this.setBackColor(bkg.getColor());
     }
 
+    @Override
     public List<String> getWrappedLines() {
         return fr.listFormattedStringToWidth(textField.getValue(), getBounds().width);
     }
@@ -159,8 +162,14 @@ public class TextBox extends ChatGui {
         return new Dimension(100, (fr.FONT_HEIGHT + 2) * getWrappedLines().size());
     }
 
+    @Override
     public GuiText getTextField() {
         return textField;
+    }
+
+    @Override
+    public GuiComponent asGui() {
+        return this;
     }
 
     public void mouseClicked(int x, int y, int mouseButton) {

@@ -1,5 +1,6 @@
 package mnm.mods.tabbychat.api;
 
+import mnm.mods.tabbychat.api.gui.ChatGui;
 import mnm.mods.util.gui.config.SettingPanel;
 
 /**
@@ -45,5 +46,12 @@ public abstract class TabbyAPI {
      * @return The addon manager
      */
     public abstract AddonManager getAddonManager();
+
+    /**
+     * Gets the gui part of the chat box.
+     *
+     * @return The chat box
+     */
+    public abstract ChatGui getGui();
 
 }

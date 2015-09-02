@@ -6,6 +6,8 @@ import java.awt.Rectangle;
 import org.lwjgl.input.Mouse;
 
 import mnm.mods.tabbychat.TabbyChat;
+import mnm.mods.tabbychat.api.gui.ChatGui;
+import mnm.mods.tabbychat.api.gui.Tray;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.settings.ColorSettings;
 import mnm.mods.tabbychat.settings.TabbySettings;
@@ -17,7 +19,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.MathHelper;
 
-public class ChatBox extends GuiPanel implements GuiMouseAdapter {
+public class ChatBox extends GuiPanel implements GuiMouseAdapter, ChatGui {
 
     private static ColorSettings colors = TabbyChat.getInstance().settings.colors;
 
@@ -140,16 +142,24 @@ public class ChatBox extends GuiPanel implements GuiMouseAdapter {
         return getBounds().width;
     }
 
+    @Override
     public ChatArea getChatArea() {
         return this.chatArea;
     }
 
-    public ChatTray getTray() {
+    @Override
+    public Tray getTray() {
         return this.pnlTray;
     }
 
+    @Override
     public TextBox getChatInput() {
         return this.txtChatInput;
+    }
+
+    @Override
+    public GuiPanel asGui() {
+        return this;
     }
 
 }
