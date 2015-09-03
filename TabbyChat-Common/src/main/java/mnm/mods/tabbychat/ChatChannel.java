@@ -193,6 +193,7 @@ public class ChatChannel implements Channel {
 
         trim(TabbyChat.getInstance().settings.advanced.historyLen.getValue());
 
+        ((ChatManager) TabbyChat.getInstance().getChat()).save();
     }
 
     public void trim(int size) {
@@ -209,6 +210,7 @@ public class ChatChannel implements Channel {
     @Override
     public void removeMessageAt(int pos) {
         this.getMessages().remove(pos);
+        ((ChatManager) TabbyChat.getInstance().getChat()).save();
     }
 
     @Override
@@ -220,6 +222,7 @@ public class ChatChannel implements Channel {
                 iter.remove();
             }
         }
+        ((ChatManager) TabbyChat.getInstance().getChat()).save();
     }
 
     @Override

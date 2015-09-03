@@ -2,15 +2,21 @@ package mnm.mods.tabbychat;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
+import com.google.common.collect.Lists;
 import com.google.gson.annotations.Expose;
 
 import mnm.mods.tabbychat.api.Message;
 import mnm.mods.tabbychat.settings.GeneralSettings;
 import mnm.mods.tabbychat.util.TimeStamps;
+import mnm.mods.util.ReflectionHelper;
 import net.minecraft.client.gui.ChatLine;
+import net.minecraft.event.HoverEvent;
+import net.minecraft.event.HoverEvent.Action;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 
@@ -73,5 +79,27 @@ public class ChatMessage implements Message {
     @Override
     public Date getDate() {
         return this.date;
+    }
+
+    void fixSerialization() {
+        List<HoverEvent> list = Lists.newArrayList();
+        @SuppressWarnings("unchecked")
+        Iterable<IChatComponent> chat = message;
+        for (IChatComponent message : chat) {
+            ChatStyle style = message.getChatStyle();
+            HoverEvent hover = style.getChatHoverEvent();
+            if (list.contains(hover))
+                continue;
+            list.add(hover);
+            if (hover != null && hover.getAction() == Action.SHOW_ENTITY) {
+                // serialization is bugged
+                try {
+                    String[] names = { "b", "field_150703_b", "value" };
+                    ReflectionHelper.setFieldValue(HoverEvent.class, hover, null, names);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }

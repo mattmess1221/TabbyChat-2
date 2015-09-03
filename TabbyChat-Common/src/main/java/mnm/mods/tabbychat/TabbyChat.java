@@ -1,7 +1,6 @@
 package mnm.mods.tabbychat;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.List;
@@ -139,15 +138,6 @@ public abstract class TabbyChat extends TabbyAPI {
 
         addFilterVariables();
         MnmUtils.getInstance().setChatProxy(new TabbedChatProxy());
-        // add shutdown hook for saving chat
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                if (currentServer != null) {
-                    onDisconnect();
-                }
-            }
-        });
     }
 
     private void addFilterVariables() {
@@ -175,8 +165,7 @@ public abstract class TabbyChat extends TabbyAPI {
             // Get the default text via Reflection
             String inputBuffer = "";
             try {
-                inputBuffer = (String) ReflectionHelper.getFieldValue(GuiChat.class, currentScreen,
-                        TabbyRef.DEFAULT_INPUT_FIELD_TEXT);
+                inputBuffer = ReflectionHelper.getFieldValue(GuiChat.class, (GuiChat) currentScreen, TabbyRef.DEFAULT_INPUT_FIELD_TEXT);
             } catch (Exception e) {}
             if (currentScreen instanceof GuiSleepMP) {
                 mc.displayGuiScreen(new GuiSleepTC());
@@ -189,6 +178,8 @@ public abstract class TabbyChat extends TabbyAPI {
     protected void onJoin(SocketAddress address) {
         if (address instanceof InetSocketAddress) {
             this.currentServer = (InetSocketAddress) address;
+        } else {
+            this.currentServer = null;
         }
 
         // Set server settings
@@ -205,24 +196,11 @@ public abstract class TabbyChat extends TabbyAPI {
         File conf = serverSettings.getFile().getParentFile();
         try {
             GuiNewChatTC.getInstance().getChatManager().loadFrom(conf);
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOGGER.warn("Unable to load chat data.", e);
         }
         // update check
         updateCheck();
-    }
-
-    protected void onDisconnect() {
-        currentServer = null;
-        if (serverSettings == null) {
-            return;
-        }
-        File conf = serverSettings.getFile().getParentFile();
-        try {
-            ((ChatManager) getChat()).saveTo(conf);
-        } catch (IOException e) {
-            LOGGER.warn("Unable to save chat data.", e);
-        }
     }
 
     private void updateCheck() {

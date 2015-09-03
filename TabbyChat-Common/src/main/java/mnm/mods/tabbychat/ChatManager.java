@@ -116,6 +116,7 @@ public class ChatManager implements Chat {
             this.channels.add(channel);
             ((ChatTray) chatbox.getTray()).addChannel(channel);
         }
+        save();
     }
 
     @Override
@@ -127,6 +128,7 @@ public class ChatManager implements Chat {
         if (getActiveChannel() == channel) {
             setActiveChannel(ChatChannel.DEFAULT_CHANNEL);
         }
+        save();
     }
 
     @Override
@@ -139,6 +141,7 @@ public class ChatManager implements Chat {
         for (Channel channel : this.channels) {
             channel.removeMessages(id);
         }
+        save();
     }
 
     @Override
@@ -181,7 +184,18 @@ public class ChatManager implements Chat {
         active.setStatus(ChannelStatus.ACTIVE);
     }
 
+    private boolean loading;
+
     public void loadFrom(File dir) throws IOException {
+        loading = true;
+        try {
+            loadFrom_(dir);
+        } finally {
+            loading = false;
+        }
+    }
+
+    private synchronized void loadFrom_(File dir) throws IOException {
         File file = new File(dir, "data.gz");
         if (!file.exists()) {
             return;
@@ -229,9 +243,10 @@ public class ChatManager implements Chat {
                 .format(EnumChatFormatting.GRAY)
                 .build();
         for (Channel c : getChannels()) {
-            c.addMessage(chat);
+            if (!c.getMessages().isEmpty()) {
+                c.addMessage(chat, -1);
+            }
         }
-
     }
 
     private void readJson(JsonObject obj, boolean pm) {
@@ -243,7 +258,21 @@ public class ChatManager implements Chat {
         }
     }
 
-    public void saveTo(File dir) throws IOException {
+    public void save() {
+        if (loading) {
+            return;
+        }
+        try {
+            saveTo(TabbyChat.getInstance().serverSettings.getFile().getParentFile());
+        } catch (IOException e) {
+            TabbyChat.getLogger().warn("Error while saving chat data", e);
+        }
+    }
+
+    public synchronized void saveTo(File dir) throws IOException {
+        // remove buggy show_entity hovers
+        removeShowEntity(ChatChannel.DEFAULT_CHANNEL.getMessages());
+
         JsonObject root = new JsonObject();
         root.add("default", gson.toJsonTree(ChatChannel.DEFAULT_CHANNEL.getMessages()));
 
@@ -252,10 +281,10 @@ public class ChatManager implements Chat {
         JsonObject pms = new JsonObject();
         root.add("pms", pms);
 
-        for (Entry<Channel, List<Message>> entry : messages.entrySet()) {
-            Channel c = entry.getKey();
+        for (Channel c : messages.keySet()) {
             JsonObject obj = c.isPm() ? pms : chans;
-            obj.add(c.getName(), gson.toJsonTree(entry.getKey().getMessages()));
+            removeShowEntity(c.getMessages());
+            obj.add(c.getName(), gson.toJsonTree(c.getMessages()));
         }
 
         // active channels
@@ -288,6 +317,12 @@ public class ChatManager implements Chat {
         } finally {
             IOUtils.closeQuietly(fout);
             IOUtils.closeQuietly(gzout);
+        }
+    }
+
+    private void removeShowEntity(List<Message> messages) {
+        for (Message msg : messages) {
+            ((ChatMessage) msg).fixSerialization();
         }
     }
 

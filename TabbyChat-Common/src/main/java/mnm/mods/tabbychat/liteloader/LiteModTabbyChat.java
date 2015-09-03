@@ -13,7 +13,6 @@ import com.mumfrey.liteloader.resources.ModResourcePackDir;
 
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.util.TabbyRef;
-import net.minecraft.client.gui.GuiDisconnected;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.network.NetHandlerPlayClient;
@@ -44,22 +43,17 @@ public class LiteModTabbyChat extends TabbyChat implements RenderListener, JoinG
     @Override
     public void onRenderGui(GuiScreen currentScreen) {
         onRender(currentScreen);
-        if (getCurrentServer() != null && currentScreen instanceof GuiDisconnected) {
-            onDisconnect();
-        }
     }
 
     @Override
-    public void onJoinGame(INetHandler iNet, S01PacketJoinGame packet, ServerData serverData,
-            RealmsServer realms) {
+    public void onJoinGame(INetHandler iNet, S01PacketJoinGame packet, ServerData serverData, RealmsServer realms) {
         NetHandlerPlayClient play = (NetHandlerPlayClient) iNet;
-        SocketAddress addr;
-        if (play.getNetworkManager().isLocalChannel()) {
-            addr = null;
-        } else {
+        SocketAddress addr = null;
+        if (!play.getNetworkManager().isLocalChannel()) {
             addr = play.getNetworkManager().getRemoteAddress();
         }
         onJoin(addr);
+
     }
 
     @Override

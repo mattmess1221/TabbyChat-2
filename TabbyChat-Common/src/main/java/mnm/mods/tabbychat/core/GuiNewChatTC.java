@@ -1,6 +1,5 @@
 package mnm.mods.tabbychat.core;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.lwjgl.input.Mouse;
@@ -101,19 +100,6 @@ public class GuiNewChatTC extends GuiNewChat {
     public void resetScroll() {
         chat.getChatBox().getChatArea().resetScroll();
         super.resetScroll();
-    }
-
-    @Override
-    public void clearChatMessages() {
-        try {
-            if (TabbyChat.getInstance().serverSettings != null) {
-                chat.saveTo(TabbyChat.getInstance().serverSettings.getFile().getParentFile());
-            }
-        } catch (IOException e) {
-            TabbyChat.getLogger().warn("Error while saving chat data", e);
-        }
-        chat.clearMessages();
-        super.clearChatMessages();
     }
 
     @Override
