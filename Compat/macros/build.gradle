@@ -2,7 +2,7 @@ apply plugin: 'net.minecrell.vanilla.base'
 apply from: utils.file('gradle/minecraft.gradle')
 
 archivesBaseName = 'TabbyChat-2-macros-compat'
-version = '1.0.1'
+version = '1.0.2'
 
 minecraft.replace '@VERSION@':project.version
 
