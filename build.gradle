@@ -79,15 +79,7 @@ allprojects.findAll {!(it in [project, api, forge, common])}.each { project ->
         project.tasks.withType(Jar) { jar ->
             if (jar.name == 'repackMinecraft') return; // exclude minecraft
 
-            def pname = project.name.capitalize()
-            def jname = jar.name.capitalize()
-            def copy = task "copy$pname$jname"(type: Copy) {
-                dependsOn project.build
-                from jar.archivePath
-                into rootProject.jar.destinationDir
-                outputs.upToDateWhen {false}
-            }
-            rootProject.build.dependsOn copy
+            destinationDir = rootProject.jar.destinationDir
         }
     }
 }
