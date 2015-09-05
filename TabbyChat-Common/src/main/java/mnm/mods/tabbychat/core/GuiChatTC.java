@@ -14,6 +14,11 @@ import com.google.common.collect.ObjectArrays;
 import mnm.mods.tabbychat.ChatManager;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
+import mnm.mods.tabbychat.api.events.ChatMessageEvent.ChatSentEvent;
+import mnm.mods.tabbychat.api.events.InputEvent.KeyTyped;
+import mnm.mods.tabbychat.api.events.InputEvent.MouseClick;
+import mnm.mods.tabbychat.api.events.ScreenEvent;
+import mnm.mods.tabbychat.api.events.ScreenEvent.ChatInitEvent;
 import mnm.mods.tabbychat.util.BackgroundChatThread;
 import mnm.mods.tabbychat.util.ForgeClientCommands;
 import mnm.mods.util.gui.GuiComponent;
@@ -71,7 +76,7 @@ public class GuiChatTC extends GuiChat {
     @Override
     public void initGui() {
         super.initGui();
-        tc.getEventManager().onInitScreen(this, componentList);
+        tc.getBus().post(new ChatInitEvent(this, componentList));
         if (!opened) {
             textBox.setValue("");
             textBox.getTextField().writeText(defaultInputFieldText);
@@ -86,7 +91,7 @@ public class GuiChatTC extends GuiChat {
         for (GuiComponent comp : this.componentList) {
             comp.updateComponent();
         }
-        tc.getEventManager().onUpdateScreen();
+        tc.getBus().post(new ScreenEvent.Update(this));
     }
 
     public boolean hasOpened() {
@@ -95,7 +100,7 @@ public class GuiChatTC extends GuiChat {
 
     @Override
     public void onGuiClosed() {
-        tc.getEventManager().onCloseScreen();
+        tc.getBus().post(new ScreenEvent.Close(this));
         this.sentHistoryBuffer = "";
         this.chat.getChatBox().onClosed();
         super.onGuiClosed();
@@ -121,7 +126,9 @@ public class GuiChatTC extends GuiChat {
 
     @Override
     protected void keyTyped(char key, int code) {
-        if (tc.getEventManager().onKeyTyped(key, code)) {
+        KeyTyped event = new KeyTyped(this, key, code);
+        tc.getBus().post(event);
+        if (event.isCancelled()) {
             return;
         }
         this.waitingOnAutocomplete = false;
@@ -179,7 +186,9 @@ public class GuiChatTC extends GuiChat {
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-        if (tc.getEventManager().onMouseClicked(mouseX, mouseY, mouseButton)) {
+        MouseClick event = new MouseClick(this, mouseX, mouseY, mouseButton);
+        tc.getBus().post(event);
+        if (event.isCancelled()) {
             return;
         }
         if (mouseButton == 0) {
@@ -206,13 +215,15 @@ public class GuiChatTC extends GuiChat {
                 GlStateManager.popMatrix();
             }
         }
-        tc.getEventManager().onRenderChatScreen(mouseX, mouseY, tick);
+        tc.getBus().post(new ScreenEvent.Render(this, mouseX, mouseY, tick));
     }
 
     protected void sendCurrentChat(boolean keepOpen) {
         String message = this.textBox.getValue().trim();
         // send the outbound message to ChatSent modules.
-        message = tc.getEventManager().onChatSent(message);
+        ChatSentEvent event = new ChatSentEvent(message);
+        tc.getBus().post(event);
+        message = event.message;
         Channel active = chat.getActiveChannel();
         String[] toSend = processSends(message, active.getPrefix(), active.isPrefixHidden());
         // time to wait between each send

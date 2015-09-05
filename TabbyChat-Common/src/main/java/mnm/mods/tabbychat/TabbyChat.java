@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
+import com.google.common.eventbus.EventBus;
 
 import mnm.mods.tabbychat.api.AddonManager;
 import mnm.mods.tabbychat.api.Chat;
@@ -23,8 +24,6 @@ import mnm.mods.tabbychat.api.gui.ChatGui;
 import mnm.mods.tabbychat.core.GuiChatTC;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.core.GuiSleepTC;
-import mnm.mods.tabbychat.core.api.TabbyAddonManager;
-import mnm.mods.tabbychat.core.api.TabbyEvents;
 import mnm.mods.tabbychat.extra.ChatAddonAntiSpam;
 import mnm.mods.tabbychat.extra.ChatLogging;
 import mnm.mods.tabbychat.extra.filters.FilterAddon;
@@ -50,7 +49,7 @@ public abstract class TabbyChat extends TabbyAPI {
     private static TabbyChat instance;
 
     private AddonManager addonManager;
-    private TabbyEvents events;
+    private EventBus bus;
 
     public TabbySettings settings;
     @Nullable
@@ -84,8 +83,9 @@ public abstract class TabbyChat extends TabbyAPI {
         return this.addonManager;
     }
 
-    public TabbyEvents getEventManager() {
-        return this.events;
+    @Override
+    public EventBus getBus() {
+        return bus;
     }
 
     @Override
@@ -123,7 +123,7 @@ public abstract class TabbyChat extends TabbyAPI {
         loadUtils();
 
         addonManager = new TabbyAddonManager();
-        events = new TabbyEvents(addonManager);
+        bus = new EventBus("tabbychat");
 
         // Set global settings
         settings = new TabbySettings();
@@ -132,9 +132,9 @@ public abstract class TabbyChat extends TabbyAPI {
         // Save settings
         settings.saveSettingsFile();
 
-        addonManager.registerListener(new ChatAddonAntiSpam());
-        addonManager.registerListener(new FilterAddon());
-        addonManager.registerListener(new ChatLogging(new File("logs/chat")));
+        bus.register(new ChatAddonAntiSpam());
+        bus.register(new FilterAddon());
+        bus.register(new ChatLogging(new File("logs/chat")));
 
         addFilterVariables();
         MnmUtils.getInstance().setChatProxy(new TabbedChatProxy());

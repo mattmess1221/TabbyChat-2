@@ -9,7 +9,7 @@ import mnm.mods.tabbychat.ChatManager;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.ChannelStatus;
-import mnm.mods.tabbychat.api.listener.events.ChatMessageEvent.ChatRecievedEvent;
+import mnm.mods.tabbychat.api.events.ChatMessageEvent.ChatRecievedEvent;
 import mnm.mods.tabbychat.gui.ChatBox;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiNewChat;
@@ -70,7 +70,7 @@ public class GuiNewChatTC extends GuiNewChat {
         // chat listeners
         ChatRecievedEvent chatevent = new ChatRecievedEvent(ichat, id);
         chatevent.channels.add(ChatChannel.DEFAULT_CHANNEL);
-        tc.getEventManager().onChatRecieved(chatevent);
+        tc.getBus().post(chatevent);
         // chat filters
         ichat = chatevent.chat;
         id = chatevent.id;

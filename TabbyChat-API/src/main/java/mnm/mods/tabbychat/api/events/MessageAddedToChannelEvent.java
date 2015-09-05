@@ -1,8 +1,12 @@
-package mnm.mods.tabbychat.api.listener.events;
+package mnm.mods.tabbychat.api.events;
 
 import mnm.mods.tabbychat.api.Channel;
 import net.minecraft.util.IChatComponent;
 
+/**
+ * Called whenever a message is added to a channel. To cancel, subscribe to
+ * {@link ChatMessageEvent} and change the destination channels instead.
+ */
 public class MessageAddedToChannelEvent extends Event {
 
     public IChatComponent chat;

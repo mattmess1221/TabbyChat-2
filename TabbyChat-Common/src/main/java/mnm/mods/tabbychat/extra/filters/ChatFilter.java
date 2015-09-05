@@ -6,12 +6,12 @@ import java.util.regex.PatternSyntaxException;
 
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.TabbyAPI;
+import mnm.mods.tabbychat.api.events.ChatMessageEvent.ChatRecievedEvent;
 import mnm.mods.tabbychat.api.filters.Filter;
 import mnm.mods.tabbychat.api.filters.FilterEvent;
 import mnm.mods.tabbychat.api.filters.FilterSettings;
 import mnm.mods.tabbychat.api.filters.FilterVariable;
 import mnm.mods.tabbychat.api.filters.IFilterAction;
-import mnm.mods.tabbychat.api.listener.events.ChatMessageEvent.ChatRecievedEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.audio.PositionedSoundRecord;

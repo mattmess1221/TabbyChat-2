@@ -1,4 +1,4 @@
-package mnm.mods.tabbychat.api.listener.events;
+package mnm.mods.tabbychat.api.events;
 
 import java.util.Set;
 

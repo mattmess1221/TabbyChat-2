@@ -2,8 +2,8 @@ package mnm.mods.tabbychat.extra.filters;
 
 import java.util.regex.Matcher;
 
+import mnm.mods.tabbychat.api.events.ChatMessageEvent.ChatRecievedEvent;
 import mnm.mods.tabbychat.api.filters.FilterEvent;
-import mnm.mods.tabbychat.api.listener.events.ChatMessageEvent.ChatRecievedEvent;
 
 public abstract class TabFilter extends ChatFilter {
 

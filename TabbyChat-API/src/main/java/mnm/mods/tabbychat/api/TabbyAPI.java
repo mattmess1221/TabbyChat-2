@@ -1,5 +1,7 @@
 package mnm.mods.tabbychat.api;
 
+import com.google.common.eventbus.EventBus;
+
 import mnm.mods.tabbychat.api.gui.ChatGui;
 import mnm.mods.util.gui.config.SettingPanel;
 
@@ -46,6 +48,13 @@ public abstract class TabbyAPI {
      * @return The addon manager
      */
     public abstract AddonManager getAddonManager();
+
+    /**
+     * Gets the event bus used to register event listeners and post events.
+     *
+     * @return The event bus
+     */
+    public abstract EventBus getBus();
 
     /**
      * Gets the gui part of the chat box.
