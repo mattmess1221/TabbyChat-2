@@ -45,7 +45,7 @@ public class FMLTabbyChat extends TabbyChat {
     }
 
     @EventHandler
-    public void init(@SuppressWarnings("unused") FMLInitializationEvent event) {
+    public void init(FMLInitializationEvent event) {
         if (getAPI() == null) {
             setInstance(this);
             this.setConfigFolder(tempDir);
