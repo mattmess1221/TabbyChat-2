@@ -1,4 +1,5 @@
-apply plugin: 'forge'
+apply plugin: 'net.minecraftforge.gradle.forge'
+
 version = rootProject.version
 apply from: utils.file('gradle/minecraft.gradle')
 configurations.compile {
@@ -11,11 +12,4 @@ dependencies {
     compile utils
     compile api
     compile common
-}
-eclipse.classpath.file {
-    whenMerged { classpath ->
-        def refs = classpath.entries.findAll{ it.kind == 'src' && it.path.startsWith('/') }
-        classpath.entries.removeAll refs
-        classpath.entries.addAll refs
-    }
 }

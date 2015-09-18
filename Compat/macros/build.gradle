@@ -1,4 +1,4 @@
-apply plugin: 'net.minecrell.vanilla.base'
+apply plugin: 'net.minecraftforge.gradle.tweaker-client'
 apply from: utils.file('gradle/minecraft.gradle')
 
 archivesBaseName = 'TabbyChat-2-macros-compat'

@@ -1,8 +1,9 @@
-apply plugin: 'net.minecrell.vanilla.base'
+apply plugin: 'net.minecraftforge.gradle.tweaker-client'
+
 version = rootProject.version
 apply from: utils.file('gradle/minecraft.gradle')
 // disable reobfuscation
-reobf.onlyIf { false }
+reobfJar.enabled = false
 
 dependencies{
     // Add util library

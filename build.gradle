@@ -1,32 +1,11 @@
-buildscript {
-    repositories {
-        mavenCentral()
-        maven {
-            name = "forge"
-            url = "http://files.minecraftforge.net/maven"
-        }
-        maven {
-            name = "sonatype"
-            url = "https://oss.sonatype.org/content/repositories/snapshots/"
-        }
-        maven {
-            // for the vanilla plugin
-            name = "minecrell"
-            url = "http://repo.minecrell.net/snapshots"
-        }
-    }
-    dependencies {
-        classpath 'net.minecrell:VanillaGradle:1.0.2-SNAPSHOT'
-    }
+plugins {
+	id 'net.minecraftforge.gradle.tweaker-client' version '2.0.1'
 }
-
 ext.utils = rootProject.project(':MnM-Utils')
 ext.api = rootProject.project(':TabbyChat-API')
 ext.forge = rootProject.project(':TabbyChat-Forge')
 ext.common = rootProject.project(':TabbyChat-Common')
 ext.rev = '0.31'
-
-apply plugin: 'forge'
 
 group = 'mnm.mods'
 archivesBaseName = 'TabbyChat'
@@ -58,8 +37,7 @@ afterEvaluate {
        from([api, common, forge].collect { it.sourceSets.main.output })
     }
 }
-// disable things
-//tasks.findAll{task -> task.name.contains('eclipse')}*.enabled = false
+
 subprojects {
     repositories {
         flatDir  {
@@ -67,19 +45,22 @@ subprojects {
         }
     }
     afterEvaluate {
-        if (it in [api, common, forge]) {
-            reobf.enabled = false
-        }
+        //if (it in [api, common, forge]) {
+        //    reobfJar.enabled = false
+        //}
         // disable runs in subprojects
         tasks.findAll {it.name.startsWith 'run'}*.enabled = false
-}}
+		makeStart.enabled = false
+	}
+}
 
-allprojects.findAll {!(it in [project, api, forge, common])}.each { project ->
-    project.afterEvaluate {
-        project.tasks.withType(Jar) { jar ->
-            if (jar.name == 'repackMinecraft') return; // exclude minecraft
-
-            destinationDir = rootProject.jar.destinationDir
-        }
-    }
+allprojects.findAll {
+	!(it in [project, api, forge, common])
+}.each { project ->
+	project.afterEvaluate {
+		project.tasks.withType(Jar) { jar ->
+			if (jar.name == 'repackMinecraft') return
+			destinationDir = rootProject.jar.destinationDir
+		}
+	}
 }
