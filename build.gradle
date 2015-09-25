@@ -10,7 +10,7 @@ buildscript {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.0-SNAPSHOT'
     }
 }
-apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'net.minecraftforge.gradle.tweaker-client'
 
 ext.utils = rootProject.project(':MnM-Utils')
 ext.api = rootProject.project(':TabbyChat-API')
@@ -28,7 +28,7 @@ if (bnum != null) {
 apply from: utils.file('gradle/minecraft.gradle')
 
 dependencies {
-    // for the runClient
+    // for the reobf
     compile utils
 }
 jar {
@@ -37,14 +37,14 @@ jar {
         attributes "ModSide":"CLIENT"
     }
 }
-task jarDev(type:Jar) {
-    classifier "dev"
+task jarSrg(type:Jar) {
+    classifier "srg"
 }
-artifacts.archives jarDev
+artifacts.archives jarSrg
 afterEvaluate {
     evaluationDependsOnChildren()
     // add content to jars
-    [jar, jarDev]*.with {
+    [jar, jarSrg]*.with {
        from([api, common, forge].collect { it.sourceSets.main.output })
     }
 }

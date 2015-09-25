@@ -17,3 +17,4 @@ dependencies {
 jar {
     extension 'litemod'
 }
+sourceJar.enabled = false
