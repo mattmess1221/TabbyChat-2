@@ -47,6 +47,7 @@ afterEvaluate {
     [jar, jarSrg]*.with {
        from([api, common, forge].collect { it.sourceSets.main.output })
     }
+	[api, common, forge].each{it.reobfJar.enabled = false}
 }
 
 subprojects {
