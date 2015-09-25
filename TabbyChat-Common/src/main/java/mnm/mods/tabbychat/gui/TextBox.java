@@ -3,16 +3,23 @@ package mnm.mods.tabbychat.gui;
 import java.awt.Dimension;
 import java.util.List;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
+
+import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.TabbyAPI;
 import mnm.mods.tabbychat.api.gui.ChatInput;
 import mnm.mods.tabbychat.core.GuiChatTC;
+import mnm.mods.tabbychat.extra.spell.SpellingFormatter;
 import mnm.mods.util.Color;
 import mnm.mods.util.gui.GuiComponent;
 import mnm.mods.util.gui.GuiText;
+import mnm.mods.util.text.FancyFontRenderer;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.util.IChatComponent;
 
 public class TextBox extends ChatGui implements ChatInput {
 
@@ -20,12 +27,14 @@ public class TextBox extends ChatGui implements ChatInput {
     // Dummy textField
     private GuiText textField = new GuiText();
     private int cursorCounter;
+    private Function<String, IChatComponent> formatter;
 
     public TextBox() {
         super();
         textField.getTextField().setMaxStringLength(300);
         textField.setFocused(true);
         textField.getTextField().setCanLoseFocus(false);
+        formatter = new SpellingFormatter(TabbyChat.getInstance().getSpellcheck());
     }
 
     @Override
@@ -71,8 +80,7 @@ public class TextBox extends ChatGui implements ChatInput {
                 yPos += fr.FONT_HEIGHT + 2;
             }
 
-            if (textField.getCursorPosition() + size < this.textField
-                    .getValue().length()) {
+            if (textField.getCursorPosition() + size < this.textField.getValue().length()) {
                 marker = '|';
             } else {
                 marker = '_';
@@ -83,6 +91,7 @@ public class TextBox extends ChatGui implements ChatInput {
     }
 
     private void drawText() {
+        FancyFontRenderer ffr = new FancyFontRenderer(mc.fontRendererObj);
         // selection
         boolean started = false;
         boolean ended = false;
@@ -90,10 +99,10 @@ public class TextBox extends ChatGui implements ChatInput {
 
         int yPos = 2;
         int pos = 0;
-        for (String line : getWrappedLines()) {
+        for (IChatComponent line : getFormattedLines()) {
+            ffr.drawChat(line, 1, yPos, false);
             int xPos = 1;
-            for (Character c : line.toCharArray()) {
-                fr.drawString(c.toString(), xPos, yPos, getForeColor());
+            for (Character c : line.getUnformattedText().toCharArray()) {
                 int width = fr.getCharWidth(c);
                 int cursorPos = textField.getCursorPosition();
                 int selectDist = textField.getSelectedText().length();
@@ -155,6 +164,10 @@ public class TextBox extends ChatGui implements ChatInput {
     @Override
     public List<String> getWrappedLines() {
         return fr.listFormattedStringToWidth(textField.getValue(), getBounds().width);
+    }
+
+    public List<IChatComponent> getFormattedLines() {
+        return Lists.transform(getWrappedLines(), formatter);
     }
 
     @Override

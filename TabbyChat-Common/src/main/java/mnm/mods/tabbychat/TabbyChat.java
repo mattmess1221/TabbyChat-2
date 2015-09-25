@@ -28,6 +28,8 @@ import mnm.mods.tabbychat.core.api.TabbyEvents;
 import mnm.mods.tabbychat.extra.ChatAddonAntiSpam;
 import mnm.mods.tabbychat.extra.ChatLogging;
 import mnm.mods.tabbychat.extra.filters.FilterAddon;
+import mnm.mods.tabbychat.extra.spell.LangDict;
+import mnm.mods.tabbychat.extra.spell.Spellcheck;
 import mnm.mods.tabbychat.gui.settings.GuiSettingsScreen;
 import mnm.mods.tabbychat.settings.ServerSettings;
 import mnm.mods.tabbychat.settings.TabbySettings;
@@ -49,6 +51,7 @@ public abstract class TabbyChat extends TabbyAPI {
 
     private AddonManager addonManager;
     private TabbyEvents events;
+    private Spellcheck spellcheck;
 
     public TabbySettings settings;
     @Nullable
@@ -82,6 +85,10 @@ public abstract class TabbyChat extends TabbyAPI {
 
     public TabbyEvents getEventManager() {
         return this.events;
+    }
+
+    public Spellcheck getSpellcheck() {
+        return spellcheck;
     }
 
     @Override
@@ -120,6 +127,7 @@ public abstract class TabbyChat extends TabbyAPI {
 
         addonManager = new TabbyAddonManager();
         events = new TabbyEvents(addonManager);
+        spellcheck = new Spellcheck(LangDict.ENGLISH);
 
         // Set global settings
         settings = new TabbySettings();

@@ -26,5 +26,12 @@ public class GeneralSettings extends SettingObject<GeneralSettings> {
     public SettingValue<Boolean> unreadFlashing = value(true);
     @Setting
     public SettingValue<Boolean> checkUpdates = value(true);
+    @Setting
+    public Spelling spelling = new Spelling();
 
+    public class Spelling extends SettingObject<Spelling> {
+
+        @Setting
+        public SettingValue<Boolean> enabled = value(true);
+    }
 }
