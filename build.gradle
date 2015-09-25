@@ -39,6 +39,7 @@ jar {
 }
 task jarSrg(type:Jar) {
     classifier "srg"
+	// TODO reobfuscate
 }
 artifacts.archives jarSrg
 afterEvaluate {
@@ -48,6 +49,13 @@ afterEvaluate {
        from([api, common, forge].collect { it.sourceSets.main.output })
     }
 	[api, common, forge].each{it.reobfJar.enabled = false}
+	if (bnum != null) { // disable extra artifacts on build server
+		allprojects {
+			tasks.withType(Jar).findAll {
+				it.classifier in ['srg', 'dev', 'sources']
+			}*.enabled = false
+		}
+	}
 }
 
 subprojects {
