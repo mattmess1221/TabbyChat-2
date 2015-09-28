@@ -1,86 +1,93 @@
 buildscript {
-    repositories {
-        jcenter()
-        maven {
-            name = "forge"
-            url = "http://files.minecraftforge.net/maven"
-        }
-    }
-    dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.0-SNAPSHOT'
-    }
+	repositories {
+		jcenter()
+		maven {
+			name = "forge"
+			url = "http://files.minecraftforge.net/maven"
+		}
+	}
+	dependencies {
+		classpath 'net.minecraftforge.gradle:ForgeGradle:2.0-SNAPSHOT'
+	}
 }
 apply plugin: 'net.minecraftforge.gradle.tweaker-client'
 
-ext.utils = rootProject.project(':MnM-Utils')
-ext.api = rootProject.project(':TabbyChat-API')
-ext.forge = rootProject.project(':TabbyChat-Forge')
-ext.common = rootProject.project(':TabbyChat-Common')
-ext.rev = '0.31'
+ext {
+	utils = rootProject.project(':MnM-Utils')
+	api = rootProject.project(':TabbyChat-API')
+	forge = rootProject.project(':TabbyChat-Forge')
+	common = rootProject.project(':TabbyChat-Common')
+	macros = rootProject.project(':macros')
 
+	rev = '0.31'
+}
+def buildServer = System.env.BUILD_ID != null
 group = 'mnm.mods'
 archivesBaseName = 'TabbyChat'
-version = '2.0.0-beta3.1'
-def bnum = System.env.BUILD_ID
-if (bnum != null) {
-  version += "-SNAPSHOT-$bnum"
-}
+version = '2.0.0-beta-SNAPSHOT' + ".$System.env.BUILD_ID"
+// version = '2.0.0-beta3.1'
 apply from: utils.file('gradle/minecraft.gradle')
 
+allprojects {
+	repositories {
+		flatDir  {
+			dirs rootProject.file('libs')
+		}
+	}
+}
 dependencies {
-    // for the reobf
-    compile utils
+	// for the reobf
+	compile project.subprojects
 }
 jar {
-    manifest {
-        attributes "ModType":"FML,LiteLoader"
-        attributes "ModSide":"CLIENT"
-    }
+	manifest {
+		attributes "ModType":"FML,LiteLoader"
+		attributes "ModSide":"CLIENT"
+	}
 }
 task jarSrg(type:Jar) {
-    classifier "srg"
+	classifier "srg"
 	// TODO reobfuscate
 }
 artifacts.archives jarSrg
+// waiting on ForgeGradle#268 (https://github.com/MinecraftForge/ForgeGradle/pull/268)
+/*
+reobf {
+	jarSrg {
+		setSrgSrg()
+	}
+}
+*/
 afterEvaluate {
-    evaluationDependsOnChildren()
-    // add content to jars
-    [jar, jarSrg]*.with {
-       from([api, common, forge].collect { it.sourceSets.main.output })
-    }
-	[api, common, forge].each{it.reobfJar.enabled = false}
-	if (bnum != null) { // disable extra artifacts on build server
+	// add content to jars
+	evaluationDependsOnChildren()
+	[api, common, forge].each{ proj ->
+		[jar,jarSrg]*.from proj.sourceSets.main.output
+		sourceJar {
+			dependsOn proj.sourceJar
+			from zipTree(proj.sourceJar.archivePath)
+		}
+		proj.reobfJar.enabled = false
+	}
+	if (buildServer) { // disable extra artifacts on build server
 		allprojects {
 			tasks.withType(Jar).findAll {
-				it.classifier in ['srg', 'dev', 'sources']
+				it.classifier in ['srg', 'sources']
 			}*.enabled = false
 		}
 	}
 }
 
 subprojects {
-    repositories {
-        flatDir  {
-            dirs rootProject.file('libs')
-        }
-    }
-    afterEvaluate {
-        //if (it in [api, common, forge]) {
-        //    reobfJar.enabled = false
-        //}
-        // disable runs in subprojects
-        tasks.findAll {it.name.startsWith 'run'}*.enabled = false
-		makeStart.enabled = false
-	}
+	// disable runs in subprojects
+	tasks.findAll {it.name.startsWith 'run'}*.enabled = false
+	makeStart.enabled = false
 }
-
-allprojects.findAll {
-	!(it in [project, api, forge, common])
-}.each { project ->
+// find jars and move their destination dir to /build/libs of root project
+[utils, macros].each { project ->
 	project.afterEvaluate {
-		project.tasks.withType(Jar) { jar ->
-			if (jar.name == 'repackMinecraft') return
-			destinationDir = rootProject.jar.destinationDir
-		}
+		project.tasks.withType(Jar).findAll {
+			it.name != 'repackMinecraft'
+		}*.destinationDir file('build/libs')
 	}
 }
