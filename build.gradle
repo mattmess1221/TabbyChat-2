@@ -62,6 +62,9 @@ reobf {
 afterEvaluate {
 	// add content to jars
 	evaluationDependsOnChildren()
+	jar.from(common.configurations.shade.collect {it.isDirectory() ? it : zipTree(it)}) {
+		exclude 'META-INF/***'
+	}
 	[api, common, forge].each{ proj ->
 		[jar,jarSrg]*.from proj.sourceSets.main.output
 		sourceJar {
