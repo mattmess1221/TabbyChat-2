@@ -10,3 +10,4 @@ dependencies{
     compile utils
 }
 jar.classifier "api"
+tasks.findAll {it.name.contains 'make' }*.enabled = false

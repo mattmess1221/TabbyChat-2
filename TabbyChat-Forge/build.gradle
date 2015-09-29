@@ -13,3 +13,4 @@ dependencies {
     compile api
     compile common
 }
+tasks.findAll {it.name.contains 'make' }*.enabled = false

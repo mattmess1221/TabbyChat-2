@@ -27,11 +27,12 @@ archivesBaseName = 'TabbyChat'
 version = '2.0.0-beta-SNAPSHOT' + ".$System.env.BUILD_ID"
 // version = '2.0.0-beta3.1'
 apply from: utils.file('gradle/minecraft.gradle')
+minecraft.tweakClass = 'com.mumfrey.liteloader.launch.LiteLoaderTweaker'
 
 allprojects {
 	repositories {
 		flatDir  {
-			dirs rootProject.file('libs')
+			dirs rootProject.file('flat')
 		}
 	}
 }
@@ -76,12 +77,9 @@ afterEvaluate {
 			}*.enabled = false
 		}
 	}
-}
-
-subprojects {
-	// disable runs in subprojects
-	tasks.findAll {it.name.startsWith 'run'}*.enabled = false
-	makeStart.enabled = false
+	def mc = plugins.getPlugin 'net.minecraftforge.gradle.tweaker-client'
+	mc.replacer.putReplacement '{RUN_CLIENT_MAIN}', 'com.mumfrey.liteloader.debug.Start'
+	mc.replacer.putReplacement '{RUN_CLIENT_TWEAKER}', 'com.mumfrey.liteloader.launch.LiteLoaderTweaker'
 }
 // find jars and move their destination dir to /build/libs of root project
 [utils, macros].each { project ->

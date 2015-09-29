@@ -14,8 +14,9 @@ dependencies {
     // Add util library
     compile utils
     compile api
-    compile ':liteloader:1.8-SNAPSHOT-mcpnames'
+    deobfCompile 'com.mumfrey:liteloader:1.8-SNAPSHOT:srg'
     compile 'net.sf.jazzy:jazzy:0.5.2-rtext-1.4.1-2'
 
     testCompile 'junit:junit:4.12'
 }
+tasks.findAll {it.name.contains 'make' }*.enabled = false
