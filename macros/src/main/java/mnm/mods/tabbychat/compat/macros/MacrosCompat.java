@@ -34,7 +34,7 @@ public class MacrosCompat implements ChatScreenListener, ChatScreenRenderer, Cha
             return false;
         EventInfo<GuiChat> event = mkEvnt("", chat, true);
         MacroModCore.onChatGuiEvent(event, mouseX, mouseY, button);
-        return event.isCancellable();
+        return event.isCancelled();
     }
 
     @Override
