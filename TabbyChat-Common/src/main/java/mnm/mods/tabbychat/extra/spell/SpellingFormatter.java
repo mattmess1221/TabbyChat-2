@@ -10,7 +10,7 @@ import net.minecraft.util.IChatComponent;
 
 public class SpellingFormatter implements Function<String, IChatComponent> {
 
-    private Spellcheck spelling;
+    private final Spellcheck spelling;
 
     public SpellingFormatter(Spellcheck sp) {
         spelling = sp;
@@ -20,15 +20,15 @@ public class SpellingFormatter implements Function<String, IChatComponent> {
     public IChatComponent apply(String text) {
         if (!TabbyChat.getInstance().settings.general.spelling.enabled.getValue())
             return new ChatComponentText(text);
+        spelling.checkSpelling(text);
         String[] split = text.split(" ");
         ChatBuilder b = new ChatBuilder();
         for (String word : split) {
-            if (b.size() > 0)
-                b.text(" ");
             b.text(word);
             if (!spelling.isCorrect(word)) {
                 b.underline(Color.RED);
             }
+            b.text(" ");
         }
         return b.build();
     }

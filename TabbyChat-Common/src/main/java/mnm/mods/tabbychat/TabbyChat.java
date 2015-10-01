@@ -28,7 +28,6 @@ import mnm.mods.tabbychat.core.api.TabbyEvents;
 import mnm.mods.tabbychat.extra.ChatAddonAntiSpam;
 import mnm.mods.tabbychat.extra.ChatLogging;
 import mnm.mods.tabbychat.extra.filters.FilterAddon;
-import mnm.mods.tabbychat.extra.spell.LangDict;
 import mnm.mods.tabbychat.extra.spell.Spellcheck;
 import mnm.mods.tabbychat.gui.settings.GuiSettingsScreen;
 import mnm.mods.tabbychat.settings.ServerSettings;
@@ -127,7 +126,7 @@ public abstract class TabbyChat extends TabbyAPI {
 
         addonManager = new TabbyAddonManager();
         events = new TabbyEvents(addonManager);
-        spellcheck = new Spellcheck(LangDict.ENGLISH);
+        spellcheck = new Spellcheck();
 
         // Set global settings
         settings = new TabbySettings();
