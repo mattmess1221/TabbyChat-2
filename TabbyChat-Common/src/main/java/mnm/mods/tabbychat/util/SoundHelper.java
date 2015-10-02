@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import mnm.mods.util.ReflectionHelper;
+import mnm.mods.tabbychat.liteloader.TabbyPrivateFields;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.audio.SoundRegistry;
@@ -62,8 +62,7 @@ public class SoundHelper implements Comparable<SoundHelper> {
     private static SoundRegistry getRegistry() {
         try {
             SoundHandler handler = Minecraft.getMinecraft().getSoundHandler();
-            return (SoundRegistry) ReflectionHelper.getFieldValue(SoundHandler.class, handler,
-                    TabbyRef.SND_REGISTRY);
+            return TabbyPrivateFields.sndRegistry.get(handler);
         } catch (Exception e) {
             throw new RuntimeException("Error while getting sound registry.", e);
         }

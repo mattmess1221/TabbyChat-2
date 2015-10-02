@@ -41,10 +41,7 @@ dependencies {
 	compile project.subprojects
 }
 jar {
-	manifest {
-		attributes "ModType":"FML,LiteLoader"
-		attributes "ModSide":"CLIENT"
-	}
+    extension 'litemod'
 }
 task jarSrg(type:Jar) {
 	classifier "srg"

@@ -3,17 +3,10 @@ package mnm.mods.tabbychat.liteloader;
 import java.io.File;
 import java.net.SocketAddress;
 
-import com.mojang.realmsclient.dto.RealmsServer;
-import com.mumfrey.liteloader.JoinGameListener;
-import com.mumfrey.liteloader.RenderListener;
-import com.mumfrey.liteloader.common.Resources;
-import com.mumfrey.liteloader.core.LiteLoader;
-import com.mumfrey.liteloader.resources.ModResourcePack;
-import com.mumfrey.liteloader.resources.ModResourcePackDir;
-
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.util.TabbyRef;
-import net.minecraft.client.gui.GuiScreen;
+import mnm.mods.util.MnmUtils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.resources.IResourceManager;
@@ -21,7 +14,17 @@ import net.minecraft.client.resources.IResourcePack;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.play.server.S01PacketJoinGame;
 
-public class LiteModTabbyChat extends TabbyChat implements RenderListener, JoinGameListener {
+import com.mojang.realmsclient.dto.RealmsServer;
+import com.mumfrey.liteloader.JoinGameListener;
+import com.mumfrey.liteloader.Tickable;
+import com.mumfrey.liteloader.common.Resources;
+import com.mumfrey.liteloader.core.LiteLoader;
+import com.mumfrey.liteloader.resources.ModResourcePack;
+import com.mumfrey.liteloader.resources.ModResourcePackDir;
+
+public class LiteModTabbyChat implements Tickable, JoinGameListener {
+
+    private TabbyChat tc;
 
     @Override
     public String getName() {
@@ -35,14 +38,14 @@ public class LiteModTabbyChat extends TabbyChat implements RenderListener, JoinG
 
     @Override
     public void init(File configPath) {
-        setInstance(this);
-        setConfigFolder(configPath);
-        init();
+        this.tc = new TabbyChat(configPath);
+        loadUtils();
+        tc.init();
     }
 
     @Override
-    public void onRenderGui(GuiScreen currentScreen) {
-        onRender(currentScreen);
+    public void onTick(Minecraft arg0, float arg1, boolean arg2, boolean arg3) {
+        tc.changeChatScreen(arg0.currentScreen);
     }
 
     @Override
@@ -52,12 +55,39 @@ public class LiteModTabbyChat extends TabbyChat implements RenderListener, JoinG
         if (!play.getNetworkManager().isLocalChannel()) {
             addr = play.getNetworkManager().getRemoteAddress();
         }
-        onJoin(addr);
+        tc.onJoin(addr);
 
     }
 
-    @Override
-    protected void loadResourcePack(File source, String name) {
+    private void loadUtils() {
+        File source = findClasspathRoot(MnmUtils.class);
+        loadResourcePack(source, "Mnm Utils");
+        try {
+            Minecraft.class.getMethod("getMinecraft");
+            // I'm in dev, fix things.
+            loadResourcePack(findClasspathRoot(TabbyChat.class), "TabbyChat-Common");
+        } catch (Exception e) {
+            // unimportant
+        }
+    }
+
+    private static File findClasspathRoot(Class<?> clas) {
+        String str = clas.getProtectionDomain().getCodeSource().getLocation().toString();
+        str = str.replace("/" + clas.getCanonicalName().replace('.', '/').concat(".class"), "");
+        str = str.replace('\\', '/');
+        if (str.endsWith("!")) {
+            str = str.substring(0, str.length() - 1);
+        }
+        if (str.startsWith("jar:")) {
+            str = str.substring(4);
+        }
+        if (str.startsWith("file:/")) {
+            str = str.substring(6);
+        }
+        return new File(str);
+    }
+
+    private void loadResourcePack(File source, String name) {
         IResourcePack pack;
         if (source.isFile()) {
             pack = new ModResourcePack(name, source);
@@ -73,19 +103,8 @@ public class LiteModTabbyChat extends TabbyChat implements RenderListener, JoinG
         resources.registerResourcePack(pack);
     }
 
-    // Unused
-    // | | |
-    // V V V
     @Override
-    public void onRender() {}
-
-    @Override
-    public void onRenderWorld() {}
-
-    @Override
-    public void onSetupCameraTransform() {}
-
-    @Override
-    public void upgradeSettings(String version, File configPath, File oldConfigPath) {}
+    public void upgradeSettings(String version, File configPath, File oldConfigPath) {
+    }
 
 }

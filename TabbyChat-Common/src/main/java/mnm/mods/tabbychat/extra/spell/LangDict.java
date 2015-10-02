@@ -4,16 +4,22 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 import mnm.mods.tabbychat.TabbyChat;
+import net.minecraft.client.Minecraft;
+
+import com.google.common.collect.Maps;
 
 public class LangDict {
 
-    public static final LangDict ENGLISH = new LangDict("en_US");
+    private static final Map<String, LangDict> cache = Maps.newHashMap();
+
+    public static final LangDict ENGLISH = getLang("en_US");
 
     private String path;
 
-    public LangDict(String s) {
+    private LangDict(String s) {
         path = s;
     }
 
@@ -42,5 +48,21 @@ public class LangDict {
 
     private String getPath() {
         return String.format("dicts/%sx.dic", path);
+    }
+
+    @Override
+    public String toString() {
+        return path;
+    }
+
+    public static LangDict getLang(String id) {
+        if (!cache.containsKey(id)) {
+            cache.put(id, new LangDict(id));
+        }
+        return cache.get(id);
+    }
+
+    public static LangDict getLang() {
+        return getLang(Minecraft.getMinecraft().gameSettings.language);
     }
 }

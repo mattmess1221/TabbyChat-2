@@ -20,7 +20,6 @@ public class SpellingFormatter implements Function<String, IChatComponent> {
     public IChatComponent apply(String text) {
         if (!TabbyChat.getInstance().settings.general.spelling.enabled.getValue())
             return new ChatComponentText(text);
-        spelling.checkSpelling(text);
         String[] split = text.split(" ");
         ChatBuilder b = new ChatBuilder();
         for (String word : split) {

@@ -8,18 +8,13 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import com.google.common.base.Function;
-import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
-
 import mnm.mods.tabbychat.api.AddonManager;
 import mnm.mods.tabbychat.api.Chat;
 import mnm.mods.tabbychat.api.TabbyAPI;
+import mnm.mods.tabbychat.api.VersionData;
 import mnm.mods.tabbychat.api.filters.FilterVariable;
-import mnm.mods.tabbychat.api.gui.ChatGui;
+import mnm.mods.tabbychat.api.internal.ForgeProxy;
+import mnm.mods.tabbychat.api.internal.InternalAPI;
 import mnm.mods.tabbychat.core.GuiChatTC;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.core.GuiSleepTC;
@@ -29,12 +24,14 @@ import mnm.mods.tabbychat.extra.ChatAddonAntiSpam;
 import mnm.mods.tabbychat.extra.ChatLogging;
 import mnm.mods.tabbychat.extra.filters.FilterAddon;
 import mnm.mods.tabbychat.extra.spell.Spellcheck;
+import mnm.mods.tabbychat.gui.ChatBox;
 import mnm.mods.tabbychat.gui.settings.GuiSettingsScreen;
+import mnm.mods.tabbychat.liteloader.TabbyPrivateFields;
 import mnm.mods.tabbychat.settings.ServerSettings;
 import mnm.mods.tabbychat.settings.TabbySettings;
+import mnm.mods.tabbychat.util.DefaultForgeProxy;
 import mnm.mods.tabbychat.util.TabbyRef;
 import mnm.mods.util.MnmUtils;
-import mnm.mods.util.ReflectionHelper;
 import mnm.mods.util.gui.config.SettingPanel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
@@ -43,14 +40,21 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiSleepMP;
 import net.minecraft.entity.player.EntityPlayer;
 
-public abstract class TabbyChat extends TabbyAPI {
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.google.common.base.Function;
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
+
+public class TabbyChat extends TabbyAPI implements InternalAPI {
 
     private static final Logger LOGGER = LogManager.getLogger(TabbyRef.MOD_ID);
-    private static TabbyChat instance;
 
     private AddonManager addonManager;
     private TabbyEvents events;
     private Spellcheck spellcheck;
+    private ForgeProxy forgeProxy = new DefaultForgeProxy();
 
     public TabbySettings settings;
     @Nullable
@@ -59,17 +63,22 @@ public abstract class TabbyChat extends TabbyAPI {
     private File dataFolder;
     private InetSocketAddress currentServer;
 
-    protected static void setInstance(TabbyChat inst) {
-        instance = inst;
-        setAPI(inst);
+    public TabbyChat(File configPath) {
+        super();
+        this.dataFolder = new File(configPath, TabbyRef.MOD_ID);
     }
 
     public static TabbyChat getInstance() {
-        return instance;
+        return (TabbyChat) getAPI();
     }
 
     public static Logger getLogger() {
         return LOGGER;
+    }
+
+    @Override
+    public VersionData getVersionData() {
+        return new Version();
     }
 
     @Override
@@ -81,6 +90,15 @@ public abstract class TabbyChat extends TabbyAPI {
     public AddonManager getAddonManager() {
         return this.addonManager;
     }
+    
+    public ForgeProxy getForgeProxy() {
+        return forgeProxy;
+    }
+    
+    @Override
+    public void setForgeProxy(ForgeProxy forgeProxy) {
+        this.forgeProxy = forgeProxy;
+    }
 
     public TabbyEvents getEventManager() {
         return this.events;
@@ -91,7 +109,7 @@ public abstract class TabbyChat extends TabbyAPI {
     }
 
     @Override
-    public ChatGui getGui() {
+    public ChatBox getGui() {
         return GuiNewChatTC.getInstance().getChatManager().getChatBox();
     }
 
@@ -108,25 +126,11 @@ public abstract class TabbyChat extends TabbyAPI {
         return dataFolder;
     }
 
-    @Override
-    public void registerSettings(Class<? extends SettingPanel<?>> setting) {
-        GuiSettingsScreen.registerSetting(setting);
-    }
-
-    // Protected methods
-
-    protected abstract void loadResourcePack(File source, String name);
-
-    protected void setConfigFolder(File config) {
-        this.dataFolder = new File(config, TabbyRef.MOD_ID);
-    }
-
-    protected void init() {
-        loadUtils();
+    public void init() {
 
         addonManager = new TabbyAddonManager();
         events = new TabbyEvents(addonManager);
-        spellcheck = new Spellcheck();
+        spellcheck = new Spellcheck(new File(getDataFolder(), "user.dic"));
 
         // Set global settings
         settings = new TabbySettings();
@@ -162,23 +166,20 @@ public abstract class TabbyChat extends TabbyAPI {
         });
     }
 
-    protected void onRender(GuiScreen currentScreen) {
+    public void changeChatScreen(GuiScreen currentScreen) {
         if (currentScreen instanceof GuiChat && !(currentScreen instanceof GuiChatTC)) {
             Minecraft mc = Minecraft.getMinecraft();
-            // Get the default text via Reflection
-            String inputBuffer = "";
-            try {
-                inputBuffer = ReflectionHelper.getFieldValue(GuiChat.class, (GuiChat) currentScreen, TabbyRef.DEFAULT_INPUT_FIELD_TEXT);
-            } catch (Exception e) {}
             if (currentScreen instanceof GuiSleepMP) {
                 mc.displayGuiScreen(new GuiSleepTC());
             } else {
+                // Get the default text via Reflection
+                String inputBuffer = TabbyPrivateFields.defaultInputFieldText.get((GuiChat) currentScreen);
                 mc.displayGuiScreen(new GuiChatTC(inputBuffer));
             }
         }
     }
 
-    protected void onJoin(SocketAddress address) {
+    public void onJoin(SocketAddress address) {
         if (address instanceof InetSocketAddress) {
             this.currentServer = (InetSocketAddress) address;
         } else {
@@ -204,39 +205,22 @@ public abstract class TabbyChat extends TabbyAPI {
         }
     }
 
-    private void loadUtils() {
-        File source = findClasspathRoot(MnmUtils.class);
-        loadResourcePack(source, "Mnm Utils");
-        try {
-            Minecraft.class.getMethod("getMinecraft");
-            // I'm in dev, fix things.
-            loadResourcePack(findClasspathRoot(TabbyChat.class), "TabbyChat-Common");
-        } catch (Exception e) {
-            // unimportant
-        }
-    }
-
-    private static File findClasspathRoot(Class<?> clas) {
-        String str = clas.getProtectionDomain().getCodeSource().getLocation().toString();
-        str = str.replace("/" + clas.getCanonicalName().replace('.', '/').concat(".class"), "");
-        str = str.replace('\\', '/');
-        if (str.endsWith("!")) {
-            str = str.substring(0, str.length() - 1);
-        }
-        if (str.startsWith("jar:")) {
-            str = str.substring(4);
-        }
-        if (str.startsWith("file:/")) {
-            str = str.substring(6);
-        }
-        return new File(str);
-    }
-
     private static void hookIntoChat(GuiIngame guiIngame) throws Exception {
         if (!GuiNewChatTC.class.isAssignableFrom(guiIngame.getChatGUI().getClass())) {
-            // guiIngame.persistantChatGUI = GuiNewChatTC.getInstance();
-            ReflectionHelper.setFieldValue(GuiIngame.class, guiIngame, GuiNewChatTC.getInstance(), TabbyRef.PERSISTANT_CHAT_GUI);
+            TabbyPrivateFields.persistantChatGUI.setFinal(guiIngame, GuiNewChatTC.getInstance());
             LOGGER.info("Successfully hooked into chat.");
+        }
+    }
+
+    private class Version implements VersionData {
+        @Override
+        public double getRevision() {
+            return TabbyRef.MOD_REVISION;
+        }
+
+        @Override
+        public String getVersion() {
+            return TabbyRef.MOD_VERSION;
         }
     }
 }

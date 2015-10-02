@@ -33,7 +33,6 @@ import mnm.mods.tabbychat.api.ChannelStatus;
 import mnm.mods.tabbychat.api.Chat;
 import mnm.mods.tabbychat.api.Message;
 import mnm.mods.tabbychat.gui.ChatBox;
-import mnm.mods.tabbychat.gui.ChatTray;
 import mnm.mods.tabbychat.settings.AdvancedSettings;
 import mnm.mods.util.ChatBuilder;
 import mnm.mods.util.config.SettingMap;
@@ -114,7 +113,7 @@ public class ChatManager implements Chat {
     public void addChannel(Channel channel) {
         if (!this.channels.contains(channel)) {
             this.channels.add(channel);
-            ((ChatTray) chatbox.getTray()).addChannel(channel);
+            chatbox.getTray().addChannel(channel);
         }
         save();
     }
@@ -123,7 +122,7 @@ public class ChatManager implements Chat {
     public void removeChannel(Channel channel) {
         if (channels.contains(channel) && !channel.equals(ChatChannel.DEFAULT_CHANNEL)) {
             channels.remove(channel);
-            ((ChatTray) chatbox.getTray()).removeChannel(channel);
+            chatbox.getTray().removeChannel(channel);
         }
         if (getActiveChannel() == channel) {
             setActiveChannel(ChatChannel.DEFAULT_CHANNEL);
@@ -153,7 +152,7 @@ public class ChatManager implements Chat {
         this.channels.clear();
         this.channels.add(ChatChannel.DEFAULT_CHANNEL);
 
-        ((ChatTray) chatbox.getTray()).clear();
+        chatbox.getTray().clear();
     }
 
     @Override

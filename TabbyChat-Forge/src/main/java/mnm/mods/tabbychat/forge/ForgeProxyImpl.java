@@ -1,12 +1,12 @@
 package mnm.mods.tabbychat.forge;
 
-import mnm.mods.tabbychat.util.ForgeClientCommands;
+import mnm.mods.tabbychat.api.internal.ForgeProxy;
 import net.minecraftforge.client.ClientCommandHandler;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ForgeCommandsImpl extends ForgeClientCommands {
+public class ForgeProxyImpl implements ForgeProxy {
 
     private static final Logger logger = LogManager.getLogger();
 
@@ -30,9 +30,5 @@ public class ForgeCommandsImpl extends ForgeClientCommands {
             logger.error(e);
         }
         return result;
-    }
-
-    static void setInstance() {
-        setInstance(new ForgeCommandsImpl());
     }
 }

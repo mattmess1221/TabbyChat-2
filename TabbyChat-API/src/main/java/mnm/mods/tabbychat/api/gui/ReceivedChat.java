@@ -1,12 +1,11 @@
 package mnm.mods.tabbychat.api.gui;
 
-import mnm.mods.util.gui.GuiComponent;
 import net.minecraft.util.IChatComponent;
 
 /**
  * This contains all the previously received chat from the current server.
  */
-public interface ReceivedChat extends IGui<GuiComponent> {
+public interface ReceivedChat<Gui> extends IGui<Gui> {
 
     /**
      * Gets the {@link IChatComponent} that is at the specified coordinates.

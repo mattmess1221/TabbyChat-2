@@ -3,14 +3,12 @@ package mnm.mods.tabbychat.gui;
 import java.awt.Dimension;
 import java.util.List;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
-
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.TabbyAPI;
 import mnm.mods.tabbychat.api.gui.ChatInput;
 import mnm.mods.tabbychat.core.GuiChatTC;
+import mnm.mods.tabbychat.extra.spell.Spellcheck;
 import mnm.mods.tabbychat.extra.spell.SpellingFormatter;
 import mnm.mods.util.Color;
 import mnm.mods.util.gui.GuiComponent;
@@ -21,20 +19,24 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.util.IChatComponent;
 
-public class TextBox extends ChatGui implements ChatInput {
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
+
+public class TextBox extends ChatGui implements ChatInput<GuiComponent, GuiText> {
 
     private FontRenderer fr = mc.fontRendererObj;
     // Dummy textField
     private GuiText textField = new GuiText();
     private int cursorCounter;
-    private Function<String, IChatComponent> formatter;
+    private Spellcheck spellcheck;
 
     public TextBox() {
         super();
         textField.getTextField().setMaxStringLength(300);
         textField.setFocused(true);
         textField.getTextField().setCanLoseFocus(false);
-        formatter = new SpellingFormatter(TabbyChat.getInstance().getSpellcheck());
+
+        spellcheck = TabbyChat.getInstance().getSpellcheck();
     }
 
     @Override
@@ -167,7 +169,9 @@ public class TextBox extends ChatGui implements ChatInput {
     }
 
     public List<IChatComponent> getFormattedLines() {
-        return Lists.transform(getWrappedLines(), formatter);
+        List<String> lines = getWrappedLines();
+        spellcheck.checkSpelling(Joiner.on(' ').join(lines));
+        return Lists.transform(lines, new SpellingFormatter(spellcheck));
     }
 
     @Override

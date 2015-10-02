@@ -2,9 +2,13 @@ package mnm.mods.tabbychat.api.gui;
 
 import java.awt.Rectangle;
 
-import mnm.mods.util.gui.GuiComponent;
-
-public interface IGui<Gui extends GuiComponent> {
+/**
+ * 
+ * @author Matthew
+ *
+ * @param <Gui> The gui type, such as GuiComponent or GuiPanel
+ */
+public interface IGui<Gui> {
 
     /**
      * Gets this gui as its underlying gui type. Convenience method for casting

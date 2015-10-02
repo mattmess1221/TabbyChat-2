@@ -1,7 +1,6 @@
 package mnm.mods.tabbychat.api;
 
 import mnm.mods.tabbychat.api.gui.ChatGui;
-import mnm.mods.util.gui.config.SettingPanel;
 
 /**
  * Represents the main object for TabbyChat
@@ -10,11 +9,8 @@ public abstract class TabbyAPI {
 
     private static TabbyAPI instance;
 
-    protected static void setAPI(TabbyAPI tabbychat) {
-        if (instance != null) {
-            throw new RuntimeException("TabbyChat 2 API is already initialized!");
-        }
-        instance = tabbychat;
+    protected TabbyAPI() {
+        instance = this;
     }
 
     /**
@@ -27,11 +23,21 @@ public abstract class TabbyAPI {
     }
 
     /**
-     * Registers a setting category with the setting screen.
-     *
-     * @param setting The setting class.
+     * Used to easily cast this to another object.
+     * @return (T) this
      */
-    public abstract void registerSettings(Class<? extends SettingPanel<?>> setting);
+    @SuppressWarnings("unchecked")
+    public <T> T cast() {
+        return (T) this;
+    }
+
+    /**
+     * Retrieve TabbyChat's version data. Version data contains the readable
+     * version string and comparable double.
+     * 
+     * @return The version data
+     */
+    public abstract VersionData getVersionData();
 
     /**
      * Gets the chat.
@@ -52,6 +58,6 @@ public abstract class TabbyAPI {
      *
      * @return The chat box
      */
-    public abstract ChatGui getGui();
+    public abstract ChatGui<?> getGui();
 
 }

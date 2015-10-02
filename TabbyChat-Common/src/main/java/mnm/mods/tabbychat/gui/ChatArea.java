@@ -29,7 +29,7 @@ import net.minecraft.entity.player.EntityPlayer.EnumChatVisibility;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IChatComponent;
 
-public class ChatArea extends GuiComponent implements Supplier<List<Message>>, GuiMouseAdapter, ReceivedChat {
+public class ChatArea extends GuiComponent implements Supplier<List<Message>>, GuiMouseAdapter, ReceivedChat<GuiComponent> {
 
     private Supplier<List<Message>> supplier = Suppliers.memoizeWithExpiration(this, 50, TimeUnit.MILLISECONDS);
     private int scrollPos = 0;

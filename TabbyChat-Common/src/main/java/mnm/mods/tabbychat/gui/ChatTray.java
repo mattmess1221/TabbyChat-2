@@ -6,7 +6,7 @@ import java.util.Iterator;
 import mnm.mods.tabbychat.ChatChannel;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.ChannelStatus;
-import mnm.mods.tabbychat.api.gui.Tray;
+import mnm.mods.tabbychat.api.gui.IGui;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.util.Color;
 import mnm.mods.util.gui.BorderLayout;
@@ -15,7 +15,7 @@ import mnm.mods.util.gui.GuiComponent;
 import mnm.mods.util.gui.GuiPanel;
 import net.minecraft.client.gui.Gui;
 
-public class ChatTray extends GuiPanel implements Tray {
+public class ChatTray extends GuiPanel implements IGui<GuiPanel> {
 
     private GuiPanel tabList = new GuiPanel(new FlowLayout());
     private ChatPanel controls = new ChatPanel(new FlowLayout());
@@ -80,11 +80,6 @@ public class ChatTray extends GuiPanel implements Tray {
 
     public boolean isHandleHovered() {
         return handle.isHovered();
-    }
-
-    @Override
-    public GuiPanel getTabList() {
-        return this.tabList;
     }
 
     @Override

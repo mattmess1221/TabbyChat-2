@@ -4,18 +4,10 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.WordUtils;
-import org.lwjgl.input.Keyboard;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.ObjectArrays;
-
 import mnm.mods.tabbychat.ChatManager;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.util.BackgroundChatThread;
-import mnm.mods.tabbychat.util.ForgeClientCommands;
 import mnm.mods.util.gui.GuiComponent;
 import mnm.mods.util.gui.GuiText;
 import net.minecraft.client.Minecraft;
@@ -27,6 +19,13 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.MovingObjectPosition;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.WordUtils;
+import org.lwjgl.input.Keyboard;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.ObjectArrays;
 
 public class GuiChatTC extends GuiChat {
 
@@ -328,7 +327,7 @@ public class GuiChatTC extends GuiChat {
     private void sendAutocompleteRequest(String word, String s1) {
         if (word.length() >= 1) {
             // Forge auto complete
-            ForgeClientCommands.getInstance().autoComplete(word, s1);
+            tc.getForgeProxy().autoComplete(word, s1);
 
             BlockPos blockpos = null;
             if (this.mc.objectMouseOver != null
@@ -348,7 +347,7 @@ public class GuiChatTC extends GuiChat {
             this.foundPlayerNames.clear();
 
             // Forge auto complete
-            String[] complete = ForgeClientCommands.getInstance().getLatestAutoComplete();
+            String[] complete = tc.getForgeProxy().getLatestAutoComplete();
             if (complete != null) {
                 array = ObjectArrays.concat(complete, array, String.class);
             }

@@ -9,8 +9,5 @@ configurations.compile {
 	exclude group: "com.typesafe.akka"
 }
 dependencies {
-    compile utils
     compile api
-    compile common
 }
-tasks.findAll {it.name.contains 'make' }*.enabled = false

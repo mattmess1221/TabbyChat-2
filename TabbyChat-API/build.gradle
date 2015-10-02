@@ -5,9 +5,5 @@ apply from: utils.file('gradle/minecraft.gradle')
 // disable reobfuscation
 reobfJar.enabled = false
 
-dependencies{
-    // Add util library
-    compile utils
-}
 jar.classifier "api"
 tasks.findAll {it.name.contains 'make' }*.enabled = false
