@@ -21,6 +21,8 @@ public class ChatTextUtils {
     }
 
     public static List<Message> split(List<Message> list, int width) {
+        if (width <= 8) // ignore, characters are larger than width
+            return Lists.newArrayList(list);
         // prevent concurrent modification caused by chat thread
         synchronized (list) {
             List<Message> result = Lists.newArrayList();
