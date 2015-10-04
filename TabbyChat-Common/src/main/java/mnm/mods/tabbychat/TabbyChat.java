@@ -8,6 +8,13 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.google.common.base.Function;
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
+
 import mnm.mods.tabbychat.api.AddonManager;
 import mnm.mods.tabbychat.api.Chat;
 import mnm.mods.tabbychat.api.TabbyAPI;
@@ -32,6 +39,7 @@ import mnm.mods.tabbychat.settings.TabbySettings;
 import mnm.mods.tabbychat.util.DefaultForgeProxy;
 import mnm.mods.tabbychat.util.TabbyRef;
 import mnm.mods.util.MnmUtils;
+import mnm.mods.util.events.GuiScreenHandler;
 import mnm.mods.util.gui.config.SettingPanel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
@@ -39,13 +47,6 @@ import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiSleepMP;
 import net.minecraft.entity.player.EntityPlayer;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import com.google.common.base.Function;
-import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
 
 public class TabbyChat extends TabbyAPI implements InternalAPI {
 
@@ -90,11 +91,11 @@ public class TabbyChat extends TabbyAPI implements InternalAPI {
     public AddonManager getAddonManager() {
         return this.addonManager;
     }
-    
+
     public ForgeProxy getForgeProxy() {
         return forgeProxy;
     }
-    
+
     @Override
     public void setForgeProxy(ForgeProxy forgeProxy) {
         this.forgeProxy = forgeProxy;
@@ -145,6 +146,8 @@ public class TabbyChat extends TabbyAPI implements InternalAPI {
 
         addFilterVariables();
         MnmUtils.getInstance().setChatProxy(new TabbedChatProxy());
+
+        addChatHooks();
     }
 
     private void addFilterVariables() {
@@ -166,17 +169,21 @@ public class TabbyChat extends TabbyAPI implements InternalAPI {
         });
     }
 
-    public void changeChatScreen(GuiScreen currentScreen) {
-        if (currentScreen instanceof GuiChat && !(currentScreen instanceof GuiChatTC)) {
-            Minecraft mc = Minecraft.getMinecraft();
-            if (currentScreen instanceof GuiSleepMP) {
-                mc.displayGuiScreen(new GuiSleepTC());
-            } else {
+    private void addChatHooks() {
+        GuiScreenHandler.addHandler(GuiChat.class, new Function<GuiChat, GuiScreen>() {
+            @Override
+            public GuiScreen apply(GuiChat input) {
                 // Get the default text via Reflection
-                String inputBuffer = TabbyPrivateFields.defaultInputFieldText.get((GuiChat) currentScreen);
-                mc.displayGuiScreen(new GuiChatTC(inputBuffer));
+                String inputBuffer = TabbyPrivateFields.defaultInputFieldText.get(input);
+                return new GuiChatTC(inputBuffer);
             }
-        }
+        });
+        GuiScreenHandler.addHandler(GuiSleepMP.class, new Function<GuiSleepMP, GuiScreen>() {
+            @Override
+            public GuiScreen apply(GuiSleepMP input) {
+                return new GuiSleepTC();
+            }
+        });
     }
 
     public void onJoin(SocketAddress address) {
