@@ -1,9 +1,10 @@
 apply plugin: 'net.minecraftforge.gradle.tweaker-client'
 
+archivesBaseName = 'TabbyChat-API'
 version = rootProject.version
 apply from: utils.file('gradle/minecraft.gradle')
 // disable reobfuscation
-reobfJar.enabled = false
+tasks.findAll{'reobf' in it.name}*.enabled = false
 
 jar.classifier "api"
 tasks.findAll {it.name.contains 'make' }*.enabled = false

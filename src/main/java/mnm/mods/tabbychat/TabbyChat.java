@@ -39,7 +39,8 @@ import mnm.mods.tabbychat.settings.TabbySettings;
 import mnm.mods.tabbychat.util.DefaultForgeProxy;
 import mnm.mods.tabbychat.util.TabbyRef;
 import mnm.mods.util.MnmUtils;
-import mnm.mods.util.events.GuiScreenHandler;
+import mnm.mods.util.events.IScreenRedirect;
+import mnm.mods.util.events.ScreenHandler;
 import mnm.mods.util.gui.config.SettingPanel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
@@ -170,17 +171,18 @@ public class TabbyChat extends TabbyAPI implements InternalAPI {
     }
 
     private void addChatHooks() {
-        GuiScreenHandler.addHandler(GuiChat.class, new Function<GuiChat, GuiScreen>() {
+        ScreenHandler handler = MnmUtils.getInstance().getScreenHandler();
+        handler.addScreen(GuiChat.class, new IScreenRedirect<GuiChat>() {
             @Override
-            public GuiScreen apply(GuiChat input) {
+            public GuiScreen redirect(GuiChat input) {
                 // Get the default text via Reflection
                 String inputBuffer = TabbyPrivateFields.defaultInputFieldText.get(input);
                 return new GuiChatTC(inputBuffer);
             }
         });
-        GuiScreenHandler.addHandler(GuiSleepMP.class, new Function<GuiSleepMP, GuiScreen>() {
+        handler.addScreen(GuiSleepMP.class, new IScreenRedirect<GuiSleepMP>() {
             @Override
-            public GuiScreen apply(GuiSleepMP input) {
+            public GuiScreen redirect(GuiSleepMP input) {
                 return new GuiSleepTC();
             }
         });

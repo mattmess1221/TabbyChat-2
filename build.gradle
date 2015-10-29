@@ -1,33 +1,34 @@
-buildscript {
-	repositories {
-		jcenter()
-		maven {
-			name = "forge"
-			url = "http://files.minecraftforge.net/maven"
-		}
-	}
-	dependencies {
-		classpath 'net.minecraftforge.gradle:ForgeGradle:2.0-SNAPSHOT'
-	}
+plugins{
+	id 'net.minecraftforge.gradle.tweaker-client' version '2.0.2'
 }
-apply plugin: 'net.minecraftforge.gradle.tweaker-client'
-
 ext {
 	utils = rootProject.project(':MnM-Utils')
-	api = rootProject.project(':TabbyChat-API')
-	forge = rootProject.project(':TabbyChat-Forge')
-	common = rootProject.project(':TabbyChat-Common')
+	api = rootProject.project(':api')
+	forge = rootProject.project(':forge')
 	macros = rootProject.project(':macros')
 
 	rev = '0.31'
+
 }
 def buildServer = System.env.BUILD_ID != null
+
 group = 'mnm.mods'
 archivesBaseName = 'TabbyChat'
-version = '2.0.0-beta-SNAPSHOT' + ".$System.env.BUILD_ID"
+version = "2.0-beta-SNAPSHOT.${System.env.BUILD_ID}"
+if (buildServer) version += ".${System.env.GIT_COMMIT?.substring(0,6)}"
 // version = '2.0.0-beta3.1'
+
 apply from: utils.file('gradle/minecraft.gradle')
-minecraft.tweakClass = 'com.mumfrey.liteloader.launch.LiteLoaderTweaker'
+
+minecraft{
+	// Replace the version string
+	replace(
+		"@VERSION@": project.version,
+		"@REVISION@": project.rev,
+		"@MCVERSION@": project.minecraft.version
+	)
+	tweakClass = 'com.mumfrey.liteloader.launch.LiteLoaderTweaker'
+}
 
 allprojects {
 	repositories {
@@ -37,55 +38,51 @@ allprojects {
 	}
 }
 dependencies {
-	// for the reobf
-	compile project.subprojects
+	// Add util library
+	deobfProvided 'com.mumfrey:liteloader:1.8-SNAPSHOT:srg'
+
+	provided utils
+
+	compile api
+	compile 'net.sf.jazzy:jazzy:0.5.2-rtext-1.4.1-2'
+
+	testCompile 'junit:junit:4.12'
 }
+
 jar {
-    extension 'litemod'
-}
-task jarSrg(type:Jar) {
-	classifier "srg"
-	// TODO reobfuscate
-}
-artifacts.archives jarSrg
-// waiting on ForgeGradle#268 (https://github.com/MinecraftForge/ForgeGradle/pull/268)
-/*
-reobf {
-	jarSrg {
-		setSrgSrg()
-	}
-}
-*/
-afterEvaluate {
-	// add content to jars
-	evaluationDependsOnChildren()
-	jar.from(common.configurations.shade.collect {it.isDirectory() ? it : zipTree(it)}) {
+	extension 'litemod'
+	from(configurations.compile.collect {it.isDirectory() ? it : zipTree(it)}) {
 		exclude 'META-INF/***'
 	}
-	[api, common, forge].each{ proj ->
-		[jar,jarSrg]*.from proj.sourceSets.main.output
-		sourceJar {
-			dependsOn proj.sourceJar
-			from zipTree(proj.sourceJar.archivePath)
-		}
-		proj.reobfJar.enabled = false
+	from {forge.sourceSets.main.output}
+}
+sourceJar {
+	from {[api,forge]*.sourceSets.main.allSource}
+}
+task jarSrg(type:Jar) {
+	dependsOn jar
+	classifier "srg"
+	from zipTree(jar.archivePath)
+}
+artifacts.archives jarSrg
+
+reobf {
+	jar.task.dependsOn jarSrg
+	jarSrg {
+		useSrgSrg()
 	}
-	if (buildServer) { // disable extra artifacts on build server
+}
+
+afterEvaluate {
+	evaluationDependsOnChildren()
+	if (buildServer) {
+		// disable extra artifacts on build server
 		allprojects {
 			tasks.withType(Jar).findAll {
 				it.classifier in ['srg', 'sources']
 			}*.enabled = false
 		}
-	}
-	def mc = plugins.getPlugin 'net.minecraftforge.gradle.tweaker-client'
-	mc.replacer.putReplacement '{RUN_CLIENT_MAIN}', 'com.mumfrey.liteloader.debug.Start'
-	mc.replacer.putReplacement '{RUN_CLIENT_TWEAKER}', 'com.mumfrey.liteloader.launch.LiteLoaderTweaker'
-}
-// find jars and move their destination dir to /build/libs of root project
-[utils, macros].each { project ->
-	project.afterEvaluate {
-		project.tasks.withType(Jar).findAll {
-			it.name != 'repackMinecraft'
-		}*.destinationDir file('build/libs')
+		// find jars and move their destination dir to /build/libs of root project
+		[utils,macros].each {it.jar.destinationDir file('build/libs')}
 	}
 }

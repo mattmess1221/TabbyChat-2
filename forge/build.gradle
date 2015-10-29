@@ -1,6 +1,5 @@
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-version = rootProject.version
 apply from: utils.file('gradle/minecraft.gradle')
 configurations.compile {
 	exclude group: "org.scala-lang"
@@ -11,3 +10,4 @@ configurations.compile {
 dependencies {
     compile api
 }
+tasks.findAll{'reobf' in it.name}*.enabled = false
