@@ -82,6 +82,8 @@ afterEvaluate {
 				it.classifier in ['srg', 'sources']
 			}*.enabled = false
 		}
+		// also disable reobf tasks
+		[utils.reobf.jarSrg,reobf.jarSrg]*.task*.enabled = false
 		// find jars and move their destination dir to /build/libs of root project
 		[utils,macros].each {it.jar.destinationDir file('build/libs')}
 	}
