@@ -2,6 +2,7 @@ package mnm.mods.tabbychat.gui;
 
 import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -28,6 +29,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer.EnumChatVisibility;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IChatComponent;
+import net.minecraft.util.MathHelper;
 
 public class ChatArea extends GuiComponent implements Supplier<List<Message>>, GuiMouseAdapter, ReceivedChat<GuiComponent> {
 
@@ -186,24 +188,26 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, G
     public IChatComponent getChatComponent(int clickX, int clickY) {
         if (GuiNewChatTC.getInstance().getChatOpen()) {
             final float scale = getActualScale();
+            Point point = scalePoint(new Point(clickX, clickY));
             Point actual = getActualPosition();
             // check that cursor is in bounds.
-            if (clickX >= actual.x && clickY >= actual.y
-                    && clickX <= actual.x + getBounds().width * scale
-                    && clickY <= actual.y + getBounds().height * scale) {
+            Rectangle bounds = getBounds();
+            if (point.x >= actual.x && point.y >= actual.y
+                    && point.x <= actual.x + bounds.width * scale
+                    && point.y <= actual.y + bounds.height * scale) {
 
-                final int size = (int) (mc.fontRendererObj.FONT_HEIGHT * scale);
+                float size = mc.fontRendererObj.FONT_HEIGHT * scale;
 
-                int bottom = actual.y + (int) (getBounds().height * scale);
+                float bottom = (actual.y * scale) + (bounds.height * scale);
                 // The line to get
-                int linePos = (int) (clickY - (getBounds().height * scale) - actual.y + (bottom % size)) / -size;
+                int linePos = MathHelper.ceiling_float_int((point.y - bottom) / -size) + scrollPos;
 
                 // Iterate through the chat component, stopping when the desired
                 // x is reached.
                 List<Message> list = this.getVisibleChat();
                 if (linePos >= 0 && linePos < list.size()) {
                     Message chatline = list.get(linePos);
-                    int x = actual.x;
+                    float x = actual.x;
                     Iterator<IChatComponent> iterator = chatline.getMessageWithOptionalTimestamp().iterator();
 
                     while (iterator.hasNext()) {
@@ -216,10 +220,10 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, G
                             // clean it up
                             String clean = GuiUtilRenderComponents.func_178909_a(text, false);
                             // get it's width, then scale it.
-                            int width = (int) (this.mc.fontRendererObj.getStringWidth(clean) * scale);
+                            float width = this.mc.fontRendererObj.getStringWidth(clean);
                             x += width;
 
-                            if (x > clickX) {
+                            if (x * scale > point.x) {
                                 return ichatcomponent;
                             }
                         }

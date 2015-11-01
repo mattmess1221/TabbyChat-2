@@ -23,6 +23,7 @@ import net.minecraft.util.MovingObjectPosition;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.ObjectArrays;
@@ -193,7 +194,7 @@ public class GuiChatTC extends GuiChat {
     @Override
     public void drawScreen(int mouseX, int mouseY, float tick) {
 
-        IChatComponent chat = chatGui.getChatComponent(mouseX, mouseY);
+        IChatComponent chat = chatGui.getChatComponent(Mouse.getX(), Mouse.getY());
         this.handleComponentHover(chat, mouseX, mouseY);
 
         // Draw the components
