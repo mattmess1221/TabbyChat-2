@@ -28,6 +28,7 @@ public class Spellcheck {
     public Spellcheck(File userDict) {
         try {
             if (!userDict.exists()) {
+                userDict.getParentFile().mkdirs();
                 userDict.createNewFile();
             }
             this.userDict = new SpellDictionaryHashMap(userDict);
@@ -67,8 +68,10 @@ public class Spellcheck {
     }
 
     public void checkSpelling(String string) {
-        this.errors.clear();
-        this.spellCheck.checkSpelling(new StringWordTokenizer(string));
+        if (spellCheck != null) {
+            this.errors.clear();
+            this.spellCheck.checkSpelling(new StringWordTokenizer(string));
+        }
     }
 
     public boolean isCorrect(String word) {

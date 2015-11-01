@@ -8,7 +8,7 @@ minecraft.replace '@VERSION@':project.version
 
 dependencies {
     compile api
-    deobfCompile 'com.mumfrey:liteloader:1.8-SNAPSHOT:srg'
+    deobfCompile 'com.mumfrey:liteloader:1.8-SNAPSHOT:srgnames'
     deobfCompile 'com.mumfrey:mod_macros:0.11.1_beta2_mc1.8:srg'
 }
 jar {

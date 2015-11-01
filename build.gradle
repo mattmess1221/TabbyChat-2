@@ -39,7 +39,7 @@ allprojects {
 }
 dependencies {
 	// Add util library
-	deobfProvided 'com.mumfrey:liteloader:1.8-SNAPSHOT:srg'
+	deobfProvided 'com.mumfrey:liteloader:1.8-SNAPSHOT:srgnames'
 
 	provided utils
 
