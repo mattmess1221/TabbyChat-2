@@ -201,9 +201,7 @@ public class TextBox extends ChatGui implements ChatInput<GuiComponent, GuiText>
 
     private void mouseClicked(int x, int y, int mouseButton) {
         if (mouseButton == 0) {
-            System.out.println(y);
             Rectangle bounds = this.getBounds();
-            // float scale = this.getActualScale();
 
             int width = bounds.width;
             int row = y / (fr.FONT_HEIGHT + 2);
