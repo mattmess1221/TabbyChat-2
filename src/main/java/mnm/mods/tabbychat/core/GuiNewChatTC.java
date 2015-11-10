@@ -42,6 +42,8 @@ public class GuiNewChatTC extends GuiNewChat {
 
     @Override
     public void drawChat(int i) {
+        if (getChatOpen())
+            return;
         ChatBox chatbox = chat.getChatBox();
         float scale = chatbox.getScale();
 

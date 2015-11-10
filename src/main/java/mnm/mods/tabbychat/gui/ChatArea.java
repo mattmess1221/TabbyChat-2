@@ -187,20 +187,19 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, G
     @Override
     public IChatComponent getChatComponent(int clickX, int clickY) {
         if (GuiNewChatTC.getInstance().getChatOpen()) {
-            final float scale = getActualScale();
             Point point = scalePoint(new Point(clickX, clickY));
-            Point actual = getActualPosition();
+            Rectangle actual = getActualBounds();
             // check that cursor is in bounds.
-            Rectangle bounds = getBounds();
             if (point.x >= actual.x && point.y >= actual.y
-                    && point.x <= actual.x + bounds.width * scale
-                    && point.y <= actual.y + bounds.height * scale) {
+                    && point.x <= actual.x + actual.width
+                    && point.y <= actual.y + actual.height) {
 
+                float scale = getActualScale();
                 float size = mc.fontRendererObj.FONT_HEIGHT * scale;
+                float bottom = (actual.y + actual.height);
 
-                float bottom = (actual.y * scale) + (bounds.height * scale);
                 // The line to get
-                int linePos = MathHelper.ceiling_float_int((point.y - bottom) / -size) + scrollPos;
+                int linePos = MathHelper.floor_float((point.y - bottom) / -size) + scrollPos;
 
                 // Iterate through the chat component, stopping when the desired
                 // x is reached.
@@ -220,10 +219,9 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, G
                             // clean it up
                             String clean = GuiUtilRenderComponents.func_178909_a(text, false);
                             // get it's width, then scale it.
-                            float width = this.mc.fontRendererObj.getStringWidth(clean);
-                            x += width;
+                            x += this.mc.fontRendererObj.getStringWidth(clean) * scale;
 
-                            if (x * scale > point.x) {
+                            if (x > point.x) {
                                 return ichatcomponent;
                             }
                         }
@@ -232,10 +230,6 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, G
             }
         }
         return null;
-    }
-
-    public float getChatScale() {
-        return this.mc.gameSettings.chatScale;
     }
 
     @Override

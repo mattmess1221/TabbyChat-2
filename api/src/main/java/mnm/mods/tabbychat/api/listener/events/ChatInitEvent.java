@@ -1,7 +1,5 @@
 package mnm.mods.tabbychat.api.listener.events;
 
-import java.util.List;
-
 import net.minecraft.client.gui.GuiChat;
 
 /**
@@ -10,10 +8,8 @@ import net.minecraft.client.gui.GuiChat;
 public class ChatInitEvent extends Event {
 
     public final GuiChat chatScreen;
-    public final List<?> components;
 
-    public ChatInitEvent(GuiChat chat, List<?> components) {
+    public ChatInitEvent(GuiChat chat) {
         this.chatScreen = chat;
-        this.components = components;
     }
 }

@@ -43,11 +43,10 @@ public class ChatBox extends GuiPanel implements GuiMouseAdapter, ChatGui<GuiPan
     @Override
     public void accept(GuiMouseEvent event) {
         Rectangle bounds = getBounds();
-        float scale = getActualScale();
 
         // divide by scale because smaller scales make the point movement larger
-        int x = (int) (event.position.x / scale);
-        int y = (int) (event.position.y / scale);
+        int x = bounds.x + event.position.x;
+        int y = bounds.y + event.position.y;
 
         if (event.event == GuiMouseEvent.PRESSED) {
             if (Mouse.isButtonDown(0) && (pnlTray.isHovered() || (GuiScreen.isAltKeyDown() && isHovered()))) {

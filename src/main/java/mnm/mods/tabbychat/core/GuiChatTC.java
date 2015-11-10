@@ -4,6 +4,14 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.WordUtils;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.ObjectArrays;
+
 import mnm.mods.tabbychat.ChatManager;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
@@ -19,14 +27,6 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.MovingObjectPosition;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.WordUtils;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.ObjectArrays;
 
 public class GuiChatTC extends GuiChat {
 
@@ -66,45 +66,43 @@ public class GuiChatTC extends GuiChat {
                 && !chat.getActiveChannel().getPrefix().isEmpty()) {
             defaultInputFieldText = chat.getActiveChannel().getPrefix() + " ";
         }
+
+        this.componentList.add(chat.getChatBox());
     }
 
     @Override
     public void initGui() {
-        super.initGui();
-        tc.getEventManager().onInitScreen(this, componentList);
+        Keyboard.enableRepeatEvents(true);
+        tc.getEventManager().onInitScreen(this);
         if (!opened) {
             textBox.setValue("");
             textBox.getTextField().writeText(defaultInputFieldText);
             this.opened = true;
+            updateScreen();
         }
     }
 
     @Override
     public void updateScreen() {
-        super.updateScreen();
-        chat.getChatBox().updateComponent();
         for (GuiComponent comp : this.componentList) {
             comp.updateComponent();
         }
         tc.getEventManager().onUpdateScreen();
     }
 
-    public boolean hasOpened() {
-        return this.opened;
-    }
-
     @Override
     public void onGuiClosed() {
         tc.getEventManager().onCloseScreen();
         this.sentHistoryBuffer = "";
-        this.chat.getChatBox().onClosed();
-        super.onGuiClosed();
+        for (GuiComponent comp : this.componentList) {
+            comp.onClosed();
+        }
+        Keyboard.enableRepeatEvents(false);
     }
 
     @Override
     public void handleMouseInput() throws IOException {
         super.handleMouseInput();
-        this.chat.getChatBox().handleMouseInput();
         for (GuiComponent comp : this.componentList) {
             comp.handleMouseInput();
         }
@@ -113,7 +111,6 @@ public class GuiChatTC extends GuiChat {
     @Override
     public void handleKeyboardInput() throws IOException {
         super.handleKeyboardInput();
-        this.chat.getChatBox().handleKeyboardInput();
         for (GuiComponent comp : this.componentList) {
             comp.handleKeyboardInput();
         }
@@ -183,30 +180,29 @@ public class GuiChatTC extends GuiChat {
             return;
         }
         if (mouseButton == 0) {
-            IChatComponent chat = chatGui.getChatComponent(mouseX, mouseY);
-            if (this.handleComponentClick(chat)) {
-                return;
-            }
+            IChatComponent chat = chatGui.getChatComponent(Mouse.getX(), Mouse.getY());
+            this.handleComponentClick(chat);
         }
-        chat.getChatBox().getChatInput().mouseClicked(mouseX, mouseY, mouseButton);
     }
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float tick) {
 
-        IChatComponent chat = chatGui.getChatComponent(Mouse.getX(), Mouse.getY());
-        this.handleComponentHover(chat, mouseX, mouseY);
-
         // Draw the components
         for (GuiComponent component : componentList) {
             if (component.isVisible()) {
                 GlStateManager.pushMatrix();
+                GlStateManager.scale(component.getScale(), component.getScale(), 0);
                 GlStateManager.translate(component.getBounds().x, component.getBounds().y, 0);
                 component.drawComponent(mouseX, mouseY);
                 GlStateManager.popMatrix();
             }
         }
         tc.getEventManager().onRenderChatScreen(mouseX, mouseY, tick);
+
+        IChatComponent chat = chatGui.getChatComponent(Mouse.getX(), Mouse.getY());
+        this.handleComponentHover(chat, mouseX, mouseY);
+
     }
 
     protected void sendCurrentChat(boolean keepOpen) {
@@ -373,6 +369,15 @@ public class GuiChatTC extends GuiChat {
                 this.playerNamesFound = true;
                 this.autocompletePlayerNames();
             }
+        }
+    }
+
+    @Override
+    protected void setText(String text, boolean overwrite) {
+        if (overwrite) {
+            textBox.getTextField().setText(text);
+        } else {
+            textBox.getTextField().writeText(text);
         }
     }
 }

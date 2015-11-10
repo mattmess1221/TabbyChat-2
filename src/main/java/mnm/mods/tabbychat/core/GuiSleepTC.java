@@ -9,14 +9,19 @@ import net.minecraft.network.play.client.C0BPacketEntityAction;
 
 import org.lwjgl.input.Keyboard;
 
-public class GuiSleepTC extends GuiChatTC implements ActionPerformed {
+public class GuiSleepTC extends GuiChatTC {
 
     @Override
     public void initGui() {
         super.initGui();
         GuiButton button = new GuiButton(I18n.format("multiplayer.stopSleeping"));
         button.setBounds(width / 2 - 100, height - 30, 200, 20);
-        button.addActionListener(this);
+        button.addActionListener(new ActionPerformed() {
+            @Override
+            public void action(GuiEvent event) {
+                wakeFromSleep();
+            }
+        });
         this.componentList.add(button);
     }
 
@@ -44,14 +49,8 @@ public class GuiSleepTC extends GuiChatTC implements ActionPerformed {
         }
     }
 
-    @Override
-    public void action(GuiEvent event) {
-        this.wakeFromSleep();
-    }
-
     private void wakeFromSleep() {
         NetHandlerPlayClient nethandlerplayclient = this.mc.thePlayer.sendQueue;
-        nethandlerplayclient.addToSendQueue(new C0BPacketEntityAction(this.mc.thePlayer,
-                C0BPacketEntityAction.Action.STOP_SLEEPING));
+        nethandlerplayclient.addToSendQueue(new C0BPacketEntityAction(this.mc.thePlayer, C0BPacketEntityAction.Action.STOP_SLEEPING));
     }
 }

@@ -1,7 +1,12 @@
 package mnm.mods.tabbychat.gui;
 
 import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.List;
+
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
@@ -13,16 +18,15 @@ import mnm.mods.tabbychat.extra.spell.SpellingFormatter;
 import mnm.mods.util.Color;
 import mnm.mods.util.gui.GuiComponent;
 import mnm.mods.util.gui.GuiText;
+import mnm.mods.util.gui.events.GuiMouseAdapter;
+import mnm.mods.util.gui.events.GuiMouseEvent;
 import mnm.mods.util.text.FancyFontRenderer;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.util.IChatComponent;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
-
-public class TextBox extends ChatGui implements ChatInput<GuiComponent, GuiText> {
+public class TextBox extends ChatGui implements ChatInput<GuiComponent, GuiText>, GuiMouseAdapter {
 
     private FontRenderer fr = mc.fontRendererObj;
     // Dummy textField
@@ -189,13 +193,21 @@ public class TextBox extends ChatGui implements ChatInput<GuiComponent, GuiText>
         return this;
     }
 
-    public void mouseClicked(int x, int y, int mouseButton) {
+    @Override
+    public void accept(GuiMouseEvent event) {
+        Point p = event.position;
+        mouseClicked(p.x, p.y, event.button);
+    }
+
+    private void mouseClicked(int x, int y, int mouseButton) {
         if (mouseButton == 0) {
-            int xPos = this.getActualPosition().x;
-            int yPos = this.getActualPosition().y;
-            int width = this.getBounds().width;
-            int row = (y - yPos) / (fr.FONT_HEIGHT + 2);
-            int col = x - xPos;
+            System.out.println(y);
+            Rectangle bounds = this.getBounds();
+            // float scale = this.getActualScale();
+
+            int width = bounds.width;
+            int row = y / (fr.FONT_HEIGHT + 2);
+            int col = x;
 
             List<String> lines = getWrappedLines();
             if (row < 0 || row >= lines.size() || col < 0 || col > width) {

@@ -13,7 +13,6 @@ import mnm.mods.tabbychat.api.listener.events.ChatInitEvent;
 import mnm.mods.tabbychat.api.listener.events.ChatMessageEvent.ChatRecievedEvent;
 import mnm.mods.tabbychat.api.listener.events.ChatMessageEvent.ChatSentEvent;
 import mnm.mods.tabbychat.api.listener.events.MessageAddedToChannelEvent;
-import mnm.mods.util.gui.GuiComponent;
 import net.minecraft.client.gui.GuiChat;
 
 public class TabbyEvents {
@@ -33,9 +32,9 @@ public class TabbyEvents {
         return sendEvent.message;
     }
 
-    public void onInitScreen(GuiChat chat, List<GuiComponent> components) {
+    public void onInitScreen(GuiChat chat) {
         List<ChatScreenListener> listeners = manager.getListenersOfType(ChatScreenListener.class);
-        ChatInitEvent init = new ChatInitEvent(chat, components);
+        ChatInitEvent init = new ChatInitEvent(chat);
         for (ChatScreenListener screen : listeners) {
             screen.onInitScreen(init);
         }
