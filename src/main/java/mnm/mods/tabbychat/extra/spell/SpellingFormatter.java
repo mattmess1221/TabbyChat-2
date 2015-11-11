@@ -1,6 +1,7 @@
 package mnm.mods.tabbychat.extra.spell;
 
 import com.google.common.base.Function;
+import com.swabunga.spell.event.SpellCheckEvent;
 
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.util.ChatBuilder;
@@ -20,16 +21,18 @@ public class SpellingFormatter implements Function<String, IChatComponent> {
     public IChatComponent apply(String text) {
         if (!TabbyChat.getInstance().settings.general.spelling.enabled.getValue())
             return new ChatComponentText(text);
-        String[] split = text.split(" ");
         ChatBuilder b = new ChatBuilder();
-        for (String word : split) {
-            b.text(word);
-            if (!spelling.isCorrect(word)) {
-                b.underline(Color.RED);
-            }
-            b.text(" ");
+        int prev = 0;
+        for (SpellCheckEvent event : spelling) {
+            int start = event.getWordContextPosition();
+            int end = event.getWordContextPosition() + event.getInvalidWord().length();
+
+            b.text(text.substring(prev, start));
+            b.text(text.substring(start, end)).underline(Color.RED);
+
+            prev = end;
         }
-        return b.build();
+        return b.text(text.substring(prev)).build();
     }
 
 }

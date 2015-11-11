@@ -5,9 +5,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.Set;
+import java.util.Iterator;
+import java.util.List;
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.common.io.Closeables;
 import com.swabunga.spell.engine.SpellDictionary;
 import com.swabunga.spell.engine.SpellDictionaryHashMap;
@@ -18,12 +20,12 @@ import com.swabunga.spell.event.StringWordTokenizer;
 
 import mnm.mods.tabbychat.TabbyChat;
 
-public class Spellcheck {
+public class Spellcheck implements Iterable<SpellCheckEvent> {
 
     private SpellChecker spellCheck;
     private LangDict language;
     private SpellDictionary userDict;
-    private Set<String> errors = Sets.newHashSet();
+    private List<SpellCheckEvent> errors = Lists.newArrayList();
 
     public Spellcheck(File userDict) {
         try {
@@ -54,7 +56,7 @@ public class Spellcheck {
             spellCheck.addSpellCheckListener(new SpellCheckListener() {
                 @Override
                 public synchronized void spellingError(SpellCheckEvent event) {
-                    errors.add(event.getInvalidWord());
+                    errors.add(event);
                 }
             });
         } finally {
@@ -74,8 +76,9 @@ public class Spellcheck {
         }
     }
 
-    public boolean isCorrect(String word) {
-        return !errors.contains(word);
+    @Override
+    public Iterator<SpellCheckEvent> iterator() {
+        return ImmutableList.copyOf(errors).iterator();
     }
 
 }
