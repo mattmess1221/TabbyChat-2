@@ -47,6 +47,7 @@ import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiSleepMP;
+import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.entity.player.EntityPlayer;
 
 public class TabbyChat extends TabbyAPI implements InternalAPI {
@@ -133,6 +134,10 @@ public class TabbyChat extends TabbyAPI implements InternalAPI {
         addonManager = new TabbyAddonManager();
         events = new TabbyEvents(addonManager);
         spellcheck = new Spellcheck(new File(getDataFolder(), "user.dic"));
+
+        // Keeps the current language updated whenever it is changed.
+        IReloadableResourceManager irrm = (IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager();
+        irrm.registerReloadListener(spellcheck);
 
         // Set global settings
         settings = new TabbySettings();

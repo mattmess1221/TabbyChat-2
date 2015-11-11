@@ -1,6 +1,7 @@
 package mnm.mods.tabbychat.extra.spell;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -19,8 +20,12 @@ import com.swabunga.spell.event.SpellChecker;
 import com.swabunga.spell.event.StringWordTokenizer;
 
 import mnm.mods.tabbychat.TabbyChat;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.client.resources.IResourceManagerReloadListener;
+import net.minecraft.client.resources.Language;
 
-public class Spellcheck implements Iterable<SpellCheckEvent> {
+public class Spellcheck implements Iterable<SpellCheckEvent>, IResourceManagerReloadListener {
 
     private SpellChecker spellCheck;
     private LangDict language;
@@ -34,21 +39,26 @@ public class Spellcheck implements Iterable<SpellCheckEvent> {
                 userDict.createNewFile();
             }
             this.userDict = new SpellDictionaryHashMap(userDict);
-            loadLanguage(LangDict.ENGLISH);
+            this.loadCurrentLanguage();
         } catch (IOException e) {
             TabbyChat.getLogger().warn("Error whie loading dictionary.", e);
         }
     }
 
-    public void loadLanguage(LangDict lang) throws IOException {
-        if (lang == language) {
+    public void loadDictionary(LangDict lang) throws IOException {
+        if (lang == null || lang.equals(language)) {
             return;
         }
-        this.language = lang;
         InputStream in = null;
         Reader read = null;
         try {
-            in = lang.openStream();
+            try {
+                in = lang.openStream();
+            } catch (FileNotFoundException e) {
+                TabbyChat.getLogger().warn(e + " Falling back to English.");
+                lang = LangDict.ENGLISH;
+                in = lang.openStream();
+            }
             read = new InputStreamReader(in);
             SpellDictionary dictionary = new SpellDictionaryHashMap(read);
             spellCheck = new SpellChecker(dictionary);
@@ -59,6 +69,7 @@ public class Spellcheck implements Iterable<SpellCheckEvent> {
                     errors.add(event);
                 }
             });
+            this.language = lang;
         } finally {
             Closeables.closeQuietly(in);
             Closeables.closeQuietly(read);
@@ -73,6 +84,20 @@ public class Spellcheck implements Iterable<SpellCheckEvent> {
         if (spellCheck != null) {
             this.errors.clear();
             this.spellCheck.checkSpelling(new StringWordTokenizer(string));
+        }
+    }
+
+    @Override
+    public void onResourceManagerReload(IResourceManager resourceManager) {
+        loadCurrentLanguage();
+    }
+
+    private void loadCurrentLanguage() {
+        Language lang = Minecraft.getMinecraft().getLanguageManager().getCurrentLanguage();
+        try {
+            loadDictionary(LangDict.fromLanguage(lang));
+        } catch (IOException e) {
+            TabbyChat.getLogger().warn("Error while loading dictionary.", e);
         }
     }
 

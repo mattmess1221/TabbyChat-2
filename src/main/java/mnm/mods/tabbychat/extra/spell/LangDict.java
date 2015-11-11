@@ -2,29 +2,28 @@ package mnm.mods.tabbychat.extra.spell;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
+
+import org.apache.commons.lang3.Validate;
 
 import mnm.mods.tabbychat.TabbyChat;
-import net.minecraft.client.Minecraft;
-
-import com.google.common.collect.Maps;
+import net.minecraft.client.resources.Language;
 
 public class LangDict {
 
-    private static final Map<String, LangDict> cache = Maps.newHashMap();
+    public static final LangDict ENGLISH = new LangDict("en_US");
 
-    public static final LangDict ENGLISH = getLang("en_US");
+    private final String language;
 
-    private String path;
-
-    private LangDict(String s) {
-        path = s;
+    LangDict(String lang) {
+        Validate.notNull(lang, "Language cannot be null!");
+        language = lang;
     }
 
     public boolean isClasspath() {
-        return getClass().getClassLoader().getResource("dicts/" + path + "x.dic") != null;
+        return getClass().getClassLoader().getResource(getPath()) != null;
     }
 
     public boolean isConfig() {
@@ -41,28 +40,31 @@ public class LangDict {
             in = new FileInputStream(f);
         } else {
             // it doesn't exist.
-            in = ENGLISH.openStream();
+            throw new FileNotFoundException("Dictionary for " + language + " does not exist.");
         }
         return in;
     }
 
     private String getPath() {
-        return String.format("dicts/%sx.dic", path);
+        return String.format("dicts/%sx.dic", language);
     }
 
     @Override
-    public String toString() {
-        return path;
+    public int hashCode() {
+        return language.hashCode();
     }
 
-    public static LangDict getLang(String id) {
-        if (!cache.containsKey(id)) {
-            cache.put(id, new LangDict(id));
-        }
-        return cache.get(id);
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null || !(obj instanceof LangDict))
+            return false;
+        LangDict other = (LangDict) obj;
+        return language.equals(other.language);
     }
 
-    public static LangDict getLang() {
-        return getLang(Minecraft.getMinecraft().gameSettings.language);
+    public static LangDict fromLanguage(Language lang) {
+        return new LangDict(lang.getLanguageCode());
     }
 }
