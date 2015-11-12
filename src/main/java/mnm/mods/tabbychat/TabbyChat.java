@@ -133,7 +133,7 @@ public class TabbyChat extends TabbyAPI implements InternalAPI {
 
         addonManager = new TabbyAddonManager();
         events = new TabbyEvents(addonManager);
-        spellcheck = new Spellcheck(new File(getDataFolder(), "user.dic"));
+        spellcheck = new Spellcheck(getDataFolder());
 
         // Keeps the current language updated whenever it is changed.
         IReloadableResourceManager irrm = (IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager();
