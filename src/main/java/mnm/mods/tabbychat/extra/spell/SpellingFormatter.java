@@ -5,10 +5,8 @@ import java.util.Iterator;
 import com.google.common.base.Function;
 import com.swabunga.spell.event.SpellCheckEvent;
 
-import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.util.ChatBuilder;
 import mnm.mods.util.Color;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IChatComponent;
 
 public class SpellingFormatter implements Function<String, IChatComponent> {
@@ -24,28 +22,38 @@ public class SpellingFormatter implements Function<String, IChatComponent> {
 
     @Override
     public IChatComponent apply(String text) {
-        if (!TabbyChat.getInstance().settings.general.spelling.enabled.getValue())
-            return new ChatComponentText(text);
         ChatBuilder b = new ChatBuilder();
         int prev = 0;
+        int length = totalLength;
+        // save where we are at.
+        totalLength += text.length();
         while (spelling.hasNext() || event != null) {
             if (event == null)
                 event = spelling.next();
-            int start = event.getWordContextPosition() - totalLength;
-            int end = event.getWordContextPosition() + event.getInvalidWord().length() - totalLength;
-            if (end > text.length()) {
-                // bail out
+            int start = event.getWordContextPosition() - length;
+            int end = start + event.getInvalidWord().length();
+
+            if (start < 0) {
+                // error started on previous line
+                start = prev;
+            }
+            if (start > text.length()) {
+                // no more errors on this line
                 break;
-                // I just don't know what went wrong...
             }
             b.text(text.substring(prev, start));
+
+            if (end > text.length()) {
+                // error goes to next line
+                return b.text(text.substring(start)).underline(Color.RED).build();
+            }
             b.text(text.substring(start, end)).underline(Color.RED);
 
             prev = end;
             event = null;
         }
-        // save where we were at.
-        totalLength += prev + 1;
+        // no more errors.
+        totalLength++;
         return b.text(text.substring(prev)).build();
     }
 

@@ -5,7 +5,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.List;
 
-import com.google.common.base.Joiner;
+import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
 import mnm.mods.tabbychat.TabbyChat;
@@ -24,6 +24,7 @@ import mnm.mods.util.text.FancyFontRenderer;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IChatComponent;
 
 public class TextBox extends ChatGui implements ChatInput<GuiComponent, GuiText>, GuiMouseAdapter {
@@ -174,8 +175,16 @@ public class TextBox extends ChatGui implements ChatInput<GuiComponent, GuiText>
 
     public List<IChatComponent> getFormattedLines() {
         List<String> lines = getWrappedLines();
-        spellcheck.checkSpelling(Joiner.on(' ').join(lines));
-        return Lists.transform(lines, new SpellingFormatter(spellcheck));
+        if (TabbyChat.getInstance().settings.general.spelling.enabled.getValue()) {
+            spellcheck.checkSpelling(textField.getValue());
+            return Lists.transform(lines, new SpellingFormatter(spellcheck));
+        }
+        return Lists.transform(lines, new Function<String, IChatComponent>() {
+            @Override
+            public IChatComponent apply(String input) {
+                return new ChatComponentText(input);
+            }
+        });
     }
 
     @Override
