@@ -60,12 +60,11 @@ public class ChatBox extends GuiPanel implements GuiMouseAdapter, ChatGui<GuiPan
             if (event.event == GuiMouseEvent.RELEASED) {
                 // save bounds
                 TabbySettings sett = TabbyChat.getInstance().settings;
-                sett.advanced.chatX.setValue(bounds.x);
-                sett.advanced.chatY.setValue(bounds.y);
-                sett.advanced.chatW.setValue(bounds.width);
-                sett.advanced.chatH.setValue(bounds.height);
+                sett.advanced.chatX.set(bounds.x);
+                sett.advanced.chatY.set(bounds.y);
+                sett.advanced.chatW.set(bounds.width);
+                sett.advanced.chatH.set(bounds.height);
 
-                sett.saveSettingsFile();
                 drag = null;
                 tempbox = null;
             } else if (event.event == GuiMouseEvent.DRAGGED) {
@@ -81,12 +80,12 @@ public class ChatBox extends GuiPanel implements GuiMouseAdapter, ChatGui<GuiPan
 
     @Override
     public int getForeColor() {
-        return colors.chatTextColor.getValue().getColor();
+        return colors.chatTextColor.get().getColor();
     }
 
     @Override
     public int getBackColor() {
-        return colors.chatBoxColor.getValue().getColor();
+        return colors.chatBoxColor.get().getColor();
     }
 
     @Override

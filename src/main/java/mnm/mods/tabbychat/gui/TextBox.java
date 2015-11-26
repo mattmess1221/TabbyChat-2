@@ -175,7 +175,7 @@ public class TextBox extends ChatGui implements ChatInput<GuiComponent, GuiText>
 
     public List<IChatComponent> getFormattedLines() {
         List<String> lines = getWrappedLines();
-        if (TabbyChat.getInstance().settings.general.spelling.enabled.getValue()) {
+        if (TabbyChat.getInstance().settings.general.spelling.enabled.get()) {
             spellcheck.checkSpelling(textField.getValue());
             return Lists.transform(lines, new SpellingFormatter(spellcheck));
         }

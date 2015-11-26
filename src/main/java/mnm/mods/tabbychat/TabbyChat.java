@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
+import com.mumfrey.liteloader.core.LiteLoader;
 
 import mnm.mods.tabbychat.api.AddonManager;
 import mnm.mods.tabbychat.api.Chat;
@@ -141,10 +142,7 @@ public class TabbyChat extends TabbyAPI implements InternalAPI {
 
         // Set global settings
         settings = new TabbySettings();
-        // Load settings
-        settings.loadSettingsFile();
-        // Save settings
-        settings.saveSettingsFile();
+        LiteLoader.getInstance().registerExposable(settings, null);
 
         addonManager.registerListener(new ChatAddonAntiSpam());
         addonManager.registerListener(new FilterAddon());
@@ -201,8 +199,7 @@ public class TabbyChat extends TabbyAPI implements InternalAPI {
 
         // Set server settings
         serverSettings = new ServerSettings(currentServer);
-        serverSettings.loadSettingsFile();
-        serverSettings.saveSettingsFile();
+        LiteLoader.getInstance().registerExposable(serverSettings, null);
 
         try {
             hookIntoChat(Minecraft.getMinecraft().ingameGUI);

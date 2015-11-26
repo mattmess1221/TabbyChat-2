@@ -5,8 +5,9 @@ import java.util.Iterator;
 import com.google.common.base.Function;
 import com.swabunga.spell.event.SpellCheckEvent;
 
-import mnm.mods.util.ChatBuilder;
 import mnm.mods.util.Color;
+import mnm.mods.util.text.ChatBuilder;
+import mnm.mods.util.text.IChatBuilder;
 import net.minecraft.util.IChatComponent;
 
 public class SpellingFormatter implements Function<String, IChatComponent> {
@@ -22,7 +23,7 @@ public class SpellingFormatter implements Function<String, IChatComponent> {
 
     @Override
     public IChatComponent apply(String text) {
-        ChatBuilder b = new ChatBuilder();
+        IChatBuilder b = new ChatBuilder();
         int prev = 0;
         int length = totalLength;
         // save where we are at.

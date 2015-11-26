@@ -1,31 +1,27 @@
 package mnm.mods.tabbychat.settings;
 
-import java.io.File;
-
 import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.Expose;
 
-import mnm.mods.tabbychat.TabbyChat;
-import mnm.mods.util.config.Setting;
+import mnm.mods.tabbychat.util.TabbyRef;
 import mnm.mods.util.config.SettingsFile;
 import net.minecraft.util.EnumTypeAdapterFactory;
 
-public class TabbySettings extends SettingsFile<TabbySettings> {
+public class TabbySettings extends SettingsFile {
 
-    protected static final File DIR = TabbyChat.getInstance().getDataFolder();
-
-    @Setting
+    @Expose
     public GeneralSettings general = new GeneralSettings();
-    @Setting
+    @Expose
     public AdvancedSettings advanced = new AdvancedSettings();
-    @Setting
+    @Expose
     public ColorSettings colors = new ColorSettings();
 
     public TabbySettings() {
-        super(DIR, "tabbychat");
+        super(TabbyRef.MOD_ID, "tabbychat");
     }
 
     @Override
-    protected void setupGson(GsonBuilder builder) {
-        builder.registerTypeAdapterFactory(new EnumTypeAdapterFactory());
+    public void setupGsonSerialiser(GsonBuilder gsonBuilder) {
+        super.setupGsonSerialiser(gsonBuilder.registerTypeAdapterFactory(new EnumTypeAdapterFactory()));
     }
 }

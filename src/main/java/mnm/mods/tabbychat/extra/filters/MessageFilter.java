@@ -24,7 +24,7 @@ public class MessageFilter extends TabFilter {
     public Pattern getPattern() {
         try {
             // Quickly update the pattern
-            MessagePatterns messege = TabbyChat.getInstance().serverSettings.general.messegePattern.getValue();
+            MessagePatterns messege = TabbyChat.getInstance().serverSettings.general.messegePattern.get();
             String pattern = String.format("(?:%s|%s)", messege.getOutgoing(), messege.getIncoming());
             setPattern(pattern);
         } catch (PatternSyntaxException e) {
@@ -39,7 +39,7 @@ public class MessageFilter extends TabFilter {
 
         @Override
         public void action(Filter filter, FilterEvent event) {
-            if (TabbyChat.getInstance().serverSettings.general.pmEnabled.getValue()) {
+            if (TabbyChat.getInstance().serverSettings.general.pmEnabled.get()) {
                 // 0 = whole message, 1 = outgoing recipient, 2 = incoming recipient
                 String player = event.matcher.group(1);
                 // For when it's an incoming message.

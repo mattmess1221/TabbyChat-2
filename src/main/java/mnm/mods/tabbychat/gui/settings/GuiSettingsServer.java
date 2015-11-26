@@ -41,7 +41,7 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> implements C
     @Override
     public void initGUI() {
         GeneralServerSettings sett = getSettings().general;
-        index = getSettings().filters.getValue().size() - 1;
+        index = getSettings().filters.get().size() - 1;
 
         int pos = 1;
         this.addComponent(new GuiLabel(Translation.CHANNELS_ENABLED.toString()), new int[] { 2, pos });
@@ -68,8 +68,8 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> implements C
 
         pos += 2;
         this.addComponent(new GuiLabel(Translation.MESSAGE_PATTERN.toString()), new int[] { 1, pos });
-        if (sett.messegePattern.getValue() == null) {
-            sett.messegePattern.setValue(MessagePatterns.WHISPERS);
+        if (sett.messegePattern.get() == null) {
+            sett.messegePattern.set(MessagePatterns.WHISPERS);
         }
         GuiSettingEnum<MessagePatterns> enmMsg = new GuiSettingEnum<MessagePatterns>(sett.messegePattern,
                 MessagePatterns.values());
@@ -175,7 +175,7 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> implements C
     private void add() {
         // creates a new filter, adds it to the list, and selects it.
         getSettings().filters.add(new ChatFilter());
-        select(getSettings().filters.getValue().size() - 1);
+        select(getSettings().filters.get().size() - 1);
         update();
     }
 
@@ -185,7 +185,7 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> implements C
         this.edit.setEnabled(true);
         this.delete.setEnabled(true);
 
-        int size = getSettings().filters.getValue().size();
+        int size = getSettings().filters.get().size();
 
         if (index >= size - 1) {
             this.next.setEnabled(false);

@@ -1,34 +1,32 @@
 package mnm.mods.tabbychat.settings;
 
-import java.io.File;
 import java.net.InetSocketAddress;
 
-import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.Expose;
 
 import mnm.mods.tabbychat.ChatChannel;
 import mnm.mods.tabbychat.extra.filters.ChatFilter;
+import mnm.mods.tabbychat.util.TabbyRef;
 import mnm.mods.util.IPUtils;
-import mnm.mods.util.config.Setting;
-import mnm.mods.util.config.SettingList;
-import mnm.mods.util.config.SettingMap;
 import mnm.mods.util.config.SettingsFile;
-import net.minecraft.util.EnumTypeAdapterFactory;
+import mnm.mods.util.config.ValueList;
+import mnm.mods.util.config.ValueMap;
 
-public class ServerSettings extends SettingsFile<ServerSettings> {
+public class ServerSettings extends SettingsFile {
 
-    @Setting
+    @Expose
     public GeneralServerSettings general = new GeneralServerSettings();
-    @Setting
-    public SettingList<ChatFilter> filters = list(ChatFilter.class);
-    @Setting
-    public SettingMap<ChatChannel> channels = map(ChatChannel.class);
-    @Setting
-    public SettingMap<ChatChannel> pms = map(ChatChannel.class);
+    @Expose
+    public ValueList<ChatFilter> filters = list();
+    @Expose
+    public ValueMap<ChatChannel> channels = map();
+    @Expose
+    public ValueMap<ChatChannel> pms = map();
 
     private final InetSocketAddress ip;
 
     public ServerSettings(InetSocketAddress url) {
-        super(new File(TabbySettings.DIR, getIPForFileName(url)), "server");
+        super(TabbyRef.MOD_ID + "/" + getIPForFileName(url), "server");
         this.ip = url;
     }
 
@@ -45,11 +43,6 @@ public class ServerSettings extends SettingsFile<ServerSettings> {
 
     public InetSocketAddress getIP() {
         return this.ip;
-    }
-
-    @Override
-    protected void setupGson(GsonBuilder builder) {
-        builder.registerTypeAdapterFactory(new EnumTypeAdapterFactory());
     }
 
 }

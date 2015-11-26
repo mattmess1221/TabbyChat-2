@@ -53,11 +53,11 @@ public class ChatMessage implements Message {
     public IChatComponent getMessageWithOptionalTimestamp() {
         IChatComponent chat;
         GeneralSettings settings = TabbyChat.getInstance().settings.general;
-        if (date != null && settings.timestampChat.getValue()) {
+        if (date != null && settings.timestampChat.get()) {
             chat = new ChatComponentText("");
 
-            TimeStamps stamp = settings.timestampStyle.getValue();
-            EnumChatFormatting format = settings.timestampColor.getValue();
+            TimeStamps stamp = settings.timestampStyle.get();
+            EnumChatFormatting format = settings.timestampColor.get();
             chat = new ChatComponentTranslation("%s %s", format + stamp.format(date),
                     getMessage());
         } else {

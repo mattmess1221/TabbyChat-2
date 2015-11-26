@@ -18,7 +18,7 @@ public class ChannelFilter extends TabFilter {
 
     @Override
     public Pattern getPattern() {
-        return TabbyChat.getInstance().serverSettings.general.channelPattern.getValue().getPattern();
+        return TabbyChat.getInstance().serverSettings.general.channelPattern.get().getPattern();
     }
 
     public static class ChannelAction implements IFilterAction {
@@ -28,9 +28,9 @@ public class ChannelFilter extends TabFilter {
         @Override
         public void action(Filter filter, FilterEvent event) {
             GeneralServerSettings general = TabbyChat.getInstance().serverSettings.general;
-            if (general.channelsEnabled.getValue()) {
+            if (general.channelsEnabled.get()) {
                 String chan = event.matcher.group(1);
-                if (!general.ignoredChannels.getValue().contains(chan)) {
+                if (!general.ignoredChannels.get().contains(chan)) {
                     // not ignoring
                     Channel dest = TabbyAPI.getAPI().getChat().getChannel(chan);
                     event.channels.add(dest);

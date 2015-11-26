@@ -34,9 +34,9 @@ import mnm.mods.tabbychat.api.Chat;
 import mnm.mods.tabbychat.api.Message;
 import mnm.mods.tabbychat.gui.ChatBox;
 import mnm.mods.tabbychat.settings.AdvancedSettings;
-import mnm.mods.util.ChatBuilder;
-import mnm.mods.util.config.SettingMap;
+import mnm.mods.util.config.ValueMap;
 import mnm.mods.util.gui.GuiText;
+import mnm.mods.util.text.ChatBuilder;
 import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.EnumTypeAdapterFactory;
@@ -64,10 +64,10 @@ public class ChatManager implements Chat {
         Rectangle rect = new Rectangle();
 
         AdvancedSettings settings = TabbyChat.getInstance().settings.advanced;
-        rect.x = settings.chatX.getValue();
-        rect.y = settings.chatY.getValue();
-        rect.width = settings.chatW.getValue();
-        rect.height = settings.chatH.getValue();
+        rect.x = settings.chatX.get();
+        rect.y = settings.chatY.get();
+        rect.width = settings.chatW.get();
+        rect.height = settings.chatH.get();
 
         this.chatbox = new ChatBox(rect);
     }
@@ -94,14 +94,13 @@ public class ChatManager implements Chat {
         return channel;
     }
 
-    private Channel getChannel(String name, boolean pm, Map<String, Channel> from, SettingMap<ChatChannel> setting) {
+    private Channel getChannel(String name, boolean pm, Map<String, Channel> from, ValueMap<ChatChannel> setting) {
         if (!from.containsKey(name)) {
             // fetch from settings
             ChatChannel chan = setting.get(name);
             if (chan == null || chan.getName() == null) {
                 chan = new ChatChannel(name, pm);
-                setting.put(chan.getName(), chan);
-                TabbyChat.getInstance().serverSettings.saveSettingsFile();
+                setting.get().put(chan.getName(), chan);
             }
             from.put(name, chan);
             messages.put(chan, chan.getMessages());

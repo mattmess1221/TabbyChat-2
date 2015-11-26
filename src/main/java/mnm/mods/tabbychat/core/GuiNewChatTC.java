@@ -83,7 +83,7 @@ public class GuiNewChatTC extends GuiNewChat {
                 chatevent.channels.add(this.chat.getActiveChannel());
             }
             if (chatevent.channels.contains(ChatChannel.DEFAULT_CHANNEL) && chatevent.channels.size() > 1
-                    && !tc.serverSettings.general.useDefaultTab.getValue()) {
+                    && !tc.serverSettings.general.useDefaultTab.get()) {
                 chatevent.channels.remove(ChatChannel.DEFAULT_CHANNEL);
             }
             boolean msg = !chatevent.channels.contains(this.chat.getActiveChannel());

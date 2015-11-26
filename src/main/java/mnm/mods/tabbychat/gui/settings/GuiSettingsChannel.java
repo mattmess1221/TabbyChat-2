@@ -49,7 +49,7 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
         channels = new GuiScrollingPanel();
         channels.setSize(60, 200);
         channels.getContentPanel().setLayout(new VerticalLayout());
-        for (Channel channel : getSettings().channels.getValue().values()) {
+        for (Channel channel : getSettings().channels.get().values()) {
             channels.getContentPanel().addComponent(new ChannelButton(channel));
         }
         this.addComponent(channels, BorderLayout.Position.WEST);
@@ -119,11 +119,10 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
                 // remove from chat
                 TabbyAPI.getAPI().getChat().removeChannel(channel);
                 // remove from settings file
-                getSettings().channels.getValue().remove(channel.getName());
+                getSettings().channels.get().remove(channel.getName());
                 if (!channel.isPm()) {
                     // don't add this channel again.
                     getSettings().general.ignoredChannels.add(channel.getName());
-                    getSettings().saveSettingsFile();
                 }
                 // remove from settings gui
                 for (GuiComponent comp : channels.getContentPanel()) {
@@ -142,7 +141,6 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
         channel.setAlias(alias.getValue());
         channel.setPrefix(prefix.getValue());
         channel.setPrefixHidden(hidePrefix.getValue());
-        getSettings().saveSettingsFile();
     }
 
     @Override

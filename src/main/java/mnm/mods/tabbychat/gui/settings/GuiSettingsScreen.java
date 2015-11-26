@@ -79,13 +79,10 @@ public class GuiSettingsScreen extends ComponentScreen {
         save.addActionListener(new ActionPerformed() {
             @Override
             public void action(GuiEvent event) {
-                Set<SettingsFile<?>> files = Sets.newHashSet();
+                Set<SettingsFile> files = Sets.newHashSet();
                 for (SettingPanel<?> sett : panels) {
                     sett.saveSettings();
                     files.add(sett.getSettings());
-                }
-                for (SettingsFile<?> file : files) {
-                    file.saveSettingsFile();
                 }
                 Minecraft.getMinecraft().displayGuiScreen(null);
             }
@@ -160,14 +157,6 @@ public class GuiSettingsScreen extends ComponentScreen {
         selectedSetting.initGUI();
         activate(setting.getClass());
         panel.addComponent(selectedSetting, BorderLayout.Position.CENTER);
-    }
-
-    public void saveSettings() {
-        for (GuiComponent comp : settingsList) {
-            if (comp instanceof SettingPanel) {
-                ((SettingPanel<?>) comp).getSettings().saveSettingsFile();
-            }
-        }
     }
 
     public static void registerSetting(Class<? extends SettingPanel<?>> settings) {

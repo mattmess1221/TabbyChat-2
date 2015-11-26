@@ -212,7 +212,7 @@ public class GuiChatTC extends GuiChat {
         Channel active = chat.getActiveChannel();
         String[] toSend = processSends(message, active.getPrefix(), active.isPrefixHidden());
         // time to wait between each send
-        long wait = tc.settings.advanced.msgDelay.getValue();
+        long wait = tc.settings.advanced.msgDelay.get();
         new BackgroundChatThread(this, toSend, wait).start();
 
         // add to sent chat manually

@@ -173,8 +173,8 @@ public class ChatChannel implements Channel {
         if (event.chat == null) {
             return;
         }
-        if (TabbyChat.getInstance().settings.advanced.hideTag.getValue() && this != DEFAULT_CHANNEL) {
-            ChannelPatterns pattern = TabbyChat.getInstance().serverSettings.general.channelPattern.getValue();
+        if (TabbyChat.getInstance().settings.advanced.hideTag.get() && this != DEFAULT_CHANNEL) {
+            ChannelPatterns pattern = TabbyChat.getInstance().serverSettings.general.channelPattern.get();
             Matcher matcher = pattern.getPattern().matcher(event.chat.getUnformattedText());
             if (matcher.find()) {
                 event.chat = ChatTextUtils.subChat(event.chat, matcher.end());
@@ -191,7 +191,7 @@ public class ChatChannel implements Channel {
             chatbox.scroll(1);
         }
 
-        trim(TabbyChat.getInstance().settings.advanced.historyLen.getValue());
+        trim(TabbyChat.getInstance().settings.advanced.historyLen.get());
 
         ((ChatManager) TabbyChat.getInstance().getChat()).save();
     }
