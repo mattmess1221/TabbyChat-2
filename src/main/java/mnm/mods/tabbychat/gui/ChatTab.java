@@ -2,18 +2,19 @@ package mnm.mods.tabbychat.gui;
 
 import java.awt.Dimension;
 
+import com.google.common.eventbus.Subscribe;
+
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.ChannelStatus;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.util.Color;
 import mnm.mods.util.gui.GuiButton;
-import mnm.mods.util.gui.events.GuiMouseAdapter;
 import mnm.mods.util.gui.events.GuiMouseEvent;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 
-public class ChatTab extends GuiButton implements GuiMouseAdapter {
+public class ChatTab extends GuiButton {
 
     private final Channel channel;
 
@@ -22,8 +23,8 @@ public class ChatTab extends GuiButton implements GuiMouseAdapter {
         this.channel = channel;
     }
 
-    @Override
-    public void accept(GuiMouseEvent event) {
+    @Subscribe
+    public void tryCommitSudoku(GuiMouseEvent event) {
         if (event.event == GuiMouseEvent.CLICKED) {
             ChatTab comp = (ChatTab) event.component;
             if (event.button == 0) {

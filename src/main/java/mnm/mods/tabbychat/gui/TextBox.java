@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import com.google.common.eventbus.Subscribe;
 
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
@@ -18,7 +19,6 @@ import mnm.mods.tabbychat.extra.spell.SpellingFormatter;
 import mnm.mods.util.Color;
 import mnm.mods.util.gui.GuiComponent;
 import mnm.mods.util.gui.GuiText;
-import mnm.mods.util.gui.events.GuiMouseAdapter;
 import mnm.mods.util.gui.events.GuiMouseEvent;
 import mnm.mods.util.text.FancyFontRenderer;
 import net.minecraft.client.gui.FontRenderer;
@@ -27,7 +27,7 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IChatComponent;
 
-public class TextBox extends ChatGui implements ChatInput<GuiComponent, GuiText>, GuiMouseAdapter {
+public class TextBox extends ChatGui implements ChatInput<GuiComponent, GuiText> {
 
     private FontRenderer fr = mc.fontRendererObj;
     // Dummy textField
@@ -202,8 +202,8 @@ public class TextBox extends ChatGui implements ChatInput<GuiComponent, GuiText>
         return this;
     }
 
-    @Override
-    public void accept(GuiMouseEvent event) {
+    @Subscribe
+    public void onMouseClick(GuiMouseEvent event) {
         Point p = event.position;
         mouseClicked(p.x, p.y, event.button);
     }

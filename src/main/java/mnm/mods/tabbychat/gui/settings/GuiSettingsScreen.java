@@ -4,6 +4,10 @@ import java.awt.Rectangle;
 import java.util.List;
 import java.util.Set;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.common.eventbus.Subscribe;
+
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.util.Color;
 import mnm.mods.util.config.SettingsFile;
@@ -15,14 +19,11 @@ import mnm.mods.util.gui.GuiComponent;
 import mnm.mods.util.gui.GuiPanel;
 import mnm.mods.util.gui.VerticalLayout;
 import mnm.mods.util.gui.config.SettingPanel;
-import mnm.mods.util.gui.events.ActionPerformed;
+import mnm.mods.util.gui.events.ActionPerformedEvent;
 import mnm.mods.util.gui.events.GuiEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 public class GuiSettingsScreen extends ComponentScreen {
 
@@ -65,20 +66,17 @@ public class GuiSettingsScreen extends ComponentScreen {
         panel.setLayout(new BorderLayout());
         panel.setSize(300, 200);
         // redundant casting for reobfuscation
-        panel.setPosition(((GuiScreen) this).width / 2 - panel.getBounds().width / 2, ((GuiScreen) this).height / 2
-                - panel.getBounds().height / 2);
+        panel.setPosition(((GuiScreen) this).width / 2 - panel.getBounds().width / 2, ((GuiScreen) this).height / 2 - panel.getBounds().height / 2);
         GuiPanel panel = new GuiPanel(new BorderLayout());
         this.panel.addComponent(panel, BorderLayout.Position.WEST);
-        panel.addComponent(settingsList = new GuiPanel(new VerticalLayout()),
-                BorderLayout.Position.WEST);
-        panel.addComponent(closeSaveButtons = new GuiPanel(new FlowLayout()),
-                BorderLayout.Position.SOUTH);
+        panel.addComponent(settingsList = new GuiPanel(new VerticalLayout()), BorderLayout.Position.WEST);
+        panel.addComponent(closeSaveButtons = new GuiPanel(new FlowLayout()), BorderLayout.Position.SOUTH);
         GuiButton save = new GuiButton("Save");
         save.setSize(40, 10);
         save.setBackColor(Color.getColor(0, 255, 0, 127));
-        save.addActionListener(new ActionPerformed() {
-            @Override
-            public void action(GuiEvent event) {
+        save.getBus().register(new Object() {
+            @Subscribe
+            public void applyAllTheSettingsAndCloseTheScreen(ActionPerformedEvent event) {
                 Set<SettingsFile> files = Sets.newHashSet();
                 for (SettingPanel<?> sett : panels) {
                     sett.saveSettings();
@@ -91,9 +89,9 @@ public class GuiSettingsScreen extends ComponentScreen {
         GuiButton close = new GuiButton("Close");
         close.setSize(40, 10);
         close.setBackColor(Color.getColor(0, 255, 0, 127));
-        close.addActionListener(new ActionPerformed() {
-            @Override
-            public void action(GuiEvent event) {
+        close.getBus().register(new Object() {
+            @Subscribe
+            public void closeTheScreenWithoutSaving(ActionPerformedEvent event) {
                 Minecraft.getMinecraft().displayGuiScreen(null);
             }
         });
@@ -103,9 +101,9 @@ public class GuiSettingsScreen extends ComponentScreen {
             // Populate the settings
             for (SettingPanel<?> sett : panels) {
                 SettingsButton button = new SettingsButton(sett);
-                button.addActionListener(new ActionPerformed() {
-                    @Override
-                    public void action(GuiEvent event) {
+                button.getBus().register(new Object() {
+                    @Subscribe
+                    public void switchToThisPanel(GuiEvent event) {
                         selectSetting(((SettingsButton) event.component).getSettings());
                     }
                 });

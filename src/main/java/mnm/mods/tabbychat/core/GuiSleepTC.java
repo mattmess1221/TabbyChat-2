@@ -1,13 +1,14 @@
 package mnm.mods.tabbychat.core;
 
+import org.lwjgl.input.Keyboard;
+
+import com.google.common.eventbus.Subscribe;
+
 import mnm.mods.util.gui.GuiButton;
-import mnm.mods.util.gui.events.ActionPerformed;
-import mnm.mods.util.gui.events.GuiEvent;
+import mnm.mods.util.gui.events.ActionPerformedEvent;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
-
-import org.lwjgl.input.Keyboard;
 
 public class GuiSleepTC extends GuiChatTC {
 
@@ -16,13 +17,13 @@ public class GuiSleepTC extends GuiChatTC {
         super.initGui();
         GuiButton button = new GuiButton(I18n.format("multiplayer.stopSleeping"));
         button.setBounds(width / 2 - 100, height - 30, 200, 20);
-        button.addActionListener(new ActionPerformed() {
-            @Override
-            public void action(GuiEvent event) {
-                wakeFromSleep();
-            }
-        });
+        button.getBus().register(this);
         this.componentList.add(button);
+    }
+
+    @Subscribe
+    public void wakeUpSleepyHead(ActionPerformedEvent event) {
+        wakeFromSleep();
     }
 
     @Override

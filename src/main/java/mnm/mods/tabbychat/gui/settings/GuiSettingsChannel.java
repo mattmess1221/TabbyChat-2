@@ -1,5 +1,7 @@
 package mnm.mods.tabbychat.gui.settings;
 
+import com.google.common.eventbus.Subscribe;
+
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.TabbyAPI;
@@ -17,8 +19,7 @@ import mnm.mods.util.gui.GuiScrollingPanel;
 import mnm.mods.util.gui.GuiText;
 import mnm.mods.util.gui.VerticalLayout;
 import mnm.mods.util.gui.config.SettingPanel;
-import mnm.mods.util.gui.events.ActionPerformed;
-import mnm.mods.util.gui.events.GuiEvent;
+import mnm.mods.util.gui.events.ActionPerformedEvent;
 import net.minecraft.client.resources.I18n;
 
 public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
@@ -103,18 +104,18 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
         this.panel.addComponent(new GuiLabel(Translation.CHANNEL_HIDE_PREFIX.toString()), new int[] { 2, pos });
 
         GuiButton accept = new GuiButton(I18n.format("gui.done"));
-        accept.addActionListener(new ActionPerformed() {
-            @Override
-            public void action(GuiEvent event) {
+        accept.getBus().register(new Object() {
+            @Subscribe
+            public void somebodySaveMe(ActionPerformedEvent event) {
                 save();
             }
         });
         this.panel.addComponent(accept, new int[] { 2, 15, 4, 2 });
 
         GuiButton forget = new GuiButton(Translation.CHANNEL_FORGET.toString());
-        forget.addActionListener(new ActionPerformed() {
-            @Override
-            public void action(GuiEvent event) {
+        forget.getBus().register(new Object() {
+            @Subscribe
+            public void oohShinyObject(ActionPerformedEvent event) {
                 Channel channel = GuiSettingsChannel.this.channel;
                 // remove from chat
                 TabbyAPI.getAPI().getChat().removeChannel(channel);
@@ -148,7 +149,7 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
         return TabbyChat.getInstance().serverSettings;
     }
 
-    public class ChannelButton extends GuiButton implements ActionPerformed {
+    public class ChannelButton extends GuiButton {
 
         private Channel channel;
 
@@ -158,8 +159,8 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
             setSize(60, 15);
         }
 
-        @Override
-        public void action(GuiEvent event) {
+        @Subscribe
+        public void margeChangeTheChannel(ActionPerformedEvent event) {
             select(channel);
         }
     }

@@ -9,6 +9,7 @@ import org.lwjgl.input.Keyboard;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
+import com.google.common.eventbus.Subscribe;
 
 import mnm.mods.tabbychat.api.filters.Filter;
 import mnm.mods.tabbychat.api.filters.FilterSettings;
@@ -21,14 +22,12 @@ import mnm.mods.util.gui.GuiGridLayout;
 import mnm.mods.util.gui.GuiLabel;
 import mnm.mods.util.gui.GuiPanel;
 import mnm.mods.util.gui.GuiText;
-import mnm.mods.util.gui.events.ActionPerformed;
-import mnm.mods.util.gui.events.GuiEvent;
-import mnm.mods.util.gui.events.GuiKeyboardAdapter;
+import mnm.mods.util.gui.events.ActionPerformedEvent;
 import mnm.mods.util.gui.events.GuiKeyboardEvent;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 
-public class GuiFilterEditor extends GuiPanel implements GuiKeyboardAdapter {
+public class GuiFilterEditor extends GuiPanel {
 
     private Filter filter;
     private Consumer<Filter> consumer;
@@ -85,11 +84,11 @@ public class GuiFilterEditor extends GuiPanel implements GuiKeyboardAdapter {
         pos += 1;
         this.addComponent(txtSound = new GuiText(), new int[] { 3, pos, 14, 1 });
         txtSound.setValue(settings.getSoundName());
-        txtSound.addKeyboardAdapter(new GuiKeyboardAdapter() {
+        txtSound.getBus().register(new Object() {
             private int pos;
 
-            @Override
-            public void accept(GuiKeyboardEvent event) {
+            @Subscribe
+            public void suggestSounds(GuiKeyboardEvent event) {
                 final int max = 10;
                 if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
                     pos++;
@@ -139,18 +138,18 @@ public class GuiFilterEditor extends GuiPanel implements GuiKeyboardAdapter {
         this.addComponent(lblError = new GuiLabel(""), new int[] { 6, pos });
 
         GuiButton accept = new GuiButton(I18n.format("gui.done"));
-        accept.addActionListener(new ActionPerformed() {
-            @Override
-            public void action(GuiEvent event) {
+        accept.getBus().register(new Object() {
+            @Subscribe
+            public void finish(ActionPerformedEvent event) {
                 accept();
             }
         });
         this.addComponent(accept, new int[] { 5, 14, 4, 1 });
 
         GuiButton cancel = new GuiButton(I18n.format("gui.cancel"));
-        cancel.addActionListener(new ActionPerformed() {
-            @Override
-            public void action(GuiEvent event) {
+        cancel.getBus().register(new Object() {
+            @Subscribe
+            public void stopEverything(ActionPerformedEvent event) {
                 cancel();
             }
         });
@@ -177,8 +176,8 @@ public class GuiFilterEditor extends GuiPanel implements GuiKeyboardAdapter {
         getParent().setOverlay(null);
     }
 
-    @Override
-    public void accept(GuiKeyboardEvent event) {
+    @Subscribe
+    public void updateError(GuiKeyboardEvent event) {
         if (txtPattern.isFocused()) {
             // check valid regex
             try {

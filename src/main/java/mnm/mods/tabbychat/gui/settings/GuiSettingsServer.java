@@ -1,5 +1,7 @@
 package mnm.mods.tabbychat.gui.settings;
 
+import com.google.common.eventbus.Subscribe;
+
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.filters.Filter;
 import mnm.mods.tabbychat.extra.filters.ChatFilter;
@@ -18,8 +20,7 @@ import mnm.mods.util.gui.config.GuiSettingBoolean;
 import mnm.mods.util.gui.config.GuiSettingEnum;
 import mnm.mods.util.gui.config.GuiSettingStringList;
 import mnm.mods.util.gui.config.SettingPanel;
-import mnm.mods.util.gui.events.ActionPerformed;
-import mnm.mods.util.gui.events.GuiEvent;
+import mnm.mods.util.gui.events.ActionPerformedEvent;
 import net.minecraft.client.resources.I18n;
 
 public class GuiSettingsServer extends SettingPanel<ServerSettings> implements Consumer<Filter> {
@@ -71,8 +72,7 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> implements C
         if (sett.messegePattern.get() == null) {
             sett.messegePattern.set(MessagePatterns.WHISPERS);
         }
-        GuiSettingEnum<MessagePatterns> enmMsg = new GuiSettingEnum<MessagePatterns>(sett.messegePattern,
-                MessagePatterns.values());
+        GuiSettingEnum<MessagePatterns> enmMsg = new GuiSettingEnum<MessagePatterns>(sett.messegePattern, MessagePatterns.values());
         enmMsg.setCaption(Translation.MESSAGE_PATTERN_DESC.toString());
         this.addComponent(enmMsg, new int[] { 5, pos, 4, 1 });
 
@@ -94,27 +94,27 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> implements C
 
         pos += 2;
         prev = new GuiButton("<");
-        prev.addActionListener(new ActionPerformed() {
-            @Override
-            public void action(GuiEvent event) {
+        prev.getBus().register(new Object() {
+            @Subscribe
+            public void goBackwards(ActionPerformedEvent event) {
                 select(index - 1);
             }
         });
         this.addComponent(prev, new int[] { 0, pos, 1, 2 });
 
         edit = new GuiButton(I18n.format("selectServer.edit"));
-        edit.addActionListener(new ActionPerformed() {
-            @Override
-            public void action(GuiEvent event) {
+        edit.getBus().register(new Object() {
+            @Subscribe
+            public void goEditwords(ActionPerformedEvent event) {
                 edit(index);
             }
         });
         this.addComponent(edit, new int[] { 1, pos, 2, 2 });
 
         next = new GuiButton(">");
-        next.addActionListener(new ActionPerformed() {
-            @Override
-            public void action(GuiEvent event) {
+        next.getBus().register(new Object() {
+            @Subscribe
+            public void goForwards(ActionPerformedEvent event) {
                 select(index + 1);
             }
         });
@@ -122,9 +122,9 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> implements C
 
         this.addComponent(lblFilter = new GuiLabel(""), new int[] { 5, pos, 1, 3 });
         GuiButton _new = new GuiButton(Translation.FILTERS_NEW.toString());
-        _new.addActionListener(new ActionPerformed() {
-            @Override
-            public void action(GuiEvent event) {
+        _new.getBus().register(new Object() {
+            @Subscribe
+            public void goAddwords(ActionPerformedEvent event) {
                 add();
             }
         });
@@ -132,9 +132,9 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> implements C
         pos += 2;
         this.addComponent(_new, new int[] { 0, pos, 2, 2 });
         delete = new GuiButton(I18n.format("selectServer.delete"));
-        delete.addActionListener(new ActionPerformed() {
-            @Override
-            public void action(GuiEvent event) {
+        delete.getBus().register(new Object() {
+            @Subscribe
+            public void goDelwords(ActionPerformedEvent event) {
                 delete(index);
             }
         });

@@ -3,6 +3,10 @@ package mnm.mods.tabbychat.gui;
 import java.awt.Point;
 import java.awt.Rectangle;
 
+import org.lwjgl.input.Mouse;
+
+import com.google.common.eventbus.Subscribe;
+
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.gui.ChatGui;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
@@ -10,15 +14,12 @@ import mnm.mods.tabbychat.settings.ColorSettings;
 import mnm.mods.tabbychat.settings.TabbySettings;
 import mnm.mods.util.gui.BorderLayout;
 import mnm.mods.util.gui.GuiPanel;
-import mnm.mods.util.gui.events.GuiMouseAdapter;
 import mnm.mods.util.gui.events.GuiMouseEvent;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.MathHelper;
 
-import org.lwjgl.input.Mouse;
-
-public class ChatBox extends GuiPanel implements GuiMouseAdapter, ChatGui<GuiPanel> {
+public class ChatBox extends GuiPanel implements ChatGui<GuiPanel> {
 
     private static ColorSettings colors = TabbyChat.getInstance().settings.colors;
 
@@ -40,8 +41,8 @@ public class ChatBox extends GuiPanel implements GuiMouseAdapter, ChatGui<GuiPan
         this.setBounds(rect);
     }
 
-    @Override
-    public void accept(GuiMouseEvent event) {
+    @Subscribe
+    public void killjoysMovingCompanyForAllYourFurnitureMovingNeeds(GuiMouseEvent event) {
         Rectangle bounds = getBounds();
 
         // divide by scale because smaller scales make the point movement larger

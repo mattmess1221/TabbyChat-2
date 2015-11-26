@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.Lists;
+import com.google.common.eventbus.Subscribe;
 
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
@@ -20,7 +21,6 @@ import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.util.ChatTextUtils;
 import mnm.mods.util.Color;
 import mnm.mods.util.gui.GuiComponent;
-import mnm.mods.util.gui.events.GuiMouseAdapter;
 import mnm.mods.util.gui.events.GuiMouseEvent;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
@@ -31,7 +31,7 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.MathHelper;
 
-public class ChatArea extends GuiComponent implements Supplier<List<Message>>, GuiMouseAdapter, ReceivedChat<GuiComponent> {
+public class ChatArea extends GuiComponent implements Supplier<List<Message>>, ReceivedChat<GuiComponent> {
 
     private Supplier<List<Message>> supplier = Suppliers.memoizeWithExpiration(this, 50, TimeUnit.MILLISECONDS);
     private int scrollPos = 0;
@@ -40,8 +40,8 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, G
         this.setMinimumSize(new Dimension(300, 160));
     }
 
-    @Override
-    public void accept(GuiMouseEvent event) {
+    @Subscribe
+    public void superScrollingAction(GuiMouseEvent event) {
         if (event.event == GuiMouseEvent.SCROLLED) {
             // Scrolling
             int scroll = event.scroll;
