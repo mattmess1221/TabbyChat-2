@@ -1,6 +1,15 @@
-plugins{
-	id 'net.minecraftforge.gradle.tweaker-client' version '2.0.2'
+buildscript {
+	repositories {
+		jcenter()
+		maven {
+			name 'forge'
+			url 'http://file.minecraftforge.net/maven'
+		}
+	}
+	dependencies.classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
 }
+apply plugin: 'net.minecraftforge.gradle.tweaker-client'
+
 ext {
 	utils = rootProject.project(':MnM-Utils')
 	api = rootProject.project(':api')
@@ -14,7 +23,7 @@ def buildServer = System.env.BUILD_ID != null
 
 group = 'mnm.mods'
 archivesBaseName = 'TabbyChat'
-version = "2.0-beta-SNAPSHOT.${System.env.BUILD_ID}"
+version = "2.0-mc${minecraft.version}-beta-SNAPSHOT.${System.env.BUILD_ID}"
 if (buildServer) version += ".${System.env.GIT_COMMIT?.substring(0,6)}"
 // version = '2.0.0-beta3.1'
 
@@ -48,26 +57,31 @@ dependencies {
 
 	testCompile 'junit:junit:4.12'
 }
-
-jar {
-	extension 'litemod'
-	from(configurations.compile.collect {it.isDirectory() ? it : zipTree(it)}) {
-		exclude 'META-INF/***'
-	}
-	from {forge.sourceSets.main.output}
-}
 sourceJar {
 	from {[api,forge]*.sourceSets.main.allSource}
 }
 task jarSrg(type:Jar) {
-	dependsOn jar
 	classifier "srg"
-	from zipTree(jar.archivePath)
+
+	from sourceSets.main.output}
+	from api.sourceSets.main.output
+	from forge.sourceSets.main.output
 }
-artifacts.archives jarSrg
+task releaseJar(type:Jar) {
+	extension 'litemod'
+
+	from sourceSets.main.output
+	from api.sourceSets.main.output
+	from forge.sourceSets.main.output
+
+	from(configurations.compile.collect {it.isDirectory() ? it : zipTree(it)}) {
+		exclude 'META-INF/***'
+	}
+}
+artifacts.archives jarSrg, releaseJar
 
 reobf {
-	jar.task.dependsOn jarSrg
+	releaseJar {}
 	jarSrg {
 		useSrgSrg()
 	}

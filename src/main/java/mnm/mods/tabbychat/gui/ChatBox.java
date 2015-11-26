@@ -99,7 +99,7 @@ public class ChatBox extends GuiPanel implements GuiMouseAdapter, ChatGui<GuiPan
         Rectangle bounds = getBounds();
         Point point = getActualPosition();
         float scale = getActualScale();
-        ScaledResolution sr = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
+        ScaledResolution sr = new ScaledResolution(mc);
 
         int x = point.x;
         int y = point.y;

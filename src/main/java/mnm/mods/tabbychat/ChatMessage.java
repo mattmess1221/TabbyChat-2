@@ -83,9 +83,7 @@ public class ChatMessage implements Message {
 
     void fixSerialization() {
         List<HoverEvent> list = Lists.newArrayList();
-        @SuppressWarnings("unchecked")
-        Iterable<IChatComponent> chat = message;
-        for (IChatComponent message : chat) {
+        for (IChatComponent message : message) {
             ChatStyle style = message.getChatStyle();
             HoverEvent hover = style.getChatHoverEvent();
             if (list.contains(hover))

@@ -168,7 +168,6 @@ public class TabbyChat extends TabbyAPI implements InternalAPI {
         addonManager.setFilterVariable("onlineplayer", new FilterVariable() {
             @Override
             public String getVar() {
-                @SuppressWarnings("unchecked")
                 List<String> playerNames = Lists.transform(mc.theWorld.playerEntities, names);
                 return Joiner.on('|').appendTo(new StringBuilder("(?:"), playerNames).append(')').toString();
             }
