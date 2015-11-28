@@ -104,20 +104,21 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, G
         return getChat(true);
     }
 
-    public List<Message> getChat(boolean force) {
+    private List<Message> getChat(boolean force) {
         if (!force) {
             return supplier.get();
         }
-        return getChat();
-    }
-
-    private List<Message> getChat() {
         Channel channel = TabbyAPI.getAPI().getChat().getActiveChannel();
         return ChatTextUtils.split(channel.getMessages(), getBounds().width);
+
+    }
+
+    public List<Message> getChat() {
+        return getChat(false);
     }
 
     public List<Message> getVisibleChat() {
-        List<Message> lines = getChat(false);
+        List<Message> lines = getChat();
 
         List<Message> messages = Lists.newArrayList();
         int length = 0;
@@ -167,7 +168,7 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, G
 
     @Override
     public void setScrollPos(int scroll) {
-        List<Message> list = getChat(false);
+        List<Message> list = getChat();
         scroll = Math.min(scroll, list.size() - GuiNewChatTC.getInstance().getLineCount());
         scroll = Math.max(scroll, 0);
 
@@ -203,7 +204,7 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, G
 
                 // Iterate through the chat component, stopping when the desired
                 // x is reached.
-                List<Message> list = this.getVisibleChat();
+                List<Message> list = this.getChat();
                 if (linePos >= 0 && linePos < list.size()) {
                     Message chatline = list.get(linePos);
                     float x = actual.x;
