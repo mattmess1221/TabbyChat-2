@@ -117,10 +117,10 @@ public class ChatTab extends GuiButton {
     }
 
     private int applyTransparency(int color) {
-        Color color1 = new Color(color);
+        Color color1 = Color.of(color);
         float perc = (mc.gameSettings.chatOpacity * 0.9F + 0.1F) / 2;
         int opacity = (int) (perc * color1.getAlpha());
-        return new Color(color1.getRed(), color1.getGreen(), color1.getBlue(), opacity).getColor();
+        return Color.of(color1.getRed(), color1.getGreen(), color1.getBlue(), opacity).getColor();
     }
 
     @Override

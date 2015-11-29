@@ -9,7 +9,7 @@ import mnm.mods.util.config.ValueObject;
 public class ColorSettings extends ValueObject {
 
     @Expose
-    public Value<Color> chatBoxColor = value(new Color(0, 0, 0, 127));
+    public Value<Color> chatBoxColor = value(Color.of(0, 0, 0, 127));
     @Expose
-    public Value<Color> chatTextColor = value(new Color(255, 255, 255, 255));
+    public Value<Color> chatTextColor = value(Color.of(255, 255, 255, 255));
 }

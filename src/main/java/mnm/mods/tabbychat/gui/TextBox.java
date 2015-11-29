@@ -162,9 +162,8 @@ public class TextBox extends ChatGui implements ChatInput<GuiComponent, GuiText>
         // int newY = getBounds().y + getBounds().height - newHeight;
         this.setSize(getMinimumSize().width, newHeight);
 
-        Color color = new Color(getParent().getBackColor());
-        Color bkg = new Color(color.getRed(), color.getGreen(), color.getBlue(),
-                color.getAlpha() / 4 * 3);
+        Color color = Color.of(getParent().getBackColor());
+        Color bkg = Color.of(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() / 4 * 3);
         this.setBackColor(bkg.getColor());
     }
 

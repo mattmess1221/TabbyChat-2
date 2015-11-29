@@ -3,7 +3,7 @@ buildscript {
 		jcenter()
 		maven {
 			name 'forge'
-			url 'http://file.minecraftforge.net/maven'
+			url 'http://files.minecraftforge.net/maven'
 		}
 	}
 	dependencies.classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
@@ -63,7 +63,7 @@ sourceJar {
 task jarSrg(type:Jar) {
 	classifier "srg"
 
-	from sourceSets.main.output}
+	from sourceSets.main.output
 	from api.sourceSets.main.output
 	from forge.sourceSets.main.output
 }

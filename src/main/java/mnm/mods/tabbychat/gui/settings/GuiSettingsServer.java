@@ -36,7 +36,7 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> implements C
     public GuiSettingsServer() {
         this.setLayout(new GuiGridLayout(10, 20));
         this.setDisplayString(Translation.SETTINGS_SERVER.toString());
-        this.setBackColor(new Color(255, 215, 0, 64).getColor());
+        this.setBackColor(Color.of(255, 215, 0, 64).getColor());
     }
 
     @Override
