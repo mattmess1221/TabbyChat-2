@@ -1,5 +1,7 @@
 package mnm.mods.tabbychat.gui.settings;
 
+import static mnm.mods.tabbychat.util.Translation.*;
+
 import com.google.common.eventbus.Subscribe;
 
 import mnm.mods.tabbychat.TabbyChat;
@@ -10,7 +12,6 @@ import mnm.mods.tabbychat.settings.GeneralServerSettings;
 import mnm.mods.tabbychat.settings.ServerSettings;
 import mnm.mods.tabbychat.util.ChannelPatterns;
 import mnm.mods.tabbychat.util.MessagePatterns;
-import mnm.mods.tabbychat.util.Translation;
 import mnm.mods.util.Color;
 import mnm.mods.util.Consumer;
 import mnm.mods.util.gui.GuiButton;
@@ -22,6 +23,7 @@ import mnm.mods.util.gui.config.GuiSettingStringList;
 import mnm.mods.util.gui.config.SettingPanel;
 import mnm.mods.util.gui.events.ActionPerformedEvent;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.util.ChatComponentTranslation;
 
 public class GuiSettingsServer extends SettingPanel<ServerSettings> implements Consumer<Filter> {
 
@@ -35,7 +37,7 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> implements C
 
     public GuiSettingsServer() {
         this.setLayout(new GuiGridLayout(10, 20));
-        this.setDisplayString(Translation.SETTINGS_SERVER.toString());
+        this.setDisplayString(SETTINGS_SERVER.toString());
         this.setBackColor(Color.of(255, 215, 0, 64).getColor());
     }
 
@@ -45,52 +47,52 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> implements C
         index = getSettings().filters.get().size() - 1;
 
         int pos = 1;
-        this.addComponent(new GuiLabel(Translation.CHANNELS_ENABLED.toString()), new int[] { 2, pos });
+        this.addComponent(new GuiLabel(new ChatComponentTranslation(CHANNELS_ENABLED)), new int[] { 2, pos });
         GuiSettingBoolean chkChannels = new GuiSettingBoolean(sett.channelsEnabled);
-        chkChannels.setCaption(Translation.CHANNELS_ENABLED_DESC.toString());
+        chkChannels.setCaption(CHANNELS_ENABLED_DESC.toString());
         this.addComponent(chkChannels, new int[] { 1, pos });
 
         pos += 1;
-        this.addComponent(new GuiLabel(Translation.PM_ENABLED.toString()), new int[] { 2, pos });
+        this.addComponent(new GuiLabel(new ChatComponentTranslation(PM_ENABLED)), new int[] { 2, pos });
         GuiSettingBoolean chkPM = new GuiSettingBoolean(sett.pmEnabled);
-        chkPM.setCaption(Translation.PM_ENABLED_DESC.toString());
+        chkPM.setCaption(PM_ENABLED_DESC.toString());
         this.addComponent(chkPM, new int[] { 1, pos });
 
         pos += 1;
-        addComponent(new GuiLabel(Translation.USE_DEFAULT.toString()), new int[] { 2, pos });
+        addComponent(new GuiLabel(new ChatComponentTranslation(USE_DEFAULT)), new int[] { 2, pos });
         addComponent(new GuiSettingBoolean(sett.useDefaultTab), new int[] { 1, pos });
 
         pos += 2;
-        this.addComponent(new GuiLabel(Translation.CHANNEL_PATTERN.toString()), new int[] { 1, pos });
+        this.addComponent(new GuiLabel(new ChatComponentTranslation(CHANNEL_PATTERN)), new int[] { 1, pos });
         GuiSettingEnum<ChannelPatterns> enmChanPat = new GuiSettingEnum<ChannelPatterns>(sett.channelPattern,
                 ChannelPatterns.values());
-        enmChanPat.setCaption(Translation.CHANNEL_PATTERN_DESC.toString());
+        enmChanPat.setCaption(CHANNEL_PATTERN_DESC.toString());
         this.addComponent(enmChanPat, new int[] { 5, pos, 4, 1 });
 
         pos += 2;
-        this.addComponent(new GuiLabel(Translation.MESSAGE_PATTERN.toString()), new int[] { 1, pos });
+        this.addComponent(new GuiLabel(new ChatComponentTranslation(MESSAGE_PATTERN)), new int[] { 1, pos });
         if (sett.messegePattern.get() == null) {
             sett.messegePattern.set(MessagePatterns.WHISPERS);
         }
         GuiSettingEnum<MessagePatterns> enmMsg = new GuiSettingEnum<MessagePatterns>(sett.messegePattern, MessagePatterns.values());
-        enmMsg.setCaption(Translation.MESSAGE_PATTERN_DESC.toString());
+        enmMsg.setCaption(MESSAGE_PATTERN_DESC.toString());
         this.addComponent(enmMsg, new int[] { 5, pos, 4, 1 });
 
         pos += 2;
-        this.addComponent(new GuiLabel(Translation.IGNORED_CHANNELS.toString()), new int[] { 0, pos });
+        this.addComponent(new GuiLabel(new ChatComponentTranslation(IGNORED_CHANNELS)), new int[] { 0, pos });
         GuiSettingStringList strIgnored = new GuiSettingStringList(sett.ignoredChannels);
-        strIgnored.setCaption(Translation.IGNORED_CHANNELS_DESC.toString());
+        strIgnored.setCaption(IGNORED_CHANNELS_DESC.toString());
         this.addComponent(strIgnored, new int[] { 5, pos, 5, 1 });
 
         pos += 2;
-        this.addComponent(new GuiLabel(Translation.DEFAULT_CHANNELS.toString()), new int[] { 0, pos });
+        this.addComponent(new GuiLabel(new ChatComponentTranslation(DEFAULT_CHANNELS)), new int[] { 0, pos });
         GuiSettingStringList strDefaults = new GuiSettingStringList(sett.defaultChannels);
-        strDefaults.setCaption(Translation.DEFAULT_CHANNELS_DESC.toString());
+        strDefaults.setCaption(DEFAULT_CHANNELS_DESC.toString());
         this.addComponent(strDefaults, new int[] { 5, pos, 5, 1 });
 
         // Filters
         pos += 2;
-        this.addComponent(new GuiLabel(Translation.FILTERS.toString()), new int[] { 4, pos, 1, 2 });
+        this.addComponent(new GuiLabel(new ChatComponentTranslation(FILTERS)), new int[] { 4, pos, 1, 2 });
 
         pos += 2;
         prev = new GuiButton("<");
@@ -120,8 +122,8 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> implements C
         });
         this.addComponent(next, new int[] { 3, pos, 1, 2 });
 
-        this.addComponent(lblFilter = new GuiLabel(""), new int[] { 5, pos, 1, 3 });
-        GuiButton _new = new GuiButton(Translation.FILTERS_NEW.toString());
+        this.addComponent(lblFilter = new GuiLabel(), new int[] { 5, pos, 1, 3 });
+        GuiButton _new = new GuiButton(FILTERS_NEW.toString());
         _new.getBus().register(new Object() {
             @Subscribe
             public void goAddwords(ActionPerformedEvent event) {
@@ -158,7 +160,7 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> implements C
 
     @Override
     public void apply(Filter f) {
-        this.lblFilter.setString(f.getName());
+        this.lblFilter.setText(f.getName());
     }
 
     private void select(int i) {
@@ -201,7 +203,7 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> implements C
             this.index = 0;
         } else {
             Filter filter = getSettings().filters.get(index);
-            this.lblFilter.setString(filter.getName());
+            this.lblFilter.setText(filter.getName());
         }
     }
 

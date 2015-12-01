@@ -1,12 +1,13 @@
 package mnm.mods.tabbychat.gui.settings;
 
+import static mnm.mods.tabbychat.util.Translation.*;
+
 import com.google.common.eventbus.Subscribe;
 
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.TabbyAPI;
 import mnm.mods.tabbychat.settings.ServerSettings;
-import mnm.mods.tabbychat.util.Translation;
 import mnm.mods.util.Color;
 import mnm.mods.util.gui.BorderLayout;
 import mnm.mods.util.gui.GuiButton;
@@ -21,6 +22,7 @@ import mnm.mods.util.gui.VerticalLayout;
 import mnm.mods.util.gui.config.SettingPanel;
 import mnm.mods.util.gui.events.ActionPerformedEvent;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.util.ChatComponentTranslation;
 
 public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
 
@@ -40,7 +42,7 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
     public GuiSettingsChannel(Channel channel) {
         this.channel = channel;
         this.setLayout(new BorderLayout());
-        this.setDisplayString(Translation.CHANNEL_TITLE.toString());
+        this.setDisplayString(CHANNEL_TITLE.toString());
         this.setBackColor(Color.getColor(0, 15, 100, 65));
 
     }
@@ -77,31 +79,30 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
         this.panel.clearComponents();
         if (channel == null) {
             if (channels.getContentPanel().getComponentCount() > 0) {
-                this.panel.addComponent(new GuiLabel(Translation.CHANNEL_SELECT.toString()), new int[] { 1, pos });
+                this.panel.addComponent(new GuiLabel(new ChatComponentTranslation(CHANNEL_SELECT)), new int[] { 1, pos });
             } else {
-                this.panel.addComponent(new GuiLabel(Translation.CHANNEL_NONE.toString()), new int[] { 1, pos });
+                this.panel.addComponent(new GuiLabel(new ChatComponentTranslation(CHANNEL_NONE)), new int[] { 1, pos });
             }
             return;
         }
         this.panel.addComponent(
-                new GuiLabel(Translation.CHANNEL_LABEL.translate(channel.getName())),
+                new GuiLabel(new ChatComponentTranslation(CHANNEL_LABEL, channel.getName())),
                 new int[] { 1, pos });
 
         pos += 3;
-        this.panel.addComponent(new GuiLabel(Translation.CHANNEL_ALIAS.toString()),
-                new int[] { 1, pos });
+        this.panel.addComponent(new GuiLabel(new ChatComponentTranslation(CHANNEL_ALIAS)), new int[] { 1, pos });
         this.panel.addComponent(alias = new GuiText(), new int[] { 3, pos, 4, 1 });
         alias.setValue(channel.getAlias());
 
         pos += 2;
-        this.panel.addComponent(new GuiLabel(Translation.CHANNEL_PREFIX.toString()), new int[] { 1, pos });
+        this.panel.addComponent(new GuiLabel(new ChatComponentTranslation(CHANNEL_PREFIX)), new int[] { 1, pos });
         this.panel.addComponent(prefix = new GuiText(), new int[] { 3, pos, 4, 1 });
         prefix.setValue(channel.getPrefix());
 
         pos += 2;
         this.panel.addComponent(hidePrefix = new GuiCheckbox(), new int[] { 1, pos });
         hidePrefix.setValue(channel.isPrefixHidden());
-        this.panel.addComponent(new GuiLabel(Translation.CHANNEL_HIDE_PREFIX.toString()), new int[] { 2, pos });
+        this.panel.addComponent(new GuiLabel(new ChatComponentTranslation(CHANNEL_HIDE_PREFIX)), new int[] { 2, pos });
 
         GuiButton accept = new GuiButton(I18n.format("gui.done"));
         accept.getBus().register(new Object() {
@@ -112,7 +113,7 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
         });
         this.panel.addComponent(accept, new int[] { 2, 15, 4, 2 });
 
-        GuiButton forget = new GuiButton(Translation.CHANNEL_FORGET.toString());
+        GuiButton forget = new GuiButton(CHANNEL_FORGET.toString());
         forget.getBus().register(new Object() {
             @Subscribe
             public void oohShinyObject(ActionPerformedEvent event) {

@@ -160,7 +160,7 @@ public class TabbyChat extends TabbyAPI implements InternalAPI {
         final Function<EntityPlayer, String> names = new Function<EntityPlayer, String>() {
             @Override
             public String apply(EntityPlayer player) {
-                return Pattern.quote(player.getCommandSenderName());
+                return Pattern.quote(player.getName());
             }
         };
         addonManager.setFilterVariable("onlineplayer", new FilterVariable() {

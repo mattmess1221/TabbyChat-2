@@ -107,7 +107,7 @@ public class TextBox extends ChatGui implements ChatInput<GuiComponent, GuiText>
         int yPos = 2;
         int pos = 0;
         for (IChatComponent line : getFormattedLines()) {
-            ffr.drawChat(line, 1, yPos, false);
+            ffr.drawChat(line, 1, yPos, getForeColor(), false);
             int xPos = 1;
             for (Character c : line.getUnformattedText().toCharArray()) {
                 int width = fr.getCharWidth(c);

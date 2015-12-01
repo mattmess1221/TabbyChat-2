@@ -2,7 +2,7 @@ package mnm.mods.tabbychat.util;
 
 import java.util.regex.Pattern;
 
-import mnm.mods.util.Translatable;
+import net.minecraft.client.resources.I18n;
 
 public enum ChannelPatterns {
 
@@ -13,10 +13,10 @@ public enum ChannelPatterns {
     ANGLESPARENS(Translation.DELIMS_ANGLES_PARENS, "^<\\(%s\\) ?[\\w\\d]{3,30}>"),
     ANGLESBRACKETS(Translation.DELIMS_ANGLES_BRAKETS, "^<\\[%s\\](?: )?[\\w\\d]{3,30}>");
 
-    private final Translatable translation;
+    private final String translation;
     private final Pattern pattern;
 
-    private ChannelPatterns(Translatable title, String pattern) {
+    private ChannelPatterns(String title, String pattern) {
         this.translation = title;
         this.pattern = Pattern.compile(String.format(pattern, "([\\p{L}0-9_]{1,16})"));
     }
@@ -27,6 +27,6 @@ public enum ChannelPatterns {
 
     @Override
     public String toString() {
-        return translation.toString();
+        return I18n.format(translation);
     }
 }
