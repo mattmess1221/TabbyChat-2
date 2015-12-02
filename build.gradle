@@ -8,32 +8,28 @@ buildscript {
 	}
 	dependencies.classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
 }
-apply plugin: 'net.minecraftforge.gradle.tweaker-client'
-
 ext {
 	utils = rootProject.project(':MnM-Utils')
 	api = rootProject.project(':api')
 	forge = rootProject.project(':forge')
-	macros = rootProject.project(':macros')
-
-	rev = '0.31'
-
+	compat = rootProject.project(':compat')
 }
-def buildServer = System.env.BUILD_ID != null
+apply plugin: 'net.minecraftforge.gradle.tweaker-client'
+version = '2.0-SNAPSHOT'
+// version = '2.0'
+
+apply from: utils.file('gradle/minecraft.gradle')
+version += "-b$gitRevision"
 
 group = 'mnm.mods'
 archivesBaseName = 'TabbyChat'
-version = "2.0-mc${minecraft.version}-beta-SNAPSHOT.${System.env.BUILD_ID}"
-if (buildServer) version += ".${System.env.GIT_COMMIT?.substring(0,6)}"
-// version = '2.0.0-beta3.1'
 
-apply from: utils.file('gradle/minecraft.gradle')
 
-minecraft{
+minecraft {
 	// Replace the version string
 	replace(
 		"@VERSION@": project.version,
-		"@REVISION@": project.rev,
+		"@REVISION@": project.gitRevision,
 		"@MCVERSION@": project.minecraft.version
 	)
 	tweakClass = 'com.mumfrey.liteloader.launch.LiteLoaderTweaker'
@@ -58,38 +54,40 @@ dependencies {
 	testCompile 'junit:junit:4.12'
 }
 sourceJar {
-	from {[api,forge]*.sourceSets.main.allSource}
+	from {[api,forge,compat]*.sourceSets.main.allSource}
 }
-task jarSrg(type:Jar) {
+jar {
 	classifier "srg"
 
-	from sourceSets.main.output
 	from api.sourceSets.main.output
-	from forge.sourceSets.main.output
+	from {forge.sourceSets.main.output}
+	from {compat.sourceSets.main.output}
 }
 task releaseJar(type:Jar) {
 	extension 'litemod'
+	appendix "mc$minecraft.version"
 
 	from sourceSets.main.output
 	from api.sourceSets.main.output
-	from forge.sourceSets.main.output
+	from {forge.sourceSets.main.output}
+	from {compat.sourceSets.main.output}
 
 	from(configurations.compile.collect {it.isDirectory() ? it : zipTree(it)}) {
 		exclude 'META-INF/***'
 	}
 }
-artifacts.archives jarSrg, releaseJar
+artifacts.archives releaseJar
 
 reobf {
 	releaseJar {}
-	jarSrg {
+	jar {
 		useSrgSrg()
 	}
 }
 
 afterEvaluate {
 	evaluationDependsOnChildren()
-	if (buildServer) {
+	if (System.env.BUILD_ID != null) {
 		// disable extra artifacts on build server
 		allprojects {
 			tasks.withType(Jar).findAll {
@@ -99,6 +97,6 @@ afterEvaluate {
 		// also disable reobf tasks
 		[utils.reobf.jarSrg,reobf.jarSrg]*.task*.enabled = false
 		// find jars and move their destination dir to /build/libs of root project
-		[utils,macros].each {it.jar.destinationDir file('build/libs')}
+		utils.jar.destinationDir file('build/libs')
 	}
 }

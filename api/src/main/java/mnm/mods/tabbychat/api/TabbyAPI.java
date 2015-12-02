@@ -23,15 +23,6 @@ public abstract class TabbyAPI {
     }
 
     /**
-     * Used to easily cast this to another object.
-     * @return (T) this
-     */
-    @SuppressWarnings("unchecked")
-    public <T> T cast() {
-        return (T) this;
-    }
-
-    /**
      * Retrieve TabbyChat's version data. Version data contains the readable
      * version string and comparable double.
      * 

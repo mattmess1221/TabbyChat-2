@@ -2,4 +2,4 @@ rootProject.name = 'TabbyChat-2'
 include 'MnM-Utils', 'api', 'forge'
 
 // compat stuff
-include ':macros'
+include ':compat'

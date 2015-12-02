@@ -3,10 +3,15 @@ package mnm.mods.tabbychat.liteloader;
 import java.io.File;
 import java.net.SocketAddress;
 
+import org.apache.logging.log4j.LogManager;
+
 import com.mojang.realmsclient.dto.RealmsServer;
 import com.mumfrey.liteloader.JoinGameListener;
+import com.mumfrey.liteloader.core.LiteLoader;
 
 import mnm.mods.tabbychat.TabbyChat;
+import mnm.mods.tabbychat.api.internal.Compat;
+import mnm.mods.tabbychat.api.listener.TabbyListener;
 import mnm.mods.tabbychat.util.TabbyRef;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.network.NetHandlerPlayClient;
@@ -31,6 +36,7 @@ public class LiteModTabbyChat implements JoinGameListener {
     public void init(File configPath) {
         this.tc = new TabbyChat(configPath);
         tc.init();
+        addCompatibility("mnm.mods.tabbychat.compat.Macros");
     }
 
     @Override
@@ -41,6 +47,21 @@ public class LiteModTabbyChat implements JoinGameListener {
             addr = play.getNetworkManager().getRemoteAddress();
         }
         tc.onJoin(addr);
+    }
+
+    private void addCompatibility(String classname) {
+        try {
+            Class<?> cl = Class.forName(classname);
+
+            if (LiteLoader.getInstance().isModActive(cl.getAnnotation(Compat.class).value())) {
+                LogManager.getLogger().info(cl.getSimpleName() + " detected. Adding compatibilities.");
+                TabbyListener o = (TabbyListener) cl.newInstance();
+
+                tc.getAddonManager().registerListener(o);
+            }
+        } catch (Throwable e) {
+            LogManager.getLogger().warn("Unable to add compatibility. Did something change?", e);
+        }
     }
 
     @Override

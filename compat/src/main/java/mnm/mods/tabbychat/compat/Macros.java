@@ -1,7 +1,8 @@
-package mnm.mods.tabbychat.compat.macros;
+package mnm.mods.tabbychat.compat;
 
 import com.mumfrey.liteloader.transformers.event.EventInfo;
 
+import mnm.mods.tabbychat.api.internal.Compat;
 import mnm.mods.tabbychat.api.listener.ChatInputListener;
 import mnm.mods.tabbychat.api.listener.ChatScreenListener;
 import mnm.mods.tabbychat.api.listener.ChatScreenRenderer;
@@ -11,7 +12,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiScreen;
 
-public class MacrosCompat implements ChatScreenListener, ChatScreenRenderer, ChatInputListener {
+@Compat("macros")
+public class Macros implements ChatScreenListener, ChatScreenRenderer, ChatInputListener {
 
     @Override
     public void onRender(int mouseX, int mouseY, float parTick) {
