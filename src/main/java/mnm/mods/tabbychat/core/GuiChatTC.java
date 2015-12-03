@@ -234,6 +234,8 @@ public class GuiChatTC extends GuiChat {
         if (StringUtils.isEmpty(msg)) {
             return null;
         }
+        // get rid of spaces
+        msg = msg.trim().replaceAll("  +", " ");
         int len = 100 - prefix.length();
         if (!hidden && msg.startsWith(prefix)) {
             msg = msg.substring(prefix.length()).trim();
