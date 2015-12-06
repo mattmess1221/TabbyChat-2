@@ -11,6 +11,7 @@ import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.util.Color;
 import mnm.mods.util.gui.GuiButton;
 import mnm.mods.util.gui.events.GuiMouseEvent;
+import mnm.mods.util.gui.events.GuiMouseEvent.MouseEvent;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 
@@ -25,22 +26,21 @@ public class ChatTab extends GuiButton {
 
     @Subscribe
     public void tryCommitSudoku(GuiMouseEvent event) {
-        if (event.event == GuiMouseEvent.CLICKED) {
-            ChatTab comp = (ChatTab) event.component;
-            if (event.button == 0) {
+        if (event.getEvent() == MouseEvent.CLICK) {
+            if (event.getButton() == 0) {
                 if (GuiScreen.isShiftKeyDown()) {
                     // Remove channel
-                    TabbyChat.getInstance().getChat().removeChannel(comp.getChannel());
+                    TabbyChat.getInstance().getChat().removeChannel(this.getChannel());
                 } else {
                     // Enable channel, disable others
-                    TabbyChat.getInstance().getChat().setActiveChannel(comp.getChannel());
+                    TabbyChat.getInstance().getChat().setActiveChannel(this.getChannel());
                 }
-            } else if (event.button == 1) {
+            } else if (event.getButton() == 1) {
                 // Open channel options
-                comp.getChannel().openSettings();
-            } else if (event.button == 2) {
+                this.getChannel().openSettings();
+            } else if (event.getButton() == 2) {
                 // middle click
-                TabbyChat.getInstance().getChat().removeChannel(comp.getChannel());
+                TabbyChat.getInstance().getChat().removeChannel(this.getChannel());
             }
         }
     }

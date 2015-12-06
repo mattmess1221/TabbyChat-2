@@ -2,20 +2,20 @@ package mnm.mods.tabbychat.extra;
 
 import java.util.Map;
 
-import mnm.mods.tabbychat.TabbyChat;
-import mnm.mods.tabbychat.api.Channel;
-import mnm.mods.tabbychat.api.listener.ChannelListener;
-import mnm.mods.tabbychat.api.listener.events.MessageAddedToChannelEvent;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.collect.Maps;
+import com.google.common.eventbus.Subscribe;
 
-public class ChatAddonAntiSpam implements ChannelListener {
+import mnm.mods.tabbychat.TabbyChat;
+import mnm.mods.tabbychat.api.Channel;
+import mnm.mods.tabbychat.api.events.MessageAddedToChannelEvent;
+
+public class ChatAddonAntiSpam {
 
     private Map<Channel, Counter> messageMap = Maps.newHashMap();
 
-    @Override
+    @Subscribe
     public void onMessageAdded(MessageAddedToChannelEvent event) {
 
         boolean enabled = TabbyChat.getInstance().settings.general.antiSpam.get();

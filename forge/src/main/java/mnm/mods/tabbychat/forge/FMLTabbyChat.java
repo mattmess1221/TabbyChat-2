@@ -2,10 +2,11 @@ package mnm.mods.tabbychat.forge;
 
 import org.apache.logging.log4j.LogManager;
 
+import com.google.common.eventbus.EventBus;
+
 import mnm.mods.tabbychat.api.TabbyAPI;
 import mnm.mods.tabbychat.api.internal.Compat;
 import mnm.mods.tabbychat.api.internal.InternalAPI;
-import mnm.mods.tabbychat.api.listener.TabbyListener;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -28,14 +29,13 @@ public class FMLTabbyChat {
     }
 
     @SuppressWarnings("unused")
-    private void addCompatibility(String classname) {
+    private void addCompatibility(String classname, EventBus bus) {
         try {
             Class<?> cl = Class.forName(classname);
             if (Loader.isModLoaded(cl.getAnnotation(Compat.class).value())) {
                 LogManager.getLogger().info(cl.getSimpleName() + " detected. Adding compatibilities.");
-                TabbyListener o = (TabbyListener) cl.newInstance();
 
-                TabbyAPI.getAPI().getAddonManager().registerListener(o);
+                bus.register(cl.newInstance());
             }
         } catch (Throwable e) {
             LogManager.getLogger().warn("Unable to add compatibility. Did something change?", e);

@@ -104,7 +104,7 @@ public class GuiSettingsScreen extends ComponentScreen {
                 button.getBus().register(new Object() {
                     @Subscribe
                     public void switchToThisPanel(GuiEvent event) {
-                        selectSetting(((SettingsButton) event.component).getSettings());
+                        selectSetting(((SettingsButton) event.getComponent()).getSettings());
                     }
                 });
                 settingsList.addComponent(button);

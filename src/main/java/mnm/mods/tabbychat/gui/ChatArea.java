@@ -22,6 +22,7 @@ import mnm.mods.tabbychat.util.ChatTextUtils;
 import mnm.mods.util.Color;
 import mnm.mods.util.gui.GuiComponent;
 import mnm.mods.util.gui.events.GuiMouseEvent;
+import mnm.mods.util.gui.events.GuiMouseEvent.MouseEvent;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiUtilRenderComponents;
@@ -31,7 +32,7 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.MathHelper;
 
-public class ChatArea extends GuiComponent implements Supplier<List<Message>>, ReceivedChat<GuiComponent> {
+public class ChatArea extends GuiComponent implements Supplier<List<Message>>, ReceivedChat {
 
     private Supplier<List<Message>> supplier = Suppliers.memoizeWithExpiration(this, 50, TimeUnit.MILLISECONDS);
     private int scrollPos = 0;
@@ -42,9 +43,9 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, R
 
     @Subscribe
     public void superScrollingAction(GuiMouseEvent event) {
-        if (event.event == GuiMouseEvent.SCROLLED) {
+        if (event.getEvent() == MouseEvent.SCROLL) {
             // Scrolling
-            int scroll = event.scroll;
+            int scroll = event.getScroll();
             // One tick = 120
             if (scroll != 0) {
                 if (scroll > 1) {
@@ -230,10 +231,5 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, R
             }
         }
         return null;
-    }
-
-    @Override
-    public GuiComponent asGui() {
-        return this;
     }
 }

@@ -1,7 +1,6 @@
 package mnm.mods.tabbychat.gui;
 
 import java.awt.Dimension;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.List;
 
@@ -17,7 +16,6 @@ import mnm.mods.tabbychat.core.GuiChatTC;
 import mnm.mods.tabbychat.extra.spell.Spellcheck;
 import mnm.mods.tabbychat.extra.spell.SpellingFormatter;
 import mnm.mods.util.Color;
-import mnm.mods.util.gui.GuiComponent;
 import mnm.mods.util.gui.GuiText;
 import mnm.mods.util.gui.events.GuiMouseEvent;
 import mnm.mods.util.text.FancyFontRenderer;
@@ -27,7 +25,7 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IChatComponent;
 
-public class TextBox extends ChatGui implements ChatInput<GuiComponent, GuiText> {
+public class TextBox extends ChatGui implements ChatInput {
 
     private FontRenderer fr = mc.fontRendererObj;
     // Dummy textField
@@ -191,20 +189,23 @@ public class TextBox extends ChatGui implements ChatInput<GuiComponent, GuiText>
         return new Dimension(100, (fr.FONT_HEIGHT + 2) * getWrappedLines().size());
     }
 
-    @Override
     public GuiText getTextField() {
         return textField;
     }
 
     @Override
-    public GuiComponent asGui() {
-        return this;
+    public String getText() {
+        return textField.getValue();
+    }
+
+    @Override
+    public void setText(String text) {
+        textField.setValue(text);
     }
 
     @Subscribe
     public void onMouseClick(GuiMouseEvent event) {
-        Point p = event.position;
-        mouseClicked(p.x, p.y, event.button);
+        mouseClicked(event.getMouseX(), event.getMouseY(), event.getButton());
     }
 
     private void mouseClicked(int x, int y, int mouseButton) {
@@ -227,5 +228,4 @@ public class TextBox extends ChatGui implements ChatInput<GuiComponent, GuiText>
             textField.getTextField().setCursorPosition(index + 1);
         }
     }
-
 }

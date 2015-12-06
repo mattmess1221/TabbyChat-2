@@ -15,9 +15,17 @@ import com.google.common.collect.ObjectArrays;
 import mnm.mods.tabbychat.ChatManager;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
+import mnm.mods.tabbychat.api.events.ChatMessageEvent.ChatSentEvent;
+import mnm.mods.tabbychat.api.events.ChatScreenEvents.ChatCloseEvent;
+import mnm.mods.tabbychat.api.events.ChatScreenEvents.ChatInitEvent;
+import mnm.mods.tabbychat.api.events.ChatScreenEvents.ChatUpdateEvent;
 import mnm.mods.tabbychat.util.BackgroundChatThread;
 import mnm.mods.util.gui.GuiComponent;
 import mnm.mods.util.gui.GuiText;
+import mnm.mods.util.gui.events.GuiKeyboardEvent;
+import mnm.mods.util.gui.events.GuiMouseEvent;
+import mnm.mods.util.gui.events.GuiMouseEvent.MouseEvent;
+import mnm.mods.util.gui.events.GuiRenderEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.renderer.GlStateManager;
@@ -32,7 +40,7 @@ public class GuiChatTC extends GuiChat {
 
     protected Minecraft mc = Minecraft.getMinecraft();
     protected List<GuiComponent> componentList = Lists.newArrayList();
-    protected GuiNewChatTC chatGui = GuiNewChatTC.getInstance();
+    protected GuiNewChatTC chatGui;
     protected ChatManager chat;
 
     private String defaultInputFieldText;
@@ -73,7 +81,7 @@ public class GuiChatTC extends GuiChat {
     @Override
     public void initGui() {
         Keyboard.enableRepeatEvents(true);
-        tc.getEventManager().onInitScreen(this);
+        chatGui.getBus().post(new ChatInitEvent(this));
         if (!opened) {
             textBox.setValue("");
             textBox.getTextField().writeText(defaultInputFieldText);
@@ -87,12 +95,12 @@ public class GuiChatTC extends GuiChat {
         for (GuiComponent comp : this.componentList) {
             comp.updateComponent();
         }
-        tc.getEventManager().onUpdateScreen();
+        chatGui.getBus().post(new ChatUpdateEvent(this));
     }
 
     @Override
     public void onGuiClosed() {
-        tc.getEventManager().onCloseScreen();
+        chatGui.getBus().post(new ChatCloseEvent(this));
         this.sentHistoryBuffer = "";
         for (GuiComponent comp : this.componentList) {
             comp.onClosed();
@@ -118,9 +126,7 @@ public class GuiChatTC extends GuiChat {
 
     @Override
     protected void keyTyped(char key, int code) {
-        if (tc.getEventManager().onKeyTyped(key, code)) {
-            return;
-        }
+        chatGui.getBus().post(new GuiKeyboardEvent(null, code, key, 0L));
         this.waitingOnAutocomplete = false;
         if (code != Keyboard.KEY_TAB) {
             this.playerNamesFound = false;
@@ -176,9 +182,7 @@ public class GuiChatTC extends GuiChat {
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-        if (tc.getEventManager().onMouseClicked(mouseX, mouseY, mouseButton)) {
-            return;
-        }
+        chatGui.getBus().post(new GuiMouseEvent(null, MouseEvent.CLICK, mouseX, mouseY, mouseButton));
         if (mouseButton == 0) {
             IChatComponent chat = chatGui.getChatComponent(Mouse.getX(), Mouse.getY());
             this.handleComponentClick(chat);
@@ -198,7 +202,7 @@ public class GuiChatTC extends GuiChat {
                 GlStateManager.popMatrix();
             }
         }
-        tc.getEventManager().onRenderChatScreen(mouseX, mouseY, tick);
+        chatGui.getBus().post(new GuiRenderEvent(null, mouseX, mouseY, tick));
 
         IChatComponent chat = chatGui.getChatComponent(Mouse.getX(), Mouse.getY());
         this.handleComponentHover(chat, mouseX, mouseY);
@@ -208,7 +212,7 @@ public class GuiChatTC extends GuiChat {
     protected void sendCurrentChat(boolean keepOpen) {
         String message = this.textBox.getValue().trim();
         // send the outbound message to ChatSent modules.
-        message = tc.getEventManager().onChatSent(message);
+        chatGui.getBus().post(new ChatSentEvent(message));
         Channel active = chat.getActiveChannel();
         String[] toSend = processSends(message, active.getPrefix(), active.isPrefixHidden());
         // time to wait between each send
@@ -380,4 +384,5 @@ public class GuiChatTC extends GuiChat {
             textBox.getTextField().writeText(text);
         }
     }
+
 }

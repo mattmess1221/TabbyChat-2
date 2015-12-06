@@ -5,7 +5,7 @@ import net.minecraft.util.IChatComponent;
 /**
  * This contains all the previously received chat from the current server.
  */
-public interface ReceivedChat<Gui> extends IGui<Gui> {
+public interface ReceivedChat extends IGui {
 
     /**
      * Gets the {@link IChatComponent} that is at the specified coordinates.

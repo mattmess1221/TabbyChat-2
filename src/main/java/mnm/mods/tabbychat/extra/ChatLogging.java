@@ -10,19 +10,20 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
 
-import mnm.mods.tabbychat.TabbyChat;
-import mnm.mods.tabbychat.api.listener.ChatRecievedListener;
-import mnm.mods.tabbychat.api.listener.events.ChatMessageEvent.ChatRecievedEvent;
-import mnm.mods.util.IPUtils;
-import net.minecraft.client.Minecraft;
-
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.compress.compressors.gzip.GzipUtils;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
-public class ChatLogging implements ChatRecievedListener {
+import com.google.common.eventbus.Subscribe;
+
+import mnm.mods.tabbychat.TabbyChat;
+import mnm.mods.tabbychat.api.events.ChatMessageEvent.ChatReceivedEvent;
+import mnm.mods.util.IPUtils;
+import net.minecraft.client.Minecraft;
+
+public class ChatLogging {
 
     private static final SimpleDateFormat LOG_NAME_FORMAT = new SimpleDateFormat("yyyy'-'MM'-'dd");
     private static final SimpleDateFormat LOG_FORMAT = new SimpleDateFormat("'['HH':'mm':'ss'] '");
@@ -38,8 +39,8 @@ public class ChatLogging implements ChatRecievedListener {
         compressLogs();
     }
 
-    @Override
-    public void onChatRecieved(ChatRecievedEvent message) {
+    @Subscribe
+    public void onChatRecieved(ChatReceivedEvent message) {
         if (TabbyChat.getInstance().settings.general.logChat.get()) {
 
             checkLog();

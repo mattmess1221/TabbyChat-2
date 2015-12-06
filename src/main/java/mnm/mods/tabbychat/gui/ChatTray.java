@@ -15,7 +15,7 @@ import mnm.mods.util.gui.GuiComponent;
 import mnm.mods.util.gui.GuiPanel;
 import net.minecraft.client.gui.Gui;
 
-public class ChatTray extends GuiPanel implements IGui<GuiPanel> {
+public class ChatTray extends GuiPanel implements IGui {
 
     private GuiPanel tabList = new GuiPanel(new FlowLayout());
     private ChatPanel controls = new ChatPanel(new FlowLayout());
@@ -79,10 +79,5 @@ public class ChatTray extends GuiPanel implements IGui<GuiPanel> {
 
     public boolean isHandleHovered() {
         return handle.isHovered();
-    }
-
-    @Override
-    public GuiPanel asGui() {
-        return this;
     }
 }

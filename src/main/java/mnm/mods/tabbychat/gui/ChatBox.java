@@ -9,17 +9,17 @@ import com.google.common.eventbus.Subscribe;
 
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.gui.ChatGui;
-import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.settings.ColorSettings;
 import mnm.mods.tabbychat.settings.TabbySettings;
 import mnm.mods.util.gui.BorderLayout;
 import mnm.mods.util.gui.GuiPanel;
 import mnm.mods.util.gui.events.GuiMouseEvent;
+import mnm.mods.util.gui.events.GuiMouseEvent.MouseEvent;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.MathHelper;
 
-public class ChatBox extends GuiPanel implements ChatGui<GuiPanel> {
+public class ChatBox extends GuiPanel implements ChatGui {
 
     private static ColorSettings colors = TabbyChat.getInstance().settings.colors;
 
@@ -46,10 +46,10 @@ public class ChatBox extends GuiPanel implements ChatGui<GuiPanel> {
         Rectangle bounds = getBounds();
 
         // divide by scale because smaller scales make the point movement larger
-        int x = bounds.x + event.position.x;
-        int y = bounds.y + event.position.y;
+        int x = bounds.x + event.getMouseX();
+        int y = bounds.y + event.getMouseY();
 
-        if (event.event == GuiMouseEvent.PRESSED) {
+        if (event.getEvent() == MouseEvent.PRESS) {
             if (Mouse.isButtonDown(0) && (pnlTray.isHovered() || (GuiScreen.isAltKeyDown() && isHovered()))) {
                 dragMode = !pnlTray.isHandleHovered();
                 drag = new Point(x, y);
@@ -58,7 +58,7 @@ public class ChatBox extends GuiPanel implements ChatGui<GuiPanel> {
         }
 
         if (drag != null) {
-            if (event.event == GuiMouseEvent.RELEASED) {
+            if (event.getEvent() == MouseEvent.RELEASE) {
                 // save bounds
                 TabbySettings sett = TabbyChat.getInstance().settings;
                 sett.advanced.chatX.set(bounds.x);
@@ -68,7 +68,7 @@ public class ChatBox extends GuiPanel implements ChatGui<GuiPanel> {
 
                 drag = null;
                 tempbox = null;
-            } else if (event.event == GuiMouseEvent.DRAGGED) {
+            } else if (event.getEvent() == MouseEvent.DRAG) {
                 if (!dragMode) {
                     bounds.setSize(tempbox.width + x - drag.x, tempbox.height - y + drag.y);
                     bounds.setLocation(tempbox.x, tempbox.y + y - drag.y);
@@ -91,7 +91,7 @@ public class ChatBox extends GuiPanel implements ChatGui<GuiPanel> {
 
     @Override
     public float getScale() {
-        return GuiNewChatTC.getInstance().getChatScale();
+        return TabbyChat.getInstance().getChatGui().getChatScale();
     }
 
     @Override
@@ -153,11 +153,6 @@ public class ChatBox extends GuiPanel implements ChatGui<GuiPanel> {
     @Override
     public TextBox getChatInput() {
         return this.txtChatInput;
-    }
-
-    @Override
-    public GuiPanel asGui() {
-        return this;
     }
 
 }

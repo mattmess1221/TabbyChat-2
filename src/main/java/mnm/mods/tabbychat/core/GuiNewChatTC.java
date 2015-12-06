@@ -4,34 +4,37 @@ import java.util.List;
 
 import org.lwjgl.input.Mouse;
 
+import com.google.common.eventbus.EventBus;
+
 import mnm.mods.tabbychat.ChatChannel;
 import mnm.mods.tabbychat.ChatManager;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.ChannelStatus;
-import mnm.mods.tabbychat.api.listener.events.ChatMessageEvent.ChatRecievedEvent;
+import mnm.mods.tabbychat.api.events.ChatMessageEvent.ChatReceivedEvent;
+import mnm.mods.tabbychat.api.gui.ChatScreen;
 import mnm.mods.tabbychat.gui.ChatBox;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiNewChat;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.IChatComponent;
 
-public class GuiNewChatTC extends GuiNewChat {
+public class GuiNewChatTC extends GuiNewChat implements ChatScreen {
 
     private static GuiNewChatTC instance;
-    private ChatManager chat;
 
     private TabbyChat tc = TabbyChat.getInstance();
+    private ChatManager chat;
+    private EventBus bus;
 
-    private GuiNewChatTC(Minecraft minecraft) {
+    public GuiNewChatTC(Minecraft minecraft, ChatManager manager) {
         super(minecraft);
-        chat = new ChatManager();
+        chat = manager;
+        bus = new EventBus();
+        instance = this;
     }
 
-    public static GuiNewChatTC getInstance() {
-        if (instance == null) {
-            instance = new GuiNewChatTC(Minecraft.getMinecraft());
-        }
+    public static GuiNewChat getInstance() {
         return instance;
     }
 
@@ -50,7 +53,8 @@ public class GuiNewChatTC extends GuiNewChat {
         GlStateManager.popMatrix(); // ignore what GuiIngame did.
         // translate to above the itemrenderer
         // before push so it effects the tab list too.
-        GlStateManager.translate(0, 0, 150.5);
+        GlStateManager.translate(0, 0, 151);
+        GlStateManager.enableAlpha();
         GlStateManager.pushMatrix();
 
         // Scale it accordingly
@@ -70,9 +74,9 @@ public class GuiNewChatTC extends GuiNewChat {
     @Override
     public synchronized void printChatMessageWithOptionalDeletion(IChatComponent ichat, int id) {
         // chat listeners
-        ChatRecievedEvent chatevent = new ChatRecievedEvent(ichat, id);
+        ChatReceivedEvent chatevent = new ChatReceivedEvent(ichat, id);
         chatevent.channels.add(ChatChannel.DEFAULT_CHANNEL);
-        tc.getEventManager().onChatRecieved(chatevent);
+        tc.getBus().post(chatevent);
         // chat filters
         ichat = chatevent.chat;
         id = chatevent.id;
@@ -127,4 +131,10 @@ public class GuiNewChatTC extends GuiNewChat {
     public int getChatWidth() {
         return chat.getChatBox().getChatArea().getBounds().width;
     }
+
+    @Override
+    public EventBus getBus() {
+        return bus;
+    }
+
 }

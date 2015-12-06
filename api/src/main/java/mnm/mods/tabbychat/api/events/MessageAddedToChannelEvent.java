@@ -1,9 +1,9 @@
-package mnm.mods.tabbychat.api.listener.events;
+package mnm.mods.tabbychat.api.events;
 
 import mnm.mods.tabbychat.api.Channel;
 import net.minecraft.util.IChatComponent;
 
-public class MessageAddedToChannelEvent extends Event {
+public class MessageAddedToChannelEvent {
 
     public IChatComponent chat;
     public int id;

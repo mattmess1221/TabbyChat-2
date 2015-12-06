@@ -13,7 +13,7 @@ import com.google.common.collect.Lists;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.ChannelStatus;
 import mnm.mods.tabbychat.api.Message;
-import mnm.mods.tabbychat.api.listener.events.MessageAddedToChannelEvent;
+import mnm.mods.tabbychat.api.events.MessageAddedToChannelEvent;
 import mnm.mods.tabbychat.gui.ChatArea;
 import mnm.mods.tabbychat.gui.settings.GuiSettingsChannel;
 import mnm.mods.tabbychat.util.ChannelPatterns;
@@ -169,7 +169,7 @@ public class ChatChannel implements Channel {
             removeMessages(id);
         }
         MessageAddedToChannelEvent event = new MessageAddedToChannelEvent(chat.createCopy(), id, this);
-        TabbyChat.getInstance().getEventManager().onMessageAddedToChannel(event);
+        TabbyChat.getInstance().getBus().post(event);
         if (event.chat == null) {
             return;
         }

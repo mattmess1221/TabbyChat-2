@@ -1,4 +1,4 @@
-package mnm.mods.tabbychat.api.listener.events;
+package mnm.mods.tabbychat.api.events;
 
 import java.util.Set;
 
@@ -7,7 +7,7 @@ import net.minecraft.util.IChatComponent;
 
 import com.google.common.collect.Sets;
 
-public abstract class ChatMessageEvent extends Event {
+public abstract class ChatMessageEvent {
 
     /**
      * Used to listen to and change outbound chat.
@@ -25,13 +25,13 @@ public abstract class ChatMessageEvent extends Event {
      * Used to listen to chat and modify it. Can also select which channels it
      * goes to.
      */
-    public static class ChatRecievedEvent extends ChatMessageEvent {
+    public static class ChatReceivedEvent extends ChatMessageEvent {
 
         public IChatComponent chat;
         public int id;
         public Set<Channel> channels = Sets.newHashSet();
 
-        public ChatRecievedEvent(IChatComponent chat, int id) {
+        public ChatReceivedEvent(IChatComponent chat, int id) {
             this.chat = chat;
             this.id = id;
         }

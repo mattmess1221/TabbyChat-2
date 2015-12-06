@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
+import com.google.common.eventbus.EventBus;
 import com.mumfrey.liteloader.core.LiteLoader;
 
 import mnm.mods.tabbychat.api.AddonManager;
@@ -27,12 +28,10 @@ import mnm.mods.tabbychat.core.GuiChatTC;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.core.GuiSleepTC;
 import mnm.mods.tabbychat.core.api.TabbyAddonManager;
-import mnm.mods.tabbychat.core.api.TabbyEvents;
 import mnm.mods.tabbychat.extra.ChatAddonAntiSpam;
 import mnm.mods.tabbychat.extra.ChatLogging;
 import mnm.mods.tabbychat.extra.filters.FilterAddon;
 import mnm.mods.tabbychat.extra.spell.Spellcheck;
-import mnm.mods.tabbychat.gui.ChatBox;
 import mnm.mods.tabbychat.gui.settings.GuiSettingsScreen;
 import mnm.mods.tabbychat.liteloader.TabbyPrivateFields;
 import mnm.mods.tabbychat.settings.ServerSettings;
@@ -55,8 +54,10 @@ public class TabbyChat extends TabbyAPI implements InternalAPI {
 
     private static final Logger LOGGER = LogManager.getLogger(TabbyRef.MOD_ID);
 
+    private ChatManager chatManager;
+    private GuiNewChatTC chatGui;
     private AddonManager addonManager;
-    private TabbyEvents events;
+    private EventBus bus;
     private Spellcheck spellcheck;
     private ForgeProxy forgeProxy = new DefaultForgeProxy();
 
@@ -87,7 +88,11 @@ public class TabbyChat extends TabbyAPI implements InternalAPI {
 
     @Override
     public Chat getChat() {
-        return GuiNewChatTC.getInstance().getChatManager();
+        return chatManager;
+    }
+
+    public GuiNewChatTC getChatGui() {
+        return chatGui;
     }
 
     @Override
@@ -104,17 +109,17 @@ public class TabbyChat extends TabbyAPI implements InternalAPI {
         this.forgeProxy = forgeProxy;
     }
 
-    public TabbyEvents getEventManager() {
-        return this.events;
+    @Override
+    public EventBus getBus() {
+        return bus;
     }
+
+//    public TabbyEvents getEventManager() {
+//        return this.events;
+//    }
 
     public Spellcheck getSpellcheck() {
         return spellcheck;
-    }
-
-    @Override
-    public ChatBox getGui() {
-        return GuiNewChatTC.getInstance().getChatManager().getChatBox();
     }
 
     public void openSettings(SettingPanel<?> setting) {
@@ -132,8 +137,10 @@ public class TabbyChat extends TabbyAPI implements InternalAPI {
 
     public void init() {
 
+        chatManager = new ChatManager();
+        chatGui = new GuiNewChatTC(Minecraft.getMinecraft(), chatManager);
         addonManager = new TabbyAddonManager();
-        events = new TabbyEvents(addonManager);
+
         spellcheck = new Spellcheck(getDataFolder());
 
         // Keeps the current language updated whenever it is changed.
@@ -144,9 +151,9 @@ public class TabbyChat extends TabbyAPI implements InternalAPI {
         settings = new TabbySettings();
         LiteLoader.getInstance().registerExposable(settings, null);
 
-        addonManager.registerListener(new ChatAddonAntiSpam());
-        addonManager.registerListener(new FilterAddon());
-        addonManager.registerListener(new ChatLogging(new File("logs/chat")));
+        bus.register(new ChatAddonAntiSpam());
+        bus.register(new FilterAddon());
+        bus.register(new ChatLogging(new File("logs/chat")));
 
         addFilterVariables();
         MnmUtils.getInstance().setChatProxy(new TabbedChatProxy());
@@ -209,15 +216,15 @@ public class TabbyChat extends TabbyAPI implements InternalAPI {
         // load chat
         File conf = serverSettings.getFile().getParentFile();
         try {
-            GuiNewChatTC.getInstance().getChatManager().loadFrom(conf);
+            chatManager.loadFrom(conf);
         } catch (Exception e) {
             LOGGER.warn("Unable to load chat data.", e);
         }
     }
 
-    private static void hookIntoChat(GuiIngame guiIngame) throws Exception {
+    private void hookIntoChat(GuiIngame guiIngame) throws Exception {
         if (!GuiNewChatTC.class.isAssignableFrom(guiIngame.getChatGUI().getClass())) {
-            TabbyPrivateFields.persistantChatGUI.setFinal(guiIngame, GuiNewChatTC.getInstance());
+            TabbyPrivateFields.persistantChatGUI.setFinal(guiIngame, chatGui);
             LOGGER.info("Successfully hooked into chat.");
         }
     }

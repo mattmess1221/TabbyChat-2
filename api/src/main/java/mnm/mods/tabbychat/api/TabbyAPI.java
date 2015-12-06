@@ -1,6 +1,6 @@
 package mnm.mods.tabbychat.api;
 
-import mnm.mods.tabbychat.api.gui.ChatGui;
+import com.google.common.eventbus.EventBus;
 
 /**
  * Represents the main object for TabbyChat
@@ -25,7 +25,7 @@ public abstract class TabbyAPI {
     /**
      * Retrieve TabbyChat's version data. Version data contains the readable
      * version string and comparable double.
-     * 
+     *
      * @return The version data
      */
     public abstract VersionData getVersionData();
@@ -45,10 +45,11 @@ public abstract class TabbyAPI {
     public abstract AddonManager getAddonManager();
 
     /**
-     * Gets the gui part of the chat box.
+     * Gets the common event bus used for chat messages. For gui related things,
+     * use the Component's.
      *
-     * @return The chat box
+     * @return The event bus
      */
-    public abstract ChatGui<?> getGui();
+    public abstract EventBus getBus();
 
 }

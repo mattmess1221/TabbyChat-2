@@ -33,9 +33,9 @@ import mnm.mods.tabbychat.api.ChannelStatus;
 import mnm.mods.tabbychat.api.Chat;
 import mnm.mods.tabbychat.api.Message;
 import mnm.mods.tabbychat.gui.ChatBox;
+import mnm.mods.tabbychat.gui.TextBox;
 import mnm.mods.tabbychat.settings.AdvancedSettings;
 import mnm.mods.util.config.ValueMap;
-import mnm.mods.util.gui.GuiText;
 import mnm.mods.util.text.ChatBuilder;
 import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
@@ -161,15 +161,15 @@ public class ChatManager implements Chat {
 
     @Override
     public void setActiveChannel(Channel channel) {
-        GuiText text = chatbox.getChatInput().getTextField();
+        TextBox text = chatbox.getChatInput();
         if (active.isPrefixHidden()
-                ? text.getValue().trim().isEmpty()
-                : text.getValue().trim().equals(active.getPrefix())) {
+                ? text.getText().trim().isEmpty()
+                : text.getText().trim().equals(active.getPrefix())) {
             // text is the prefix, so remove it.
-            text.setValue("");
+            text.setText("");
             if (!channel.isPrefixHidden() && !channel.getPrefix().isEmpty()) {
                 // target has prefix visible
-                text.setValue(channel.getPrefix() + " ");
+                text.setText(channel.getPrefix() + " ");
             }
         }
         // reset scroll

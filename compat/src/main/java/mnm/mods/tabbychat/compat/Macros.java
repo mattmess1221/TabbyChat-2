@@ -1,59 +1,48 @@
 package mnm.mods.tabbychat.compat;
 
+import com.google.common.eventbus.Subscribe;
 import com.mumfrey.liteloader.transformers.event.EventInfo;
 
 import mnm.mods.tabbychat.api.internal.Compat;
-import mnm.mods.tabbychat.api.listener.ChatInputListener;
-import mnm.mods.tabbychat.api.listener.ChatScreenListener;
-import mnm.mods.tabbychat.api.listener.ChatScreenRenderer;
-import mnm.mods.tabbychat.api.listener.events.ChatInitEvent;
+import mnm.mods.util.gui.events.GuiMouseEvent;
+import mnm.mods.util.gui.events.GuiRenderEvent;
+import mnm.mods.util.gui.events.GuiUpdateEvent;
 import net.eq2online.macros.core.MacroModCore;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiScreen;
 
 @Compat("macros")
-public class Macros implements ChatScreenListener, ChatScreenRenderer, ChatInputListener {
+public class Macros {
 
-    @Override
-    public void onRender(int mouseX, int mouseY, float parTick) {
+    @Subscribe
+    public void onRender(GuiRenderEvent render) {
         GuiChat chat = getChat();
         if (chat == null)
             return;
         // draw buttons
-        MacroModCore.preChatGuiEvent(mkEvnt("", chat, false), mouseX, mouseY, parTick);
+        MacroModCore.preChatGuiEvent(mkEvnt("", chat, false), render.getMouseX(), render.getMouseY(), render.getTicks());
         // draw wrench (gui editor)
-        MacroModCore.onChatGuiEvent(mkEvnt("", chat, false), mouseX, mouseY, parTick);
+        MacroModCore.onChatGuiEvent(mkEvnt("", chat, false), render.getMouseX(), render.getMouseY(), render.getTicks());
     }
 
-    @Override
-    public void onInitScreen(ChatInitEvent chatInitEvent) {}
-
-    @Override
-    public boolean onMouseClicked(int mouseX, int mouseY, int button) {
+    @Subscribe
+    public void onMouseClicked(GuiMouseEvent mouse) {
         GuiChat chat = getChat();
         if (chat == null)
-            return false;
+            return;
         EventInfo<GuiChat> event = mkEvnt("", chat, true);
-        MacroModCore.onChatGuiEvent(event, mouseX, mouseY, button);
-        return event.isCancelled();
+        MacroModCore.onChatGuiEvent(event, mouse.getMouseX(), mouse.getMouseY(), mouse.getButton());
+        // TODO make cancellable
     }
 
-    @Override
-    public boolean onKeyTyped(char ch, int code) {
-        return false;
-    }
-
-    @Override
-    public void onUpdateScreen() {
+    @Subscribe
+    public void onUpdateScreen(GuiUpdateEvent event) {
         GuiChat chat = getChat();
         if (chat == null)
             return;
         MacroModCore.onChatGuiEvent(mkEvnt("", chat, false));
     }
-
-    @Override
-    public void onCloseScreen() {}
 
     private static <T> EventInfo<T> mkEvnt(String s, T t, boolean c) {
         return new EventInfo<T>(s, t, c);

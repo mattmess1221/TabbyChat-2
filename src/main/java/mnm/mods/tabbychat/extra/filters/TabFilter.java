@@ -2,8 +2,8 @@ package mnm.mods.tabbychat.extra.filters;
 
 import java.util.regex.Matcher;
 
+import mnm.mods.tabbychat.api.events.ChatMessageEvent.ChatReceivedEvent;
 import mnm.mods.tabbychat.api.filters.FilterEvent;
-import mnm.mods.tabbychat.api.listener.events.ChatMessageEvent.ChatRecievedEvent;
 
 public abstract class TabFilter extends ChatFilter {
 
@@ -12,7 +12,7 @@ public abstract class TabFilter extends ChatFilter {
     }
 
     @Override
-    public void applyFilter(ChatRecievedEvent message) {
+    public void applyFilter(ChatReceivedEvent message) {
         String chat = message.chat.getUnformattedText();
         Matcher matcher = getPattern().matcher(chat);
         if (matcher.find()) {
