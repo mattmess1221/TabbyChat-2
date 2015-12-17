@@ -24,5 +24,7 @@ public class AdvancedSettings extends SettingObject<AdvancedSettings> {
     public SettingValue<Integer> msgDelay = value(500);
     @Setting
     public SettingValue<Boolean> hideTag = value(false);
+    @Setting
+    public SettingValue<Boolean> keepChatOpen = value(false);
 
 }
