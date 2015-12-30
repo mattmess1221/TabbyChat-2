@@ -146,7 +146,7 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, G
     }
 
     private int getLineOpacity(Message line) {
-        int opacity = new Color(getForeColor()).getAlpha();
+        int opacity = TabbyChat.getInstance().settings.colors.chatTextColor.getValue().getAlpha();
         double age = mc.ingameGUI.getUpdateCounter() - line.getCounter();
         if (!mc.ingameGUI.getChatGUI().getChatOpen()) {
             double opacPerc = age / TabbyChat.getInstance().settings.advanced.fadeTime.getValue();
