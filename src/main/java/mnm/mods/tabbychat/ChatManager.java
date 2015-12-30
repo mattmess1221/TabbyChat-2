@@ -269,9 +269,6 @@ public class ChatManager implements Chat {
     }
 
     public synchronized void saveTo(File dir) throws IOException {
-        // remove buggy show_entity hovers
-        removeShowEntity(ChatChannel.DEFAULT_CHANNEL.getMessages());
-
         JsonObject root = new JsonObject();
         root.add("default", gson.toJsonTree(ChatChannel.DEFAULT_CHANNEL.getMessages()));
 
@@ -282,7 +279,6 @@ public class ChatManager implements Chat {
 
         for (Channel c : messages.keySet()) {
             JsonObject obj = c.isPm() ? pms : chans;
-            removeShowEntity(c.getMessages());
             obj.add(c.getName(), gson.toJsonTree(c.getMessages()));
         }
 
@@ -316,12 +312,6 @@ public class ChatManager implements Chat {
         } finally {
             IOUtils.closeQuietly(fout);
             IOUtils.closeQuietly(gzout);
-        }
-    }
-
-    private void removeShowEntity(List<Message> messages) {
-        for (Message msg : messages) {
-            ((ChatMessage) msg).fixSerialization();
         }
     }
 
