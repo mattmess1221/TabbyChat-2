@@ -11,4 +11,6 @@ public class ColorSettings extends SettingObject<ColorSettings> {
     public SettingValue<Color> chatBoxColor = value(new Color(0, 0, 0, 127));
     @Setting
     public SettingValue<Color> chatTextColor = value(new Color(255, 255, 255, 255));
+    @Setting
+    public SettingValue<Color> chatBorderColor = value(new Color(0, 0, 0, 191));
 }

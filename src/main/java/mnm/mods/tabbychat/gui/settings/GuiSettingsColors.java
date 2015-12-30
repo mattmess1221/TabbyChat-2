@@ -20,10 +20,12 @@ public class GuiSettingsColors extends SettingPanel<TabbySettings> {
     @Override
     public void initGUI() {
         this.addComponent(new GuiSettingColor(getSettings().colors.chatBoxColor), new int[] { 2, 1, 4, 4 });
-        this.addComponent(new GuiSettingColor(getSettings().colors.chatTextColor), new int[] { 2, 6, 4, 4 });
+        this.addComponent(new GuiSettingColor(getSettings().colors.chatBorderColor), new int[] { 2, 6, 4, 4 });
+        this.addComponent(new GuiSettingColor(getSettings().colors.chatTextColor), new int[] { 2, 11, 4, 4 });
 
         this.addComponent(new GuiLabel(Translation.COLOR_CHATBOX.translate()), new int[] { 8, 3 });
-        this.addComponent(new GuiLabel(Translation.COLOR_CHAT_TEXT.translate()), new int[] { 8, 8 });
+        this.addComponent(new GuiLabel(Translation.COLOR_CHAT_BORDER.translate()), new int[] { 8, 8 });
+        this.addComponent(new GuiLabel(Translation.COLOR_CHAT_TEXT.translate()), new int[] { 8, 13 });
     }
 
     @Override

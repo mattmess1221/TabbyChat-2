@@ -81,7 +81,7 @@ public class ChatBox extends GuiPanel implements GuiMouseAdapter, ChatGui<GuiPan
 
     @Override
     public int getForeColor() {
-        return colors.chatTextColor.getValue().getColor();
+        return colors.chatBorderColor.getValue().getColor();
     }
 
     @Override

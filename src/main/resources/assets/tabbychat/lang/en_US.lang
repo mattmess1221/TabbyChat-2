@@ -71,4 +71,5 @@ tabbychat.channel.none=No channels discovered
 tabbychat.channel.forget=Forget
 
 tabbychat.settings.colors.chatbox=Chatbox color
+tabbychat.settings.colors.chatborder=Chat border color
 tabbychat.settings.colors.chattext=Chat text color

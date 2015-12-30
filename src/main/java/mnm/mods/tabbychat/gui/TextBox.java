@@ -55,7 +55,7 @@ public class TextBox extends ChatGui implements ChatInput<GuiComponent, GuiText>
         Gui.drawRect(0, 0, getBounds().width, getBounds().height, getBackColor());
         drawText();
         drawCursor();
-        drawBorders(0, 0, getBounds().width, getBounds().height);
+        drawBorders(0, 0, getBounds().width, getBounds().height, getForeColor());
         super.drawComponent(mouseX, mouseY);
 
     }
@@ -110,7 +110,8 @@ public class TextBox extends ChatGui implements ChatInput<GuiComponent, GuiText>
         int yPos = 2;
         int pos = 0;
         for (IChatComponent line : getFormattedLines()) {
-            ffr.drawChat(line, 1, yPos, false);
+            Color color = TabbyChat.getInstance().settings.colors.chatTextColor.getValue();
+            ffr.drawChat(line, 1, yPos, color.getColor(), false);
             int xPos = 1;
             for (Character c : line.getUnformattedText().toCharArray()) {
                 int width = fr.getCharWidth(c);

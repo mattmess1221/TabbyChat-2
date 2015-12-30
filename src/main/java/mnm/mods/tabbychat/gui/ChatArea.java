@@ -75,11 +75,11 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, G
             int height = visible.size() * mc.fontRendererObj.FONT_HEIGHT;
             if (GuiNewChatTC.getInstance().getChatOpen()) {
                 Gui.drawRect(0, 0, getBounds().width, getBounds().height, getBackColor());
-                drawBorders(0, 0, getBounds().width, getBounds().height);
+                drawBorders(0, 0, getBounds().width, getBounds().height, getForeColor());
             } else if (height != 0) {
                 int y = getBounds().height - height;
                 Gui.drawRect(getBounds().x, y - 1, getBounds().width, y + height, getBackColor());
-                drawBorders(getBounds().x, y - 1, getBounds().width, y + height);
+                drawBorders(getBounds().x, y - 1, getBounds().width, y + height, getForeColor());
             }
             int xPos = getBounds().x + 1;
             int yPos = getBounds().height;
@@ -94,7 +94,8 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, G
     private void drawChatLine(Message line, int xPos, int yPos) {
         GlStateManager.enableBlend();
         String text = line.getMessageWithOptionalTimestamp().getFormattedText();
-        mc.fontRendererObj.drawStringWithShadow(text, xPos, yPos, (getForeColor()) + (getLineOpacity(line) << 24));
+        Color color = TabbyChat.getInstance().settings.colors.chatTextColor.getValue();
+        mc.fontRendererObj.drawStringWithShadow(text, xPos, yPos, (color.getColor()) + (getLineOpacity(line) << 24));
         GlStateManager.disableAlpha();
         GlStateManager.disableBlend();
     }

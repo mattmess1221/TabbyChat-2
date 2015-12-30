@@ -84,6 +84,7 @@ public enum Translation implements Translatable {
 
     // color stuff
     COLOR_CHATBOX("tabbychat.settings.colors.chatbox"),
+    COLOR_CHAT_BORDER("tabbychat.settings.colors.chatborder"),
     COLOR_CHAT_TEXT("tabbychat.settings.colors.chattext");
 
     private final String translation;
