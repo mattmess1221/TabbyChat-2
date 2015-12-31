@@ -18,6 +18,7 @@ import mnm.mods.tabbychat.api.TabbyAPI;
 import mnm.mods.tabbychat.api.gui.ReceivedChat;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.util.ChatTextUtils;
+import mnm.mods.tabbychat.util.ChatVisibility;
 import mnm.mods.util.Color;
 import mnm.mods.util.gui.GuiComponent;
 import mnm.mods.util.gui.events.GuiMouseAdapter;
@@ -73,10 +74,14 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, G
         if (mc.gameSettings.chatVisibility != EnumChatVisibility.HIDDEN) {
             List<Message> visible = getVisibleChat();
             int height = visible.size() * mc.fontRendererObj.FONT_HEIGHT;
+            ChatVisibility vis = TabbyChat.getInstance().settings.advanced.visibility.getValue();
             if (GuiNewChatTC.getInstance().getChatOpen()) {
                 Gui.drawRect(0, 0, getBounds().width, getBounds().height, getBackColor());
                 this.drawVerticalLine(-1, -1, getBounds().height, getForeColor());
                 this.drawVerticalLine(getBounds().width, -1, getBounds().height, getForeColor());
+            } else if (vis == ChatVisibility.ALWAYS) {
+                Gui.drawRect(0, 0, getBounds().width, getBounds().height, getBackColor());
+                drawBorders(0, 0, getBounds().width, getBounds().height, getForeColor());
             } else if (height != 0) {
                 int y = getBounds().height - height;
                 Gui.drawRect(getBounds().x, y - 1, getBounds().width, y + height, getBackColor());
@@ -147,6 +152,11 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, G
     }
 
     private int getLineOpacity(Message line) {
+        ChatVisibility vis = TabbyChat.getInstance().settings.advanced.visibility.getValue();
+        if (vis == ChatVisibility.ALWAYS)
+            return 4;
+        if (vis == ChatVisibility.HIDDEN && !GuiNewChatTC.getInstance().getChatOpen())
+            return 0;
         int opacity = TabbyChat.getInstance().settings.colors.chatTextColor.getValue().getAlpha();
         double age = mc.ingameGUI.getUpdateCounter() - line.getCounter();
         if (!mc.ingameGUI.getChatGUI().getChatOpen()) {

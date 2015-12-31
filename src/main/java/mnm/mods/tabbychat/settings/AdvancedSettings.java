@@ -1,5 +1,6 @@
 package mnm.mods.tabbychat.settings;
 
+import mnm.mods.tabbychat.util.ChatVisibility;
 import mnm.mods.util.config.Setting;
 import mnm.mods.util.config.SettingObject;
 import mnm.mods.util.config.SettingValue;
@@ -26,5 +27,7 @@ public class AdvancedSettings extends SettingObject<AdvancedSettings> {
     public SettingValue<Boolean> hideTag = value(false);
     @Setting
     public SettingValue<Boolean> keepChatOpen = value(false);
+    @Setting
+    public SettingValue<ChatVisibility> visibility = value(ChatVisibility.NORMAL);
 
 }

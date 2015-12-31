@@ -6,6 +6,7 @@ import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.ChannelStatus;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
+import mnm.mods.tabbychat.util.ChatVisibility;
 import mnm.mods.util.Color;
 import mnm.mods.util.gui.GuiButton;
 import mnm.mods.util.gui.events.GuiMouseAdapter;
@@ -47,7 +48,8 @@ public class ChatTab extends GuiButton implements GuiMouseAdapter {
     @Override
     public void drawComponent(int mouseX, int mouseY) {
         if (GuiNewChatTC.getInstance().getChatOpen()
-                || (channel.getStatus() != null && channel.getStatus().compareTo(ChannelStatus.PINGED) > 0)) {
+                || (channel.getStatus() != null && channel.getStatus().compareTo(ChannelStatus.PINGED) > 0)
+                || TabbyChat.getInstance().settings.advanced.visibility.getValue() == ChatVisibility.ALWAYS) {
             Gui.drawRect(0, 0, getBounds().width, getBounds().height, getBackColor());
             int txtX = this.getBounds().width / 2;
             int txtY = this.getBounds().height / 2 - this.mc.fontRendererObj.FONT_HEIGHT / 2;
@@ -86,7 +88,7 @@ public class ChatTab extends GuiButton implements GuiMouseAdapter {
 
     @Override
     public int getBackColor() {
-        int back = 0x010101;
+        int back = super.getBackColor();
         if (channel.getStatus() != null) {
             switch (channel.getStatus()) {
             case ACTIVE:

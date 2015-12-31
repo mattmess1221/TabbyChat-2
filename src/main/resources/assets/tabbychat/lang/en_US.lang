@@ -73,3 +73,10 @@ tabbychat.channel.forget=Forget
 tabbychat.settings.colors.chatbox=Chatbox color
 tabbychat.settings.colors.chatborder=Chat border color
 tabbychat.settings.colors.chattext=Chat text color
+
+tabbychat.settings.advanced.fadetime=Fade time (ticks)
+tabbychat.settings.advanced.chatdelay=Chat delay (ms)
+tabbychat.settings.advanced.chatvisibility=Chat visibility
+tabbychat.settings.advanced.hidedelims=Hide channel delimeters*
+
+tabbychat.settings.experimental=* Experimental and may not work right.

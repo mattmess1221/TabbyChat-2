@@ -85,8 +85,15 @@ public enum Translation implements Translatable {
     // color stuff
     COLOR_CHATBOX("tabbychat.settings.colors.chatbox"),
     COLOR_CHAT_BORDER("tabbychat.settings.colors.chatborder"),
-    COLOR_CHAT_TEXT("tabbychat.settings.colors.chattext");
+    COLOR_CHAT_TEXT("tabbychat.settings.colors.chattext"),
 
+    ADVANCED_FADE_TIME("tabbychat.settings.advanced.fadetime"),
+    ADVANCED_CHAT_DELAY("tabbychat.settings.advanced.chatdelay"),
+    ADVANCED_CHAT_VISIBILITY("tabbychat.settings.advanced.chatvisibility"),
+    ADVANCED_HIDE_DELIMS("tabbychat.settings.advanced.hidedelims"),
+    EXPERIMENTAL("tabbychat.settings.experimental"),
+
+    ;
     private final String translation;
 
     private Translation(String trans) {
