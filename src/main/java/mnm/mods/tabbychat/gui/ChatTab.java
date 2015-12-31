@@ -46,19 +46,24 @@ public class ChatTab extends GuiButton implements GuiMouseAdapter {
 
     @Override
     public void drawComponent(int mouseX, int mouseY) {
-        if (GuiNewChatTC.getInstance().getChatOpen() || channel.getStatus() == ChannelStatus.PINGED
-                || (channel.getStatus() == ChannelStatus.UNREAD && channel.isPm())) {
+        if (GuiNewChatTC.getInstance().getChatOpen()
+                || (channel.getStatus() != null && channel.getStatus().compareTo(ChannelStatus.PINGED) > 0)) {
             Gui.drawRect(0, 0, getBounds().width, getBounds().height, getBackColor());
-            this.drawCenteredString(mc.fontRendererObj, this.getText(), this.getBounds().width / 2,
-                    (this.getBounds().height - 8) / 2, getForeColor());
-            this.drawBorders(0, 0, getBounds().width - 1, getBounds().height, getForeColor());
+            int txtX = this.getBounds().width / 2;
+            int txtY = this.getBounds().height / 2 - this.mc.fontRendererObj.FONT_HEIGHT / 2;
+            this.drawCenteredString(mc.fontRendererObj, this.getText(), txtX, txtY, getForeColor());
+            // this.drawVerticalLine(0, -1, getBounds().height,
+            // super.getForeColor());
+            this.drawVerticalLine(getBounds().width, -1, getBounds().height, super.getForeColor());
         }
     }
 
+    public Channel getChannel() {
+        return this.channel;
+    }
+
     @Override
-    public void updateComponent() {
-        int fore = 0xfff0f0f0;
-        int back = 0x010101;
+    public String getText() {
         String alias = channel.getAlias();
 
         if (channel.isPm()) {
@@ -68,51 +73,76 @@ public class ChatTab extends GuiButton implements GuiMouseAdapter {
             switch (channel.getStatus()) {
             case ACTIVE:
                 alias = "[" + alias + "]";
-                // Cyan
-                back = 0xff5b7c7b;
-                fore = 0xffa5e7e4;
                 break;
             case UNREAD:
                 alias = "<" + alias + ">";
+                break;
+            default:
+                break;
+            }
+        }
+        return alias;
+    }
+
+    @Override
+    public int getBackColor() {
+        int back = 0x010101;
+        if (channel.getStatus() != null) {
+            switch (channel.getStatus()) {
+            case ACTIVE:
+                // Cyan
+                back = 0xff5b7c7b;
+                break;
+            case UNREAD:
                 // Red
                 back = 0xff720000;
+                break;
+            case PINGED:
+                // green
+                back = 0xff00aa00;
+                break;
+            case JOINED:
+                // aqua
+                back = 0xff00aaaa;
+                break;
+            }
+        }
+        if (isHovered()) {
+            // Yellow
+            back = 0xff7f8052;
+        }
+        return applyTransparency(back);
+    }
+
+    @Override
+    public int getForeColor() {
+        int fore = 0xfff0f0f0;
+        if (channel.getStatus() != null) {
+            switch (channel.getStatus()) {
+            case ACTIVE:
+                // Cyan
+                fore = 0xffa5e7e4;
+                break;
+            case UNREAD:
+                // Red
                 fore = 0xffff0000;
                 break;
             case PINGED:
                 // green
                 fore = 0xff55ff55;
-                back = 0xff00aa00;
                 break;
             case JOINED:
                 // aqua
                 fore = 0xff55ffff;
-                back = 0xff00aaaa;
                 break;
             }
         }
-        setText(alias);
 
         if (isHovered()) {
             // Yellow
             fore = 0xffffffa0;
-            back = 0xff7f8052;
         }
-        setForeColor(fore);
-        setBackColor(back);
-    }
-
-    public Channel getChannel() {
-        return this.channel;
-    }
-
-    @Override
-    public void setBackColor(int backColor) {
-        super.setBackColor(applyTransparency(backColor));
-    }
-
-    @Override
-    public void setForeColor(int foreColor) {
-        super.setForeColor(applyTransparency(foreColor));
+        return applyTransparency(fore);
     }
 
     private int applyTransparency(int color) {
@@ -128,6 +158,6 @@ public class ChatTab extends GuiButton implements GuiMouseAdapter {
         if (channel.isPm()) {
             alias = "@" + alias;
         }
-        return new Dimension(mc.fontRendererObj.getStringWidth("<" + alias + ">") + 8, 15);
+        return new Dimension(mc.fontRendererObj.getStringWidth("<" + alias + ">") + 8, 14);
     }
 }

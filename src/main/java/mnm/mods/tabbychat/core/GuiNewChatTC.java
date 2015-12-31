@@ -86,12 +86,11 @@ public class GuiNewChatTC extends GuiNewChat {
                     && !tc.serverSettings.general.useDefaultTab.getValue()) {
                 chatevent.channels.remove(ChatChannel.DEFAULT_CHANNEL);
             }
-            boolean msg = !chatevent.channels.contains(this.chat.getActiveChannel());
             for (Channel channel : chatevent.channels) {
                 channel.addMessage(ichat, id);
-                if (msg) {
-                    channel.setStatus(ChannelStatus.UNREAD);
-                }
+                if (channel == ChatChannel.DEFAULT_CHANNEL && chatevent.channels.size() > 1)
+                    continue;
+                channel.setStatus(ChannelStatus.UNREAD);
             }
             TabbyChat.getLogger().info("[CHAT] " + ichat.getUnformattedText());
             this.chat.getChatBox().updateComponent();

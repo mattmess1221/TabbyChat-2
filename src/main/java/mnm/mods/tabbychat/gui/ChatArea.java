@@ -75,7 +75,8 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, G
             int height = visible.size() * mc.fontRendererObj.FONT_HEIGHT;
             if (GuiNewChatTC.getInstance().getChatOpen()) {
                 Gui.drawRect(0, 0, getBounds().width, getBounds().height, getBackColor());
-                drawBorders(0, 0, getBounds().width, getBounds().height, getForeColor());
+                this.drawVerticalLine(-1, -1, getBounds().height, getForeColor());
+                this.drawVerticalLine(getBounds().width, -1, getBounds().height, getForeColor());
             } else if (height != 0) {
                 int y = getBounds().height - height;
                 Gui.drawRect(getBounds().x, y - 1, getBounds().width, y + height, getBackColor());
