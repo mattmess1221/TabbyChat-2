@@ -7,16 +7,16 @@ ext {
 	forge = rootProject.project(':forge')
 	macros = rootProject.project(':macros')
 
-	rev = '0.31'
+	rev = '15'
 
 }
 def buildServer = System.env.BUILD_ID != null
 
 group = 'mnm.mods'
 archivesBaseName = 'TabbyChat'
-version = "2.0-beta-SNAPSHOT.${System.env.BUILD_ID}"
-if (buildServer) version += ".${System.env.GIT_COMMIT?.substring(0,6)}"
-// version = '2.0.0-beta3.1'
+//version = "2.0-beta-SNAPSHOT.${System.env.BUILD_ID}"
+//if (buildServer) version += ".${System.env.GIT_COMMIT?.substring(0,6)}"
+version = '2.0'
 
 apply from: utils.file('gradle/minecraft.gradle')
 
@@ -56,6 +56,7 @@ jar {
 		exclude 'META-INF/***'
 	}
 	from {forge.sourceSets.main.output}
+	appendix "mc$minecraft.version"
 }
 sourceJar {
 	from {[api,forge]*.sourceSets.main.allSource}
