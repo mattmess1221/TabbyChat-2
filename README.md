@@ -10,9 +10,9 @@ Discussion for this mod can happen on the Minecraft Forum [Thread](http://www.mi
 TabbyChat 2 also has an API, on top of which some optional addons will be built. Check the TabbyChat-API directory for the source references.
 
 ##Installing
-**Requires Forge and/or LiteLoader**
+**Requires LiteLoader**
 
-After installing Forge and/or LiteLoader, copy both TabbyChat-2 and MnM-Utils into your `.minecraft/mods` folder. Don't extract them.
+After installing LiteLoader, copy both TabbyChat-2 and MnM-Utils into your `.minecraft/mods` folder. Don't extract them.
 
 **Note:** At the time of writing, there is a bug in LiteLoader that effects Linux and Mac users. This bug causes TabbyChat's dependency check to fail. To circumvent this, instead of placing TabbyChat in the `mods` folder, put it the `mods/{mcversion}` folder. I.E. `.minecraft/mods/1.8`.
 

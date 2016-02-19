@@ -65,6 +65,9 @@ public class LangDict {
     }
 
     public static LangDict fromLanguage(Language lang) {
-        return new LangDict(lang.getLanguageCode());
+        String code = "en_US";
+        if (lang != null)
+            code = lang.getLanguageCode();
+        return new LangDict(code);
     }
 }
