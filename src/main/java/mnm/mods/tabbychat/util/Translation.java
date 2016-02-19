@@ -81,7 +81,15 @@ public final class Translation {
 
     // color stuff
     public static final String COLOR_CHATBOX = "tabbychat.settings.colors.chatbox";
+    public static final String COLOR_CHAT_BORDER = "tabbychat.settings.colors.chatborder";
     public static final String COLOR_CHAT_TEXT = "tabbychat.settings.colors.chattext";
+
+    // advanced
+    public static final String ADVANCED_FADE_TIME = "tabbychat.settings.advanced.fadetime";
+    public static final String ADVANCED_CHAT_DELAY = "tabbychat.settings.advanced.chatdelay";
+    public static final String ADVANCED_CHAT_VISIBILITY = "tabbychat.settings.advanced.chatvisibility";
+    public static final String ADVANCED_HIDE_DELIMS = "tabbychat.settings.advanced.hidedelims";
+    public static final String EXPERIMENTAL = "tabbychat.settings.experimental";
 
     private Translation() {}
 }

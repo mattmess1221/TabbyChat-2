@@ -53,17 +53,17 @@ public class TextBox extends ChatGui implements ChatInput {
         Gui.drawRect(0, 0, getBounds().width, getBounds().height, getBackColor());
         drawText();
         drawCursor();
-        drawBorders(0, 0, getBounds().width, getBounds().height);
+        drawBorders(0, 0, getBounds().width, getBounds().height, getForeColor());
         super.drawComponent(mouseX, mouseY);
 
     }
 
     private void drawCursor() {
-        boolean cursorBlink = this.cursorCounter / 6 % 2 == 0;
+        boolean cursorBlink = this.cursorCounter / 6 % 3 != 0;
         if (cursorBlink) {
-            char marker;
+            final int HEIGHT = fr.FONT_HEIGHT + 2;
             int xPos = 0;
-            int yPos = 2;
+            int yPos = -2;
             int counter = -1;
             List<String> list = getWrappedLines();
             GuiTextField textField = this.textField.getTextField();
@@ -74,25 +74,28 @@ public class TextBox extends ChatGui implements ChatInput {
 
             // Count up to the target position.
             countLoop: for (String text : list) {
-                for (char c : text.concat(" ").toCharArray()) {
+                xPos = 0;
+                yPos += HEIGHT;
+                for (char c : text.toCharArray()) {
                     counter++;
+                    // should only happen with spaces
+                    while (c != ' ' && textField.getText().charAt(counter) == ' ') {
+                        counter++;// skip
+                    }
                     if (counter >= textField.getCursorPosition() + size) {
                         break countLoop;
                     }
                     xPos += fr.getCharWidth(c);
                 }
-                xPos = 0;
-                yPos += fr.FONT_HEIGHT + 2;
             }
 
             if (textField.getCursorPosition() + size < this.textField.getValue().length()) {
-                marker = '|';
+                drawVerticalLine(xPos, yPos - fr.FONT_HEIGHT, yPos, 0xffd0d0d0);
             } else {
-                marker = '_';
-                xPos += 1;
+                drawHorizontalLine(xPos + 1, xPos + 6, yPos, 0xffd0d0d0);
             }
-            fr.drawString(Character.toString(marker), xPos, yPos, 0xeeeeee);
         }
+
     }
 
     private void drawText() {
@@ -105,7 +108,8 @@ public class TextBox extends ChatGui implements ChatInput {
         int yPos = 2;
         int pos = 0;
         for (IChatComponent line : getFormattedLines()) {
-            ffr.drawChat(line, 1, yPos, getForeColor(), false);
+            Color color = TabbyChat.getInstance().settings.colors.chatTextColor.getValue();
+            ffr.drawChat(line, 1, yPos, color.getColor(), false);
             int xPos = 1;
             for (Character c : line.getUnformattedText().toCharArray()) {
                 int width = fr.getCharWidth(c);
@@ -137,11 +141,13 @@ public class TextBox extends ChatGui implements ChatInput {
         }
         // write the num of sends
         Channel active = TabbyAPI.getAPI().getChat().getActiveChannel();
-        String[] msg = GuiChatTC.processSends(textField.getText(), active.getPrefix(), active.isPrefixHidden());
+        String chat = textField.getText().trim().replaceAll("  +", " ");
+        String[] msg = GuiChatTC.processSends(chat, active.getPrefix(), active.isPrefixHidden());
+
         if (msg != null && msg.length > 0) {
             int size = msg.length;
             int color = 0x666666;
-            if (!textField.getText().endsWith(msg[size - 1])) {
+            if (!chat.endsWith(msg[size - 1])) {
                 // WARNING! Message will get cut off!
                 color = 0xff6666;
             }
@@ -162,6 +168,7 @@ public class TextBox extends ChatGui implements ChatInput {
 
         Color color = Color.of(getParent().getBackColor());
         Color bkg = Color.of(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() / 4 * 3);
+
         this.setBackColor(bkg.getColor());
     }
 

@@ -81,7 +81,7 @@ public class ChatBox extends GuiPanel implements ChatGui {
 
     @Override
     public int getForeColor() {
-        return colors.chatTextColor.get().getColor();
+        return colors.chatBorderColor.get().getColor();
     }
 
     @Override

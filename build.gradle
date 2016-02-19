@@ -13,17 +13,19 @@ ext {
 	api = rootProject.project(':api')
 	forge = rootProject.project(':forge')
 	compat = rootProject.project(':compat')
+
+	rev = '16'
+
 }
 apply plugin: 'net.minecraftforge.gradle.tweaker-client'
-version = '2.0-SNAPSHOT'
-// version = '2.0'
+version = '2.0.1-SNAPSHOT'
+// version = '2.0.1'
 
 apply from: utils.file('gradle/minecraft.gradle')
 version += "-b$gitRevision"
 
 group = 'mnm.mods'
 archivesBaseName = 'TabbyChat'
-
 
 minecraft {
 	// Replace the version string
@@ -33,6 +35,7 @@ minecraft {
 		"@MCVERSION@": project.minecraft.version
 	)
 	tweakClass = 'com.mumfrey.liteloader.launch.LiteLoaderTweaker'
+	clientJvmArgs += ['-Dmcpenv=true']
 }
 
 allprojects {
@@ -75,13 +78,23 @@ task releaseJar(type:Jar) {
 	from(configurations.compile.collect {it.isDirectory() ? it : zipTree(it)}) {
 		exclude 'META-INF/***'
 	}
+	from {forge.sourceSets.main.output}
+	appendix "mc$minecraft.version"
+}
+sourceJar {
+	from {[api,forge]*.sourceSets.main.allSource}
+}
+task jarSrg(type:Jar) {
+	dependsOn jar
+	classifier "srg"
+	from zipTree(jar.archivePath)
 }
 artifacts.archives releaseJar
 
 reobf {
 	releaseJar {}
 	jar {
-		useSrgSrg()
+		mappings = 'SEARGE'
 	}
 }
 

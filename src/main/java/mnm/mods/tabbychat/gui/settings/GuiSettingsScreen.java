@@ -34,6 +34,7 @@ public class GuiSettingsScreen extends ComponentScreen {
         registerSetting(GuiSettingsServer.class);
         registerSetting(GuiSettingsChannel.class);
         registerSetting(GuiSettingsColors.class);
+        registerSetting(GuiAdvancedSettings.class);
     }
 
     private List<SettingPanel<?>> panels = Lists.newArrayList();

@@ -1,7 +1,7 @@
 package mnm.mods.tabbychat.settings;
 
 import com.google.gson.annotations.Expose;
-
+import mnm.mods.tabbychat.util.ChatVisibility;
 import mnm.mods.util.config.Value;
 import mnm.mods.util.config.ValueObject;
 
@@ -25,5 +25,9 @@ public class AdvancedSettings extends ValueObject {
     public Value<Integer> msgDelay = value(500);
     @Expose
     public Value<Boolean> hideTag = value(false);
+    @Expose
+    public Value<Boolean> keepChatOpen = value(false);
+    @Expose
+    public Value<ChatVisibility> visibility = value(ChatVisibility.NORMAL);
 
 }

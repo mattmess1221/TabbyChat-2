@@ -135,7 +135,7 @@ public class GuiChatTC extends GuiChat {
         case Keyboard.KEY_RETURN:
         case Keyboard.KEY_NUMPADENTER:
             // send chat
-            sendCurrentChat(false);
+            sendCurrentChat(tc.settings.advanced.keepChatOpen.getValue());
             break;
         case Keyboard.KEY_TAB:
             // auto-complete
@@ -238,6 +238,8 @@ public class GuiChatTC extends GuiChat {
         if (StringUtils.isEmpty(msg)) {
             return null;
         }
+        // get rid of spaces
+        msg = msg.trim().replaceAll("  +", " ");
         int len = 100 - prefix.length();
         if (!hidden && msg.startsWith(prefix)) {
             msg = msg.substring(prefix.length()).trim();

@@ -3,20 +3,17 @@ package mnm.mods.tabbychat.gui;
 import java.awt.Dimension;
 
 import mnm.mods.util.gui.GuiComponent;
-import net.minecraft.client.gui.Gui;
 
 public class ChatHandle extends GuiComponent {
 
     public ChatHandle() {
         setSize(10, 10);
-        // setForeColor(-1);
     }
 
     @Override
     public void drawComponent(int mouseX, int mouseY) {
-        Gui.drawRect(4, 4, 10, 5, getForeColor());
-        Gui.drawRect(11, 4, 10, 11, getForeColor());
-        super.drawComponent(mouseX, mouseY);
+        this.drawHorizontalLine(3, getBounds().width - 4, 3, getForeColor());
+        this.drawVerticalLine(getBounds().width - 4, 3, getBounds().height - 3, getForeColor());
     }
 
     @Override
@@ -26,6 +23,6 @@ public class ChatHandle extends GuiComponent {
 
     @Override
     public Dimension getMinimumSize() {
-        return new Dimension(15, 15);
+        return new Dimension(12, 12);
     }
 }

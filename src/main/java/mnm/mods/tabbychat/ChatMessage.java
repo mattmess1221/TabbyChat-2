@@ -2,15 +2,12 @@ package mnm.mods.tabbychat;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
-import com.google.common.collect.Lists;
 import com.google.gson.annotations.Expose;
 
 import mnm.mods.tabbychat.api.Message;
 import mnm.mods.tabbychat.settings.GeneralSettings;
 import mnm.mods.tabbychat.util.TimeStamps;
-import mnm.mods.util.ReflectionHelper;
 import net.minecraft.client.gui.ChatLine;
 import net.minecraft.event.HoverEvent;
 import net.minecraft.event.HoverEvent.Action;
@@ -38,6 +35,7 @@ public class ChatMessage implements Message {
         if (isNew) {
             this.date = Calendar.getInstance().getTime();
         }
+        fixShowEntity();
     }
 
     public ChatMessage(ChatLine chatline) {
@@ -81,22 +79,16 @@ public class ChatMessage implements Message {
         return this.date;
     }
 
-    void fixSerialization() {
-        List<HoverEvent> list = Lists.newArrayList();
-        for (IChatComponent message : message) {
+    private void fixShowEntity() {
+        @SuppressWarnings("unchecked")
+        Iterable<IChatComponent> chat = message;
+        for (IChatComponent message : chat) {
+
             ChatStyle style = message.getChatStyle();
             HoverEvent hover = style.getChatHoverEvent();
-            if (list.contains(hover))
-                continue;
-            list.add(hover);
             if (hover != null && hover.getAction() == Action.SHOW_ENTITY) {
-                // serialization is bugged
-                try {
-                    String[] names = { "b", "field_150703_b", "value" };
-                    ReflectionHelper.setFieldValue(HoverEvent.class, hover, null, names);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                // show_entity serialization is bugged
+                style.setChatHoverEvent(null);
             }
         }
     }
