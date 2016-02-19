@@ -50,7 +50,7 @@ public class ChatTab extends GuiButton {
     public void drawComponent(int mouseX, int mouseY) {
         if (GuiNewChatTC.getInstance().getChatOpen()
                 || (channel.getStatus() != null && channel.getStatus().compareTo(ChannelStatus.PINGED) > 0)
-                || TabbyChat.getInstance().settings.advanced.visibility.getValue() == ChatVisibility.ALWAYS) {
+                || TabbyChat.getInstance().settings.advanced.visibility.get() == ChatVisibility.ALWAYS) {
             Gui.drawRect(0, 0, getBounds().width, getBounds().height, getBackColor());
             int txtX = this.getBounds().width / 2;
             int txtY = this.getBounds().height / 2 - this.mc.fontRendererObj.FONT_HEIGHT / 2;

@@ -108,7 +108,7 @@ public class TextBox extends ChatGui implements ChatInput {
         int yPos = 2;
         int pos = 0;
         for (IChatComponent line : getFormattedLines()) {
-            Color color = TabbyChat.getInstance().settings.colors.chatTextColor.getValue();
+            Color color = TabbyChat.getInstance().settings.colors.chatTextColor.get();
             ffr.drawChat(line, 1, yPos, color.getColor(), false);
             int xPos = 1;
             for (Character c : line.getUnformattedText().toCharArray()) {

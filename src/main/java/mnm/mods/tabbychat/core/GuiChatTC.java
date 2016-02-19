@@ -135,7 +135,7 @@ public class GuiChatTC extends GuiChat {
         case Keyboard.KEY_RETURN:
         case Keyboard.KEY_NUMPADENTER:
             // send chat
-            sendCurrentChat(tc.settings.advanced.keepChatOpen.getValue());
+            sendCurrentChat(tc.settings.advanced.keepChatOpen.get());
             break;
         case Keyboard.KEY_TAB:
             // auto-complete

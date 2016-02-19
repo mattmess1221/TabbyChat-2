@@ -3,10 +3,10 @@ package mnm.mods.tabbychat.compat;
 import com.google.common.eventbus.Subscribe;
 import com.mumfrey.liteloader.transformers.event.EventInfo;
 
+import mnm.mods.tabbychat.api.events.ChatScreenEvents.ChatUpdateEvent;
 import mnm.mods.tabbychat.api.internal.Compat;
 import mnm.mods.util.gui.events.GuiMouseEvent;
 import mnm.mods.util.gui.events.GuiRenderEvent;
-import mnm.mods.util.gui.events.GuiUpdateEvent;
 import net.eq2online.macros.core.MacroModCore;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
@@ -37,7 +37,7 @@ public class Macros {
     }
 
     @Subscribe
-    public void onUpdateScreen(GuiUpdateEvent event) {
+    public void onUpdateScreen(ChatUpdateEvent event) {
         GuiChat chat = getChat();
         if (chat == null)
             return;

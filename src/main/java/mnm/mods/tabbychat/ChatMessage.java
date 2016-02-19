@@ -80,9 +80,7 @@ public class ChatMessage implements Message {
     }
 
     private void fixShowEntity() {
-        @SuppressWarnings("unchecked")
-        Iterable<IChatComponent> chat = message;
-        for (IChatComponent message : chat) {
+        for (IChatComponent message : message) {
 
             ChatStyle style = message.getChatStyle();
             HoverEvent hover = style.getChatHoverEvent();

@@ -75,7 +75,7 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, R
         if (mc.gameSettings.chatVisibility != EnumChatVisibility.HIDDEN) {
             List<Message> visible = getVisibleChat();
             int height = visible.size() * mc.fontRendererObj.FONT_HEIGHT;
-            ChatVisibility vis = TabbyChat.getInstance().settings.advanced.visibility.getValue();
+            ChatVisibility vis = TabbyChat.getInstance().settings.advanced.visibility.get();
             if (GuiNewChatTC.getInstance().getChatOpen()) {
                 Gui.drawRect(0, 0, getBounds().width, getBounds().height, getBackColor());
                 this.drawVerticalLine(-1, -1, getBounds().height, getForeColor());
@@ -101,7 +101,7 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, R
     private void drawChatLine(Message line, int xPos, int yPos) {
         GlStateManager.enableBlend();
         String text = line.getMessageWithOptionalTimestamp().getFormattedText();
-        Color color = TabbyChat.getInstance().settings.colors.chatTextColor.getValue();
+        Color color = TabbyChat.getInstance().settings.colors.chatTextColor.get();
         mc.fontRendererObj.drawStringWithShadow(text, xPos, yPos, (color.getColor()) + (getLineOpacity(line) << 24));
         GlStateManager.disableAlpha();
         GlStateManager.disableBlend();
