@@ -162,7 +162,10 @@ public class GuiFilterEditor extends GuiPanel {
         filter.setPattern(txtPattern.getValue());
         FilterSettings sett = filter.getSettings();
         sett.getChannels().clear();
-        sett.getChannels().addAll(Splitter.on(",").splitToList(txtDestinations.getValue()));
+        sett.getChannels().addAll(Splitter.on(",")
+                .omitEmptyStrings()
+                .trimResults()
+                .splitToList(txtDestinations.getValue()));
         sett.setDestinationPm(chkPm.getValue());
         sett.setRemove(chkRemove.getValue());
 
