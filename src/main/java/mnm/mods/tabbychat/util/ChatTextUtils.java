@@ -17,7 +17,7 @@ public class ChatTextUtils {
 
     public static List<IChatComponent> split(IChatComponent chat, int width) {
         FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
-        return GuiUtilRenderComponents.func_178908_a(chat, width, fr, false, false);
+        return GuiUtilRenderComponents.splitText(chat, width, fr, false, false);
     }
 
     public static List<Message> split(List<Message> list, int width) {

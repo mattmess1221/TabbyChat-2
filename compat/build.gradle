@@ -6,9 +6,13 @@ version = '1.0.1'
 
 minecraft.replace '@VERSION@':project.version
 
+repositories.flatDir {
+	dir 'flat'
+}
+
 dependencies {
     compile api
-    deobfCompile 'com.mumfrey:liteloader:1.8-SNAPSHOT:srgnames'
+	compile utils
     deobfCompile 'com.mumfrey:mod_macros:0.11.1_beta2_mc1.8:srg'
 }
 jar {

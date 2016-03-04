@@ -14,12 +14,12 @@ ext {
 	forge = rootProject.project(':forge')
 	compat = rootProject.project(':compat')
 
-	rev = '16'
+	rev = '17'
 
 }
 apply plugin: 'net.minecraftforge.gradle.tweaker-client'
-version = '2.0.1-SNAPSHOT'
-// version = '2.0.1'
+version = '2.0.2-SNAPSHOT'
+// version = '2.0.2'
 
 apply from: utils.file('gradle/minecraft.gradle')
 version += "-b$gitRevision"
@@ -40,14 +40,15 @@ minecraft {
 
 allprojects {
 	repositories {
-		flatDir  {
-			dirs rootProject.file('flat')
+		maven {
+			name 'liteloader'
+			url 'http://repo.mumfrey.com/content/repositories/snapshots/'
 		}
 	}
 }
 dependencies {
 	// Add util library
-	deobfProvided 'com.mumfrey:liteloader:1.8-SNAPSHOT:srgnames'
+	deobfProvided 'com.mumfrey:liteloader:1.8.9-SNAPSHOT'
 
 	provided utils
 
@@ -61,6 +62,7 @@ sourceJar {
 }
 jar {
 	classifier "srg"
+	appendix "mc$minecraft.version"
 
 	from api.sourceSets.main.output
 	from {forge.sourceSets.main.output}
@@ -72,8 +74,12 @@ task releaseJar(type:Jar) {
 
 	from sourceSets.main.output
 	from api.sourceSets.main.output
+	from({utils.sourceSets.main.output}) {
+		exclude 'litemod.json'
+	}
 	from {forge.sourceSets.main.output}
 	from {compat.sourceSets.main.output}
+	
 
 	from(configurations.compile.collect {it.isDirectory() ? it : zipTree(it)}) {
 		exclude 'META-INF/***'
@@ -83,18 +89,14 @@ task releaseJar(type:Jar) {
 }
 sourceJar {
 	from {[api,forge]*.sourceSets.main.allSource}
-}
-task jarSrg(type:Jar) {
-	dependsOn jar
-	classifier "srg"
-	from zipTree(jar.archivePath)
+	appendix "mc$minecraft.version"
 }
 artifacts.archives releaseJar
 
 reobf {
 	releaseJar {}
 	jar {
-		mappings = 'SEARGE'
+		mappingType = 'SEARGE'
 	}
 }
 

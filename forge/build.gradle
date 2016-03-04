@@ -1,6 +1,6 @@
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-ext.forgever = '11.14.4.1589-1.8.8'
+ext.forgever = '11.15.1.1722'
 apply from: utils.file('gradle/minecraft.gradle')
 configurations.compile {
 	exclude group: "org.scala-lang"
