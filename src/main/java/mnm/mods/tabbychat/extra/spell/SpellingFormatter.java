@@ -23,6 +23,8 @@ public class SpellingFormatter implements Function<String, IChatComponent> {
 
     @Override
     public IChatComponent apply(String text) {
+        if (text == null)
+            return null;
         IChatBuilder b = new ChatBuilder();
         int prev = 0;
         int length = totalLength;

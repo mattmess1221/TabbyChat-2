@@ -93,7 +93,10 @@ public class ChatFilter implements Filter {
         String chat = StringUtils.stripControlCodes(message.chat.getUnformattedText());
 
         // Iterate through matches
-        Matcher matcher = getPattern().matcher(chat);
+        Pattern pattern = getPattern();
+        if (pattern == null)
+            return;
+        Matcher matcher = pattern.matcher(chat);
         while (matcher.find()) {
             FilterEvent event = new FilterEvent(matcher, message.channels, message.chat);
             doAction(event);
@@ -103,8 +106,9 @@ public class ChatFilter implements Filter {
     }
 
     protected final void doAction(FilterEvent event) {
-        if (getAction() != null) {
-            getAction().action(this, event);
+        IFilterAction action = getAction();
+        if (action != null) {
+            action.action(this, event);
         }
     }
 

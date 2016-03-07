@@ -4,7 +4,6 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.util.List;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 
@@ -183,12 +182,7 @@ public class TextBox extends ChatGui implements ChatInput {
             spellcheck.checkSpelling(textField.getValue());
             return Lists.transform(lines, new SpellingFormatter(spellcheck));
         }
-        return Lists.transform(lines, new Function<String, IChatComponent>() {
-            @Override
-            public IChatComponent apply(String input) {
-                return new ChatComponentText(input);
-            }
-        });
+        return Lists.transform(lines, input -> new ChatComponentText(input));
     }
 
     @Override

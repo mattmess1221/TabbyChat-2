@@ -17,7 +17,6 @@ import com.google.common.io.Files;
 import com.swabunga.spell.engine.SpellDictionary;
 import com.swabunga.spell.engine.SpellDictionaryHashMap;
 import com.swabunga.spell.event.SpellCheckEvent;
-import com.swabunga.spell.event.SpellCheckListener;
 import com.swabunga.spell.event.SpellChecker;
 import com.swabunga.spell.event.StringWordTokenizer;
 
@@ -59,12 +58,7 @@ public class Spellcheck implements Iterable<SpellCheckEvent>, IResourceManagerRe
             SpellDictionary dictionary = new SpellDictionaryHashMap(read);
             spellCheck = new SpellChecker(dictionary);
             spellCheck.setUserDictionary(userDict);
-            spellCheck.addSpellCheckListener(new SpellCheckListener() {
-                @Override
-                public synchronized void spellingError(SpellCheckEvent event) {
-                    errors.add(event);
-                }
-            });
+            spellCheck.addSpellCheckListener(errors::add);
             this.language = lang;
         } finally {
             Closeables.closeQuietly(in);

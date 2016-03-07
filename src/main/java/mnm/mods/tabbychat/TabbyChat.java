@@ -6,8 +6,6 @@ import java.net.SocketAddress;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import javax.annotation.Nullable;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,7 +19,6 @@ import mnm.mods.tabbychat.api.AddonManager;
 import mnm.mods.tabbychat.api.Chat;
 import mnm.mods.tabbychat.api.TabbyAPI;
 import mnm.mods.tabbychat.api.VersionData;
-import mnm.mods.tabbychat.api.filters.FilterVariable;
 import mnm.mods.tabbychat.api.internal.ForgeProxy;
 import mnm.mods.tabbychat.api.internal.InternalAPI;
 import mnm.mods.tabbychat.core.GuiChatTC;
@@ -39,13 +36,11 @@ import mnm.mods.tabbychat.settings.TabbySettings;
 import mnm.mods.tabbychat.util.DefaultForgeProxy;
 import mnm.mods.tabbychat.util.TabbyRef;
 import mnm.mods.util.MnmUtils;
-import mnm.mods.util.events.IScreenRedirect;
 import mnm.mods.util.events.ScreenHandler;
 import mnm.mods.util.gui.config.SettingPanel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiIngame;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiSleepMP;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.entity.player.EntityPlayer;
@@ -62,7 +57,6 @@ public class TabbyChat extends TabbyAPI implements InternalAPI {
     private ForgeProxy forgeProxy = new DefaultForgeProxy();
 
     public TabbySettings settings;
-    @Nullable
     public ServerSettings serverSettings;
 
     private File dataFolder;
@@ -164,37 +158,21 @@ public class TabbyChat extends TabbyAPI implements InternalAPI {
     private void addFilterVariables() {
         final Minecraft mc = Minecraft.getMinecraft();
         addonManager.setFilterConstant("player", mc.getSession().getUsername());
-        final Function<EntityPlayer, String> names = new Function<EntityPlayer, String>() {
-            @Override
-            public String apply(EntityPlayer player) {
-                return Pattern.quote(player.getName());
-            }
-        };
-        addonManager.setFilterVariable("onlineplayer", new FilterVariable() {
-            @Override
-            public String getVar() {
-                List<String> playerNames = Lists.transform(mc.theWorld.playerEntities, names);
-                return Joiner.on('|').appendTo(new StringBuilder("(?:"), playerNames).append(')').toString();
-            }
+        final Function<EntityPlayer, String> names = player -> Pattern.quote(player.getName());
+        addonManager.setFilterVariable("onlineplayer", () -> {
+            List<String> playerNames = Lists.transform(mc.theWorld.playerEntities, names);
+            return Joiner.on('|').appendTo(new StringBuilder("(?:"), playerNames).append(')').toString();
         });
     }
 
     private void addChatHooks() {
         ScreenHandler handler = MnmUtils.getInstance().getScreenHandler();
-        handler.addScreen(GuiChat.class, new IScreenRedirect<GuiChat>() {
-            @Override
-            public GuiScreen redirect(GuiChat input) {
-                // Get the default text via Reflection
-                String inputBuffer = TabbyPrivateFields.defaultInputFieldText.get(input);
-                return new GuiChatTC(inputBuffer);
-            }
+        handler.addScreen(GuiChat.class, input -> {
+            // Get the default text via Reflection
+            String inputBuffer = TabbyPrivateFields.defaultInputFieldText.get(input);
+            return new GuiChatTC(inputBuffer);
         });
-        handler.addScreen(GuiSleepMP.class, new IScreenRedirect<GuiSleepMP>() {
-            @Override
-            public GuiScreen redirect(GuiSleepMP input) {
-                return new GuiSleepTC();
-            }
-        });
+        handler.addScreen(GuiSleepMP.class, input -> new GuiSleepTC());
     }
 
     public void onJoin(SocketAddress address) {

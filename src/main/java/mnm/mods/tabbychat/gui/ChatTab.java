@@ -48,8 +48,9 @@ public class ChatTab extends GuiButton {
 
     @Override
     public void drawComponent(int mouseX, int mouseY) {
+        ChannelStatus status = channel.getStatus();
         if (GuiNewChatTC.getInstance().getChatOpen()
-                || (channel.getStatus() != null && channel.getStatus().compareTo(ChannelStatus.PINGED) > 0)
+                || (status != null && status.compareTo(ChannelStatus.PINGED) > 0)
                 || TabbyChat.getInstance().settings.advanced.visibility.get() == ChatVisibility.ALWAYS) {
             Gui.drawRect(0, 0, getBounds().width, getBounds().height, getBackColor().getHex());
             int txtX = this.getBounds().width / 2;
@@ -72,8 +73,9 @@ public class ChatTab extends GuiButton {
         if (channel.isPm()) {
             alias = "@" + alias;
         }
-        if (channel.getStatus() != null) {
-            switch (channel.getStatus()) {
+        ChannelStatus status = channel.getStatus();
+        if (status != null) {
+            switch (status) {
             case ACTIVE:
                 alias = "[" + alias + "]";
                 break;
@@ -90,8 +92,9 @@ public class ChatTab extends GuiButton {
     @Override
     public Color getBackColor() {
         int back = super.getBackColor().getHex();
-        if (channel.getStatus() != null) {
-            switch (channel.getStatus()) {
+        ChannelStatus status = channel.getStatus();
+        if (status != null) {
+            switch (status) {
             case ACTIVE:
                 // Cyan
                 back = 0xff5b7c7b;
@@ -120,8 +123,9 @@ public class ChatTab extends GuiButton {
     @Override
     public Color getForeColor() {
         int fore = 0xfff0f0f0;
-        if (channel.getStatus() != null) {
-            switch (channel.getStatus()) {
+        ChannelStatus status = channel.getStatus();
+        if (status != null) {
+            switch (status) {
             case ACTIVE:
                 // Cyan
                 fore = 0xffa5e7e4;

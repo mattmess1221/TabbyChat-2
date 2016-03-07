@@ -4,8 +4,6 @@ import static mnm.mods.tabbychat.util.Translation.*;
 
 import java.text.NumberFormat;
 
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -85,21 +83,15 @@ public class GuiSettingsGeneral extends SettingPanel<TabbySettings> {
     }
 
     private static EnumChatFormatting[] getColors() {
-        return Sets.filter(Sets.newHashSet(EnumChatFormatting.values()), new Predicate<EnumChatFormatting>() {
-            @Override
-            public boolean apply(EnumChatFormatting input) {
-                return input.isColor();
-            }
-        }).toArray(new EnumChatFormatting[0]);
+        return Sets.newHashSet(EnumChatFormatting.values()).stream()
+                .filter(input -> input.isColor())
+                .toArray(EnumChatFormatting[]::new);
     }
 
     private static String[] getColorNames() {
-        return Lists.transform(Lists.newArrayList(getColors()), new Function<EnumChatFormatting, String>() {
-            @Override
-            public String apply(EnumChatFormatting input) {
-                return "colors." + input.getFriendlyName();
-            }
-        }).toArray(new String[0]);
+        return Lists.newArrayList(getColors()).stream()
+                .map(input -> "colors." + input.getFriendlyName())
+                .toArray(String[]::new);
     }
 
     @Override
