@@ -74,7 +74,7 @@ public class GuiSettingsScreen extends ComponentScreen {
         panel.addComponent(closeSaveButtons = new GuiPanel(new FlowLayout()), BorderLayout.Position.SOUTH);
         GuiButton save = new GuiButton("Save");
         save.setSize(40, 10);
-        save.setBackColor(Color.getColor(0, 255, 0, 127));
+        save.setBackColor(Color.of(0, 255, 0, 127));
         save.getBus().register(new Object() {
             @Subscribe
             public void applyAllTheSettingsAndCloseTheScreen(ActionPerformedEvent event) {
@@ -89,7 +89,7 @@ public class GuiSettingsScreen extends ComponentScreen {
         closeSaveButtons.addComponent(save);
         GuiButton close = new GuiButton("Close");
         close.setSize(40, 10);
-        close.setBackColor(Color.getColor(0, 255, 0, 127));
+        close.setBackColor(Color.of(0, 255, 0, 127));
         close.getBus().register(new Object() {
             @Subscribe
             public void closeTheScreenWithoutSaving(ActionPerformedEvent event) {

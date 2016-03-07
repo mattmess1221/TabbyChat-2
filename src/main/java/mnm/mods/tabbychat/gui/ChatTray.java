@@ -40,8 +40,8 @@ public class ChatTray extends GuiPanel implements IGui {
     @Override
     public void drawComponent(int mouseX, int mouseY) {
         if (GuiNewChatTC.getInstance().getChatOpen()) {
-            Gui.drawRect(0, 0, getBounds().width, getBounds().height, getBackColor());
-            drawBorders(0, 0, getBounds().width, getBounds().height, getForeColor());
+            Gui.drawRect(0, 0, getBounds().width, getBounds().height, getBackColor().getHex());
+            drawBorders(0, 0, getBounds().width, getBounds().height, getForeColor().getHex());
         }
         super.drawComponent(mouseX, mouseY);
     }
@@ -49,9 +49,9 @@ public class ChatTray extends GuiPanel implements IGui {
     @Override
     public void updateComponent() {
         super.updateComponent();
-        Color color = Color.of(getParent().getBackColor());
+        Color color = getParent().getBackColor();
         Color bkg = Color.of(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() / 4 * 3);
-        this.setBackColor(bkg.getColor());
+        this.setBackColor(bkg);
     }
 
     public void addChannel(Channel channel) {
@@ -98,7 +98,7 @@ public class ChatTray extends GuiPanel implements IGui {
         @Override
         public void drawComponent(int mouseX, int mouseY) {
             drawBorders(2, 2, 7, 7, 0xff999999);
-            Gui.drawRect(2, 2, 7, 7, getBackColor());
+            Gui.drawRect(2, 2, 7, 7, getBackColor().getHex());
             if (value.get()) {
                 Gui.drawRect(3, 3, 6, 6, 0xffaaaaaa);
             }

@@ -29,7 +29,7 @@ public class GuiSettingsGeneral extends SettingPanel<TabbySettings> {
     public GuiSettingsGeneral() {
         setLayout(new GuiGridLayout(10, 20));
         setDisplayString(I18n.format(SETTINGS_GENERAL));
-        setBackColor(Color.getColor(255, 0, 255, 64));
+        setBackColor(Color.of(255, 0, 255, 64));
     }
 
     @Override

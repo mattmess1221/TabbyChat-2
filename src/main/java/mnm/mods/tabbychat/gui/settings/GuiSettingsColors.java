@@ -16,7 +16,7 @@ public class GuiSettingsColors extends SettingPanel<TabbySettings> {
 
     public GuiSettingsColors() {
         setDisplayString(I18n.format(SETTINGS_COLORS));
-        setBackColor(Color.getColor(0, 255, 0, 64));
+        setBackColor(Color.of(0, 255, 0, 64));
         this.setLayout(new GuiGridLayout(50, 50));
     }
 

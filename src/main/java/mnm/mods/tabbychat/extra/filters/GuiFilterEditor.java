@@ -3,6 +3,7 @@ package mnm.mods.tabbychat.extra.filters;
 import static mnm.mods.tabbychat.util.Translation.*;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -16,7 +17,7 @@ import com.google.common.eventbus.Subscribe;
 import mnm.mods.tabbychat.api.filters.Filter;
 import mnm.mods.tabbychat.api.filters.FilterSettings;
 import mnm.mods.tabbychat.util.SoundHelper;
-import mnm.mods.util.Consumer;
+import mnm.mods.util.Color;
 import mnm.mods.util.gui.GuiButton;
 import mnm.mods.util.gui.GuiCheckbox;
 import mnm.mods.util.gui.GuiGridLayout;
@@ -172,7 +173,7 @@ public class GuiFilterEditor extends GuiPanel {
         sett.setSoundNotification(chkSound.getValue());
         sett.setSoundName(txtSound.getValue());
 
-        consumer.apply(filter);
+        consumer.accept(filter);
         cancel();
     }
 
@@ -187,10 +188,10 @@ public class GuiFilterEditor extends GuiPanel {
             try {
                 String resolved = ChatFilter.resolveVariables(txtPattern.getValue());
                 Pattern.compile(resolved);
-                txtPattern.setForeColor(-1);
+                txtPattern.setForeColor(Color.WHITE);
                 lblError.setText((IChatComponent) null);
             } catch (PatternSyntaxException e) {
-                txtPattern.setForeColor(0xffff0000);
+                txtPattern.setForeColor(Color.RED);
                 String string = e.getLocalizedMessage();
                 lblError.setText(new ChatComponentText(string));
             }

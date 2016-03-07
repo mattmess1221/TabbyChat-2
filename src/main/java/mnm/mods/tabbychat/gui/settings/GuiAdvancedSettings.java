@@ -18,7 +18,7 @@ public class GuiAdvancedSettings extends SettingPanel<TabbySettings> {
     public GuiAdvancedSettings() {
         setLayout(new GuiGridLayout(10, 15));
         setDisplayString(Translation.SETTINGS_ADVANCED.toString());
-        setBackColor(Color.getColor(255, 0, 0, 64));
+        setBackColor(Color.of(255, 0, 0, 64));
     }
 
     @Override

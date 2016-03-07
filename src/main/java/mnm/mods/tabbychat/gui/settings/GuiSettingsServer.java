@@ -2,6 +2,8 @@ package mnm.mods.tabbychat.gui.settings;
 
 import static mnm.mods.tabbychat.util.Translation.*;
 
+import java.util.function.Consumer;
+
 import com.google.common.eventbus.Subscribe;
 
 import mnm.mods.tabbychat.TabbyChat;
@@ -13,7 +15,6 @@ import mnm.mods.tabbychat.settings.ServerSettings;
 import mnm.mods.tabbychat.util.ChannelPatterns;
 import mnm.mods.tabbychat.util.MessagePatterns;
 import mnm.mods.util.Color;
-import mnm.mods.util.Consumer;
 import mnm.mods.util.gui.GuiButton;
 import mnm.mods.util.gui.GuiGridLayout;
 import mnm.mods.util.gui.GuiLabel;
@@ -38,7 +39,7 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> implements C
     public GuiSettingsServer() {
         this.setLayout(new GuiGridLayout(10, 20));
         this.setDisplayString(SETTINGS_SERVER.toString());
-        this.setBackColor(Color.of(255, 215, 0, 64).getColor());
+        this.setBackColor(Color.of(255, 215, 0, 64));
     }
 
     @Override
@@ -159,7 +160,7 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> implements C
     // Filters
 
     @Override
-    public void apply(Filter f) {
+    public void accept(Filter f) {
         this.lblFilter.setText(f.getName());
     }
 

@@ -11,6 +11,7 @@ import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.gui.ChatGui;
 import mnm.mods.tabbychat.settings.ColorSettings;
 import mnm.mods.tabbychat.settings.TabbySettings;
+import mnm.mods.util.Color;
 import mnm.mods.util.gui.BorderLayout;
 import mnm.mods.util.gui.GuiPanel;
 import mnm.mods.util.gui.events.GuiMouseEvent;
@@ -80,13 +81,13 @@ public class ChatBox extends GuiPanel implements ChatGui {
     }
 
     @Override
-    public int getForeColor() {
-        return colors.chatBorderColor.get().getColor();
+    public Color getForeColor() {
+        return colors.chatBorderColor.get();
     }
 
     @Override
-    public int getBackColor() {
-        return colors.chatBoxColor.get().getColor();
+    public Color getBackColor() {
+        return colors.chatBoxColor.get();
     }
 
     @Override

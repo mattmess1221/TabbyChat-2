@@ -73,20 +73,22 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, R
     @Override
     public void drawComponent(int mouseX, int mouseY) {
         if (mc.gameSettings.chatVisibility != EnumChatVisibility.HIDDEN) {
+            int fore = getForeColor().getHex();
+            int back = getBackColor().getHex();
             List<Message> visible = getVisibleChat();
             int height = visible.size() * mc.fontRendererObj.FONT_HEIGHT;
             ChatVisibility vis = TabbyChat.getInstance().settings.advanced.visibility.get();
             if (GuiNewChatTC.getInstance().getChatOpen()) {
-                Gui.drawRect(0, 0, getBounds().width, getBounds().height, getBackColor());
-                this.drawVerticalLine(-1, -1, getBounds().height, getForeColor());
-                this.drawVerticalLine(getBounds().width, -1, getBounds().height, getForeColor());
+                Gui.drawRect(0, 0, getBounds().width, getBounds().height, back);
+                this.drawVerticalLine(-1, -1, getBounds().height, fore);
+                this.drawVerticalLine(getBounds().width, -1, getBounds().height, fore);
             } else if (vis == ChatVisibility.ALWAYS) {
-                Gui.drawRect(0, 0, getBounds().width, getBounds().height, getBackColor());
-                drawBorders(0, 0, getBounds().width, getBounds().height, getForeColor());
+                Gui.drawRect(0, 0, getBounds().width, getBounds().height, back);
+                drawBorders(0, 0, getBounds().width, getBounds().height, fore);
             } else if (height != 0) {
                 int y = getBounds().height - height;
-                Gui.drawRect(getBounds().x, y - 1, getBounds().width, y + height, getBackColor());
-                drawBorders(getBounds().x, y - 1, getBounds().width, y + height, getForeColor());
+                Gui.drawRect(getBounds().x, y - 1, getBounds().width, y + height, back);
+                drawBorders(getBounds().x, y - 1, getBounds().width, y + height, fore);
             }
             int xPos = getBounds().x + 1;
             int yPos = getBounds().height;
@@ -102,7 +104,7 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, R
         GlStateManager.enableBlend();
         String text = line.getMessageWithOptionalTimestamp().getFormattedText();
         Color color = TabbyChat.getInstance().settings.colors.chatTextColor.get();
-        mc.fontRendererObj.drawStringWithShadow(text, xPos, yPos, (color.getColor()) + (getLineOpacity(line) << 24));
+        mc.fontRendererObj.drawStringWithShadow(text, xPos, yPos, (color.getHex()) + (getLineOpacity(line) << 24));
         GlStateManager.disableAlpha();
         GlStateManager.disableBlend();
     }

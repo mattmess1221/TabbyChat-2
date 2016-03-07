@@ -50,10 +50,10 @@ public class TextBox extends ChatGui implements ChatInput {
 
     @Override
     public void drawComponent(int mouseX, int mouseY) {
-        Gui.drawRect(0, 0, getBounds().width, getBounds().height, getBackColor());
+        Gui.drawRect(0, 0, getBounds().width, getBounds().height, getBackColor().getHex());
         drawText();
         drawCursor();
-        drawBorders(0, 0, getBounds().width, getBounds().height, getForeColor());
+        drawBorders(0, 0, getBounds().width, getBounds().height, getForeColor().getHex());
         super.drawComponent(mouseX, mouseY);
 
     }
@@ -109,7 +109,7 @@ public class TextBox extends ChatGui implements ChatInput {
         int pos = 0;
         for (IChatComponent line : getFormattedLines()) {
             Color color = TabbyChat.getInstance().settings.colors.chatTextColor.get();
-            ffr.drawChat(line, 1, yPos, color.getColor(), false);
+            ffr.drawChat(line, 1, yPos, color.getHex(), false);
             int xPos = 1;
             for (Character c : line.getUnformattedText().toCharArray()) {
                 int width = fr.getCharWidth(c);
@@ -126,7 +126,7 @@ public class TextBox extends ChatGui implements ChatInput {
 
                     if (started && !ended) {
                         Gui.drawRect(xPos, yPos - 1, xPos + width, yPos + fr.FONT_HEIGHT + 1,
-                                getBackColor());
+                                getBackColor().getHex());
                     }
 
                     if (!ended && pos == Math.max(cursorPos, selectDist + cursorPos) - 1) {
@@ -166,10 +166,10 @@ public class TextBox extends ChatGui implements ChatInput {
         // int newY = getBounds().y + getBounds().height - newHeight;
         this.setSize(getMinimumSize().width, newHeight);
 
-        Color color = Color.of(getParent().getBackColor());
+        Color color = getParent().getBackColor();
         Color bkg = Color.of(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() / 4 * 3);
 
-        this.setBackColor(bkg.getColor());
+        this.setBackColor(bkg);
     }
 
     @Override

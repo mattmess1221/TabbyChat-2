@@ -51,13 +51,13 @@ public class ChatTab extends GuiButton {
         if (GuiNewChatTC.getInstance().getChatOpen()
                 || (channel.getStatus() != null && channel.getStatus().compareTo(ChannelStatus.PINGED) > 0)
                 || TabbyChat.getInstance().settings.advanced.visibility.get() == ChatVisibility.ALWAYS) {
-            Gui.drawRect(0, 0, getBounds().width, getBounds().height, getBackColor());
+            Gui.drawRect(0, 0, getBounds().width, getBounds().height, getBackColor().getHex());
             int txtX = this.getBounds().width / 2;
             int txtY = this.getBounds().height / 2 - this.mc.fontRendererObj.FONT_HEIGHT / 2;
-            this.drawCenteredString(mc.fontRendererObj, this.getText(), txtX, txtY, getForeColor());
+            this.drawCenteredString(mc.fontRendererObj, this.getText(), txtX, txtY, getForeColor().getHex());
             // this.drawVerticalLine(0, -1, getBounds().height,
             // super.getForeColor());
-            this.drawVerticalLine(getBounds().width, -1, getBounds().height, super.getForeColor());
+            this.drawVerticalLine(getBounds().width, -1, getBounds().height, super.getForeColor().getHex());
         }
     }
 
@@ -88,8 +88,8 @@ public class ChatTab extends GuiButton {
     }
 
     @Override
-    public int getBackColor() {
-        int back = super.getBackColor();
+    public Color getBackColor() {
+        int back = super.getBackColor().getHex();
         if (channel.getStatus() != null) {
             switch (channel.getStatus()) {
             case ACTIVE:
@@ -114,11 +114,11 @@ public class ChatTab extends GuiButton {
             // Yellow
             back = 0xff7f8052;
         }
-        return applyTransparency(back);
+        return applyTransparency(Color.of(back));
     }
 
     @Override
-    public int getForeColor() {
+    public Color getForeColor() {
         int fore = 0xfff0f0f0;
         if (channel.getStatus() != null) {
             switch (channel.getStatus()) {
@@ -145,14 +145,14 @@ public class ChatTab extends GuiButton {
             // Yellow
             fore = 0xffffffa0;
         }
-        return applyTransparency(fore);
+        return applyTransparency(Color.of(fore));
     }
 
-    private int applyTransparency(int color) {
-        Color color1 = Color.of(color);
+    private Color applyTransparency(Color color) {
+        Color color1 = color;
         float perc = (mc.gameSettings.chatOpacity * 0.9F + 0.1F) / 2;
         int opacity = (int) (perc * color1.getAlpha());
-        return Color.of(color1.getRed(), color1.getGreen(), color1.getBlue(), opacity).getColor();
+        return Color.of(color1.getRed(), color1.getGreen(), color1.getBlue(), opacity);
     }
 
     @Override

@@ -2,12 +2,7 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 
 ext.forgever = '11.15.1.1722'
 apply from: utils.file('gradle/minecraft.gradle')
-configurations.compile {
-	exclude group: "org.scala-lang"
-	exclude group: "org.scala-lang.plugins"
-	exclude group: "com.typesafe"
-	exclude group: "com.typesafe.akka"
-}
+
 dependencies {
     compile api
 }
