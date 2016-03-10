@@ -8,6 +8,9 @@ buildscript {
 	}
 	dependencies.classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
 }
+plugins {
+	id 'com.github.johnrengelman.shadow' version '1.2.3'
+}
 ext {
 	utils = rootProject.project(':MnM-Utils')
 	api = rootProject.project(':api')
@@ -17,7 +20,7 @@ ext {
 	rev = '17'
 
 }
-apply plugin: 'net.minecraftforge.gradle.tweaker-client'
+apply plugin: 'net.minecraftforge.gradle.liteloader'
 version = '2.0.2-SNAPSHOT'
 // version = '2.0.2'
 
@@ -34,31 +37,16 @@ minecraft {
 		"@REVISION@": project.gitRevision,
 		"@MCVERSION@": project.minecraft.version
 	)
-	tweakClass = 'com.mumfrey.liteloader.launch.LiteLoaderTweaker'
-	clientJvmArgs += ['-Dmcpenv=true']
 }
 
-allprojects {
-	repositories {
-		maven {
-			name 'liteloader'
-			url 'http://repo.mumfrey.com/content/repositories/snapshots/'
-		}
-	}
-}
 dependencies {
 	// Add util library
-	deobfProvided 'com.mumfrey:liteloader:1.8.9-SNAPSHOT'
+	shadow utils
 
-	provided utils
-
-	compile api
-	compile 'net.sf.jazzy:jazzy:0.5.2-rtext-1.4.1-2'
+	shadow api
+	shadow 'net.sf.jazzy:jazzy:0.5.2-rtext-1.4.1-2'
 
 	testCompile 'junit:junit:4.12'
-}
-sourceJar {
-	from {[api,forge,compat]*.sourceSets.main.allSource}
 }
 jar {
 	classifier "srg"
@@ -68,41 +56,26 @@ jar {
 	from {forge.sourceSets.main.output}
 	from {compat.sourceSets.main.output}
 }
-task releaseJar(type:Jar) {
-	extension 'litemod'
-	appendix "mc$minecraft.version"
-
-	from sourceSets.main.output
-	from api.sourceSets.main.output
-	from({utils.sourceSets.main.output}) {
-		exclude 'litemod.json'
-	}
-	from {forge.sourceSets.main.output}
+shadowJar {
 	from {compat.sourceSets.main.output}
-	
-
-	from(configurations.compile.collect {it.isDirectory() ? it : zipTree(it)}) {
-		exclude 'META-INF/***'
-	}
-	from {forge.sourceSets.main.output}
+	extension 'litemod'
 	appendix "mc$minecraft.version"
 }
 sourceJar {
-	from {[api,forge]*.sourceSets.main.allSource}
+	from {[api,forge,compat]*.sourceSets.main.allSource}
 	appendix "mc$minecraft.version"
 }
-artifacts.archives releaseJar
 
 reobf {
-	releaseJar {}
+	shadowJar {}
 	jar {
 		mappingType = 'SEARGE'
 	}
 }
 
 afterEvaluate {
-	evaluationDependsOnChildren()
-	if (System.env.BUILD_ID != null) {
+//	evaluationDependsOnChildren()
+	if (System.env.BUILD_ID != null && !System.env.BUILD_ID.isEmpty()) {
 		// disable extra artifacts on build server
 		allprojects {
 			tasks.withType(Jar).findAll {
