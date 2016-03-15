@@ -48,10 +48,10 @@ public class GuiNewChatTC extends GuiNewChat {
         float scale = chatbox.getScale();
 
         GlStateManager.popMatrix(); // ignore what GuiIngame did.
+        GlStateManager.pushMatrix();
         // translate to above the itemrenderer
         // before push so it effects the tab list too.
-        GlStateManager.translate(0, 0, 150.5);
-        GlStateManager.pushMatrix();
+        GlStateManager.translate(0, 0, 151);
 
         // Scale it accordingly
         GlStateManager.scale(scale, scale, 1.0F);

@@ -7,7 +7,7 @@ ext {
 	forge = rootProject.project(':forge')
 	macros = rootProject.project(':macros')
 
-	rev = '15'
+	rev = '16'
 
 }
 def buildServer = System.env.BUILD_ID != null
@@ -16,7 +16,7 @@ group = 'mnm.mods'
 archivesBaseName = 'TabbyChat'
 //version = "2.0-beta-SNAPSHOT.${System.env.BUILD_ID}"
 //if (buildServer) version += ".${System.env.GIT_COMMIT?.substring(0,6)}"
-version = '2.0'
+version = '2.0.1'
 
 apply from: utils.file('gradle/minecraft.gradle')
 
