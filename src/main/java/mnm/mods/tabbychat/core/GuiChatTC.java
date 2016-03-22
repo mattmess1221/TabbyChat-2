@@ -66,6 +66,7 @@ public class GuiChatTC extends GuiChat {
     public GuiChatTC(String text) {
         super(text);
         this.defaultInputFieldText = text;
+        chatGui = tc.getChatGui();
         sentHistoryIndex = chatGui.getSentMessages().size();
         chat = chatGui.getChatManager();
         textBox = chat.getChatBox().getChatInput().getTextField();
@@ -182,7 +183,7 @@ public class GuiChatTC extends GuiChat {
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-        chatGui.getBus().post(new GuiMouseEvent(null, MouseEvent.CLICK, mouseX, mouseY, mouseButton));
+        chatGui.getBus().post(new GuiMouseEvent(null, MouseEvent.CLICK, mouseX, mouseY, mouseButton, 0));
         if (mouseButton == 0) {
             IChatComponent chat = chatGui.getChatComponent(Mouse.getX(), Mouse.getY());
             this.handleComponentClick(chat);

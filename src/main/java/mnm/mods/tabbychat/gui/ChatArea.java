@@ -44,7 +44,7 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, R
 
     @Subscribe
     public void superScrollingAction(GuiMouseEvent event) {
-        if (event.getEvent() == MouseEvent.SCROLL) {
+        if (event.getType() == MouseEvent.SCROLL) {
             // Scrolling
             int scroll = event.getScroll();
             // One tick = 120

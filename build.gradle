@@ -38,11 +38,12 @@ minecraft {
 		"@MCVERSION@": project.minecraft.version
 	)
 }
-
+configurations {
+	compile.extendsFrom shadow
+}
 dependencies {
 	// Add util library
 	shadow utils
-
 	shadow api
 	shadow 'net.sf.jazzy:jazzy:0.5.2-rtext-1.4.1-2'
 

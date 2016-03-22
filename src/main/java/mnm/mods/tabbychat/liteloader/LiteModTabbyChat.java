@@ -58,6 +58,8 @@ public class LiteModTabbyChat implements JoinGameListener {
 
                 bus.register(cl.newInstance());
             }
+        } catch(ClassNotFoundException e) {
+            // pass over, it's not on the classpath
         } catch (Throwable e) {
             LogManager.getLogger().warn("Unable to add compatibility. Did something change?", e);
         }

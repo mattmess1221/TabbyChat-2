@@ -52,7 +52,7 @@ public class TabbyChat extends TabbyAPI implements InternalAPI {
     private ChatManager chatManager;
     private GuiNewChatTC chatGui;
     private AddonManager addonManager;
-    private EventBus bus;
+    private EventBus bus = new EventBus();
     private Spellcheck spellcheck;
     private ForgeProxy forgeProxy = new DefaultForgeProxy();
 
@@ -131,19 +131,19 @@ public class TabbyChat extends TabbyAPI implements InternalAPI {
 
     public void init() {
 
-        chatManager = new ChatManager();
-        chatGui = new GuiNewChatTC(Minecraft.getMinecraft(), chatManager);
-        addonManager = new TabbyAddonManager();
+        // Set global settings
+        settings = new TabbySettings();
+        LiteLoader.getInstance().registerExposable(settings, null);
 
         spellcheck = new Spellcheck(getDataFolder());
+
+        chatManager = new ChatManager(this);
+        chatGui = new GuiNewChatTC(Minecraft.getMinecraft(), chatManager);
+        addonManager = new TabbyAddonManager();
 
         // Keeps the current language updated whenever it is changed.
         IReloadableResourceManager irrm = (IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager();
         irrm.registerReloadListener(spellcheck);
-
-        // Set global settings
-        settings = new TabbySettings();
-        LiteLoader.getInstance().registerExposable(settings, null);
 
         bus.register(new ChatAddonAntiSpam());
         bus.register(new FilterAddon());

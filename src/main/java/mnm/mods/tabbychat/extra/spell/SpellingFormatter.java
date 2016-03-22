@@ -1,8 +1,8 @@
 package mnm.mods.tabbychat.extra.spell;
 
 import java.util.Iterator;
+import java.util.function.Function;
 
-import com.google.common.base.Function;
 import com.swabunga.spell.event.SpellCheckEvent;
 
 import mnm.mods.util.Color;

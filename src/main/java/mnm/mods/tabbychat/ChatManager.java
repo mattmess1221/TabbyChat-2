@@ -60,10 +60,10 @@ public class ChatManager implements Chat {
 
     private Map<Channel, List<Message>> messages = Maps.newHashMap();
 
-    public ChatManager() {
+    public ChatManager(TabbyChat tc) {
         Rectangle rect = new Rectangle();
 
-        AdvancedSettings settings = TabbyChat.getInstance().settings.advanced;
+        AdvancedSettings settings = tc.settings.advanced;
         rect.x = settings.chatX.get();
         rect.y = settings.chatY.get();
         rect.width = settings.chatW.get();

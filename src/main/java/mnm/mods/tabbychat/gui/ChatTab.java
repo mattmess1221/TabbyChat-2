@@ -27,7 +27,7 @@ public class ChatTab extends GuiButton {
 
     @Subscribe
     public void tryCommitSudoku(GuiMouseEvent event) {
-        if (event.getEvent() == MouseEvent.CLICK) {
+        if (event.getType() == MouseEvent.CLICK) {
             if (event.getButton() == 0) {
                 if (GuiScreen.isShiftKeyDown()) {
                     // Remove channel

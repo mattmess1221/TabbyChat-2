@@ -3,8 +3,8 @@ package mnm.mods.tabbychat.gui;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 
 import mnm.mods.tabbychat.TabbyChat;
@@ -106,7 +106,8 @@ public class TextBox extends ChatGui implements ChatInput {
 
         int yPos = 2;
         int pos = 0;
-        for (IChatComponent line : getFormattedLines()) {
+        List<IChatComponent> lines = getFormattedLines();
+        for (IChatComponent line : lines) {
             Color color = TabbyChat.getInstance().settings.colors.chatTextColor.get();
             ffr.drawChat(line, 1, yPos, color.getHex(), false);
             int xPos = 1;
@@ -180,9 +181,13 @@ public class TextBox extends ChatGui implements ChatInput {
         List<String> lines = getWrappedLines();
         if (TabbyChat.getInstance().settings.general.spelling.enabled.get()) {
             spellcheck.checkSpelling(textField.getValue());
-            return Lists.transform(lines, new SpellingFormatter(spellcheck));
+            return lines.stream()
+                    .map(new SpellingFormatter(spellcheck))
+                    .collect(Collectors.toList());
         }
-        return Lists.transform(lines, input -> new ChatComponentText(input));
+        return lines.stream()
+                .map(ChatComponentText::new)
+                .collect(Collectors.toList());
     }
 
     @Override

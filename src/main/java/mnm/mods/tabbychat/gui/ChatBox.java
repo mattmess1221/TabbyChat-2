@@ -50,7 +50,7 @@ public class ChatBox extends GuiPanel implements ChatGui {
         int x = bounds.x + event.getMouseX();
         int y = bounds.y + event.getMouseY();
 
-        if (event.getEvent() == MouseEvent.PRESS) {
+        if (event.getType() == MouseEvent.CLICK) {
             if (Mouse.isButtonDown(0) && (pnlTray.isHovered() || (GuiScreen.isAltKeyDown() && isHovered()))) {
                 dragMode = !pnlTray.isHandleHovered();
                 drag = new Point(x, y);
@@ -59,7 +59,7 @@ public class ChatBox extends GuiPanel implements ChatGui {
         }
 
         if (drag != null) {
-            if (event.getEvent() == MouseEvent.RELEASE) {
+            if (event.getType() == MouseEvent.RELEASE) {
                 // save bounds
                 TabbySettings sett = TabbyChat.getInstance().settings;
                 sett.advanced.chatX.set(bounds.x);
@@ -69,7 +69,7 @@ public class ChatBox extends GuiPanel implements ChatGui {
 
                 drag = null;
                 tempbox = null;
-            } else if (event.getEvent() == MouseEvent.DRAG) {
+            } else if (event.getType() == MouseEvent.DRAG) {
                 if (!dragMode) {
                     bounds.setSize(tempbox.width + x - drag.x, tempbox.height - y + drag.y);
                     bounds.setLocation(tempbox.x, tempbox.y + y - drag.y);

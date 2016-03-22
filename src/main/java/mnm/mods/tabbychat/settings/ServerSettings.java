@@ -3,6 +3,8 @@ package mnm.mods.tabbychat.settings;
 import java.net.InetSocketAddress;
 
 import com.google.gson.annotations.Expose;
+import com.mumfrey.liteloader.modconfig.ConfigStrategy;
+import com.mumfrey.liteloader.modconfig.ExposableOptions;
 
 import mnm.mods.tabbychat.ChatChannel;
 import mnm.mods.tabbychat.extra.filters.ChatFilter;
@@ -12,6 +14,7 @@ import mnm.mods.util.config.SettingsFile;
 import mnm.mods.util.config.ValueList;
 import mnm.mods.util.config.ValueMap;
 
+@ExposableOptions(strategy = ConfigStrategy.Unversioned)
 public class ServerSettings extends SettingsFile {
 
     @Expose
