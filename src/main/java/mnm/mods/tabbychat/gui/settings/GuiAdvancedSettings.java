@@ -1,9 +1,10 @@
 package mnm.mods.tabbychat.gui.settings;
+
 import static mnm.mods.tabbychat.util.Translation.*;
+
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.settings.TabbySettings;
 import mnm.mods.tabbychat.util.ChatVisibility;
-import mnm.mods.tabbychat.util.Translation;
 import mnm.mods.util.Color;
 import mnm.mods.util.gui.GuiGridLayout;
 import mnm.mods.util.gui.GuiLabel;
@@ -11,13 +12,14 @@ import mnm.mods.util.gui.config.GuiSettingBoolean;
 import mnm.mods.util.gui.config.GuiSettingEnum;
 import mnm.mods.util.gui.config.GuiSettingNumber.GuiSettingInt;
 import mnm.mods.util.gui.config.SettingPanel;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ChatComponentTranslation;
 
 public class GuiAdvancedSettings extends SettingPanel<TabbySettings> {
 
     public GuiAdvancedSettings() {
         setLayout(new GuiGridLayout(10, 15));
-        setDisplayString(Translation.SETTINGS_ADVANCED.toString());
+        setDisplayString(I18n.format(SETTINGS_ADVANCED));
         setBackColor(Color.of(255, 0, 0, 64));
     }
 

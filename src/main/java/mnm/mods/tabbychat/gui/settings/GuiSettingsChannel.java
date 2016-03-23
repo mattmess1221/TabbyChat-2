@@ -42,7 +42,7 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
     public GuiSettingsChannel(Channel channel) {
         this.channel = channel;
         this.setLayout(new BorderLayout());
-        this.setDisplayString(CHANNEL_TITLE.toString());
+        this.setDisplayString(I18n.format(CHANNEL_TITLE));
         this.setBackColor(Color.of(0, 15, 100, 65));
 
     }
