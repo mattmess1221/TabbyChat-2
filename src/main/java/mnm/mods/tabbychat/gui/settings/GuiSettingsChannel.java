@@ -113,7 +113,7 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
         });
         this.panel.addComponent(accept, new int[] { 2, 15, 4, 2 });
 
-        GuiButton forget = new GuiButton(CHANNEL_FORGET.toString());
+        GuiButton forget = new GuiButton(I18n.format(CHANNEL_FORGET));
         forget.getBus().register(new Object() {
             @Subscribe
             public void oohShinyObject(ActionPerformedEvent event) {
