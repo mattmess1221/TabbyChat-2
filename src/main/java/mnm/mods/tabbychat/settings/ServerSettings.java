@@ -2,7 +2,6 @@ package mnm.mods.tabbychat.settings;
 
 import java.net.InetSocketAddress;
 
-import com.google.gson.annotations.Expose;
 import com.mumfrey.liteloader.modconfig.ConfigStrategy;
 import com.mumfrey.liteloader.modconfig.ExposableOptions;
 
@@ -17,16 +16,12 @@ import mnm.mods.util.config.ValueMap;
 @ExposableOptions(strategy = ConfigStrategy.Unversioned)
 public class ServerSettings extends SettingsFile {
 
-    @Expose
     public GeneralServerSettings general = new GeneralServerSettings();
-    @Expose
     public ValueList<ChatFilter> filters = list();
-    @Expose
     public ValueMap<ChatChannel> channels = map();
-    @Expose
     public ValueMap<ChatChannel> pms = map();
 
-    private final InetSocketAddress ip;
+    private transient final InetSocketAddress ip;
 
     public ServerSettings(InetSocketAddress url) {
         super(TabbyRef.MOD_ID + "/" + getIPForFileName(url), "server");

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
 
 import org.lwjgl.input.Keyboard;
 
@@ -100,15 +101,13 @@ public class GuiFilterEditor extends GuiPanel {
                 }
 
                 // suggest sounds
-                String val = txtSound.getValue().toLowerCase()
+                final String val = txtSound.getValue().toLowerCase()
                         .substring(0, txtSound.getTextField().getCursorPosition());
-                List<String> list = Lists.newArrayList();
-                List<SoundHelper> sounds = SoundHelper.getSounds();
-                for (SoundHelper s : sounds) {
-                    if (s.getResource().toString().contains(val)) {
-                        list.add(s.getResource().toString());
-                    }
-                }
+                List<String> list = SoundHelper.getSounds().stream()
+                        .map(s -> s.getResource().toString())
+                        .filter(s -> s.contains(val))
+                        .collect(Collectors.toList());
+
                 pos = Math.min(pos, list.size() - max);
                 pos = Math.max(pos, 0);
                 if (list.size() > max) {
