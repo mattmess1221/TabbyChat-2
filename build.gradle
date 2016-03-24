@@ -18,7 +18,6 @@ ext {
 	compat = rootProject.project(':compat')
 
 	rev = '17'
-
 }
 apply plugin: 'net.minecraftforge.gradle.liteloader'
 version = '2.0.2-SNAPSHOT'
