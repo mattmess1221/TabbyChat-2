@@ -9,11 +9,8 @@ import mnm.mods.tabbychat.api.Message;
 import mnm.mods.tabbychat.settings.GeneralSettings;
 import mnm.mods.tabbychat.util.TimeStamps;
 import net.minecraft.client.gui.ChatLine;
-import net.minecraft.event.HoverEvent;
-import net.minecraft.event.HoverEvent.Action;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 
@@ -35,7 +32,6 @@ public class ChatMessage implements Message {
         if (isNew) {
             this.date = Calendar.getInstance().getTime();
         }
-        fixShowEntity();
     }
 
     public ChatMessage(ChatLine chatline) {
@@ -79,15 +75,4 @@ public class ChatMessage implements Message {
         return this.date;
     }
 
-    private void fixShowEntity() {
-        for (IChatComponent message : message) {
-
-            ChatStyle style = message.getChatStyle();
-            HoverEvent hover = style.getChatHoverEvent();
-            if (hover != null && hover.getAction() == Action.SHOW_ENTITY) {
-                // show_entity serialization is bugged
-                style.setChatHoverEvent(null);
-            }
-        }
-    }
 }

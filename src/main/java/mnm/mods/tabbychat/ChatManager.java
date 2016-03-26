@@ -46,7 +46,7 @@ public class ChatManager implements Chat {
 
     private Gson gson = new GsonBuilder()
             .excludeFieldsWithoutExposeAnnotation()
-            .registerTypeAdapter(IChatComponent.class, new IChatComponent.Serializer())
+            .registerTypeHierarchyAdapter(IChatComponent.class, new IChatComponent.Serializer())
             .registerTypeAdapter(ChatStyle.class, new ChatStyle.Serializer())
             .registerTypeAdapterFactory(new EnumTypeAdapterFactory())
             .create();
