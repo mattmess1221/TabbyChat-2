@@ -1,9 +1,6 @@
-apply plugin: 'net.minecraftforge.gradle.tweaker-client'
+apply plugin: 'net.minecraftforge.gradle.liteloader'
+version = rootProject.version
 apply from: utils.file('gradle/minecraft.gradle')
-
-version = '1.0.1'
-
-minecraft.replace '@VERSION@':project.version
 
 repositories.flatDir {
 	dir 'flat'
@@ -11,11 +8,13 @@ repositories.flatDir {
 
 dependencies {
     compile api
-	compile utils
-    deobfCompile 'com.mumfrey:mod_macros:0.11.1_beta2_mc1.8:srg'
+	provided utils
+    deobfProvided 'com.mumfrey:mod_macros:0.11.1_beta2_mc1.8:srg'
 }
-jar {
-    extension 'litemod'
-}
-sourceJar.enabled = false
 tasks.findAll {it.name.contains 'make' }*.enabled = false
+afterEvaluate {
+	jar{
+		manifest = null
+		classifier null
+	}
+}

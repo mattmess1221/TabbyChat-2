@@ -1,6 +1,7 @@
 apply plugin: 'net.minecraftforge.gradle.forge'
 
 ext.forgever = '11.15.1.1722'
+version = rootProject.version
 apply from: utils.file('gradle/minecraft.gradle')
 
 dependencies {

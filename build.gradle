@@ -16,18 +16,15 @@ ext {
 	api = rootProject.project(':api')
 	forge = rootProject.project(':forge')
 	compat = rootProject.project(':compat')
-
-	rev = '17'
 }
 apply plugin: 'net.minecraftforge.gradle.liteloader'
 version = '2.0.2-SNAPSHOT'
 // version = '2.0.2'
 
 apply from: utils.file('gradle/minecraft.gradle')
-version += "-b$gitRevision"
 
 group = 'mnm.mods'
-archivesBaseName = 'TabbyChat'
+archivesBaseName = 'tabbychat'
 
 minecraft {
 	// Replace the version string
@@ -37,33 +34,37 @@ minecraft {
 		"@MCVERSION@": project.minecraft.version
 	)
 }
-configurations {
-	compile.extendsFrom shadow
-}
 dependencies {
-	// Add util library
-	shadow utils
-	shadow api
-	shadow 'net.sf.jazzy:jazzy:0.5.2-rtext-1.4.1-2'
+	// basic dependencies
+	provided utils
+	compile api
+	compile 'net.sf.jazzy:jazzy:0.5.2-rtext-1.4.1-2'
 
 	testCompile 'junit:junit:4.12'
+
+	runtime forge
+	runtime compat
+
 }
 jar {
-	classifier "srg"
-	appendix "mc$minecraft.version"
+	classifier 'srg'
 
 	from api.sourceSets.main.output
-	from {forge.sourceSets.main.output}
-	from {compat.sourceSets.main.output}
+	from forge.sourceSets.main.output
+	from compat.sourceSets.main.output
 }
 shadowJar {
-	from {compat.sourceSets.main.output}
 	extension 'litemod'
-	appendix "mc$minecraft.version"
+	baseName = "mod-$baseName"
+	dependencies {
+		exclude dependency(name:'liteloader')
+		//exclude dependency(name:'mod_macros')
+	}
 }
 sourceJar {
-	from {[api,forge,compat]*.sourceSets.main.allSource}
-	appendix "mc$minecraft.version"
+	[api,forge,compat].each {
+		from it.sourceSets.main.allSource
+	}
 }
 
 reobf {
@@ -74,17 +75,8 @@ reobf {
 }
 
 afterEvaluate {
-//	evaluationDependsOnChildren()
 	if (System.env.BUILD_ID != null && !System.env.BUILD_ID.isEmpty()) {
-		// disable extra artifacts on build server
-		allprojects {
-			tasks.withType(Jar).findAll {
-				it.classifier in ['srg', 'sources']
-			}*.enabled = false
-		}
-		// also disable reobf tasks
-		[utils.reobf.jarSrg,reobf.jarSrg]*.task*.enabled = false
-		// find jars and move their destination dir to /build/libs of root project
+		// move their utils dir to /build/libs of root project
 		utils.jar.destinationDir file('build/libs')
 	}
 }
