@@ -1,5 +1,5 @@
 apply plugin: 'net.minecraftforge.gradle.liteloader'
-version = rootProject.version
+version = '1.0'
 apply from: utils.file('gradle/minecraft.gradle')
 
 repositories.flatDir {
@@ -13,8 +13,8 @@ dependencies {
 }
 tasks.findAll {it.name.contains 'make' }*.enabled = false
 afterEvaluate {
-	jar{
-		manifest = null
-		classifier null
+	jar {
+		// change this back to jar so it will be handled by shadow properly
+		extension 'jar'
 	}
 }
