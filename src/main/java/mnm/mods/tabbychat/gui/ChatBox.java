@@ -156,4 +156,11 @@ public class ChatBox extends GuiPanel implements ChatGui {
         return this.txtChatInput;
     }
 
+    public void onScreenHeightResize(int oldHeight, int newHeight) {
+        // measure the distance from the bottom, then subtract from new height
+        int bottom = oldHeight - getBounds().y;
+        getBounds().y = newHeight - bottom;
+        this.updateComponent();
+    }
+
 }

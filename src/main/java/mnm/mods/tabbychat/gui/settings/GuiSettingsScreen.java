@@ -73,7 +73,7 @@ public class GuiSettingsScreen extends ComponentScreen {
         close.setBackColor(Color.of(0, 255, 0, 127));
         close.getBus().register(new Object() {
             @Subscribe
-            public void closeTheScreenWithoutSaving(ActionPerformedEvent event) {
+            public void closeTheScreen(ActionPerformedEvent event) {
                 Minecraft.getMinecraft().displayGuiScreen(null);
             }
         });

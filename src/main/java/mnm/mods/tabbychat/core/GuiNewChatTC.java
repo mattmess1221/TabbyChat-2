@@ -16,6 +16,7 @@ import mnm.mods.tabbychat.api.gui.ChatScreen;
 import mnm.mods.tabbychat.gui.ChatBox;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiNewChat;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.IChatComponent;
 
@@ -23,15 +24,22 @@ public class GuiNewChatTC extends GuiNewChat implements ChatScreen {
 
     private static GuiNewChatTC instance;
 
+    private Minecraft mc;
+
     private TabbyChat tc = TabbyChat.getInstance();
     private ChatManager chat;
     private EventBus bus;
 
+    private int prevScreenHeight;
+
     public GuiNewChatTC(Minecraft minecraft, ChatManager manager) {
         super(minecraft);
+        mc = minecraft;
         chat = manager;
         bus = new EventBus();
         instance = this;
+
+        this.prevScreenHeight = mc.displayHeight;
     }
 
     public static GuiNewChat getInstance() {
@@ -45,8 +53,18 @@ public class GuiNewChatTC extends GuiNewChat implements ChatScreen {
 
     @Override
     public void drawChat(int i) {
+        if (prevScreenHeight != mc.displayHeight) {
+
+            ScaledResolution sr = new ScaledResolution(mc);
+            int scale = sr.getScaleFactor();
+            chat.getChatBox().onScreenHeightResize(prevScreenHeight / scale, mc.displayHeight / scale);
+
+            prevScreenHeight = mc.displayHeight;
+        }
+
         if (getChatOpen())
             return;
+
         ChatBox chatbox = chat.getChatBox();
         float scale = chatbox.getScale();
 
