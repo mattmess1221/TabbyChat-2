@@ -30,11 +30,9 @@ public class ChannelFilter extends TabFilter {
             GeneralServerSettings general = TabbyChat.getInstance().serverSettings.general;
             if (general.channelsEnabled.get()) {
                 String chan = event.matcher.group(1);
-                if (!general.ignoredChannels.get().contains(chan)) {
-                    // not ignoring
-                    Channel dest = TabbyAPI.getAPI().getChat().getChannel(chan);
-                    event.channels.add(dest);
-                }
+                Channel dest = TabbyAPI.getAPI().getChat().getChannel(chan);
+                event.channels.add(dest);
+
             }
         }
     }

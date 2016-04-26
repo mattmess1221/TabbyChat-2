@@ -1,9 +1,12 @@
 package mnm.mods.tabbychat.core;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.lwjgl.input.Mouse;
 
+import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 
 import mnm.mods.tabbychat.ChatChannel;
@@ -109,7 +112,11 @@ public class GuiNewChatTC extends GuiNewChat implements ChatScreen {
                 chatevent.channels.remove(ChatChannel.DEFAULT_CHANNEL);
             }
             boolean msg = !chatevent.channels.contains(this.chat.getActiveChannel());
-            for (Channel channel : chatevent.channels) {
+            final Set<String> ignored = Sets.newHashSet(this.tc.serverSettings.general.ignoredChannels.get());
+            Set<Channel> channels = chatevent.channels.stream()
+                    .filter(it -> !ignored.contains(it.getName()))
+                    .collect(Collectors.toSet());
+            for (Channel channel : channels) {
                 channel.addMessage(ichat, id);
                 if (msg) {
                     channel.setStatus(ChannelStatus.UNREAD);
