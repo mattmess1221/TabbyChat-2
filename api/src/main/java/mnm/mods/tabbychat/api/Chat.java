@@ -1,5 +1,7 @@
 package mnm.mods.tabbychat.api;
 
+import java.util.List;
+
 /**
  * Represents the Chat.
  */
@@ -44,7 +46,7 @@ public interface Chat {
      *
      * @return An array of channels
      */
-    Channel[] getChannels();
+    List<Channel> getChannels();
 
     /**
      * Gets the active {@link Channel}. The active channel is the channel whose

@@ -1,8 +1,5 @@
 package mnm.mods.tabbychat;
 
-import static mnm.mods.tabbychat.api.ChannelStatus.*;
-
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -102,30 +99,6 @@ public class ChatChannel implements Channel {
         this.prefixHidden = hidden;
     }
 
-    @Deprecated
-    @Override
-    public boolean isActive() {
-        return getStatus() == ACTIVE;
-    }
-
-    @Deprecated
-    @Override
-    public void setActive(boolean selected) {
-        setStatus(selected ? ACTIVE : null);
-    }
-
-    @Deprecated
-    @Override
-    public boolean isPending() {
-        return getStatus() == UNREAD || getStatus() == PINGED;
-    }
-
-    @Deprecated
-    @Override
-    public void setPending(boolean pending) {
-        setStatus(pending ? UNREAD : null);
-    }
-
     @Override
     public ChannelStatus getStatus() {
         return status;
@@ -161,8 +134,8 @@ public class ChatChannel implements Channel {
 
     @Override
     public void addMessage(IChatComponent chat, int id) {
-        Channel[] channels = TabbyChat.getInstance().getChat().getChannels();
-        if (!Arrays.asList(channels).contains(this)) {
+        List<Channel> channels = TabbyChat.getInstance().getChat().getChannels();
+        if (!channels.contains(this)) {
             TabbyChat.getInstance().getChat().addChannel(this);
         }
         if (id != 0) {
@@ -187,7 +160,7 @@ public class ChatChannel implements Channel {
 
         // compensate scrolling
         ChatArea chatbox = ((ChatManager) TabbyChat.getInstance().getChat()).getChatBox().getChatArea();
-        if (getStatus() == ACTIVE && chatbox.getScrollPos() > 0 && id == 0) {
+        if (getStatus() == ChannelStatus.ACTIVE && chatbox.getScrollPos() > 0 && id == 0) {
             chatbox.scroll(1);
         }
 
@@ -229,4 +202,32 @@ public class ChatChannel implements Channel {
     public void clear() {
         this.getMessages().clear();
     }
+
+    @Override
+    public int hashCode() {
+        return this.name.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (!(obj instanceof ChatChannel))
+            return false;
+        ChatChannel other = (ChatChannel) obj;
+        if (name == null) {
+            if (other.name != null)
+                return false;
+        } else if (!name.equals(other.name))
+            return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return (isPm ? "@" : "#") + name;
+    }
+
 }

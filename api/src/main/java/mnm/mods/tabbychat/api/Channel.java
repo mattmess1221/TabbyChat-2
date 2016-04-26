@@ -70,42 +70,6 @@ public interface Channel {
     void setPrefixHidden(boolean hidden);
 
     /**
-     * Gets whether this channel should be drawn as active.
-     *
-     * @return Whether active or not
-     * @deprecated Use getStatus() == ChannelStatus.ACTIVE
-     */
-    @Deprecated
-    boolean isActive();
-
-    /**
-     * Sets whether this channel should be drawn as active.
-     *
-     * @param active
-     * @deprecated Use setStatus(ChannelStatus.ACTIVE)
-     */
-    @Deprecated
-    void setActive(boolean active);
-
-    /**
-     * Gets whether this channel is pending.
-     *
-     * @return True if pending
-     * @deprecated Use getStatus() == ChannelStatus.UNREAD
-     */
-    @Deprecated
-    boolean isPending();
-
-    /**
-     * Sets whether this channel is pending.
-     *
-     * @param pending The new pending
-     * @deprecated Use setStatus(ChannelStatus.UNREAD)
-     */
-    @Deprecated
-    void setPending(boolean pending);
-
-    /**
      * Gets the channel's current status. A null indicates that there is no
      * status.
      *

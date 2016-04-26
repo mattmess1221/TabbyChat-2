@@ -8,10 +8,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Type;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
@@ -19,8 +19,9 @@ import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -55,7 +56,7 @@ public class ChatManager implements Chat {
 
     private Map<String, Channel> allChannels = Maps.newHashMap();
     private Map<String, Channel> allPms = Maps.newHashMap();
-    private Set<Channel> channels = Sets.newHashSet(ChatChannel.DEFAULT_CHANNEL);
+    private List<Channel> channels = Lists.newLinkedList();
     private Channel active = ChatChannel.DEFAULT_CHANNEL;
 
     private Map<Channel, List<Message>> messages = Maps.newHashMap();
@@ -70,6 +71,8 @@ public class ChatManager implements Chat {
         rect.height = settings.chatH.get();
 
         this.chatbox = new ChatBox(rect);
+
+        this.channels.add(ChatChannel.DEFAULT_CHANNEL);
     }
 
     @Override
@@ -130,8 +133,8 @@ public class ChatManager implements Chat {
     }
 
     @Override
-    public Channel[] getChannels() {
-        return channels.toArray(new Channel[channels.size()]);
+    public List<Channel> getChannels() {
+        return ImmutableList.copyOf(channels);
     }
 
     @Override
@@ -236,8 +239,15 @@ public class ChatManager implements Chat {
             addChannel(getChannel(e.getAsString(), true));
         }
 
+        String time;
+        if (root.has("datetime")) {
+            Instant datetime = Instant.ofEpochSecond(root.get("datetime").getAsLong());
+            time = datetime.toString();
+        } else {
+            time = "UNKNOWN";
+        }
         IChatComponent chat = new ChatBuilder()
-                .text("-- Previously --")
+                .text("Chat log from " + time)
                 .format(EnumChatFormatting.GRAY)
                 .build();
         for (Channel c : getChannels()) {
@@ -269,6 +279,7 @@ public class ChatManager implements Chat {
 
     public synchronized void saveTo(File dir) throws IOException {
         JsonObject root = new JsonObject();
+        root.addProperty("datetime", Instant.now().getEpochSecond());
         root.add("default", gson.toJsonTree(ChatChannel.DEFAULT_CHANNEL.getMessages()));
 
         JsonObject chans = new JsonObject();
