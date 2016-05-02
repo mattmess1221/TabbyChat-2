@@ -41,6 +41,9 @@ public class GuiAdvancedSettings extends SettingPanel<TabbySettings> {
         addComponent(new GuiLabel(new ChatComponentTranslation(ADVANCED_HIDE_DELIMS)), new int[] { 2, 7 });
         addComponent(new GuiSettingBoolean(getSettings().advanced.hideTag), new int[] { 1, 7 });
 
+        addComponent(new GuiLabel(new ChatComponentTranslation(ADVANCED_SPELLCHECK)), new int[] { 2, 8 });
+        addComponent(new GuiSettingBoolean(getSettings().advanced.spelling), new int[] { 1, 8 });
+
         addComponent(new GuiLabel(new ChatComponentTranslation(EXPERIMENTAL)), new int[] { 0, 13 });
     }
 

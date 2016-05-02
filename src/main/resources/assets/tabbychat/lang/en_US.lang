@@ -78,5 +78,6 @@ tabbychat.settings.advanced.fadetime=Fade time (ticks)
 tabbychat.settings.advanced.chatdelay=Chat delay (ms)
 tabbychat.settings.advanced.chatvisibility=Chat visibility
 tabbychat.settings.advanced.hidedelims=Hide channel delimeters*
+tabbychat.settings.advanced.spellcheck=Enable spellcheck
 
 tabbychat.settings.experimental=* Experimental and may not work right.

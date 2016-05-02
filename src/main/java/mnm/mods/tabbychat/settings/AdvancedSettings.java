@@ -16,5 +16,6 @@ public class AdvancedSettings extends ValueObject {
     public Value<Integer> msgDelay = value(500);
     public Value<Boolean> hideTag = value(false);
     public Value<Boolean> keepChatOpen = value(false);
+    public Value<Boolean> spelling = value(true);
     public Value<ChatVisibility> visibility = value(ChatVisibility.NORMAL);
 }

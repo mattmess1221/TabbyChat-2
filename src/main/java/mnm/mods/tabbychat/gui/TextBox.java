@@ -179,7 +179,7 @@ public class TextBox extends ChatGui implements ChatInput {
 
     public List<IChatComponent> getFormattedLines() {
         List<String> lines = getWrappedLines();
-        if (TabbyChat.getInstance().settings.general.spelling.enabled.get()) {
+        if (TabbyChat.getInstance().settings.advanced.spelling.get()) {
             spellcheck.checkSpelling(textField.getValue());
             return lines.stream()
                     .map(new SpellingFormatter(spellcheck))
