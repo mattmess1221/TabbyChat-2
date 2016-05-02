@@ -11,11 +11,13 @@ import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.gui.ChatGui;
 import mnm.mods.tabbychat.settings.ColorSettings;
 import mnm.mods.tabbychat.settings.TabbySettings;
+import mnm.mods.tabbychat.util.ScaledDimension;
 import mnm.mods.util.Color;
 import mnm.mods.util.gui.BorderLayout;
 import mnm.mods.util.gui.GuiPanel;
 import mnm.mods.util.gui.events.GuiMouseEvent;
 import mnm.mods.util.gui.events.GuiMouseEvent.MouseEvent;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.MathHelper;
@@ -156,10 +158,14 @@ public class ChatBox extends GuiPanel implements ChatGui {
         return this.txtChatInput;
     }
 
-    public void onScreenHeightResize(int oldHeight, int newHeight) {
+    public void onScreenHeightResize(int oldWidth, int oldHeight, int newWidth, int newHeight) {
         // measure the distance from the bottom, then subtract from new height
-        int bottom = oldHeight - getBounds().y;
-        getBounds().y = newHeight - bottom;
+
+        ScaledDimension oldDim = new ScaledDimension(oldWidth, oldHeight);
+        ScaledDimension newDim = new ScaledDimension(newWidth, newHeight);
+
+        int bottom = oldDim.getScaledHeight() - getBounds().y;
+        getBounds().y = newDim.getScaledHeight() - bottom;
         this.updateComponent();
     }
 
