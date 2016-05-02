@@ -46,6 +46,12 @@ public class SplitMessageTest {
         msg = "This message is also short, but the prefix is hidden.";
         target = new String[] { "/g This message is also short, but the prefix is hidden." };
         assertArrayEquals(GuiChatTC.processSends(msg, "/g", true), target);
+
+        // a different command is sent
+        msg = "/warp spawn";
+        target = new String[] { "/warp spawn" };
+        assertArrayEquals(GuiChatTC.processSends(msg, "/msg Friend", true), target);
+        assertArrayEquals(GuiChatTC.processSends(msg, "/msg Friend", false), target);
     }
 
 }
