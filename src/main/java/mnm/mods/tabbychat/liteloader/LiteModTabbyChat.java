@@ -7,18 +7,20 @@ import org.apache.logging.log4j.LogManager;
 
 import com.google.common.eventbus.EventBus;
 import com.mojang.realmsclient.dto.RealmsServer;
+import com.mumfrey.liteloader.InitCompleteListener;
 import com.mumfrey.liteloader.JoinGameListener;
 import com.mumfrey.liteloader.core.LiteLoader;
 
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.internal.Compat;
 import mnm.mods.tabbychat.util.TabbyRef;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.play.server.S01PacketJoinGame;
 
-public class LiteModTabbyChat implements JoinGameListener {
+public class LiteModTabbyChat implements JoinGameListener, InitCompleteListener {
 
     private TabbyChat tc;
 
@@ -36,6 +38,11 @@ public class LiteModTabbyChat implements JoinGameListener {
     public void init(File configPath) {
         this.tc = new TabbyChat(configPath);
         tc.init();
+    }
+
+    @Override
+    public void onInitCompleted(Minecraft minecraft, LiteLoader loader) {
+        tc.postInit();
         addCompatibility("mnm.mods.tabbychat.compat.Macros", tc.getChatGui().getBus());
     }
 
@@ -58,12 +65,15 @@ public class LiteModTabbyChat implements JoinGameListener {
 
                 bus.register(cl.newInstance());
             }
-        } catch(ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
             // pass over, it's not on the classpath
         } catch (Throwable e) {
             LogManager.getLogger().warn("Unable to add compatibility. Did something change?", e);
         }
     }
+
+    @Override
+    public void onTick(Minecraft minecraft, float partialTicks, boolean inGame, boolean clock) {}
 
     @Override
     public void upgradeSettings(String version, File configPath, File oldConfigPath) {}

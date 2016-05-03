@@ -108,10 +108,6 @@ public class TabbyChat extends TabbyAPI implements InternalAPI {
         return bus;
     }
 
-//    public TabbyEvents getEventManager() {
-//        return this.events;
-//    }
-
     public Spellcheck getSpellcheck() {
         return spellcheck;
     }
@@ -137,8 +133,6 @@ public class TabbyChat extends TabbyAPI implements InternalAPI {
 
         spellcheck = new Spellcheck(getDataFolder());
 
-        chatManager = new ChatManager(this);
-        chatGui = new GuiNewChatTC(Minecraft.getMinecraft(), chatManager);
         addonManager = new TabbyAddonManager();
 
         // Keeps the current language updated whenever it is changed.
@@ -153,6 +147,12 @@ public class TabbyChat extends TabbyAPI implements InternalAPI {
         MnmUtils.getInstance().setChatProxy(new TabbedChatProxy());
 
         addChatHooks();
+    }
+
+    public void postInit() {
+        // gui related stuff should be done here
+        chatManager = new ChatManager(this);
+        chatGui = new GuiNewChatTC(Minecraft.getMinecraft(), chatManager);
     }
 
     private void addFilterVariables() {
