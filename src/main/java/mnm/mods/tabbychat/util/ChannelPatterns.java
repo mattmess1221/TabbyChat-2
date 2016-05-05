@@ -18,7 +18,7 @@ public enum ChannelPatterns {
 
     private ChannelPatterns(String title, String pattern) {
         this.translation = title;
-        this.pattern = Pattern.compile(String.format(pattern, "(.{1,16})"));
+        this.pattern = Pattern.compile(String.format(pattern, "(.{1,16}?)"));
     }
 
     public Pattern getPattern() {
