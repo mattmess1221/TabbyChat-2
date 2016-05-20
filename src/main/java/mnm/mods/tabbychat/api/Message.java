@@ -2,7 +2,7 @@ package mnm.mods.tabbychat.api;
 
 import java.util.Date;
 
-import net.minecraft.util.IChatComponent;
+import net.minecraft.util.text.ITextComponent;
 
 /**
  * Represents a message.
@@ -14,14 +14,14 @@ public interface Message {
      *
      * @return The message
      */
-    IChatComponent getMessage();
+    ITextComponent getMessage();
 
     /**
      * Gets the message with a time stamp if they are enabled.
      *
      * @return The time-stamped message
      */
-    IChatComponent getMessageWithOptionalTimestamp();
+    ITextComponent getMessageWithOptionalTimestamp();
 
     /**
      * Gets the update counter used for this message.

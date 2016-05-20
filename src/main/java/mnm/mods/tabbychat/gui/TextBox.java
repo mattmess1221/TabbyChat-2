@@ -21,8 +21,8 @@ import mnm.mods.util.text.FancyFontRenderer;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiTextField;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.IChatComponent;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 
 public class TextBox extends ChatGui implements ChatInput {
 
@@ -106,8 +106,8 @@ public class TextBox extends ChatGui implements ChatInput {
 
         int yPos = 2;
         int pos = 0;
-        List<IChatComponent> lines = getFormattedLines();
-        for (IChatComponent line : lines) {
+        List<ITextComponent> lines = getFormattedLines();
+        for (ITextComponent line : lines) {
             Color color = TabbyChat.getInstance().settings.colors.chatTextColor.get();
             ffr.drawChat(line, 1, yPos, color.getHex(), false);
             int xPos = 1;
@@ -177,7 +177,7 @@ public class TextBox extends ChatGui implements ChatInput {
         return fr.listFormattedStringToWidth(textField.getValue(), getBounds().width);
     }
 
-    public List<IChatComponent> getFormattedLines() {
+    public List<ITextComponent> getFormattedLines() {
         List<String> lines = getWrappedLines();
         if (TabbyChat.getInstance().settings.advanced.spelling.get()) {
             spellcheck.checkSpelling(textField.getValue());
@@ -186,7 +186,7 @@ public class TextBox extends ChatGui implements ChatInput {
                     .collect(Collectors.toList());
         }
         return lines.stream()
-                .map(ChatComponentText::new)
+                .map(TextComponentString::new)
                 .collect(Collectors.toList());
     }
 

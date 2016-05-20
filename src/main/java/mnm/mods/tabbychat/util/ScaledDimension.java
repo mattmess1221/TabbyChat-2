@@ -1,12 +1,12 @@
 package mnm.mods.tabbychat.util;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.MathHelper;
 
 /**
  * Modified version of ScaledResolution. Supports arbitrary dimensions
+ * 
  * @author Matthew
- *
  */
 public class ScaledDimension {
 

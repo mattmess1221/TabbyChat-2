@@ -6,19 +6,13 @@ buildscript {
 			url 'http://files.minecraftforge.net/maven'
 		}
 	}
-	dependencies.classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
-}
-plugins {
-	id 'com.github.johnrengelman.shadow' version '1.2.3'
+	dependencies.classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
 }
 ext {
 	utils = rootProject.project(':MnM-Utils')
-	api = rootProject.project(':api')
-	forge = rootProject.project(':forge')
-	compat = rootProject.project(':compat')
 }
 apply plugin: 'net.minecraftforge.gradle.liteloader'
-version = '2.0.4'
+version = '2.1'
 
 apply from: utils.file('gradle/minecraft.gradle')
 
@@ -33,49 +27,35 @@ minecraft {
 		"@MCVERSION@": project.minecraft.version
 	)
 }
+configurations {
+	shade
+	compile.extendsFrom shade
+}
 dependencies {
 	// basic dependencies
-	provided utils
-	compile api
-	compile 'net.sf.jazzy:jazzy:0.5.2-rtext-1.4.1-2'
+	compile utils
+
+	shade 'net.sf.jazzy:jazzy:0.5.2-rtext-1.4.1-2'
 
 	testCompile 'junit:junit:4.12'
 
-	runtime forge
-	runtime compat
-
+}
+def fromDeps = {
+	configurations.shade.collect {it.directory ? it : zipTree(it)}.each {
+		from it
+	}
+	from litemod
 }
 jar {
+	with fromDeps
+}
+task srgJar(type:Jar) {
 	classifier 'srg'
-
-	from api.sourceSets.main.output
-	from forge.sourceSets.main.output
-	from compat.sourceSets.main.output
-}
-shadowJar {
-	extension 'litemod'
-	baseName = "mod-$baseName"
-	dependencies {
-		exclude dependency(name:'liteloader')
-		//exclude dependency(name:'mod_macros')
-	}
-}
-sourceJar {
-	[api,forge,compat].each {
-		from it.sourceSets.main.allSource
-	}
+	with fromDeps
 }
 
 reobf {
-	shadowJar {}
-	jar {
+	srgJar {
 		mappingType = 'SEARGE'
-	}
-}
-
-afterEvaluate {
-	if (System.env.BUILD_ID != null && !System.env.BUILD_ID.isEmpty()) {
-		// move their utils dir to /build/libs of root project
-		utils.jar.destinationDir file('build/libs')
 	}
 }

@@ -10,12 +10,12 @@ import mnm.mods.tabbychat.api.Message;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiUtilRenderComponents;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.IChatComponent;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 
 public class ChatTextUtils {
 
-    public static List<IChatComponent> split(IChatComponent chat, int width) {
+    public static List<ITextComponent> split(ITextComponent chat, int width) {
         FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
         return GuiUtilRenderComponents.splitText(chat, width, fr, false, false);
     }
@@ -29,9 +29,9 @@ public class ChatTextUtils {
             Iterator<Message> iter = list.iterator();
             while (iter.hasNext() && result.size() <= 100) {
                 Message line = iter.next();
-                List<IChatComponent> chatlist = split(line.getMessageWithOptionalTimestamp(), width);
+                List<ITextComponent> chatlist = split(line.getMessageWithOptionalTimestamp(), width);
                 for (int i = chatlist.size() - 1; i >= 0; i--) {
-                    IChatComponent chat = chatlist.get(i);
+                    ITextComponent chat = chatlist.get(i);
                     result.add(new ChatMessage(line.getCounter(), chat, line.getID(), false));
                 }
             }
@@ -48,19 +48,19 @@ public class ChatTextUtils {
      * @return The end of the chat
      * @see String#substring(int)
      */
-    public static IChatComponent subChat(IChatComponent chat, int beginIndex) {
-        IChatComponent rchat = null;
-        Iterator<IChatComponent> ichat = chat.iterator();
+    public static ITextComponent subChat(ITextComponent chat, int beginIndex) {
+        ITextComponent rchat = null;
+        Iterator<ITextComponent> ichat = chat.iterator();
         int pos = 0;
         while (ichat.hasNext()) {
-            IChatComponent part = ichat.next();
-            String s = part.getUnformattedTextForChat();
+            ITextComponent part = ichat.next();
+            String s = part.getUnformattedComponentText();
 
             int len = s.length();
             if (len + pos >= beginIndex) {
                 if (pos < beginIndex) {
-                    IChatComponent schat = new ChatComponentText(s.substring(beginIndex - pos));
-                    schat.setChatStyle(part.getChatStyle().createShallowCopy());
+                    ITextComponent schat = new TextComponentString(s.substring(beginIndex - pos));
+                    schat.setStyle(part.getStyle().createShallowCopy());
                     part = schat;
                 }
                 if (rchat == null) {

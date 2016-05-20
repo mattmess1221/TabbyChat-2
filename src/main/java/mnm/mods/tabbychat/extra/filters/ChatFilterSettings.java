@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import mnm.mods.tabbychat.api.filters.FilterSettings;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.text.TextFormatting;
 
 /**
  * Defines the settings used by filters.
@@ -17,8 +17,8 @@ public class ChatFilterSettings implements FilterSettings {
     private boolean isDestinationPm;
     // highlighting
     private boolean highlight = false;
-    private EnumChatFormatting color;
-    private EnumChatFormatting format;
+    private TextFormatting color;
+    private TextFormatting format;
     // notifications
     private boolean soundNotification = false;
     private String soundName = "";
@@ -59,12 +59,12 @@ public class ChatFilterSettings implements FilterSettings {
     }
 
     @Override
-    public EnumChatFormatting getColor() {
+    public TextFormatting getColor() {
         return color;
     }
 
     @Override
-    public void setColor(EnumChatFormatting color) {
+    public void setColor(TextFormatting color) {
         if (color != null && !color.isColor()) {
             throw new IllegalArgumentException(color.getFriendlyName() + " is not a color.");
         }
@@ -72,12 +72,12 @@ public class ChatFilterSettings implements FilterSettings {
     }
 
     @Override
-    public EnumChatFormatting getFormat() {
+    public TextFormatting getFormat() {
         return format;
     }
 
     @Override
-    public void setFormat(EnumChatFormatting format) {
+    public void setFormat(TextFormatting format) {
         if (format != null && !format.isFancyStyling()) {
             throw new IllegalArgumentException(format.getFriendlyName() + " is not formatting.");
         }

@@ -20,7 +20,7 @@ import mnm.mods.tabbychat.gui.ChatBox;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiNewChat;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.IChatComponent;
+import net.minecraft.util.text.ITextComponent;
 
 public class GuiNewChatTC extends GuiNewChat implements ChatScreen {
 
@@ -92,13 +92,13 @@ public class GuiNewChatTC extends GuiNewChat implements ChatScreen {
     }
 
     @Override
-    public synchronized void printChatMessageWithOptionalDeletion(IChatComponent ichat, int id) {
+    public synchronized void printChatMessageWithOptionalDeletion(ITextComponent ichat, int id) {
         // chat listeners
         ChatReceivedEvent chatevent = new ChatReceivedEvent(ichat, id);
         chatevent.channels.add(ChatChannel.DEFAULT_CHANNEL);
         tc.getBus().post(chatevent);
         // chat filters
-        ichat = chatevent.chat;
+        ichat = chatevent.text;
         id = chatevent.id;
         if (ichat != null && !ichat.getUnformattedText().isEmpty()) {
             if (id != 0) {
@@ -142,7 +142,7 @@ public class GuiNewChatTC extends GuiNewChat implements ChatScreen {
     }
 
     @Override
-    public IChatComponent getChatComponent(int clickX, int clickY) {
+    public ITextComponent getChatComponent(int clickX, int clickY) {
         return chat.getChatBox().getChatArea().getChatComponent(clickX, clickY);
     }
 

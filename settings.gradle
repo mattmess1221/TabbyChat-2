@@ -1,5 +1,5 @@
 rootProject.name = 'tabbychat'
-include 'MnM-Utils', 'api', 'forge'
+include 'MnM-Utils'
 
 // compat stuff
 include ':compat'

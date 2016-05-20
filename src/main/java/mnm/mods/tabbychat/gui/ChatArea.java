@@ -29,9 +29,9 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiUtilRenderComponents;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer.EnumChatVisibility;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.IChatComponent;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 
 public class ChatArea extends GuiComponent implements Supplier<List<Message>>, ReceivedChat {
 
@@ -202,7 +202,7 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, R
     }
 
     @Override
-    public IChatComponent getChatComponent(int clickX, int clickY) {
+    public ITextComponent getChatComponent(int clickX, int clickY) {
         if (GuiNewChatTC.getInstance().getChatOpen()) {
             Point point = scalePoint(new Point(clickX, clickY));
             Rectangle actual = getActualBounds();
@@ -224,17 +224,17 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, R
                 if (linePos >= 0 && linePos < list.size()) {
                     Message chatline = list.get(linePos);
                     float x = actual.x;
-                    Iterator<IChatComponent> iterator = chatline.getMessageWithOptionalTimestamp().iterator();
+                    Iterator<ITextComponent> iterator = chatline.getMessageWithOptionalTimestamp().iterator();
 
                     while (iterator.hasNext()) {
-                        IChatComponent ichatcomponent = iterator.next();
+                        ITextComponent ichatcomponent = iterator.next();
 
-                        if (ichatcomponent instanceof ChatComponentText) {
+                        if (ichatcomponent instanceof TextComponentString) {
 
                             // get the text of the component, no children.
-                            String text = ((ChatComponentText) ichatcomponent).getChatComponentText_TextValue();
+                            String text = ichatcomponent.getUnformattedComponentText();
                             // clean it up
-                            String clean = GuiUtilRenderComponents.func_178909_a(text, false);
+                            String clean = GuiUtilRenderComponents.removeTextColorsIfConfigured(text, false);
                             // get it's width, then scale it.
                             x += this.mc.fontRendererObj.getStringWidth(clean) * scale;
 

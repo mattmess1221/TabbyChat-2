@@ -28,11 +28,11 @@ public class ChatAddonAntiSpam {
                 counter = new Counter("");
                 messageMap.put(channel, counter);
             }
-            String chat = event.chat.getUnformattedText();
+            String chat = event.text.getUnformattedText();
 
             if (getDifference(chat, counter.lastMessage) <= prejudice) {
                 counter.spamCounter++;
-                event.chat.appendText(" [" + counter.spamCounter + "x]");
+                event.text.appendText(" [" + counter.spamCounter + "x]");
                 channel.removeMessageAt(0);
             } else {
                 counter.lastMessage = chat;

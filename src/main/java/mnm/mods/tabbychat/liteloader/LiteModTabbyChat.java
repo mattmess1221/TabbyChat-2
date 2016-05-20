@@ -18,7 +18,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.network.INetHandler;
-import net.minecraft.network.play.server.S01PacketJoinGame;
+import net.minecraft.network.play.server.SPacketJoinGame;
 
 public class LiteModTabbyChat implements JoinGameListener, InitCompleteListener {
 
@@ -47,7 +47,7 @@ public class LiteModTabbyChat implements JoinGameListener, InitCompleteListener 
     }
 
     @Override
-    public void onJoinGame(INetHandler iNet, S01PacketJoinGame packet, ServerData serverData, RealmsServer realms) {
+    public void onJoinGame(INetHandler iNet, SPacketJoinGame packet, ServerData serverData, RealmsServer realms) {
         NetHandlerPlayClient play = (NetHandlerPlayClient) iNet;
         SocketAddress addr = null;
         if (!play.getNetworkManager().isLocalChannel()) {
@@ -71,9 +71,6 @@ public class LiteModTabbyChat implements JoinGameListener, InitCompleteListener 
             LogManager.getLogger().warn("Unable to add compatibility. Did something change?", e);
         }
     }
-
-    @Override
-    public void onTick(Minecraft minecraft, float partialTicks, boolean inGame, boolean clock) {}
 
     @Override
     public void upgradeSettings(String version, File configPath, File oldConfigPath) {}

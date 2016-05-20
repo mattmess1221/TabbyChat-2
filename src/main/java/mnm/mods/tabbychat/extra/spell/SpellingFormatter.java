@@ -6,11 +6,11 @@ import java.util.function.Function;
 import com.swabunga.spell.event.SpellCheckEvent;
 
 import mnm.mods.util.Color;
-import mnm.mods.util.text.ChatBuilder;
-import mnm.mods.util.text.IChatBuilder;
-import net.minecraft.util.IChatComponent;
+import mnm.mods.util.text.ITextBuilder;
+import mnm.mods.util.text.TextBuilder;
+import net.minecraft.util.text.ITextComponent;
 
-public class SpellingFormatter implements Function<String, IChatComponent> {
+public class SpellingFormatter implements Function<String, ITextComponent> {
 
     private final Iterator<SpellCheckEvent> spelling;
 
@@ -22,10 +22,10 @@ public class SpellingFormatter implements Function<String, IChatComponent> {
     }
 
     @Override
-    public IChatComponent apply(String text) {
+    public ITextComponent apply(String text) {
         if (text == null)
             return null;
-        IChatBuilder b = new ChatBuilder();
+        ITextBuilder b = new TextBuilder();
         int prev = 0;
         int length = totalLength;
         // save where we are at.

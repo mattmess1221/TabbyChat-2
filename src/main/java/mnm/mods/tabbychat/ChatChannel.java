@@ -16,7 +16,7 @@ import mnm.mods.tabbychat.gui.settings.GuiSettingsChannel;
 import mnm.mods.tabbychat.util.ChannelPatterns;
 import mnm.mods.tabbychat.util.ChatTextUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.IChatComponent;
+import net.minecraft.util.text.ITextComponent;
 
 public class ChatChannel implements Channel {
 
@@ -128,12 +128,12 @@ public class ChatChannel implements Channel {
     }
 
     @Override
-    public void addMessage(IChatComponent chat) {
+    public void addMessage(ITextComponent chat) {
         addMessage(chat, 0);
     }
 
     @Override
-    public void addMessage(IChatComponent chat, int id) {
+    public void addMessage(ITextComponent chat, int id) {
         List<Channel> channels = TabbyChat.getInstance().getChat().getChannels();
         if (!channels.contains(this)) {
             TabbyChat.getInstance().getChat().addChannel(this);
@@ -143,19 +143,19 @@ public class ChatChannel implements Channel {
         }
         MessageAddedToChannelEvent event = new MessageAddedToChannelEvent(chat.createCopy(), id, this);
         TabbyChat.getInstance().getBus().post(event);
-        if (event.chat == null) {
+        if (event.text == null) {
             return;
         }
         if (TabbyChat.getInstance().settings.advanced.hideTag.get() && this != DEFAULT_CHANNEL) {
             ChannelPatterns pattern = TabbyChat.getInstance().serverSettings.general.channelPattern.get();
-            Matcher matcher = pattern.getPattern().matcher(event.chat.getUnformattedText());
+            Matcher matcher = pattern.getPattern().matcher(event.text.getUnformattedText());
             if (matcher.find()) {
-                event.chat = ChatTextUtils.subChat(event.chat, matcher.end());
+                event.text = ChatTextUtils.subChat(event.text, matcher.end());
             }
         }
 
         int uc = Minecraft.getMinecraft().ingameGUI.getUpdateCounter();
-        Message msg = new ChatMessage(uc, event.chat, id, true);
+        Message msg = new ChatMessage(uc, event.text, id, true);
         this.getMessages().add(0, msg);
 
         // compensate scrolling

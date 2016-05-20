@@ -14,12 +14,12 @@ public abstract class TabFilter extends ChatFilter {
 
     @Override
     public void applyFilter(ChatReceivedEvent message) {
-        String chat = message.chat.getUnformattedText();
+        String chat = message.text.getUnformattedText();
         Pattern pattern = getPattern();
         if (pattern == null) return;
         Matcher matcher = pattern.matcher(chat);
         if (matcher.find()) {
-            FilterEvent event = new FilterEvent(matcher, message.channels, message.chat);
+            FilterEvent event = new FilterEvent(matcher, message.channels, message.text);
             doAction(event);
             message.channels = event.channels;
         }

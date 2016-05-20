@@ -15,9 +15,10 @@ import mnm.mods.tabbychat.api.filters.IFilterAction;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.audio.PositionedSoundRecord;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.StringUtils;
+import net.minecraft.util.text.TextComponentString;
 
 public class ChatFilter implements Filter {
 
@@ -44,7 +45,7 @@ public class ChatFilter implements Filter {
         } catch (PatternSyntaxException e) {
             e.printStackTrace();
             TabbyAPI.getAPI().getChat().getChannel("TabbyChat")
-                    .addMessage(new ChatComponentText(e.getMessage()));
+                    .addMessage(new TextComponentString(e.getMessage()));
         }
     }
 
@@ -90,7 +91,7 @@ public class ChatFilter implements Filter {
     }
 
     public void applyFilter(ChatReceivedEvent message) {
-        String chat = StringUtils.stripControlCodes(message.chat.getUnformattedText());
+        String chat = StringUtils.stripControlCodes(message.text.getUnformattedText());
 
         // Iterate through matches
         Pattern pattern = getPattern();
@@ -98,9 +99,9 @@ public class ChatFilter implements Filter {
             return;
         Matcher matcher = pattern.matcher(chat);
         while (matcher.find()) {
-            FilterEvent event = new FilterEvent(matcher, message.channels, message.chat);
+            FilterEvent event = new FilterEvent(matcher, message.channels, message.text);
             doAction(event);
-            message.chat = event.chat; // Set the new chat
+            message.text = event.text; // Set the new chat
             message.channels = event.channels; // Add new channels.
         }
     }
@@ -146,7 +147,8 @@ public class ChatFilter implements Filter {
             if (settings.isSoundNotification()) {
                 String sname = settings.getSoundName();
                 ResourceLocation loc = new ResourceLocation(sname);
-                ISound sound = PositionedSoundRecord.create(loc);
+                SoundEvent sndEvent = SoundEvent.REGISTRY.getObject(loc);
+                ISound sound = PositionedSoundRecord.getMasterRecord(sndEvent, 1.0F);
                 Minecraft.getMinecraft().getSoundHandler().playSound(sound);
             }
         }

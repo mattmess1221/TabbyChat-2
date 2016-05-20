@@ -19,8 +19,8 @@ import mnm.mods.util.gui.config.GuiSettingEnum;
 import mnm.mods.util.gui.config.GuiSettingNumber.GuiSettingDouble;
 import mnm.mods.util.gui.config.SettingPanel;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 
 public class GuiSettingsGeneral extends SettingPanel<TabbySettings> {
 
@@ -35,36 +35,36 @@ public class GuiSettingsGeneral extends SettingPanel<TabbySettings> {
         GeneralSettings sett = getSettings().general;
 
         int pos = 1;
-        addComponent(new GuiLabel(new ChatComponentTranslation(LOG_CHAT)), new int[] { 2, pos });
+        addComponent(new GuiLabel(new TextComponentTranslation(LOG_CHAT)), new int[] { 2, pos });
         GuiSettingBoolean chkLogChat = new GuiSettingBoolean(sett.logChat);
         chkLogChat.setCaption(I18n.format(LOG_CHAT_DESC));
         addComponent(chkLogChat, new int[] { 1, pos });
 
-        addComponent(new GuiLabel(new ChatComponentTranslation(SPLIT_LOG)), new int[] { 7, pos });
+        addComponent(new GuiLabel(new TextComponentTranslation(SPLIT_LOG)), new int[] { 7, pos });
         GuiSettingBoolean chkSplitLog = new GuiSettingBoolean(sett.splitLog);
         chkSplitLog.setCaption(I18n.format(SPLIT_LOG_DESC));
         addComponent(chkSplitLog, new int[] { 6, pos });
 
         pos += 2;
-        addComponent(new GuiLabel(new ChatComponentTranslation(TIMESTAMP)), new int[] { 2, pos });
+        addComponent(new GuiLabel(new TextComponentTranslation(TIMESTAMP)), new int[] { 2, pos });
         addComponent(new GuiSettingBoolean(sett.timestampChat), new int[] { 1, pos });
 
         pos += 2;
-        addComponent(new GuiLabel(new ChatComponentTranslation(TIMESTAMP_STYLE)), new int[] { 3, pos });
+        addComponent(new GuiLabel(new TextComponentTranslation(TIMESTAMP_STYLE)), new int[] { 3, pos });
         addComponent(new GuiSettingEnum<TimeStamps>(sett.timestampStyle, TimeStamps.values()), new int[] { 5, pos, 4, 1 });
 
         pos += 2;
-        addComponent(new GuiLabel(new ChatComponentTranslation(TIMESTAMP_COLOR)), new int[] { 3, pos });
-        addComponent(new GuiSettingEnum<EnumChatFormatting>(sett.timestampColor, getColors(), getColorNames()), new int[] { 5, pos, 4, 1 });
+        addComponent(new GuiLabel(new TextComponentTranslation(TIMESTAMP_COLOR)), new int[] { 3, pos });
+        addComponent(new GuiSettingEnum<TextFormatting>(sett.timestampColor, getColors(), getColorNames()), new int[] { 5, pos, 4, 1 });
 
         pos += 2;
-        addComponent(new GuiLabel(new ChatComponentTranslation(ANTI_SPAM)), new int[] { 2, pos });
+        addComponent(new GuiLabel(new TextComponentTranslation(ANTI_SPAM)), new int[] { 2, pos });
         GuiSettingBoolean chkSpam = new GuiSettingBoolean(sett.antiSpam);
         chkSpam.setCaption(I18n.format(ANTI_SPAM_DESC));
         addComponent(chkSpam, new int[] { 1, pos });
 
         pos += 2;
-        addComponent(new GuiLabel(new ChatComponentTranslation(SPAM_PREJUDICE)), new int[] { 3, pos });
+        addComponent(new GuiLabel(new TextComponentTranslation(SPAM_PREJUDICE)), new int[] { 3, pos });
         GuiSettingDouble nud = new GuiSettingDouble(sett.antiSpamPrejudice);
         nud.getInput().setMin(0);
         nud.getInput().setMax(1);
@@ -74,18 +74,18 @@ public class GuiSettingsGeneral extends SettingPanel<TabbySettings> {
         addComponent(nud, new int[] { 6, pos, 2, 1 });
 
         pos += 2;
-        addComponent(new GuiLabel(new ChatComponentTranslation(UNREAD_FLASHING)), new int[] { 2, pos });
+        addComponent(new GuiLabel(new TextComponentTranslation(UNREAD_FLASHING)), new int[] { 2, pos });
         addComponent(new GuiSettingBoolean(sett.unreadFlashing), new int[] { 1, pos });
 
         pos += 2;
-        addComponent(new GuiLabel(new ChatComponentTranslation(CHECK_UPDATES)), new int[] { 2, pos });
+        addComponent(new GuiLabel(new TextComponentTranslation(CHECK_UPDATES)), new int[] { 2, pos });
         addComponent(new GuiSettingBoolean(sett.checkUpdates), new int[] { 1, pos });
     }
 
-    private static EnumChatFormatting[] getColors() {
-        return Sets.newHashSet(EnumChatFormatting.values()).stream()
+    private static TextFormatting[] getColors() {
+        return Sets.newHashSet(TextFormatting.values()).stream()
                 .filter(input -> input.isColor())
-                .toArray(EnumChatFormatting[]::new);
+                .toArray(TextFormatting[]::new);
     }
 
     private static String[] getColorNames() {

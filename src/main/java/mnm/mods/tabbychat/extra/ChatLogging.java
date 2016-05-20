@@ -48,7 +48,7 @@ public class ChatLogging {
                 return;
             }
 
-            out.println(LOG_FORMAT.format(Calendar.getInstance().getTime()) + message.chat.getUnformattedText());
+            out.println(LOG_FORMAT.format(Calendar.getInstance().getTime()) + message.text.getUnformattedText());
         }
     }
 

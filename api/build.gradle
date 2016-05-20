@@ -1,8 +1,0 @@
-apply plugin: 'net.minecraftforge.gradle.tweaker-client'
-
-archivesBaseName = 'TabbyChat-API'
-version = '1.0'
-apply from: utils.file('gradle/minecraft.gradle')
-
-jar.classifier "api"
-tasks.findAll {it.name.contains 'make' }*.enabled = false

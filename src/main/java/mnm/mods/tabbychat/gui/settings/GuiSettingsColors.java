@@ -10,7 +10,7 @@ import mnm.mods.util.gui.GuiLabel;
 import mnm.mods.util.gui.config.GuiSettingColor;
 import mnm.mods.util.gui.config.SettingPanel;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.text.TextComponentTranslation;
 
 public class GuiSettingsColors extends SettingPanel<TabbySettings> {
 
@@ -26,9 +26,9 @@ public class GuiSettingsColors extends SettingPanel<TabbySettings> {
         this.addComponent(new GuiSettingColor(getSettings().colors.chatBorderColor), new int[] { 2, 6, 4, 4 });
         this.addComponent(new GuiSettingColor(getSettings().colors.chatTextColor), new int[] { 2, 11, 4, 4 });
 
-        this.addComponent(new GuiLabel(new ChatComponentTranslation(COLOR_CHATBOX)), new int[] { 8, 3 });
-        this.addComponent(new GuiLabel(new ChatComponentTranslation(COLOR_CHAT_BORDER)), new int[]{ 8, 8 });
-        this.addComponent(new GuiLabel(new ChatComponentTranslation(COLOR_CHAT_TEXT)), new int[] { 8, 13 });
+        this.addComponent(new GuiLabel(new TextComponentTranslation(COLOR_CHATBOX)), new int[] { 8, 3 });
+        this.addComponent(new GuiLabel(new TextComponentTranslation(COLOR_CHAT_BORDER)), new int[]{ 8, 8 });
+        this.addComponent(new GuiLabel(new TextComponentTranslation(COLOR_CHAT_TEXT)), new int[] { 8, 13 });
 
     }
 

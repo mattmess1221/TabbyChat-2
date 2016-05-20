@@ -37,18 +37,18 @@ import mnm.mods.tabbychat.gui.ChatBox;
 import mnm.mods.tabbychat.gui.TextBox;
 import mnm.mods.tabbychat.settings.AdvancedSettings;
 import mnm.mods.util.config.ValueMap;
-import mnm.mods.util.text.ChatBuilder;
-import net.minecraft.util.ChatStyle;
-import net.minecraft.util.EnumChatFormatting;
+import mnm.mods.util.text.TextBuilder;
 import net.minecraft.util.EnumTypeAdapterFactory;
-import net.minecraft.util.IChatComponent;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextFormatting;
 
 public class ChatManager implements Chat {
 
     private Gson gson = new GsonBuilder()
             .excludeFieldsWithoutExposeAnnotation()
-            .registerTypeHierarchyAdapter(IChatComponent.class, new IChatComponent.Serializer())
-            .registerTypeAdapter(ChatStyle.class, new ChatStyle.Serializer())
+            .registerTypeHierarchyAdapter(ITextComponent.class, new ITextComponent.Serializer())
+            .registerTypeAdapter(Style.class, new Style.Serializer())
             .registerTypeAdapterFactory(new EnumTypeAdapterFactory())
             .create();
 
@@ -246,9 +246,9 @@ public class ChatManager implements Chat {
         } else {
             time = "UNKNOWN";
         }
-        IChatComponent chat = new ChatBuilder()
+        ITextComponent chat = new TextBuilder()
                 .text("Chat log from " + time)
-                .format(EnumChatFormatting.GRAY)
+                .format(TextFormatting.GRAY)
                 .build();
         for (Channel c : getChannels()) {
             if (!c.getMessages().isEmpty()) {

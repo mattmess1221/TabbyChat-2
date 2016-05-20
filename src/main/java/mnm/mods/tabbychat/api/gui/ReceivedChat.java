@@ -1,6 +1,6 @@
 package mnm.mods.tabbychat.api.gui;
 
-import net.minecraft.util.IChatComponent;
+import net.minecraft.util.text.ITextComponent;
 
 /**
  * This contains all the previously received chat from the current server.
@@ -15,7 +15,7 @@ public interface ReceivedChat extends IGui {
      * @param clickY The y position
      * @return The chat component
      */
-    IChatComponent getChatComponent(int clickX, int clickY);
+    ITextComponent getChatComponent(int clickX, int clickY);
 
     /**
      * Scrolls the chat the specified number of lines. Positive goes up,

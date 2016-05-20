@@ -8,7 +8,7 @@ import mnm.mods.util.gui.GuiButton;
 import mnm.mods.util.gui.events.ActionPerformedEvent;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.network.play.client.C0BPacketEntityAction;
+import net.minecraft.network.play.client.CPacketEntityAction;
 
 public class GuiSleepTC extends GuiChatTC {
 
@@ -51,7 +51,7 @@ public class GuiSleepTC extends GuiChatTC {
     }
 
     private void wakeFromSleep() {
-        NetHandlerPlayClient nethandlerplayclient = this.mc.thePlayer.sendQueue;
-        nethandlerplayclient.addToSendQueue(new C0BPacketEntityAction(this.mc.thePlayer, C0BPacketEntityAction.Action.STOP_SLEEPING));
+        NetHandlerPlayClient nethandlerplayclient = this.mc.thePlayer.connection;
+        nethandlerplayclient.sendPacket(new CPacketEntityAction(this.mc.thePlayer, CPacketEntityAction.Action.STOP_SLEEPING));
     }
 }

@@ -22,7 +22,7 @@ import mnm.mods.util.gui.VerticalLayout;
 import mnm.mods.util.gui.config.SettingPanel;
 import mnm.mods.util.gui.events.ActionPerformedEvent;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.text.TextComponentTranslation;
 
 public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
 
@@ -79,30 +79,30 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
         this.panel.clearComponents();
         if (channel == null) {
             if (channels.getContentPanel().getComponentCount() > 0) {
-                this.panel.addComponent(new GuiLabel(new ChatComponentTranslation(CHANNEL_SELECT)), new int[] { 1, pos });
+                this.panel.addComponent(new GuiLabel(new TextComponentTranslation(CHANNEL_SELECT)), new int[] { 1, pos });
             } else {
-                this.panel.addComponent(new GuiLabel(new ChatComponentTranslation(CHANNEL_NONE)), new int[] { 1, pos });
+                this.panel.addComponent(new GuiLabel(new TextComponentTranslation(CHANNEL_NONE)), new int[] { 1, pos });
             }
             return;
         }
         this.panel.addComponent(
-                new GuiLabel(new ChatComponentTranslation(CHANNEL_LABEL, channel.getName())),
+                new GuiLabel(new TextComponentTranslation(CHANNEL_LABEL, channel.getName())),
                 new int[] { 1, pos });
 
         pos += 3;
-        this.panel.addComponent(new GuiLabel(new ChatComponentTranslation(CHANNEL_ALIAS)), new int[] { 1, pos });
+        this.panel.addComponent(new GuiLabel(new TextComponentTranslation(CHANNEL_ALIAS)), new int[] { 1, pos });
         this.panel.addComponent(alias = new GuiText(), new int[] { 3, pos, 4, 1 });
         alias.setValue(channel.getAlias());
 
         pos += 2;
-        this.panel.addComponent(new GuiLabel(new ChatComponentTranslation(CHANNEL_PREFIX)), new int[] { 1, pos });
+        this.panel.addComponent(new GuiLabel(new TextComponentTranslation(CHANNEL_PREFIX)), new int[] { 1, pos });
         this.panel.addComponent(prefix = new GuiText(), new int[] { 3, pos, 4, 1 });
         prefix.setValue(channel.getPrefix());
 
         pos += 2;
         this.panel.addComponent(hidePrefix = new GuiCheckbox(), new int[] { 1, pos });
         hidePrefix.setValue(channel.isPrefixHidden());
-        this.panel.addComponent(new GuiLabel(new ChatComponentTranslation(CHANNEL_HIDE_PREFIX)), new int[] { 2, pos });
+        this.panel.addComponent(new GuiLabel(new TextComponentTranslation(CHANNEL_HIDE_PREFIX)), new int[] { 2, pos });
 
         GuiButton accept = new GuiButton(I18n.format("gui.done"));
         accept.getBus().register(new Object() {

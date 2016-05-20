@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.util.IChatComponent;
+import net.minecraft.util.text.ITextComponent;
 
 /**
  * Represents a channel.
@@ -100,18 +100,18 @@ public interface Channel {
     /**
      * Adds a message to the channel.
      *
-     * @param chat The message
+     * @param text The message
      */
-    void addMessage(IChatComponent chat);
+    void addMessage(ITextComponent text);
 
     /**
      * Adds a message to the channel with optional deletion. Any messages
      * previously added with the same id will be removed.
      *
-     * @param chat The message to send
+     * @param text The message to send
      * @param id The id of the message
      */
-    void addMessage(IChatComponent chat, int id);
+    void addMessage(ITextComponent text, int id);
 
     /**
      * Removes messages at the given position.

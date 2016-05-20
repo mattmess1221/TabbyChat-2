@@ -5,7 +5,7 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.text.TextFormatting;
 
 /**
  * Settings used for filters. Contains settings such as what channels they are
@@ -70,7 +70,7 @@ public interface FilterSettings {
      * @return The color used for highlighting
      */
     @Nullable
-    EnumChatFormatting getColor();
+    TextFormatting getColor();
 
     /**
      * Sets the color used for highlighting. Only use colors.
@@ -78,7 +78,7 @@ public interface FilterSettings {
      * @param color The color of the highlight.
      * @throws IllegalArgumentException if the color is not a color
      */
-    void setColor(@Nullable EnumChatFormatting color);
+    void setColor(@Nullable TextFormatting color);
 
     /**
      * Gets the formatting used for highlighting.
@@ -86,7 +86,7 @@ public interface FilterSettings {
      * @return The formatting used for highlighting
      */
     @Nullable
-    EnumChatFormatting getFormat();
+    TextFormatting getFormat();
 
     /**
      * Sets the formatting for highlighting. Only use formatting.
@@ -94,7 +94,7 @@ public interface FilterSettings {
      * @param format The format of the highlight.
      * @throws IllegalArgumentException if the format is not a format.
      */
-    void setFormat(@Nullable EnumChatFormatting format);
+    void setFormat(@Nullable TextFormatting format);
 
     /**
      * Gets if this filter has a sound notification.
