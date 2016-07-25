@@ -3,19 +3,19 @@ package mnm.mods.tabbychat.util;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import mnm.mods.tabbychat.core.GuiChatTC;
-
 import org.apache.commons.lang3.StringUtils;
+
+import net.minecraft.client.gui.GuiScreen;
 
 public class BackgroundChatThread extends Thread {
 
     private static Lock lock = new ReentrantLock();
 
-    private final GuiChatTC chat;
+    private final GuiScreen chat;
     private String[] messages;
     private long waitMilis;
 
-    public BackgroundChatThread(GuiChatTC chat, String[] message, long milis) {
+    public BackgroundChatThread(GuiScreen chat, String[] message, long milis) {
         this.chat = chat;
         this.messages = message;
         this.waitMilis = milis;

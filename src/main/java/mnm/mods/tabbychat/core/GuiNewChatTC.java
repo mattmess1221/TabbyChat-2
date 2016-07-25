@@ -64,8 +64,8 @@ public class GuiNewChatTC extends GuiNewChat implements ChatScreen {
             prevScreenHeight = mc.displayHeight;
         }
 
-        if (getChatOpen())
-            return;
+//        if (getChatOpen())
+//            return;
 
         ChatBox chatbox = chat.getChatBox();
         float scale = chatbox.getScale();

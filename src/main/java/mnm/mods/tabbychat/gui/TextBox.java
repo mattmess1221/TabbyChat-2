@@ -11,9 +11,9 @@ import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.TabbyAPI;
 import mnm.mods.tabbychat.api.gui.ChatInput;
-import mnm.mods.tabbychat.core.GuiChatTC;
 import mnm.mods.tabbychat.extra.spell.Spellcheck;
 import mnm.mods.tabbychat.extra.spell.SpellingFormatter;
+import mnm.mods.tabbychat.util.ChatProcessor;
 import mnm.mods.util.Color;
 import mnm.mods.util.gui.GuiText;
 import mnm.mods.util.gui.events.GuiMouseEvent;
@@ -28,7 +28,14 @@ public class TextBox extends ChatGui implements ChatInput {
 
     private FontRenderer fr = mc.fontRendererObj;
     // Dummy textField
-    private GuiText textField = new GuiText();
+    private GuiText textField = new GuiText((w, h) -> {
+        return new GuiTextField(0, mc.fontRendererObj, 0, 0, w, h) {
+            @Override
+            public void drawTextBox() {
+                // noop
+            }
+        };
+    });
     private int cursorCounter;
     private Spellcheck spellcheck;
 
@@ -142,7 +149,7 @@ public class TextBox extends ChatGui implements ChatInput {
         // write the num of sends
         Channel active = TabbyAPI.getAPI().getChat().getActiveChannel();
         String chat = textField.getText().trim().replaceAll("  +", " ");
-        String[] msg = GuiChatTC.processSends(chat, active.getPrefix(), active.isPrefixHidden());
+        String[] msg = ChatProcessor.processChatSends(chat, active.getPrefix(), active.isPrefixHidden());
 
         if (msg != null && msg.length > 0) {
             int size = msg.length;

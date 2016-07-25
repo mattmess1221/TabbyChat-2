@@ -3,7 +3,6 @@ package mnm.mods.tabbychat.gui;
 import java.awt.Point;
 import java.awt.Rectangle;
 
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import com.google.common.eventbus.Subscribe;
@@ -16,16 +15,13 @@ import mnm.mods.tabbychat.util.ScaledDimension;
 import mnm.mods.util.Color;
 import mnm.mods.util.gui.BorderLayout;
 import mnm.mods.util.gui.GuiPanel;
-import mnm.mods.util.gui.events.GuiKeyboardEvent;
 import mnm.mods.util.gui.events.GuiMouseEvent;
 import mnm.mods.util.gui.events.GuiMouseEvent.MouseEvent;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.util.ITabCompleter;
-import net.minecraft.util.TabCompleter;
 import net.minecraft.util.math.MathHelper;
 
-public class ChatBox extends GuiPanel implements ChatGui, ITabCompleter {
+public class ChatBox extends GuiPanel implements ChatGui {
 
     private static ColorSettings colors = TabbyChat.getInstance().settings.colors;
 
@@ -36,8 +32,6 @@ public class ChatBox extends GuiPanel implements ChatGui, ITabCompleter {
     private boolean dragMode;
     private Point drag;
     private Rectangle tempbox;
-
-    private TabCompleter tabCompleter;
 
     public ChatBox(Rectangle rect) {
         super();
@@ -85,21 +79,6 @@ public class ChatBox extends GuiPanel implements ChatGui, ITabCompleter {
                 }
             }
         }
-    }
-
-    @Subscribe
-    public void autoCompleteResponses(GuiKeyboardEvent key) {
-        this.tabCompleter.resetRequested();
-        if (key.getKey() == Keyboard.KEY_TAB)
-            this.tabCompleter.complete();
-        else {
-            this.tabCompleter.resetDidComplete();
-        }
-    }
-
-    @Override
-    public void setCompletions(String... newCompletions) {
-        this.tabCompleter.setCompletions(newCompletions);
     }
 
     @Override

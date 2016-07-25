@@ -5,19 +5,27 @@ buildscript {
 			name 'forge'
 			url 'http://files.minecraftforge.net/maven'
 		}
+		maven {
+			name = 'sponge'
+			url = 'http://repo.spongepowered.org/maven'
+		}
 	}
-	dependencies.classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+	dependencies {
+		classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+		classpath 'org.spongepowered:mixingradle:0.4-SNAPSHOT'
+	}
 }
 ext {
 	utils = rootProject.project(':MnM-Utils')
 }
 apply plugin: 'net.minecraftforge.gradle.liteloader'
+apply plugin: 'org.spongepowered.mixin'
 version = '2.1'
 
 apply from: utils.file('gradle/minecraft.gradle')
 
 group = 'mnm.mods'
-archivesBaseName = 'tabbychat'
+//archivesBaseName = 'tabbychat'
 
 minecraft {
 	// Replace the version string
@@ -26,6 +34,11 @@ minecraft {
 		"@REVISION@": project.gitRevision,
 		"@MCVERSION@": project.minecraft.version
 	)
+}
+sourceSets {
+	main {
+		refMap = 'mixin.tabbychat.refmap.json'
+	}
 }
 configurations {
 	shade
@@ -44,7 +57,6 @@ def fromDeps = {
 	configurations.shade.collect {it.directory ? it : zipTree(it)}.each {
 		from it
 	}
-	from litemod
 }
 jar {
 	with fromDeps
@@ -58,4 +70,7 @@ reobf {
 	srgJar {
 		mappingType = 'SEARGE'
 	}
+}
+mixin {
+	defaultObfuscationEnv notch
 }

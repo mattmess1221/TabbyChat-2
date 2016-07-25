@@ -1,0 +1,11 @@
+{
+	"required": true,
+	"minVersion": "0.5.6",
+	"compatibilityLevel": "JAVA_8",
+	"package": "mnm.mods.tabbychat.mixin",
+	"refmap": "mixins.tabbychat.refmap.json",
+	"mixins": [
+		"MixinGuiChat",
+		"MixinGuiIngame"
+	]
+}

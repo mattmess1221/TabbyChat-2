@@ -10,7 +10,6 @@ public final class TabbyRef {
     public static final String MOD_VERSION = "@VERSION@";
     public static final double MOD_REVISION = getRevision();
 
-
     private static double getRevision() {
         Double d = Doubles.tryParse("@REVISION@");
         return d != null ? d : 0;
