@@ -1,4 +1,4 @@
-package mnm.mods.tabbychat.mixin;
+package mnm.mods.tabbychat.core.mixin;
 
 import java.io.IOException;
 import java.util.List;

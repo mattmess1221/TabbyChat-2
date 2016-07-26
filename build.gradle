@@ -25,7 +25,6 @@ version = '2.1'
 apply from: utils.file('gradle/minecraft.gradle')
 
 group = 'mnm.mods'
-//archivesBaseName = 'tabbychat'
 
 minecraft {
 	// Replace the version string
@@ -64,6 +63,7 @@ jar {
 task srgJar(type:Jar) {
 	classifier 'srg'
 	with fromDeps
+	baseName = "mod-${archivesBaseName.toLowerCase()}"
 }
 
 reobf {
@@ -74,3 +74,9 @@ reobf {
 mixin {
 	defaultObfuscationEnv notch
 }
+task dist(type:Copy) {
+	from jar, utils.jar
+	dependsOn assemble, utils.assemble
+	into 'build/dist'
+}
+build.dependsOn dist

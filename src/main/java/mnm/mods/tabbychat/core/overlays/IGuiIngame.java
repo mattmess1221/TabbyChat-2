@@ -1,4 +1,4 @@
-package mnm.mods.tabbychat.overlays;
+package mnm.mods.tabbychat.core.overlays;
 
 import net.minecraft.client.gui.GuiNewChat;
 
