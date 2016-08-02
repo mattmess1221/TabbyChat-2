@@ -20,7 +20,7 @@ ext {
 }
 apply plugin: 'net.minecraftforge.gradle.liteloader'
 apply plugin: 'org.spongepowered.mixin'
-version = '2.1'
+version = '2.1.1'
 
 apply from: utils.file('gradle/minecraft.gradle')
 
