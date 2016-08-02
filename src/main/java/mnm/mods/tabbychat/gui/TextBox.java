@@ -28,19 +28,16 @@ public class TextBox extends ChatGui implements ChatInput {
 
     private FontRenderer fr = mc.fontRendererObj;
     // Dummy textField
-    private GuiText textField = new GuiText((w, h) -> {
-        return new GuiTextField(0, mc.fontRendererObj, 0, 0, w, h) {
-            @Override
-            public void drawTextBox() {
-                // noop
-            }
-        };
+    private GuiText textField = new GuiText(new GuiTextField(0, mc.fontRendererObj, 0, 0, 0, 0) {
+        @Override
+        public void drawTextBox() {
+            // noop
+        }
     });
     private int cursorCounter;
     private Spellcheck spellcheck;
 
     public TextBox() {
-        super();
         textField.getTextField().setMaxStringLength(300);
         textField.setFocused(true);
         textField.getTextField().setCanLoseFocus(false);

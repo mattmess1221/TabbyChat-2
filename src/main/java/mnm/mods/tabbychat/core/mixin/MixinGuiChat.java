@@ -60,7 +60,6 @@ public abstract class MixinGuiChat extends GuiScreen implements ITabCompleter {
         this.sentHistoryCursor = chatGui.getSentMessages().size();
         this.chat = chatGui.getChatManager();
         this.textBox = chat.getChatBox().getChatInput().getTextField();
-        this.inputField = this.textBox.getTextField();
 
         Channel chan = chat.getActiveChannel();
         if (this.defaultInputFieldText.isEmpty()
@@ -74,6 +73,8 @@ public abstract class MixinGuiChat extends GuiScreen implements ITabCompleter {
 
     @Inject(method = "initGui()V", at = @At("RETURN"))
     private void onInitGui(CallbackInfo ci) {
+        this.inputField = this.textBox.getTextField();
+        this.tabCompleter = new GuiChat.ChatTabCompleter(this.inputField);
         chatGui.getBus().post(new ChatInitEvent(that));
         if (!opened) {
             textBox.setValue("");
@@ -86,7 +87,6 @@ public abstract class MixinGuiChat extends GuiScreen implements ITabCompleter {
     @Inject(method = "updateScreen()V", at = @At("RETURN"))
     private void onUpdateScreen(CallbackInfo ci) {
         this.componentList.forEach(GuiComponent::updateComponent);
-        this.inputField = this.textBox.getTextField();
     }
 
     @Inject(method = "onGuiClosed()V", at = @At("RETURN"))
