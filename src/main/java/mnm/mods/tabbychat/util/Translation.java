@@ -91,6 +91,9 @@ public final class Translation {
     public static final String ADVANCED_HIDE_DELIMS = "tabbychat.settings.advanced.hidedelims";
     public static final String ADVANCED_SPELLCHECK = "tabbychat.settings.advanced.spellcheck";
     public static final String EXPERIMENTAL = "tabbychat.settings.experimental";
+    
+    // messages
+    public static final String WARN_COMPLETIONS = "tabbychat.warn.completions";
 
     private Translation() {}
 }
