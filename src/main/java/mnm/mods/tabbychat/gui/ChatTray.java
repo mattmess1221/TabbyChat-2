@@ -1,7 +1,7 @@
 package mnm.mods.tabbychat.gui;
 
 import java.awt.Dimension;
-import java.util.Iterator;
+import java.awt.Rectangle;
 
 import com.google.common.eventbus.Subscribe;
 
@@ -17,6 +17,7 @@ import mnm.mods.util.gui.BorderLayout;
 import mnm.mods.util.gui.FlowLayout;
 import mnm.mods.util.gui.GuiComponent;
 import mnm.mods.util.gui.GuiPanel;
+import mnm.mods.util.gui.ILayout;
 import mnm.mods.util.gui.events.ActionPerformedEvent;
 import net.minecraft.client.gui.Gui;
 
@@ -51,7 +52,7 @@ public class ChatTray extends GuiPanel implements IGui {
         super.updateComponent();
         Color color = getParent().getBackColor();
         Color bkg = Color.of(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() / 4 * 3);
-        this.setBackColor(bkg);
+        this.setSecondaryColor(bkg);
     }
 
     public void addChannel(Channel channel) {
@@ -59,16 +60,8 @@ public class ChatTray extends GuiPanel implements IGui {
         tabList.addComponent(gc);
     }
 
-    public void removeChannel(Channel channel) {
-        boolean found = false;
-        Iterator<GuiComponent> iter = this.tabList.iterator();
-        while (iter.hasNext() && !found) {
-            GuiComponent gc = iter.next();
-            if (gc instanceof ChatTab && ((ChatTab) gc).getChannel().equals(channel)) {
-                tabList.removeComponent(gc);
-                found = true;
-            }
-        }
+    public void removeChannel(final Channel channel) {
+        this.tabList.removeComponent(gc -> gc instanceof ChatTab && ((ChatTab) gc).getChannel().equals(channel));
     }
 
     public void clear() {
@@ -80,11 +73,18 @@ public class ChatTray extends GuiPanel implements IGui {
 
     @Override
     public Dimension getMinimumSize() {
-        return tabList.getLayout().getLayoutSize();
+        return tabList.getLayout()
+                .map(ILayout::getLayoutSize)
+                .orElse(super.getMinimumSize());
     }
 
     public boolean isHandleHovered() {
         return handle.isHovered();
+    }
+
+    @Override
+    public Rectangle getBounds() {
+        return this.getLocation().asRectangle();
     }
 
     private class ToggleButton extends GuiComponent {
@@ -114,4 +114,5 @@ public class ChatTray extends GuiPanel implements IGui {
             return new Dimension(8, 8);
         }
     }
+
 }

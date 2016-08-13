@@ -1,6 +1,5 @@
 package mnm.mods.tabbychat;
 
-import java.awt.Rectangle;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -37,6 +36,7 @@ import mnm.mods.tabbychat.gui.ChatBox;
 import mnm.mods.tabbychat.gui.TextBox;
 import mnm.mods.tabbychat.settings.AdvancedSettings;
 import mnm.mods.util.config.ValueMap;
+import mnm.mods.util.gui.Location;
 import mnm.mods.util.text.TextBuilder;
 import net.minecraft.util.EnumTypeAdapterFactory;
 import net.minecraft.util.text.ITextComponent;
@@ -62,15 +62,13 @@ public class ChatManager implements Chat {
     private Map<Channel, List<Message>> messages = Maps.newHashMap();
 
     public ChatManager(TabbyChat tc) {
-        Rectangle rect = new Rectangle();
-
         AdvancedSettings settings = tc.settings.advanced;
-        rect.x = settings.chatX.get();
-        rect.y = settings.chatY.get();
-        rect.width = settings.chatW.get();
-        rect.height = settings.chatH.get();
+        int x = settings.chatX.get();
+        int y = settings.chatY.get();
+        int width = settings.chatW.get();
+        int height = settings.chatH.get();
 
-        this.chatbox = new ChatBox(rect);
+        this.chatbox = new ChatBox(new Location(x, y, width, height));
 
         this.channels.add(ChatChannel.DEFAULT_CHANNEL);
     }

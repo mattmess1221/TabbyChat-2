@@ -168,12 +168,12 @@ public class TextBox extends ChatGui implements ChatInput {
         List<String> list = getWrappedLines();
         int newHeight = Math.max(1, list.size()) * (fr.FONT_HEIGHT + 2);
         // int newY = getBounds().y + getBounds().height - newHeight;
-        this.setSize(getMinimumSize().width, newHeight);
+        this.setLocation(this.getLocation().copy().setWidth(getMinimumSize().width).setHeight(newHeight));
 
         Color color = getParent().getBackColor();
         Color bkg = Color.of(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() / 4 * 3);
 
-        this.setBackColor(bkg);
+        this.setSecondaryColor(bkg);
     }
 
     @Override
@@ -237,5 +237,10 @@ public class TextBox extends ChatGui implements ChatInput {
             index += fr.trimStringToWidth(lines.get(row), col).length();
             textField.getTextField().setCursorPosition(index + 1);
         }
+    }
+
+    @Override
+    public Rectangle getBounds() {
+        return this.getLocation().asRectangle();
     }
 }

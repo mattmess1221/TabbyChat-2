@@ -11,6 +11,7 @@ import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.util.ChatVisibility;
 import mnm.mods.util.Color;
 import mnm.mods.util.gui.GuiButton;
+import mnm.mods.util.gui.ILocation;
 import mnm.mods.util.gui.events.GuiMouseEvent;
 import mnm.mods.util.gui.events.GuiMouseEvent.MouseEvent;
 import net.minecraft.client.gui.Gui;
@@ -52,13 +53,13 @@ public class ChatTab extends GuiButton {
         if (GuiNewChatTC.getInstance().getChatOpen()
                 || (status != null && status.compareTo(ChannelStatus.PINGED) > 0)
                 || TabbyChat.getInstance().settings.advanced.visibility.get() == ChatVisibility.ALWAYS) {
-            Gui.drawRect(0, 0, getBounds().width, getBounds().height, getBackColor().getHex());
-            int txtX = this.getBounds().width / 2;
-            int txtY = this.getBounds().height / 2 - this.mc.fontRendererObj.FONT_HEIGHT / 2;
+            ILocation loc = getLocation();
+            Gui.drawRect(0, 0, loc.getWidth(), loc.getHeight(), getBackColor().getHex());
+            int txtX = loc.getWidth() / 2;
+            int txtY = loc.getHeight() / 2 - this.mc.fontRendererObj.FONT_HEIGHT / 2;
             this.drawCenteredString(mc.fontRendererObj, this.getText(), txtX, txtY, getForeColor().getHex());
-            // this.drawVerticalLine(0, -1, getBounds().height,
-            // super.getForeColor());
-            this.drawVerticalLine(getBounds().width, -1, getBounds().height, super.getForeColor().getHex());
+
+            this.drawVerticalLine(loc.getWidth(), -1, loc.getHeight(), super.getForeColor().getHex());
         }
     }
 

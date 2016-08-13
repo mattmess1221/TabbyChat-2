@@ -2,6 +2,7 @@ package mnm.mods.tabbychat.gui;
 
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.util.Optional;
 
 import org.lwjgl.input.Mouse;
 
@@ -13,8 +14,11 @@ import mnm.mods.tabbychat.settings.ColorSettings;
 import mnm.mods.tabbychat.settings.TabbySettings;
 import mnm.mods.tabbychat.util.ScaledDimension;
 import mnm.mods.util.Color;
+import mnm.mods.util.gui.Anchor;
 import mnm.mods.util.gui.BorderLayout;
 import mnm.mods.util.gui.GuiPanel;
+import mnm.mods.util.gui.ILocation;
+import mnm.mods.util.gui.Location;
 import mnm.mods.util.gui.events.GuiMouseEvent;
 import mnm.mods.util.gui.events.GuiMouseEvent.MouseEvent;
 import net.minecraft.client.gui.GuiScreen;
@@ -31,31 +35,32 @@ public class ChatBox extends GuiPanel implements ChatGui {
 
     private boolean dragMode;
     private Point drag;
-    private Rectangle tempbox;
+    private Location tempbox;
 
-    public ChatBox(Rectangle rect) {
+    public ChatBox(ILocation rect) {
         super();
-        this.setLayout(new BorderLayout());
+        this.setLayout(Optional.of(new BorderLayout()));
+        this.setAnchor(Anchor.BOTTOM_LEFT);
         this.addComponent(pnlTray = new ChatTray(), BorderLayout.Position.NORTH);
         this.addComponent(chatArea = new ChatArea(), BorderLayout.Position.CENTER);
         this.addComponent(txtChatInput = new TextBox(), BorderLayout.Position.SOUTH);
         this.addComponent(new Scrollbar(chatArea), BorderLayout.Position.EAST);
-        this.setBounds(rect);
+        this.setLocation(rect);
     }
 
     @Subscribe
     public void killjoysMovingCompanyForAllYourFurnitureMovingNeeds(GuiMouseEvent event) {
-        Rectangle bounds = getBounds();
+        ILocation bounds = getLocation();
 
         // divide by scale because smaller scales make the point movement larger
-        int x = bounds.x + event.getMouseX();
-        int y = bounds.y + event.getMouseY();
+        int x = bounds.getXPos() + event.getMouseX();
+        int y = bounds.getYPos() + event.getMouseY();
 
         if (event.getType() == MouseEvent.CLICK) {
             if (Mouse.isButtonDown(0) && (pnlTray.isHovered() || (GuiScreen.isAltKeyDown() && isHovered()))) {
                 dragMode = !pnlTray.isHandleHovered();
                 drag = new Point(x, y);
-                tempbox = new Rectangle(bounds);
+                tempbox = bounds.copy();
             }
         }
 
@@ -63,19 +68,24 @@ public class ChatBox extends GuiPanel implements ChatGui {
             if (event.getType() == MouseEvent.RELEASE) {
                 // save bounds
                 TabbySettings sett = TabbyChat.getInstance().settings;
-                sett.advanced.chatX.set(bounds.x);
-                sett.advanced.chatY.set(bounds.y);
-                sett.advanced.chatW.set(bounds.width);
-                sett.advanced.chatH.set(bounds.height);
+                sett.advanced.chatX.set(bounds.getXPos());
+                sett.advanced.chatY.set(bounds.getYPos());
+                sett.advanced.chatW.set(bounds.getWidth());
+                sett.advanced.chatH.set(bounds.getHeight());
 
                 drag = null;
                 tempbox = null;
             } else if (event.getType() == MouseEvent.DRAG) {
                 if (!dragMode) {
-                    bounds.setSize(tempbox.width + x - drag.x, tempbox.height - y + drag.y);
-                    bounds.setLocation(tempbox.x, tempbox.y + y - drag.y);
+                    setLocation(new Location(
+                            tempbox.getXPos(),
+                            tempbox.getYPos() + y - drag.y,
+                            tempbox.getWidth() + x - drag.x,
+                            tempbox.getHeight() - y + drag.y));
                 } else {
-                    bounds.setLocation(tempbox.x + x - drag.x, tempbox.y + y - drag.y);
+                    setLocation(getLocation().copy()
+                            .setXPos(tempbox.getXPos() + x - drag.x)
+                            .setYPos(tempbox.getYPos() + y - drag.y));
                 }
             }
         }
@@ -98,15 +108,15 @@ public class ChatBox extends GuiPanel implements ChatGui {
 
     @Override
     public void updateComponent() {
-        Rectangle bounds = getBounds();
+        ILocation bounds = getLocation();
         Point point = getActualPosition();
         float scale = getActualScale();
         ScaledResolution sr = new ScaledResolution(mc);
 
         int x = point.x;
         int y = point.y;
-        int w = (int) (bounds.width * scale);
-        int h = (int) (bounds.height * scale);
+        int w = (int) (bounds.getWidth() * scale);
+        int h = (int) (bounds.getHeight() * scale);
 
         int w1 = w;
         int h1 = h;
@@ -124,10 +134,11 @@ public class ChatBox extends GuiPanel implements ChatGui {
         y1 = Math.min(y1, sr.getScaledHeight() - h1);
 
         if (x1 != x || y1 != y || w1 != w || h1 != h) {
-            bounds.x = MathHelper.ceiling_double_int(x1 / scale);
-            bounds.y = MathHelper.ceiling_double_int(y1 / scale);
-            bounds.width = MathHelper.ceiling_double_int(w1 / scale);
-            bounds.height = MathHelper.ceiling_double_int(h1 / scale);
+            setLocation(new Location(
+                    MathHelper.ceiling_double_int(x1 / scale),
+                    MathHelper.ceiling_double_int(y1 / scale),
+                    MathHelper.ceiling_double_int(w1 / scale),
+                    MathHelper.ceiling_double_int(h1 / scale)));
         }
         super.updateComponent();
     }
@@ -163,9 +174,15 @@ public class ChatBox extends GuiPanel implements ChatGui {
         ScaledDimension oldDim = new ScaledDimension(oldWidth, oldHeight);
         ScaledDimension newDim = new ScaledDimension(newWidth, newHeight);
 
-        int bottom = oldDim.getScaledHeight() - getBounds().y;
-        getBounds().y = newDim.getScaledHeight() - bottom;
+        int bottom = oldDim.getScaledHeight() - getLocation().getYPos();
+        int y = newDim.getScaledHeight() - bottom;
+        this.setLocation(getLocation().copy().setYPos(y));
         this.updateComponent();
+    }
+
+    @Override
+    public Rectangle getBounds() {
+        return getLocation().asRectangle();
     }
 
 }

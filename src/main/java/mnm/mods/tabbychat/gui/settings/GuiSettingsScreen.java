@@ -1,7 +1,7 @@
 package mnm.mods.tabbychat.gui.settings;
 
-import java.awt.Rectangle;
 import java.util.List;
+import java.util.Optional;
 
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
@@ -15,12 +15,13 @@ import mnm.mods.util.gui.ComponentScreen;
 import mnm.mods.util.gui.GuiButton;
 import mnm.mods.util.gui.GuiComponent;
 import mnm.mods.util.gui.GuiPanel;
+import mnm.mods.util.gui.ILocation;
+import mnm.mods.util.gui.Location;
 import mnm.mods.util.gui.VerticalLayout;
 import mnm.mods.util.gui.config.SettingPanel;
 import mnm.mods.util.gui.events.ActionPerformedEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiScreen;
 
 public class GuiSettingsScreen extends ComponentScreen {
 
@@ -60,17 +61,19 @@ public class GuiSettingsScreen extends ComponentScreen {
     public void initGui() {
 
         getPanel().addComponent(panel = new GuiPanel());
-        panel.setLayout(new BorderLayout());
-        panel.setSize(300, 200);
-        // redundant casting for reobfuscation
-        panel.setPosition(((GuiScreen) this).width / 2 - panel.getBounds().width / 2, ((GuiScreen) this).height / 2 - panel.getBounds().height / 2);
+        panel.setLayout(Optional.of(new BorderLayout()));
+
+        int x = this.width / 2 - panel.getLocation().getWidth() / 2;
+        int y = this.height / 2 - panel.getLocation().getHeight() / 2;
+        panel.setLocation(new Location(x, y, 300, 200));
+
         GuiPanel panel = new GuiPanel(new BorderLayout());
         this.panel.addComponent(panel, BorderLayout.Position.WEST);
         panel.addComponent(settingsList = new GuiPanel(new VerticalLayout()), BorderLayout.Position.WEST);
 
         GuiButton close = new GuiButton("Close");
-        close.setSize(40, 10);
-        close.setBackColor(Color.of(0, 255, 0, 127));
+        close.setLocation(new Location(0, 0, 40, 10));
+        close.setSecondaryColor(Color.of(0, 255, 0, 127));
         close.getBus().register(new Object() {
             @Subscribe
             public void closeTheScreen(ActionPerformedEvent event) {
@@ -131,8 +134,8 @@ public class GuiSettingsScreen extends ComponentScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float tick) {
         // drawDefaultBackground();
-        Rectangle rect = panel.getBounds();
-        Gui.drawRect(rect.x, rect.y, rect.x + rect.width, rect.y + rect.height, Integer.MIN_VALUE);
+        ILocation rect = panel.getLocation();
+        Gui.drawRect(rect.getXPos(), rect.getYPos(), rect.getXPos() + rect.getWidth(), rect.getYPos() + rect.getHeight(), Integer.MIN_VALUE);
         super.drawScreen(mouseX, mouseY, tick);
     }
 

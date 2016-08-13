@@ -3,6 +3,7 @@ package mnm.mods.tabbychat.gui.settings;
 import static mnm.mods.tabbychat.util.Translation.*;
 
 import java.text.NumberFormat;
+import java.util.Optional;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -25,9 +26,9 @@ import net.minecraft.util.text.TextFormatting;
 public class GuiSettingsGeneral extends SettingPanel<TabbySettings> {
 
     public GuiSettingsGeneral() {
-        setLayout(new GuiGridLayout(10, 20));
+        setLayout(Optional.of(new GuiGridLayout(10, 20)));
         setDisplayString(I18n.format(SETTINGS_GENERAL));
-        setBackColor(Color.of(255, 0, 255, 64));
+        setSecondaryColor(Color.of(255, 0, 255, 64));
     }
 
     @Override

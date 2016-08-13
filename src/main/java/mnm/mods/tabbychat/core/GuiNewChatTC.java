@@ -56,7 +56,7 @@ public class GuiNewChatTC extends GuiNewChat implements ChatScreen {
 
     @Override
     public void drawChat(int i) {
-        if (prevScreenHeight != mc.displayHeight) {
+        if (prevScreenHeight != mc.displayHeight || prevScreenWidth != mc.displayWidth) {
 
             chat.getChatBox().onScreenHeightResize(prevScreenWidth, prevScreenHeight, mc.displayWidth, mc.displayHeight);
 

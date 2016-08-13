@@ -2,6 +2,8 @@ package mnm.mods.tabbychat.gui.settings;
 
 import static mnm.mods.tabbychat.util.Translation.*;
 
+import java.util.Optional;
+
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.settings.TabbySettings;
 import mnm.mods.tabbychat.util.ChatVisibility;
@@ -18,9 +20,9 @@ import net.minecraft.util.text.TextComponentTranslation;
 public class GuiAdvancedSettings extends SettingPanel<TabbySettings> {
 
     public GuiAdvancedSettings() {
-        setLayout(new GuiGridLayout(10, 15));
+        setLayout(Optional.of(new GuiGridLayout(10, 15)));
         setDisplayString(I18n.format(SETTINGS_ADVANCED));
-        setBackColor(Color.of(255, 0, 0, 64));
+        setSecondaryColor(Color.of(255, 0, 0, 64));
     }
 
     @Override
