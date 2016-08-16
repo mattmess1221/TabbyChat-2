@@ -2,11 +2,11 @@ package mnm.mods.tabbychat.gui;
 
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.util.Optional;
 
 import org.lwjgl.input.Mouse;
 
 import com.google.common.eventbus.Subscribe;
+import com.mumfrey.liteloader.core.LiteLoader;
 
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.gui.ChatGui;
@@ -37,13 +37,12 @@ public class ChatBox extends GuiPanel implements ChatGui {
     private Location tempbox;
 
     public ChatBox(ILocation rect) {
-        super();
-        this.setLayout(Optional.of(new BorderLayout()));
+        super(new BorderLayout());
         this.addComponent(pnlTray = new ChatTray(), BorderLayout.Position.NORTH);
         this.addComponent(chatArea = new ChatArea(), BorderLayout.Position.CENTER);
         this.addComponent(txtChatInput = new TextBox(), BorderLayout.Position.SOUTH);
         this.addComponent(new Scrollbar(chatArea), BorderLayout.Position.EAST);
-        this.setLocation(rect);
+        super.setLocation(rect);
     }
 
     @Subscribe
@@ -64,13 +63,6 @@ public class ChatBox extends GuiPanel implements ChatGui {
 
         if (drag != null) {
             if (event.getType() == MouseEvent.RELEASE) {
-                // save bounds
-                TabbySettings sett = TabbyChat.getInstance().settings;
-                sett.advanced.chatX.set(bounds.getXPos());
-                sett.advanced.chatY.set(bounds.getYPos());
-                sett.advanced.chatW.set(bounds.getWidth());
-                sett.advanced.chatH.set(bounds.getHeight());
-
                 drag = null;
                 tempbox = null;
             } else if (event.getType() == MouseEvent.DRAG) {
@@ -142,6 +134,18 @@ public class ChatBox extends GuiPanel implements ChatGui {
     }
 
     @Override
+    public void setLocation(ILocation location) {
+        super.setLocation(location);
+        // save bounds
+        TabbySettings sett = TabbyChat.getInstance().settings;
+        sett.advanced.chatX.set(location.getXPos());
+        sett.advanced.chatY.set(location.getYPos());
+        sett.advanced.chatW.set(location.getWidth());
+        sett.advanced.chatH.set(location.getHeight());
+        LiteLoader.getInstance().writeConfig(sett);
+    }
+
+    @Override
     public void onClosed() {
         super.onClosed();
         updateComponent();
@@ -167,6 +171,10 @@ public class ChatBox extends GuiPanel implements ChatGui {
     }
 
     public void onScreenHeightResize(int oldWidth, int oldHeight, int newWidth, int newHeight) {
+
+        if (oldWidth == 0 || oldHeight == 0)
+            return; // first time!
+
         // measure the distance from the bottom, then subtract from new height
 
         ScaledDimension oldDim = new ScaledDimension(oldWidth, oldHeight);
