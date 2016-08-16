@@ -2,7 +2,9 @@ package mnm.mods.tabbychat.gui;
 
 import java.awt.Dimension;
 import java.awt.Rectangle;
+import java.util.Map;
 
+import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
 
 import mnm.mods.tabbychat.ChatChannel;
@@ -27,6 +29,8 @@ public class ChatTray extends GuiPanel implements IGui {
     private ChatPanel controls = new ChatPanel(new FlowLayout());
     private GuiComponent handle = new ChatHandle();
 
+    private Map<Channel, GuiComponent> map = Maps.newHashMap();
+
     public ChatTray() {
         super(new BorderLayout());
         this.addComponent(tabList, BorderLayout.Position.CENTER);
@@ -41,8 +45,8 @@ public class ChatTray extends GuiPanel implements IGui {
     @Override
     public void drawComponent(int mouseX, int mouseY) {
         if (GuiNewChatTC.getInstance().getChatOpen()) {
-            Gui.drawRect(0, 0, getBounds().width, getBounds().height, getBackColor().getHex());
-            drawBorders(0, 0, getBounds().width, getBounds().height, getForeColor().getHex());
+            Gui.drawRect(0, 0, getBounds().width, getBounds().height, getSecondaryColorProperty().getHex());
+            drawBorders(0, 0, getBounds().width, getBounds().height, getPrimaryColorProperty().getHex());
         }
         super.drawComponent(mouseX, mouseY);
     }
@@ -50,18 +54,21 @@ public class ChatTray extends GuiPanel implements IGui {
     @Override
     public void updateComponent() {
         super.updateComponent();
-        Color color = getParent().getBackColor();
+        Color color = getParent().getSecondaryColorProperty();
         Color bkg = Color.of(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() / 4 * 3);
         this.setSecondaryColor(bkg);
     }
 
     public void addChannel(Channel channel) {
         GuiComponent gc = new ChatTab(channel);
+        map.put(channel, gc);
         tabList.addComponent(gc);
     }
 
     public void removeChannel(final Channel channel) {
-        this.tabList.removeComponent(gc -> gc instanceof ChatTab && ((ChatTab) gc).getChannel().equals(channel));
+        GuiComponent gc = map.get(channel);
+        this.tabList.removeComponent(gc);
+        map.remove(channel);
     }
 
     public void clear() {
@@ -75,7 +82,7 @@ public class ChatTray extends GuiPanel implements IGui {
     public Dimension getMinimumSize() {
         return tabList.getLayout()
                 .map(ILayout::getLayoutSize)
-                .orElse(super.getMinimumSize());
+                .orElseGet(super::getMinimumSize);
     }
 
     public boolean isHandleHovered() {
@@ -98,7 +105,7 @@ public class ChatTray extends GuiPanel implements IGui {
         @Override
         public void drawComponent(int mouseX, int mouseY) {
             drawBorders(2, 2, 7, 7, 0xff999999);
-            Gui.drawRect(2, 2, 7, 7, getBackColor().getHex());
+            Gui.drawRect(2, 2, 7, 7, getSecondaryColorProperty().getHex());
             if (value.get()) {
                 Gui.drawRect(3, 3, 6, 6, 0xffaaaaaa);
             }

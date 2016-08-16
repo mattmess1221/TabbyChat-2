@@ -67,7 +67,7 @@ public class GuiFilterEditor extends GuiPanel {
         this.addComponent(new GuiLabel(new TextComponentTranslation(FILTER_DESTINATIONS)), new int[] { 1, pos });
         this.addComponent(txtDestinations = new GuiText(), new int[] { 8, pos, 10, 1 });
         txtDestinations.setValue(Joiner.on(", ").join(filter.getSettings().getChannels()));
-        txtDestinations.setCaption(I18n.format(FILTER_DESTIONATIONS_DESC));
+        txtDestinations.setCaption(new TextComponentTranslation(FILTER_DESTIONATIONS_DESC));
 
         pos += 1;
         this.addComponent(new GuiLabel(new TextComponentTranslation(FILTER_IS_PM)), new int[] { 2, pos });

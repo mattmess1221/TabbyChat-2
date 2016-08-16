@@ -14,11 +14,10 @@ import mnm.mods.tabbychat.settings.ColorSettings;
 import mnm.mods.tabbychat.settings.TabbySettings;
 import mnm.mods.tabbychat.util.ScaledDimension;
 import mnm.mods.util.Color;
-import mnm.mods.util.gui.Anchor;
+import mnm.mods.util.ILocation;
+import mnm.mods.util.Location;
 import mnm.mods.util.gui.BorderLayout;
 import mnm.mods.util.gui.GuiPanel;
-import mnm.mods.util.gui.ILocation;
-import mnm.mods.util.gui.Location;
 import mnm.mods.util.gui.events.GuiMouseEvent;
 import mnm.mods.util.gui.events.GuiMouseEvent.MouseEvent;
 import net.minecraft.client.gui.GuiScreen;
@@ -40,7 +39,6 @@ public class ChatBox extends GuiPanel implements ChatGui {
     public ChatBox(ILocation rect) {
         super();
         this.setLayout(Optional.of(new BorderLayout()));
-        this.setAnchor(Anchor.BOTTOM_LEFT);
         this.addComponent(pnlTray = new ChatTray(), BorderLayout.Position.NORTH);
         this.addComponent(chatArea = new ChatArea(), BorderLayout.Position.CENTER);
         this.addComponent(txtChatInput = new TextBox(), BorderLayout.Position.SOUTH);
@@ -92,12 +90,12 @@ public class ChatBox extends GuiPanel implements ChatGui {
     }
 
     @Override
-    public Color getForeColor() {
+    public Color getPrimaryColor() {
         return colors.chatBorderColor.get();
     }
 
     @Override
-    public Color getBackColor() {
+    public Color getSecondaryColor() {
         return colors.chatBoxColor.get();
     }
 
@@ -109,12 +107,12 @@ public class ChatBox extends GuiPanel implements ChatGui {
     @Override
     public void updateComponent() {
         ILocation bounds = getLocation();
-        Point point = getActualPosition();
+        ILocation point = getActualLocation();
         float scale = getActualScale();
         ScaledResolution sr = new ScaledResolution(mc);
 
-        int x = point.x;
-        int y = point.y;
+        int x = point.getXPos();
+        int y = point.getYPos();
         int w = (int) (bounds.getWidth() * scale);
         int h = (int) (bounds.getHeight() * scale);
 

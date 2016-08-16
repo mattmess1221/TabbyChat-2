@@ -1,7 +1,6 @@
 package mnm.mods.tabbychat.gui.settings;
 
 import java.util.List;
-import java.util.Optional;
 
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
@@ -9,14 +8,14 @@ import com.mumfrey.liteloader.core.LiteLoader;
 
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.util.Color;
+import mnm.mods.util.ILocation;
+import mnm.mods.util.Location;
 import mnm.mods.util.config.SettingsFile;
 import mnm.mods.util.gui.BorderLayout;
 import mnm.mods.util.gui.ComponentScreen;
 import mnm.mods.util.gui.GuiButton;
 import mnm.mods.util.gui.GuiComponent;
 import mnm.mods.util.gui.GuiPanel;
-import mnm.mods.util.gui.ILocation;
-import mnm.mods.util.gui.Location;
 import mnm.mods.util.gui.VerticalLayout;
 import mnm.mods.util.gui.config.SettingPanel;
 import mnm.mods.util.gui.events.ActionPerformedEvent;
@@ -38,6 +37,7 @@ public class GuiSettingsScreen extends ComponentScreen {
     private List<SettingPanel<?>> panels = Lists.newArrayList();
 
     private GuiPanel panel;
+
     private GuiPanel settingsList;
     private SettingPanel<?> selectedSetting;
 
@@ -60,11 +60,10 @@ public class GuiSettingsScreen extends ComponentScreen {
     @Override
     public void initGui() {
 
-        getPanel().addComponent(panel = new GuiPanel());
-        panel.setLayout(Optional.of(new BorderLayout()));
+        getPanel().addComponent(panel = new GuiPanel(new BorderLayout()));
 
-        int x = this.width / 2 - panel.getLocation().getWidth() / 2;
-        int y = this.height / 2 - panel.getLocation().getHeight() / 2;
+        int x = this.width / 2 - 300 / 2;
+        int y = this.height / 2 - 200 / 2;
         panel.setLocation(new Location(x, y, 300, 200));
 
         GuiPanel panel = new GuiPanel(new BorderLayout());
@@ -107,6 +106,7 @@ public class GuiSettingsScreen extends ComponentScreen {
 
     @Override
     public void onGuiClosed() {
+        super.onGuiClosed();
         for (SettingPanel<?> settingPanel : panels) {
             SettingsFile config = settingPanel.getSettings();
             LiteLoader.getInstance().writeConfig(config);
@@ -135,19 +135,19 @@ public class GuiSettingsScreen extends ComponentScreen {
     public void drawScreen(int mouseX, int mouseY, float tick) {
         // drawDefaultBackground();
         ILocation rect = panel.getLocation();
-        Gui.drawRect(rect.getXPos(), rect.getYPos(), rect.getXPos() + rect.getWidth(), rect.getYPos() + rect.getHeight(), Integer.MIN_VALUE);
+        Gui.drawRect(rect.getXPos(), rect.getYPos(), rect.getXWidth(), rect.getYHeight(), Integer.MIN_VALUE);
         super.drawScreen(mouseX, mouseY, tick);
     }
 
     public void selectSetting(SettingPanel<?> setting) {
-        // setting.clearComponents();
+//        setting.clearComponents();
         deactivateAll();
         panel.removeComponent(selectedSetting);
         selectedSetting = setting;
         selectedSetting.clearComponents();
         selectedSetting.initGUI();
         activate(setting.getClass());
-        panel.addComponent(selectedSetting, BorderLayout.Position.CENTER);
+        this.panel.addComponent(this.selectedSetting, BorderLayout.Position.CENTER);
     }
 
     public static void registerSetting(Class<? extends SettingPanel<?>> settings) {

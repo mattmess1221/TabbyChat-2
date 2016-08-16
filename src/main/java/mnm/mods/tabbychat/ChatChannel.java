@@ -205,7 +205,11 @@ public class ChatChannel implements Channel {
 
     @Override
     public int hashCode() {
-        return this.name.hashCode();
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (isPm ? 1231 : 1237);
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        return result;
     }
 
     @Override
@@ -217,6 +221,8 @@ public class ChatChannel implements Channel {
         if (!(obj instanceof ChatChannel))
             return false;
         ChatChannel other = (ChatChannel) obj;
+        if (isPm != other.isPm)
+            return false;
         if (name == null) {
             if (other.name != null)
                 return false;

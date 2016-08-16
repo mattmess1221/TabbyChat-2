@@ -21,8 +21,8 @@ import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.util.ChatTextUtils;
 import mnm.mods.tabbychat.util.ChatVisibility;
 import mnm.mods.util.Color;
+import mnm.mods.util.ILocation;
 import mnm.mods.util.gui.GuiComponent;
-import mnm.mods.util.gui.ILocation;
 import mnm.mods.util.gui.events.GuiMouseEvent;
 import mnm.mods.util.gui.events.GuiMouseEvent.MouseEvent;
 import net.minecraft.client.gui.Gui;
@@ -74,8 +74,8 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, R
     @Override
     public void drawComponent(int mouseX, int mouseY) {
         if (mc.gameSettings.chatVisibility != EnumChatVisibility.HIDDEN) {
-            int fore = getForeColor().getHex();
-            int back = getBackColor().getHex();
+            int fore = getPrimaryColorProperty().getHex();
+            int back = getSecondaryColorProperty().getHex();
             List<Message> visible = getVisibleChat();
             int height = visible.size() * mc.fontRendererObj.FONT_HEIGHT;
             ChatVisibility vis = TabbyChat.getInstance().settings.advanced.visibility.get();

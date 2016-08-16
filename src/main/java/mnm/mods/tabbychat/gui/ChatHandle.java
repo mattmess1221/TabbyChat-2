@@ -3,9 +3,9 @@ package mnm.mods.tabbychat.gui;
 import java.awt.Dimension;
 
 import mnm.mods.util.Color;
+import mnm.mods.util.ILocation;
+import mnm.mods.util.Location;
 import mnm.mods.util.gui.GuiComponent;
-import mnm.mods.util.gui.ILocation;
-import mnm.mods.util.gui.Location;
 
 public class ChatHandle extends GuiComponent {
 
@@ -16,13 +16,13 @@ public class ChatHandle extends GuiComponent {
     @Override
     public void drawComponent(int mouseX, int mouseY) {
         ILocation loc = getLocation();
-        this.drawHorizontalLine(3, loc.getWidth() - 4, 3, getForeColor().getHex());
-        this.drawVerticalLine(loc.getWidth() - 4, 3, loc.getHeight() - 3, getForeColor().getHex());
+        this.drawHorizontalLine(3, loc.getWidth() - 4, 3, getPrimaryColorProperty().getHex());
+        this.drawVerticalLine(loc.getWidth() - 4, 3, loc.getHeight() - 3, getPrimaryColorProperty().getHex());
     }
 
     @Override
-    public Color getForeColor() {
-        return isHovered() ? Color.of(0xaaffffa0) : super.getForeColor();
+    public Color getPrimaryColorProperty() {
+        return isHovered() ? Color.of(0xaaffffa0) : super.getPrimaryColorProperty();
     }
 
     @Override

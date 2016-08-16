@@ -29,12 +29,12 @@ public class GuiAdvancedSettings extends SettingPanel<TabbySettings> {
     public void initGUI() {
         addComponent(new GuiLabel(new TextComponentTranslation(ADVANCED_FADE_TIME)), new int[] { 1, 1 });
         GuiSettingInt gsi = new GuiSettingInt(getSettings().advanced.fadeTime);
-        gsi.getInput().setInterval(50);
+        gsi.getComponent().setInterval(50);
         addComponent(gsi, new int[] { 5, 1, 2, 1 });
 
         addComponent(new GuiLabel(new TextComponentTranslation(ADVANCED_CHAT_DELAY)), new int[] { 1, 3 });
         gsi = new GuiSettingInt(getSettings().advanced.msgDelay);
-        gsi.getInput().setInterval(50);
+        gsi.getComponent().setInterval(50);
         addComponent(gsi, new int[] { 5, 3, 2, 1 });
 
         addComponent(new GuiLabel(new TextComponentTranslation(ADVANCED_CHAT_VISIBILITY)), new int[] { 1, 5 });
