@@ -1,8 +1,10 @@
 package mnm.mods.tabbychat.gui;
 
 import java.awt.Dimension;
-import java.util.Iterator;
+import java.awt.Rectangle;
+import java.util.Map;
 
+import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
 
 import mnm.mods.tabbychat.ChatChannel;
@@ -17,6 +19,7 @@ import mnm.mods.util.gui.BorderLayout;
 import mnm.mods.util.gui.FlowLayout;
 import mnm.mods.util.gui.GuiComponent;
 import mnm.mods.util.gui.GuiPanel;
+import mnm.mods.util.gui.ILayout;
 import mnm.mods.util.gui.events.ActionPerformedEvent;
 import net.minecraft.client.gui.Gui;
 
@@ -25,6 +28,8 @@ public class ChatTray extends GuiPanel implements IGui {
     private GuiPanel tabList = new GuiPanel(new FlowLayout());
     private ChatPanel controls = new ChatPanel(new FlowLayout());
     private GuiComponent handle = new ChatHandle();
+
+    private Map<Channel, GuiComponent> map = Maps.newHashMap();
 
     public ChatTray() {
         super(new BorderLayout());
@@ -40,8 +45,8 @@ public class ChatTray extends GuiPanel implements IGui {
     @Override
     public void drawComponent(int mouseX, int mouseY) {
         if (GuiNewChatTC.getInstance().getChatOpen()) {
-            Gui.drawRect(0, 0, getBounds().width, getBounds().height, getBackColor().getHex());
-            drawBorders(0, 0, getBounds().width, getBounds().height, getForeColor().getHex());
+            Gui.drawRect(0, 0, getBounds().width, getBounds().height, getSecondaryColorProperty().getHex());
+            drawBorders(0, 0, getBounds().width, getBounds().height, getPrimaryColorProperty().getHex());
         }
         super.drawComponent(mouseX, mouseY);
     }
@@ -49,26 +54,21 @@ public class ChatTray extends GuiPanel implements IGui {
     @Override
     public void updateComponent() {
         super.updateComponent();
-        Color color = getParent().getBackColor();
+        Color color = getParent().getSecondaryColorProperty();
         Color bkg = Color.of(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() / 4 * 3);
-        this.setBackColor(bkg);
+        this.setSecondaryColor(bkg);
     }
 
     public void addChannel(Channel channel) {
         GuiComponent gc = new ChatTab(channel);
+        map.put(channel, gc);
         tabList.addComponent(gc);
     }
 
-    public void removeChannel(Channel channel) {
-        boolean found = false;
-        Iterator<GuiComponent> iter = this.tabList.iterator();
-        while (iter.hasNext() && !found) {
-            GuiComponent gc = iter.next();
-            if (gc instanceof ChatTab && ((ChatTab) gc).getChannel().equals(channel)) {
-                tabList.removeComponent(gc);
-                found = true;
-            }
-        }
+    public void removeChannel(final Channel channel) {
+        GuiComponent gc = map.get(channel);
+        this.tabList.removeComponent(gc);
+        map.remove(channel);
     }
 
     public void clear() {
@@ -80,11 +80,18 @@ public class ChatTray extends GuiPanel implements IGui {
 
     @Override
     public Dimension getMinimumSize() {
-        return tabList.getLayout().getLayoutSize();
+        return tabList.getLayout()
+                .map(ILayout::getLayoutSize)
+                .orElseGet(super::getMinimumSize);
     }
 
     public boolean isHandleHovered() {
         return handle.isHovered();
+    }
+
+    @Override
+    public Rectangle getBounds() {
+        return this.getLocation().asRectangle();
     }
 
     private class ToggleButton extends GuiComponent {
@@ -98,7 +105,7 @@ public class ChatTray extends GuiPanel implements IGui {
         @Override
         public void drawComponent(int mouseX, int mouseY) {
             drawBorders(2, 2, 7, 7, 0xff999999);
-            Gui.drawRect(2, 2, 7, 7, getBackColor().getHex());
+            Gui.drawRect(2, 2, 7, 7, getSecondaryColorProperty().getHex());
             if (value.get()) {
                 Gui.drawRect(3, 3, 6, 6, 0xffaaaaaa);
             }
@@ -114,4 +121,5 @@ public class ChatTray extends GuiPanel implements IGui {
             return new Dimension(8, 8);
         }
     }
+
 }

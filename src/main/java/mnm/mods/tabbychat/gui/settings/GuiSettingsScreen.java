@@ -1,6 +1,5 @@
 package mnm.mods.tabbychat.gui.settings;
 
-import java.awt.Rectangle;
 import java.util.List;
 
 import com.google.common.collect.Lists;
@@ -9,6 +8,8 @@ import com.mumfrey.liteloader.core.LiteLoader;
 
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.util.Color;
+import mnm.mods.util.ILocation;
+import mnm.mods.util.Location;
 import mnm.mods.util.config.SettingsFile;
 import mnm.mods.util.gui.BorderLayout;
 import mnm.mods.util.gui.ComponentScreen;
@@ -20,7 +21,6 @@ import mnm.mods.util.gui.config.SettingPanel;
 import mnm.mods.util.gui.events.ActionPerformedEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiScreen;
 
 public class GuiSettingsScreen extends ComponentScreen {
 
@@ -37,6 +37,7 @@ public class GuiSettingsScreen extends ComponentScreen {
     private List<SettingPanel<?>> panels = Lists.newArrayList();
 
     private GuiPanel panel;
+
     private GuiPanel settingsList;
     private SettingPanel<?> selectedSetting;
 
@@ -59,18 +60,19 @@ public class GuiSettingsScreen extends ComponentScreen {
     @Override
     public void initGui() {
 
-        getPanel().addComponent(panel = new GuiPanel());
-        panel.setLayout(new BorderLayout());
-        panel.setSize(300, 200);
-        // redundant casting for reobfuscation
-        panel.setPosition(((GuiScreen) this).width / 2 - panel.getBounds().width / 2, ((GuiScreen) this).height / 2 - panel.getBounds().height / 2);
+        getPanel().addComponent(panel = new GuiPanel(new BorderLayout()));
+
+        int x = this.width / 2 - 300 / 2;
+        int y = this.height / 2 - 200 / 2;
+        panel.setLocation(new Location(x, y, 300, 200));
+
         GuiPanel panel = new GuiPanel(new BorderLayout());
         this.panel.addComponent(panel, BorderLayout.Position.WEST);
         panel.addComponent(settingsList = new GuiPanel(new VerticalLayout()), BorderLayout.Position.WEST);
 
         GuiButton close = new GuiButton("Close");
-        close.setSize(40, 10);
-        close.setBackColor(Color.of(0, 255, 0, 127));
+        close.setLocation(new Location(0, 0, 40, 10));
+        close.setSecondaryColor(Color.of(0, 255, 0, 127));
         close.getBus().register(new Object() {
             @Subscribe
             public void closeTheScreen(ActionPerformedEvent event) {
@@ -104,6 +106,7 @@ public class GuiSettingsScreen extends ComponentScreen {
 
     @Override
     public void onGuiClosed() {
+        super.onGuiClosed();
         for (SettingPanel<?> settingPanel : panels) {
             SettingsFile config = settingPanel.getSettings();
             LiteLoader.getInstance().writeConfig(config);
@@ -131,20 +134,18 @@ public class GuiSettingsScreen extends ComponentScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float tick) {
         // drawDefaultBackground();
-        Rectangle rect = panel.getBounds();
-        Gui.drawRect(rect.x, rect.y, rect.x + rect.width, rect.y + rect.height, Integer.MIN_VALUE);
+        ILocation rect = panel.getLocation();
+        Gui.drawRect(rect.getXPos(), rect.getYPos(), rect.getXWidth(), rect.getYHeight(), Integer.MIN_VALUE);
         super.drawScreen(mouseX, mouseY, tick);
     }
 
     public void selectSetting(SettingPanel<?> setting) {
-        // setting.clearComponents();
+//        setting.clearComponents();
         deactivateAll();
         panel.removeComponent(selectedSetting);
         selectedSetting = setting;
-        selectedSetting.clearComponents();
-        selectedSetting.initGUI();
         activate(setting.getClass());
-        panel.addComponent(selectedSetting, BorderLayout.Position.CENTER);
+        this.panel.addComponent(this.selectedSetting, BorderLayout.Position.CENTER);
     }
 
     public static void registerSetting(Class<? extends SettingPanel<?>> settings) {

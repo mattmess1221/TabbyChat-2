@@ -128,14 +128,15 @@ public class TabbyChat extends TabbyAPI {
         bus.register(new ChatLogging(new File("logs/chat")));
 
         addFilterVariables();
-        MnmUtils.INSTANCE.setChatProxy(new TabbedChatProxy());
 
     }
 
-    public void postInit() {
+    public void postInit(MnmUtils utils) {
         // gui related stuff should be done here
         chatManager = new ChatManager(this);
         chatGui = new GuiNewChatTC(Minecraft.getMinecraft(), chatManager);
+
+        utils.setChatProxy(new TabbedChatProxy());
     }
 
     private void addFilterVariables() {
@@ -175,8 +176,7 @@ public class TabbyChat extends TabbyAPI {
 
     private void hookIntoChat(GuiIngame guiIngame) throws Exception {
         if (!GuiNewChatTC.class.isAssignableFrom(guiIngame.getChatGUI().getClass())) {
-//            TabbyPrivateFields.persistantChatGUI.setFinal(guiIngame, chatGui);
-            ((IGuiIngame)guiIngame).setChatGUI(chatGui);
+            ((IGuiIngame) guiIngame).setChatGUI(chatGui);
             LOGGER.info("Successfully hooked into chat.");
         }
     }

@@ -3,6 +3,7 @@ package mnm.mods.tabbychat.extra.filters;
 import static mnm.mods.tabbychat.util.Translation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -46,7 +47,7 @@ public class GuiFilterEditor extends GuiPanel {
     private GuiLabel lblError;
 
     public GuiFilterEditor(Filter filter, Consumer<Filter> consumer) {
-        this.setLayout(new GuiGridLayout(20, 15));
+        this.setLayout(Optional.of(new GuiGridLayout(20, 15)));
         this.filter = filter;
         this.consumer = consumer;
 
@@ -66,7 +67,7 @@ public class GuiFilterEditor extends GuiPanel {
         this.addComponent(new GuiLabel(new TextComponentTranslation(FILTER_DESTINATIONS)), new int[] { 1, pos });
         this.addComponent(txtDestinations = new GuiText(), new int[] { 8, pos, 10, 1 });
         txtDestinations.setValue(Joiner.on(", ").join(filter.getSettings().getChannels()));
-        txtDestinations.setCaption(I18n.format(FILTER_DESTIONATIONS_DESC));
+        txtDestinations.setCaption(new TextComponentTranslation(FILTER_DESTIONATIONS_DESC));
 
         pos += 1;
         this.addComponent(new GuiLabel(new TextComponentTranslation(FILTER_IS_PM)), new int[] { 2, pos });
@@ -175,7 +176,7 @@ public class GuiFilterEditor extends GuiPanel {
     }
 
     private void cancel() {
-        getParent().setOverlay(null);
+        getParent().setOverlay(Optional.empty());
     }
 
     @Subscribe
@@ -185,10 +186,10 @@ public class GuiFilterEditor extends GuiPanel {
             try {
                 String resolved = ChatFilter.resolveVariables(txtPattern.getValue());
                 Pattern.compile(resolved);
-                txtPattern.setForeColor(Color.WHITE);
+                txtPattern.setPrimaryColor(Color.WHITE);
                 lblError.setText(null);
             } catch (PatternSyntaxException e) {
-                txtPattern.setForeColor(Color.RED);
+                txtPattern.setPrimaryColor(Color.RED);
                 String string = e.getLocalizedMessage();
                 lblError.setText(new TextComponentString(string));
             }

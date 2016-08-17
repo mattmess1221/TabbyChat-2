@@ -10,6 +10,7 @@ import mnm.mods.tabbychat.api.ChannelStatus;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.util.ChatVisibility;
 import mnm.mods.util.Color;
+import mnm.mods.util.ILocation;
 import mnm.mods.util.gui.GuiButton;
 import mnm.mods.util.gui.events.GuiMouseEvent;
 import mnm.mods.util.gui.events.GuiMouseEvent.MouseEvent;
@@ -52,13 +53,13 @@ public class ChatTab extends GuiButton {
         if (GuiNewChatTC.getInstance().getChatOpen()
                 || (status != null && status.compareTo(ChannelStatus.PINGED) > 0)
                 || TabbyChat.getInstance().settings.advanced.visibility.get() == ChatVisibility.ALWAYS) {
-            Gui.drawRect(0, 0, getBounds().width, getBounds().height, getBackColor().getHex());
-            int txtX = this.getBounds().width / 2;
-            int txtY = this.getBounds().height / 2 - this.mc.fontRendererObj.FONT_HEIGHT / 2;
-            this.drawCenteredString(mc.fontRendererObj, this.getText(), txtX, txtY, getForeColor().getHex());
-            // this.drawVerticalLine(0, -1, getBounds().height,
-            // super.getForeColor());
-            this.drawVerticalLine(getBounds().width, -1, getBounds().height, super.getForeColor().getHex());
+            ILocation loc = getLocation();
+            Gui.drawRect(0, 0, loc.getWidth(), loc.getHeight(), getSecondaryColorProperty().getHex());
+            int txtX = loc.getWidth() / 2;
+            int txtY = loc.getHeight() / 2 - this.mc.fontRendererObj.FONT_HEIGHT / 2;
+            this.drawCenteredString(mc.fontRendererObj, this.getText(), txtX, txtY, getPrimaryColorProperty().getHex());
+
+            this.drawVerticalLine(loc.getWidth(), -1, loc.getHeight(), super.getPrimaryColorProperty().getHex());
         }
     }
 
@@ -90,8 +91,8 @@ public class ChatTab extends GuiButton {
     }
 
     @Override
-    public Color getBackColor() {
-        int back = super.getBackColor().getHex();
+    public Color getSecondaryColorProperty() {
+        int back = super.getSecondaryColorProperty().getHex();
         ChannelStatus status = channel.getStatus();
         if (status != null) {
             switch (status) {
@@ -121,7 +122,7 @@ public class ChatTab extends GuiButton {
     }
 
     @Override
-    public Color getForeColor() {
+    public Color getPrimaryColorProperty() {
         int fore = 0xfff0f0f0;
         ChannelStatus status = channel.getStatus();
         if (status != null) {

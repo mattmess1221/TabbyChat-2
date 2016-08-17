@@ -2,6 +2,7 @@ package mnm.mods.tabbychat.gui.settings;
 
 import static mnm.mods.tabbychat.util.Translation.*;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import com.google.common.eventbus.Subscribe;
@@ -38,9 +39,9 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> implements C
     private GuiLabel lblFilter;
 
     public GuiSettingsServer() {
-        this.setLayout(new GuiGridLayout(10, 20));
+        this.setLayout(Optional.of(new GuiGridLayout(10, 20)));
         this.setDisplayString(I18n.format(SETTINGS_SERVER));
-        this.setBackColor(Color.of(255, 215, 0, 64));
+        this.setSecondaryColor(Color.of(255, 215, 0, 64));
     }
 
     @Override
@@ -51,13 +52,13 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> implements C
         int pos = 1;
         this.addComponent(new GuiLabel(new TextComponentTranslation(CHANNELS_ENABLED)), new int[] { 2, pos });
         GuiSettingBoolean chkChannels = new GuiSettingBoolean(sett.channelsEnabled);
-        chkChannels.setCaption(I18n.format(CHANNELS_ENABLED_DESC));
+        chkChannels.setCaption(new TextComponentTranslation(CHANNELS_ENABLED_DESC));
         this.addComponent(chkChannels, new int[] { 1, pos });
 
         pos += 1;
         this.addComponent(new GuiLabel(new TextComponentTranslation(PM_ENABLED)), new int[] { 2, pos });
         GuiSettingBoolean chkPM = new GuiSettingBoolean(sett.pmEnabled);
-        chkPM.setCaption(I18n.format(PM_ENABLED_DESC));
+        chkPM.setCaption(new TextComponentTranslation(PM_ENABLED_DESC));
         this.addComponent(chkPM, new int[] { 1, pos });
 
         pos += 1;
@@ -68,7 +69,7 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> implements C
         this.addComponent(new GuiLabel(new TextComponentTranslation(CHANNEL_PATTERN)), new int[] { 1, pos });
         GuiSettingEnum<ChannelPatterns> enmChanPat = new GuiSettingEnum<ChannelPatterns>(sett.channelPattern,
                 ChannelPatterns.values());
-        enmChanPat.setCaption(I18n.format(CHANNEL_PATTERN_DESC));
+        enmChanPat.setCaption(new TextComponentTranslation(CHANNEL_PATTERN_DESC));
         this.addComponent(enmChanPat, new int[] { 5, pos, 4, 1 });
 
         pos += 2;
@@ -77,19 +78,19 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> implements C
             sett.messegePattern.set(MessagePatterns.WHISPERS);
         }
         GuiSettingEnum<MessagePatterns> enmMsg = new GuiSettingEnum<MessagePatterns>(sett.messegePattern, MessagePatterns.values());
-        enmMsg.setCaption(I18n.format(MESSAGE_PATTERN_DESC));
+        enmMsg.setCaption(new TextComponentTranslation(MESSAGE_PATTERN_DESC));
         this.addComponent(enmMsg, new int[] { 5, pos, 4, 1 });
 
         pos += 2;
         this.addComponent(new GuiLabel(new TextComponentTranslation(IGNORED_CHANNELS)), new int[] { 0, pos });
         GuiSettingStringList strIgnored = new GuiSettingStringList(sett.ignoredChannels);
-        strIgnored.setCaption(I18n.format(IGNORED_CHANNELS_DESC));
+        strIgnored.setCaption(new TextComponentTranslation(IGNORED_CHANNELS_DESC));
         this.addComponent(strIgnored, new int[] { 5, pos, 5, 1 });
 
         pos += 2;
         this.addComponent(new GuiLabel(new TextComponentTranslation(DEFAULT_CHANNELS)), new int[] { 0, pos });
         GuiSettingStringList strDefaults = new GuiSettingStringList(sett.defaultChannels);
-        strDefaults.setCaption(I18n.format(DEFAULT_CHANNELS_DESC));
+        strDefaults.setCaption(new TextComponentTranslation(DEFAULT_CHANNELS_DESC));
         this.addComponent(strDefaults, new int[] { 5, pos, 5, 1 });
 
         // Filters
@@ -211,6 +212,6 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> implements C
 
     private void edit(int i) {
         Filter filter = getSettings().filters.get(i);
-        setOverlay(new GuiFilterEditor(filter, this));
+        setOverlay(Optional.of(new GuiFilterEditor(filter, this)));
     }
 }

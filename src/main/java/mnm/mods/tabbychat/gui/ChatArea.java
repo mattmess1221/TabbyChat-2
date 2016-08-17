@@ -21,6 +21,7 @@ import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.util.ChatTextUtils;
 import mnm.mods.tabbychat.util.ChatVisibility;
 import mnm.mods.util.Color;
+import mnm.mods.util.ILocation;
 import mnm.mods.util.gui.GuiComponent;
 import mnm.mods.util.gui.events.GuiMouseEvent;
 import mnm.mods.util.gui.events.GuiMouseEvent.MouseEvent;
@@ -73,8 +74,8 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, R
     @Override
     public void drawComponent(int mouseX, int mouseY) {
         if (mc.gameSettings.chatVisibility != EnumChatVisibility.HIDDEN) {
-            int fore = getForeColor().getHex();
-            int back = getBackColor().getHex();
+            int fore = getPrimaryColorProperty().getHex();
+            int back = getSecondaryColorProperty().getHex();
             List<Message> visible = getVisibleChat();
             int height = visible.size() * mc.fontRendererObj.FONT_HEIGHT;
             ChatVisibility vis = TabbyChat.getInstance().settings.advanced.visibility.get();
@@ -205,15 +206,15 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, R
     public ITextComponent getChatComponent(int clickX, int clickY) {
         if (GuiNewChatTC.getInstance().getChatOpen()) {
             Point point = scalePoint(new Point(clickX, clickY));
-            Rectangle actual = getActualBounds();
+            ILocation actual = getActualLocation();
             // check that cursor is in bounds.
-            if (point.x >= actual.x && point.y >= actual.y
-                    && point.x <= actual.x + actual.width
-                    && point.y <= actual.y + actual.height) {
+            if (point.x >= actual.getXPos() && point.y >= actual.getYPos()
+                    && point.x <= actual.getXPos() + actual.getWidth()
+                    && point.y <= actual.getYPos() + actual.getHeight()) {
 
                 float scale = getActualScale();
                 float size = mc.fontRendererObj.FONT_HEIGHT * scale;
-                float bottom = (actual.y + actual.height);
+                float bottom = (actual.getYPos() + actual.getHeight());
 
                 // The line to get
                 int linePos = MathHelper.floor_float((point.y - bottom) / -size) + scrollPos;
@@ -223,7 +224,7 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, R
                 List<Message> list = this.getChat();
                 if (linePos >= 0 && linePos < list.size()) {
                     Message chatline = list.get(linePos);
-                    float x = actual.x;
+                    float x = actual.getXPos();
                     Iterator<ITextComponent> iterator = chatline.getMessageWithOptionalTimestamp().iterator();
 
                     while (iterator.hasNext()) {
@@ -247,5 +248,10 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, R
             }
         }
         return null;
+    }
+
+    @Override
+    public Rectangle getBounds() {
+        return getLocation().asRectangle();
     }
 }

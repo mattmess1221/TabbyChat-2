@@ -2,6 +2,8 @@ package mnm.mods.tabbychat.gui.settings;
 
 import static mnm.mods.tabbychat.util.Translation.*;
 
+import java.util.Optional;
+
 import com.google.common.eventbus.Subscribe;
 
 import mnm.mods.tabbychat.TabbyChat;
@@ -9,6 +11,7 @@ import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.TabbyAPI;
 import mnm.mods.tabbychat.settings.ServerSettings;
 import mnm.mods.util.Color;
+import mnm.mods.util.Location;
 import mnm.mods.util.gui.BorderLayout;
 import mnm.mods.util.gui.GuiButton;
 import mnm.mods.util.gui.GuiCheckbox;
@@ -41,23 +44,23 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
 
     public GuiSettingsChannel(Channel channel) {
         this.channel = channel;
-        this.setLayout(new BorderLayout());
+        this.setLayout(Optional.of(new BorderLayout()));
         this.setDisplayString(I18n.format(CHANNEL_TITLE));
-        this.setBackColor(Color.of(0, 15, 100, 65));
+        this.setSecondaryColor(Color.of(0, 15, 100, 65));
 
     }
 
     @Override
     public void initGUI() {
         channels = new GuiScrollingPanel();
-        channels.setSize(60, 200);
-        channels.getContentPanel().setLayout(new VerticalLayout());
+        channels.setLocation(new Location(0, 0, 60, 200));
+        channels.getContentPanel().setLayout(Optional.of(new VerticalLayout()));
         for (Channel channel : getSettings().channels.get().values()) {
             channels.getContentPanel().addComponent(new ChannelButton(channel));
         }
         this.addComponent(channels, BorderLayout.Position.WEST);
         panel = new GuiPanel();
-        panel.setLayout(new GuiGridLayout(8, 20));
+        panel.setLayout(Optional.of(new GuiGridLayout(8, 20)));
         this.addComponent(panel, BorderLayout.Position.CENTER);
 
         this.select(channel);
@@ -157,7 +160,7 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
         public ChannelButton(Channel channel) {
             super(channel.getName());
             this.channel = channel;
-            setSize(60, 15);
+            setLocation(new Location(0, 0, 60, 15));
         }
 
         @Subscribe

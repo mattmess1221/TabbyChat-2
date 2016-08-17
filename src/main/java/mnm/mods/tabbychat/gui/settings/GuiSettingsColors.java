@@ -2,6 +2,8 @@ package mnm.mods.tabbychat.gui.settings;
 
 import static mnm.mods.tabbychat.util.Translation.*;
 
+import java.util.Optional;
+
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.settings.TabbySettings;
 import mnm.mods.util.Color;
@@ -16,8 +18,8 @@ public class GuiSettingsColors extends SettingPanel<TabbySettings> {
 
     public GuiSettingsColors() {
         setDisplayString(I18n.format(SETTINGS_COLORS));
-        setBackColor(Color.of(0, 255, 0, 64));
-        this.setLayout(new GuiGridLayout(50, 50));
+        setSecondaryColor(Color.of(0, 255, 0, 64));
+        this.setLayout(Optional.of(new GuiGridLayout(50, 50)));
     }
 
     @Override
@@ -27,7 +29,7 @@ public class GuiSettingsColors extends SettingPanel<TabbySettings> {
         this.addComponent(new GuiSettingColor(getSettings().colors.chatTextColor), new int[] { 2, 11, 4, 4 });
 
         this.addComponent(new GuiLabel(new TextComponentTranslation(COLOR_CHATBOX)), new int[] { 8, 3 });
-        this.addComponent(new GuiLabel(new TextComponentTranslation(COLOR_CHAT_BORDER)), new int[]{ 8, 8 });
+        this.addComponent(new GuiLabel(new TextComponentTranslation(COLOR_CHAT_BORDER)), new int[] { 8, 8 });
         this.addComponent(new GuiLabel(new TextComponentTranslation(COLOR_CHAT_TEXT)), new int[] { 8, 13 });
 
     }

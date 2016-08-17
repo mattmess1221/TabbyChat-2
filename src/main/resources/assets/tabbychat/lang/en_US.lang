@@ -81,3 +81,5 @@ tabbychat.settings.advanced.hidedelims=Hide channel delimeters*
 tabbychat.settings.advanced.spellcheck=Enable spellcheck
 
 tabbychat.settings.experimental=* Experimental and may not work right.
+
+tabbychat.warn.completions=There are %s completions. Press tab again to display them anyway.
