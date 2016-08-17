@@ -10,6 +10,8 @@ import com.mumfrey.liteloader.core.LiteLoader;
 
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.util.TabbyRef;
+import mnm.mods.util.LiteModMnmUtils;
+import mnm.mods.util.MnmUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.network.NetHandlerPlayClient;
@@ -19,6 +21,7 @@ import net.minecraft.network.play.server.SPacketJoinGame;
 public class LiteModTabbyChat implements JoinGameListener, InitCompleteListener {
 
     private TabbyChat tc;
+    private MnmUtils utils;
 
     @Override
     public String getName() {
@@ -38,7 +41,11 @@ public class LiteModTabbyChat implements JoinGameListener, InitCompleteListener 
 
     @Override
     public void onInitCompleted(Minecraft minecraft, LiteLoader loader) {
-        tc.postInit();
+        this.utils = loader.getMod(LiteModMnmUtils.class).getUtils();
+        tc.postInit(utils);
+        if (!this.tc.settings.general.checkUpdates.get()) {
+            utils.disableUpdateCheck(this.getClass());
+        }
     }
 
     @Override

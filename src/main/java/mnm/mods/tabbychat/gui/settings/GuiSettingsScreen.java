@@ -144,8 +144,6 @@ public class GuiSettingsScreen extends ComponentScreen {
         deactivateAll();
         panel.removeComponent(selectedSetting);
         selectedSetting = setting;
-        selectedSetting.clearComponents();
-        selectedSetting.initGUI();
         activate(setting.getClass());
         this.panel.addComponent(this.selectedSetting, BorderLayout.Position.CENTER);
     }
