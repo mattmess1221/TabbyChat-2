@@ -164,11 +164,6 @@ public class TextBox extends ChatGui implements ChatInput {
         super.updateComponent();
         this.cursorCounter++;
 
-        List<String> list = getWrappedLines();
-        int newHeight = Math.max(1, list.size()) * (fr.FONT_HEIGHT + 2);
-        // int newY = getBounds().y + getBounds().height - newHeight;
-        this.setLocation(this.getLocation().copy().setWidth(getMinimumSize().width).setHeight(newHeight));
-
         Color color = getParent().getSecondaryColorProperty();
         Color bkg = Color.of(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() / 4 * 3);
 
