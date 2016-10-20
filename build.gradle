@@ -20,10 +20,11 @@ ext {
 }
 apply plugin: 'net.minecraftforge.gradle.liteloader'
 apply plugin: 'org.spongepowered.mixin'
-version = '2.1.1.1'
+version = '2.1.2'
 
 apply from: utils.file('gradle/minecraft.gradle')
 
+archivesBaseName = 'tabbychat'
 group = 'mnm.mods'
 
 minecraft {

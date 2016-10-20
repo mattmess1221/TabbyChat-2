@@ -55,6 +55,11 @@ public class GuiNewChatTC extends GuiNewChat implements ChatScreen {
     }
 
     @Override
+    public void clearChatMessages() {
+        chat.clearMessages();
+    }
+
+    @Override
     public void drawChat(int i) {
         if (prevScreenHeight != mc.displayHeight || prevScreenWidth != mc.displayWidth) {
 
