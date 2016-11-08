@@ -5,17 +5,16 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.Set;
 
-import com.google.common.base.Supplier;
-import com.google.common.base.Suppliers;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
 
+import mnm.mods.tabbychat.ChatChannel;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.Message;
-import mnm.mods.tabbychat.api.TabbyAPI;
 import mnm.mods.tabbychat.api.gui.ReceivedChat;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.util.ChatTextUtils;
@@ -34,9 +33,11 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 
-public class ChatArea extends GuiComponent implements Supplier<List<Message>>, ReceivedChat {
+public class ChatArea extends GuiComponent implements ReceivedChat {
 
-    private Supplier<List<Message>> supplier = Suppliers.memoizeWithExpiration(this, 50, TimeUnit.MILLISECONDS);
+    private ChatChannel channel;
+    private List<Message> messages = Lists.newLinkedList();
+    private Set<Channel> dirty = Sets.newHashSet();
     private int scrollPos = 0;
 
     public ChatArea() {
@@ -110,22 +111,27 @@ public class ChatArea extends GuiComponent implements Supplier<List<Message>>, R
         GlStateManager.disableBlend();
     }
 
-    @Override
-    public List<Message> get() {
-        return getChat(true);
+    public void setChannel(ChatChannel channel) {
+        this.channel = channel;
+        this.markDirty(channel);
     }
 
-    private List<Message> getChat(boolean force) {
-        if (!force) {
-            return supplier.get();
-        }
-        Channel channel = TabbyAPI.getAPI().getChat().getActiveChannel();
-        return ChatTextUtils.split(channel.getMessages(), getBounds().width);
+    public void markDirty() {
+        this.markDirty(channel);
+    }
 
+    public void markDirty(Channel channel) {
+        this.dirty.add(channel);
     }
 
     public List<Message> getChat() {
-        return getChat(false);
+        if (!dirty.contains(channel)) {
+            return this.messages;
+        }
+        this.dirty.remove(channel);
+        this.messages = ChatTextUtils.split(channel.getMessages(), getBounds().width);
+        return this.messages;
+
     }
 
     public List<Message> getVisibleChat() {

@@ -6,6 +6,7 @@ import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import com.mumfrey.liteloader.core.LiteLoader;
 
+import mnm.mods.tabbychat.ChatManager;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.util.Color;
 import mnm.mods.util.ILocation;
@@ -111,6 +112,7 @@ public class GuiSettingsScreen extends ComponentScreen {
             SettingsFile config = settingPanel.getSettings();
             LiteLoader.getInstance().writeConfig(config);
         }
+        ((ChatManager) TabbyChat.getInstance().getChat()).getChatBox().getChatArea().markDirty();
     }
 
     private void deactivateAll() {

@@ -72,6 +72,7 @@ public class ChatBox extends GuiPanel implements ChatGui {
                             tempbox.getYPos() + y - drag.y,
                             tempbox.getWidth() + x - drag.x,
                             tempbox.getHeight() - y + drag.y));
+                    this.chatArea.markDirty();
                 } else {
                     setLocation(getLocation().copy()
                             .setXPos(tempbox.getXPos() + x - drag.x)

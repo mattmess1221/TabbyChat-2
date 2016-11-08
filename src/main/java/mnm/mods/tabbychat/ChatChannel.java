@@ -111,6 +111,9 @@ public class ChatChannel implements Channel {
                 || status.ordinal() < this.status.ordinal()) {
             this.status = status;
         }
+        if (status == ChannelStatus.ACTIVE) {
+            getManager().getChatBox().getChatArea().setChannel(this);
+        }
     }
 
     @Override
@@ -167,6 +170,7 @@ public class ChatChannel implements Channel {
         trim(TabbyChat.getInstance().settings.advanced.historyLen.get());
 
         ((ChatManager) TabbyChat.getInstance().getChat()).save();
+        dirty();
     }
 
     public void trim(int size) {
@@ -184,6 +188,7 @@ public class ChatChannel implements Channel {
     public void removeMessageAt(int pos) {
         this.getMessages().remove(pos);
         ((ChatManager) TabbyChat.getInstance().getChat()).save();
+        dirty();
     }
 
     @Override
@@ -196,11 +201,21 @@ public class ChatChannel implements Channel {
             }
         }
         ((ChatManager) TabbyChat.getInstance().getChat()).save();
+        dirty();
     }
 
     @Override
     public void clear() {
         this.getMessages().clear();
+        dirty();
+    }
+
+    private void dirty() {
+        getManager().getChatBox().getChatArea().markDirty(this);
+    }
+
+    private static ChatManager getManager() {
+        return (ChatManager) TabbyChat.getInstance().getChat();
     }
 
     @Override

@@ -18,6 +18,7 @@ import com.google.common.eventbus.EventBus;
 import com.mumfrey.liteloader.core.LiteLoader;
 
 import mnm.mods.tabbychat.api.AddonManager;
+import mnm.mods.tabbychat.api.ChannelStatus;
 import mnm.mods.tabbychat.api.Chat;
 import mnm.mods.tabbychat.api.TabbyAPI;
 import mnm.mods.tabbychat.api.VersionData;
@@ -134,6 +135,8 @@ public class TabbyChat extends TabbyAPI {
     public void postInit(MnmUtils utils) {
         // gui related stuff should be done here
         chatManager = new ChatManager(this);
+        // this is set here because status relies on `chatManager`.
+        ChatChannel.DEFAULT_CHANNEL.setStatus(ChannelStatus.ACTIVE);
         chatGui = new GuiNewChatTC(Minecraft.getMinecraft(), chatManager);
 
         utils.setChatProxy(new TabbedChatProxy());

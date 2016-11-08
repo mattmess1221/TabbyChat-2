@@ -38,8 +38,6 @@ public class ChatTray extends GuiPanel implements IGui {
         controls.addComponent(handle);
         this.addComponent(controls, BorderLayout.Position.EAST);
 
-        addChannel(ChatChannel.DEFAULT_CHANNEL);
-        ChatChannel.DEFAULT_CHANNEL.setStatus(ChannelStatus.ACTIVE);
     }
 
     @Override
