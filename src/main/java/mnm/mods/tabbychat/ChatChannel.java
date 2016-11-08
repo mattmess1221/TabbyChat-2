@@ -211,7 +211,8 @@ public class ChatChannel implements Channel {
     }
 
     private void dirty() {
-        getManager().getChatBox().getChatArea().markDirty(this);
+        if (this.getStatus() == ChannelStatus.ACTIVE)
+            getManager().getChatBox().getChatArea().markDirty();
     }
 
     private static ChatManager getManager() {

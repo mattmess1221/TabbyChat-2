@@ -37,7 +37,7 @@ public class ChatArea extends GuiComponent implements ReceivedChat {
 
     private ChatChannel channel;
     private List<Message> messages = Lists.newLinkedList();
-    private Set<Channel> dirty = Sets.newHashSet();
+    private boolean dirty;
     private int scrollPos = 0;
 
     public ChatArea() {
@@ -113,22 +113,18 @@ public class ChatArea extends GuiComponent implements ReceivedChat {
 
     public void setChannel(ChatChannel channel) {
         this.channel = channel;
-        this.markDirty(channel);
+        this.markDirty();
     }
 
     public void markDirty() {
-        this.markDirty(channel);
-    }
-
-    public void markDirty(Channel channel) {
-        this.dirty.add(channel);
+        this.dirty = true;
     }
 
     public List<Message> getChat() {
-        if (!dirty.contains(channel)) {
+        if (!dirty) {
             return this.messages;
         }
-        this.dirty.remove(channel);
+        this.dirty = false;
         this.messages = ChatTextUtils.split(channel.getMessages(), getBounds().width);
         return this.messages;
 
