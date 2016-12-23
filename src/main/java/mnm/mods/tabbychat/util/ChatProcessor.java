@@ -1,11 +1,13 @@
 package mnm.mods.tabbychat.util;
 
-import javax.annotation.Nullable;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 
+import javax.annotation.Nullable;
+
 public class ChatProcessor {
+
+    public static final int MAX_CHAT_LENGTH = 256;
 
     @Nullable
     public static String[] processChatSends(@Nullable String msg, String prefix, boolean hidden) {
@@ -14,7 +16,7 @@ public class ChatProcessor {
         }
         // get rid of spaces
         msg = msg.trim().replaceAll("  +", " ");
-        int len = 100 - prefix.length();
+        int len = MAX_CHAT_LENGTH - prefix.length();
         if (!hidden && msg.startsWith(prefix)) {
             msg = msg.substring(prefix.length()).trim();
         }

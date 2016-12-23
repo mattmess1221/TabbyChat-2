@@ -1,12 +1,6 @@
 package mnm.mods.tabbychat.gui;
 
-import java.awt.Dimension;
-import java.awt.Rectangle;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.google.common.eventbus.Subscribe;
-
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.TabbyAPI;
@@ -24,6 +18,10 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 
+import java.awt.*;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class TextBox extends ChatGui implements ChatInput {
 
     private FontRenderer fr = mc.fontRendererObj;
@@ -38,7 +36,7 @@ public class TextBox extends ChatGui implements ChatInput {
     private Spellcheck spellcheck;
 
     public TextBox() {
-        textField.getTextField().setMaxStringLength(300);
+        textField.getTextField().setMaxStringLength(ChatProcessor.MAX_CHAT_LENGTH * 3);
         textField.setFocused(true);
         textField.getTextField().setCanLoseFocus(false);
 
