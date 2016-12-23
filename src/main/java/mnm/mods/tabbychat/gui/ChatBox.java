@@ -1,13 +1,7 @@
 package mnm.mods.tabbychat.gui;
 
-import java.awt.Point;
-import java.awt.Rectangle;
-
-import org.lwjgl.input.Mouse;
-
 import com.google.common.eventbus.Subscribe;
 import com.mumfrey.liteloader.core.LiteLoader;
-
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.gui.ChatGui;
 import mnm.mods.tabbychat.settings.ColorSettings;
@@ -23,6 +17,9 @@ import mnm.mods.util.gui.events.GuiMouseEvent.MouseEvent;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.math.MathHelper;
+import org.lwjgl.input.Mouse;
+
+import java.awt.*;
 
 public class ChatBox extends GuiPanel implements ChatGui {
 
@@ -126,10 +123,10 @@ public class ChatBox extends GuiPanel implements ChatGui {
 
         if (x1 != x || y1 != y || w1 != w || h1 != h) {
             setLocation(new Location(
-                    MathHelper.ceiling_double_int(x1 / scale),
-                    MathHelper.ceiling_double_int(y1 / scale),
-                    MathHelper.ceiling_double_int(w1 / scale),
-                    MathHelper.ceiling_double_int(h1 / scale)));
+                    MathHelper.ceil(x1 / scale),
+                    MathHelper.ceil(y1 / scale),
+                    MathHelper.ceil(w1 / scale),
+                    MathHelper.ceil(h1 / scale)));
         }
         super.updateComponent();
     }

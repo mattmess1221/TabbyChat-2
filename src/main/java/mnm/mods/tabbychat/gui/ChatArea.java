@@ -1,19 +1,9 @@
 package mnm.mods.tabbychat.gui;
 
-import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
-
 import mnm.mods.tabbychat.ChatChannel;
 import mnm.mods.tabbychat.TabbyChat;
-import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.Message;
 import mnm.mods.tabbychat.api.gui.ReceivedChat;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
@@ -32,6 +22,10 @@ import net.minecraft.entity.player.EntityPlayer.EnumChatVisibility;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
+
+import java.awt.*;
+import java.util.Iterator;
+import java.util.List;
 
 public class ChatArea extends GuiComponent implements ReceivedChat {
 
@@ -219,7 +213,7 @@ public class ChatArea extends GuiComponent implements ReceivedChat {
                 float bottom = (actual.getYPos() + actual.getHeight());
 
                 // The line to get
-                int linePos = MathHelper.floor_float((point.y - bottom) / -size) + scrollPos;
+                int linePos = MathHelper.floor((point.y - bottom) / -size) + scrollPos;
 
                 // Iterate through the chat component, stopping when the desired
                 // x is reached.

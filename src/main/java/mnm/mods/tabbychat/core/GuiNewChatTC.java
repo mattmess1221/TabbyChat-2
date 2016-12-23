@@ -1,14 +1,7 @@
 package mnm.mods.tabbychat.core;
 
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.lwjgl.input.Mouse;
-
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
-
 import mnm.mods.tabbychat.ChatChannel;
 import mnm.mods.tabbychat.ChatManager;
 import mnm.mods.tabbychat.TabbyChat;
@@ -21,6 +14,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiNewChat;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.text.ITextComponent;
+import org.lwjgl.input.Mouse;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class GuiNewChatTC extends GuiNewChat implements ChatScreen {
 
@@ -55,8 +53,11 @@ public class GuiNewChatTC extends GuiNewChat implements ChatScreen {
     }
 
     @Override
-    public void clearChatMessages() {
+    public void clearChatMessages(boolean sent) {
         chat.clearMessages();
+        if (sent) {
+            this.getSentMessages().clear();
+        }
     }
 
     @Override
