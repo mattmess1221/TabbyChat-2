@@ -172,7 +172,7 @@ public class TabbyChat extends TabbyAPI {
 
     private void hookIntoChat(GuiIngame guiIngame) throws Exception {
         if (!GuiNewChatTC.class.isAssignableFrom(guiIngame.getChatGUI().getClass())) {
-            ((IGuiIngame) guiIngame).setChatGUI(chatGui);
+            ((IGuiIngame) guiIngame).setPersistantChatGUI(chatGui);
             LOGGER.info("Successfully hooked into chat.");
         }
     }

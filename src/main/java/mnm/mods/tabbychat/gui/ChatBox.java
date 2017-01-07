@@ -1,5 +1,9 @@
 package mnm.mods.tabbychat.gui;
 
+import java.awt.Point;
+import java.awt.Rectangle;
+
+import org.lwjgl.input.Mouse;
 import com.google.common.eventbus.Subscribe;
 import com.mumfrey.liteloader.core.LiteLoader;
 import mnm.mods.tabbychat.TabbyChat;
@@ -17,9 +21,6 @@ import mnm.mods.util.gui.events.GuiMouseEvent.MouseEvent;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.math.MathHelper;
-import org.lwjgl.input.Mouse;
-
-import java.awt.*;
 
 public class ChatBox extends GuiPanel implements ChatGui {
 
@@ -40,6 +41,7 @@ public class ChatBox extends GuiPanel implements ChatGui {
         this.addComponent(txtChatInput = new TextBox(), BorderLayout.Position.SOUTH);
         this.addComponent(new Scrollbar(chatArea), BorderLayout.Position.EAST);
         super.setLocation(rect);
+        super.updateComponent();
     }
 
     @Subscribe

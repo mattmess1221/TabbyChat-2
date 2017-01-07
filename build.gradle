@@ -20,7 +20,7 @@ ext {
 }
 apply plugin: 'net.minecraftforge.gradle.liteloader'
 apply plugin: 'org.spongepowered.mixin'
-version = '2.1.5'
+version = '2.1.6'
 
 apply from: utils.file('gradle/minecraft.gradle')
 
@@ -53,7 +53,20 @@ dependencies {
 	testCompile 'junit:junit:4.12'
 
 }
+litemod.json {
+	name = 'tabbychat'
+	author = 'killjoy1221'
+	revision = ext.gitRevision
+	dependsOn = ['mnmutils']
+	description = 'Chat overhaul.'
+	mixinConfigs = ['mixin.tabbychat.json']
+	metadata {
+		url = 'https://minecraft.curseforge.com/projects/tabbychat-2'
+		updateUrl = 'https://raw.githubusercontent.com/killjoy1221/Version/master/TabbyChat2.json'
+	}
+}
 def fromDeps = {
+	from litemod
 	configurations.shade.collect {it.directory ? it : zipTree(it)}.each {
 		from it
 	}

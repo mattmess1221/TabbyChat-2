@@ -70,7 +70,10 @@ public class ChatManager implements Chat {
 
         this.chatbox = new ChatBox(new Location(x, y, width, height));
 
-        this.channels.add(ChatChannel.DEFAULT_CHANNEL);
+        if (!this.channels.contains(ChatChannel.DEFAULT_CHANNEL)) {
+            this.channels.add(ChatChannel.DEFAULT_CHANNEL);
+            chatbox.getTray().addChannel(ChatChannel.DEFAULT_CHANNEL);
+        }
     }
 
     @Override

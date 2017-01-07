@@ -4,5 +4,5 @@ import net.minecraft.client.gui.GuiNewChat;
 
 public interface IGuiIngame {
 
-    void setChatGUI(GuiNewChat chat);
+    void setPersistantChatGUI(GuiNewChat chat);
 }
