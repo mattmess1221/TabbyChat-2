@@ -2,19 +2,9 @@ package mnm.mods.tabbychat.extra.filters;
 
 import static mnm.mods.tabbychat.util.Translation.*;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
-import java.util.stream.Collectors;
-
-import org.lwjgl.input.Keyboard;
-
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.eventbus.Subscribe;
-
 import mnm.mods.tabbychat.api.filters.Filter;
 import mnm.mods.tabbychat.api.filters.FilterSettings;
 import mnm.mods.util.Color;
@@ -31,6 +21,13 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
+import org.lwjgl.input.Keyboard;
+
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
 
 public class GuiFilterEditor extends GuiPanel {
 
@@ -46,8 +43,11 @@ public class GuiFilterEditor extends GuiPanel {
     private GuiText txtPattern;
     private GuiLabel lblError;
 
+    private GuiButton btnRegexp;
+    private GuiButton btnIgnoreCase;
+
     public GuiFilterEditor(Filter filter, Consumer<Filter> consumer) {
-        this.setLayout(Optional.of(new GuiGridLayout(20, 15)));
+        this.setLayout(new GuiGridLayout(20, 15));
         this.filter = filter;
         this.consumer = consumer;
 
@@ -56,36 +56,36 @@ public class GuiFilterEditor extends GuiPanel {
 
         int pos = 0;
 
-        this.addComponent(new GuiLabel(new TextComponentTranslation(FILTER_TITLE)), new int[] { 8, pos, 1, 2 });
+        this.addComponent(new GuiLabel(new TextComponentTranslation(FILTER_TITLE)), new int[]{8, pos, 1, 2});
 
         pos += 2;
-        this.addComponent(new GuiLabel(new TextComponentTranslation(FILTER_NAME)), new int[] { 1, pos });
-        this.addComponent(txtName = new GuiText(), new int[] { 5, pos, 10, 1 });
+        this.addComponent(new GuiLabel(new TextComponentTranslation(FILTER_NAME)), new int[]{1, pos});
+        this.addComponent(txtName = new GuiText(), new int[]{5, pos, 10, 1});
         txtName.setValue(filter.getName());
 
         pos += 2;
-        this.addComponent(new GuiLabel(new TextComponentTranslation(FILTER_DESTINATIONS)), new int[] { 1, pos });
-        this.addComponent(txtDestinations = new GuiText(), new int[] { 8, pos, 10, 1 });
+        this.addComponent(new GuiLabel(new TextComponentTranslation(FILTER_DESTINATIONS)), new int[]{1, pos});
+        this.addComponent(txtDestinations = new GuiText(), new int[]{8, pos, 10, 1});
         txtDestinations.setValue(Joiner.on(", ").join(filter.getSettings().getChannels()));
         txtDestinations.setCaption(new TextComponentTranslation(FILTER_DESTIONATIONS_DESC));
 
         pos += 1;
-        this.addComponent(new GuiLabel(new TextComponentTranslation(FILTER_IS_PM)), new int[] { 2, pos });
-        this.addComponent(chkPm = new GuiCheckbox(), new int[] { 1, pos });
+        this.addComponent(new GuiLabel(new TextComponentTranslation(FILTER_IS_PM)), new int[]{2, pos});
+        this.addComponent(chkPm = new GuiCheckbox(), new int[]{1, pos});
         chkPm.setValue(filter.getSettings().isDestinationPm());
 
         pos += 1;
-        this.addComponent(new GuiLabel(new TextComponentTranslation(FILTER_HIDE)), new int[] { 2, pos });
-        this.addComponent(chkRemove = new GuiCheckbox(), new int[] { 1, pos });
+        this.addComponent(new GuiLabel(new TextComponentTranslation(FILTER_HIDE)), new int[]{2, pos});
+        this.addComponent(chkRemove = new GuiCheckbox(), new int[]{1, pos});
         chkRemove.setValue(settings.isRemove());
 
         pos += 1;
-        this.addComponent(new GuiLabel(new TextComponentTranslation(FILTER_AUDIO_NOTIFY)), new int[] { 2, pos });
-        this.addComponent(chkSound = new GuiCheckbox(), new int[] { 1, pos });
+        this.addComponent(new GuiLabel(new TextComponentTranslation(FILTER_AUDIO_NOTIFY)), new int[]{2, pos});
+        this.addComponent(chkSound = new GuiCheckbox(), new int[]{1, pos});
         chkSound.setValue(settings.isSoundNotification());
 
         pos += 1;
-        this.addComponent(txtSound = new GuiText(), new int[] { 3, pos, 14, 1 });
+        this.addComponent(txtSound = new GuiText(), new int[]{3, pos, 14, 1});
         txtSound.setValue(settings.getSoundName());
         txtSound.getBus().register(new Object() {
             private int pos;
@@ -126,16 +126,16 @@ public class GuiFilterEditor extends GuiPanel {
                 return SoundEvent.REGISTRY.getObject(new ResourceLocation(txtSound.getValue()));
             }
         };
-        this.addComponent(play, new int[] { 18, pos, 2, 1 });
+        this.addComponent(play, new int[]{18, pos, 2, 1});
 
         pos += 2;
-        this.addComponent(new GuiLabel(new TextComponentTranslation(FILTER_EXPRESSION)), new int[] { 1, pos });
-        this.addComponent(txtPattern = new GuiText(), new int[] { 8, pos, 12, 1 });
+        this.addComponent(new GuiLabel(new TextComponentTranslation(FILTER_EXPRESSION)), new int[]{1, pos});
+        this.addComponent(txtPattern = new GuiText(), new int[]{8, pos, 12, 1});
 
         txtPattern.setValue(pattern == null ? "" : pattern);
 
         pos++;
-        this.addComponent(lblError = new GuiLabel(), new int[] { 6, pos });
+        this.addComponent(lblError = new GuiLabel(), new int[]{6, pos});
 
         GuiButton accept = new GuiButton(I18n.format("gui.done"));
         accept.getBus().register(new Object() {
@@ -144,7 +144,7 @@ public class GuiFilterEditor extends GuiPanel {
                 accept();
             }
         });
-        this.addComponent(accept, new int[] { 5, 14, 4, 1 });
+        this.addComponent(accept, new int[]{5, 14, 4, 1});
 
         GuiButton cancel = new GuiButton(I18n.format("gui.cancel"));
         cancel.getBus().register(new Object() {
@@ -153,7 +153,7 @@ public class GuiFilterEditor extends GuiPanel {
                 cancel();
             }
         });
-        this.addComponent(cancel, new int[] { 1, 14, 4, 1 });
+        this.addComponent(cancel, new int[]{1, 14, 4, 1});
     }
 
     private void accept() {
@@ -176,9 +176,10 @@ public class GuiFilterEditor extends GuiPanel {
     }
 
     private void cancel() {
-        getParent().setOverlay(Optional.empty());
+        getParent().ifPresent(p -> p.setOverlay(null));
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Subscribe
     public void updateError(GuiKeyboardEvent event) {
         if (txtPattern.isFocused()) {

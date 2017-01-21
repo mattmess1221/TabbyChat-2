@@ -1,9 +1,6 @@
 package mnm.mods.tabbychat.gui;
 
-import java.awt.Dimension;
-
 import com.google.common.eventbus.Subscribe;
-
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.ChannelStatus;
@@ -16,6 +13,9 @@ import mnm.mods.util.gui.events.GuiMouseEvent;
 import mnm.mods.util.gui.events.GuiMouseEvent.MouseEvent;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
+
+import java.awt.Dimension;
+import javax.annotation.Nonnull;
 
 public class ChatTab extends GuiButton {
 
@@ -32,17 +32,17 @@ public class ChatTab extends GuiButton {
             if (event.getButton() == 0) {
                 if (GuiScreen.isShiftKeyDown()) {
                     // Remove channel
-                    TabbyChat.getInstance().getChat().removeChannel(this.getChannel());
+                    TabbyChat.getInstance().getChat().removeChannel(this.channel);
                 } else {
                     // Enable channel, disable others
-                    TabbyChat.getInstance().getChat().setActiveChannel(this.getChannel());
+                    TabbyChat.getInstance().getChat().setActiveChannel(this.channel);
                 }
             } else if (event.getButton() == 1) {
                 // Open channel options
-                this.getChannel().openSettings();
+                this.channel.openSettings();
             } else if (event.getButton() == 2) {
                 // middle click
-                TabbyChat.getInstance().getChat().removeChannel(this.getChannel());
+                TabbyChat.getInstance().getChat().removeChannel(this.channel);
             }
         }
     }
@@ -61,10 +61,6 @@ public class ChatTab extends GuiButton {
 
             this.drawVerticalLine(loc.getWidth(), -1, loc.getHeight(), super.getPrimaryColorProperty().getHex());
         }
-    }
-
-    public Channel getChannel() {
-        return this.channel;
     }
 
     @Override
@@ -90,6 +86,7 @@ public class ChatTab extends GuiButton {
         return alias;
     }
 
+    @Nonnull
     @Override
     public Color getSecondaryColorProperty() {
         int back = super.getSecondaryColorProperty().getHex();
@@ -121,6 +118,7 @@ public class ChatTab extends GuiButton {
         return applyTransparency(Color.of(back));
     }
 
+    @Nonnull
     @Override
     public Color getPrimaryColorProperty() {
         int fore = 0xfff0f0f0;
@@ -154,12 +152,12 @@ public class ChatTab extends GuiButton {
     }
 
     private Color applyTransparency(Color color) {
-        Color color1 = color;
         float perc = (mc.gameSettings.chatOpacity * 0.9F + 0.1F) / 2;
-        int opacity = (int) (perc * color1.getAlpha());
-        return Color.of(color1.getRed(), color1.getGreen(), color1.getBlue(), opacity);
+        int opacity = (int) (perc * color.getAlpha());
+        return Color.of(color.getRed(), color.getGreen(), color.getBlue(), opacity);
     }
 
+    @Nonnull
     @Override
     public Dimension getMinimumSize() {
         String alias = channel.getAlias();

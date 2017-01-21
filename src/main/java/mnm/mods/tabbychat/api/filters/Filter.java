@@ -51,6 +51,18 @@ public interface Filter {
      */
     String getUnresolvedPattern();
 
+    boolean isRegex();
+
+    void setRegex(boolean regex);
+
+    boolean isCaseSensitive();
+
+    void setCaseSensitive(boolean caseSensitive);
+
+    void setFancy(boolean fancy);
+
+    boolean isFancy();
+
     /**
      * Sets the action that this filter does when it matches.
      *

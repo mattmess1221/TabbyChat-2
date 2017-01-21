@@ -1,14 +1,14 @@
 package mnm.mods.tabbychat.extra.filters;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import mnm.mods.tabbychat.api.events.ChatMessageEvent.ChatReceivedEvent;
 import mnm.mods.tabbychat.api.filters.FilterEvent;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public abstract class TabFilter extends ChatFilter {
 
-    public TabFilter(String action) {
+    TabFilter(String action) {
         this.setAction(action);
     }
 

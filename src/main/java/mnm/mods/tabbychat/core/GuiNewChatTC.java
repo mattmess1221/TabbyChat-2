@@ -19,6 +19,7 @@ import org.lwjgl.input.Mouse;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 
 public class GuiNewChatTC extends GuiNewChat implements ChatScreen {
 
@@ -138,6 +139,7 @@ public class GuiNewChatTC extends GuiNewChat implements ChatScreen {
         super.resetScroll();
     }
 
+    @Nonnull
     @Override
     public List<String> getSentMessages() {
         return super.getSentMessages();

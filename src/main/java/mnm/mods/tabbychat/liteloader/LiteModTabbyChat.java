@@ -1,13 +1,9 @@
 package mnm.mods.tabbychat.liteloader;
 
-import java.io.File;
-import java.net.SocketAddress;
-
 import com.mojang.realmsclient.dto.RealmsServer;
 import com.mumfrey.liteloader.InitCompleteListener;
 import com.mumfrey.liteloader.JoinGameListener;
 import com.mumfrey.liteloader.core.LiteLoader;
-
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.util.TabbyRef;
 import mnm.mods.util.LiteModMnmUtils;
@@ -18,10 +14,12 @@ import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.play.server.SPacketJoinGame;
 
+import java.io.File;
+import java.net.SocketAddress;
+
 public class LiteModTabbyChat implements JoinGameListener, InitCompleteListener {
 
     private TabbyChat tc;
-    private MnmUtils utils;
 
     @Override
     public String getName() {
@@ -41,7 +39,7 @@ public class LiteModTabbyChat implements JoinGameListener, InitCompleteListener 
 
     @Override
     public void onInitCompleted(Minecraft minecraft, LiteLoader loader) {
-        this.utils = loader.getMod(LiteModMnmUtils.class).getUtils();
+        MnmUtils utils = loader.getMod(LiteModMnmUtils.class).getUtils();
         tc.postInit(utils);
         if (!this.tc.settings.general.checkUpdates.get()) {
             utils.disableUpdateCheck(this.getClass());

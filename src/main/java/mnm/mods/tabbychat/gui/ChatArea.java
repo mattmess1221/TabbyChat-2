@@ -23,8 +23,9 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 
-import java.awt.*;
-import java.util.Iterator;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.List;
 
 public class ChatArea extends GuiComponent implements ReceivedChat {
@@ -124,7 +125,7 @@ public class ChatArea extends GuiComponent implements ReceivedChat {
 
     }
 
-    public List<Message> getVisibleChat() {
+    private List<Message> getVisibleChat() {
         List<Message> lines = getChat();
 
         List<Message> messages = Lists.newArrayList();
@@ -201,7 +202,7 @@ public class ChatArea extends GuiComponent implements ReceivedChat {
     @Override
     public ITextComponent getChatComponent(int clickX, int clickY) {
         if (GuiNewChatTC.getInstance().getChatOpen()) {
-            Point point = scalePoint(new Point(clickX, clickY));
+            Point point = scalePoint(new Point(clickX, clickY), mc.currentScreen);
             ILocation actual = getActualLocation();
             // check that cursor is in bounds.
             if (point.x >= actual.getXPos() && point.y >= actual.getYPos()
@@ -221,11 +222,8 @@ public class ChatArea extends GuiComponent implements ReceivedChat {
                 if (linePos >= 0 && linePos < list.size()) {
                     Message chatline = list.get(linePos);
                     float x = actual.getXPos();
-                    Iterator<ITextComponent> iterator = chatline.getMessageWithOptionalTimestamp().iterator();
 
-                    while (iterator.hasNext()) {
-                        ITextComponent ichatcomponent = iterator.next();
-
+                    for (ITextComponent ichatcomponent : chatline.getMessageWithOptionalTimestamp()) {
                         if (ichatcomponent instanceof TextComponentString) {
 
                             // get the text of the component, no children.

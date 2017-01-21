@@ -1,10 +1,10 @@
 package mnm.mods.tabbychat.util;
 
+import mnm.mods.util.Translatable;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import mnm.mods.util.Translatable;
 
 public enum TimeStamps implements Translatable {
 
@@ -20,7 +20,7 @@ public enum TimeStamps implements Translatable {
     private String maxTime;
     private DateFormat format;
 
-    private TimeStamps(String _code, String _maxTime) {
+    TimeStamps(String _code, String _maxTime) {
         this.code = _code;
         this.maxTime = _maxTime;
         format = new SimpleDateFormat(code);

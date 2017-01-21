@@ -29,5 +29,5 @@ public enum ChannelStatus {
     /**
      * For when players join or leave the channel.
      */
-    JOINED;
+    JOINED
 }

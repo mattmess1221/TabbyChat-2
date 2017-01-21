@@ -1,13 +1,13 @@
 package mnm.mods.tabbychat.core.api;
 
-import java.util.Map;
-
 import com.google.common.collect.Maps;
-
 import mnm.mods.tabbychat.api.AddonManager;
 import mnm.mods.tabbychat.api.filters.FilterVariable;
 import mnm.mods.tabbychat.api.filters.FilterVariable.FilterConstant;
 import mnm.mods.tabbychat.api.filters.IFilterAction;
+
+import java.util.Map;
+import javax.annotation.Nonnull;
 
 public class TabbyAddonManager implements AddonManager {
 
@@ -16,7 +16,7 @@ public class TabbyAddonManager implements AddonManager {
 
 
     @Override
-    public void registerFilterAction(String name, IFilterAction action) {
+    public void registerFilterAction(String name, @Nonnull IFilterAction action) {
         this.filterActions.put(name, action);
     }
 

@@ -22,7 +22,7 @@ public enum MessagePatterns {
     private final String incoming;
     private final String outgoing;
 
-    private MessagePatterns(String translation, String incoming, String outgoing) {
+    MessagePatterns(String translation, String incoming, String outgoing) {
         this.translation = translation;
         this.incoming = String.format(incoming, PLAYER_PATTERN);
         this.outgoing = String.format(outgoing, PLAYER_PATTERN);

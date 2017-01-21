@@ -1,8 +1,5 @@
 package mnm.mods.tabbychat.extra.filters;
 
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
-
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.TabbyAPI;
@@ -11,15 +8,20 @@ import mnm.mods.tabbychat.api.filters.FilterEvent;
 import mnm.mods.tabbychat.api.filters.IFilterAction;
 import mnm.mods.tabbychat.util.MessagePatterns;
 
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+import javax.annotation.Nonnull;
+
 /**
  * Base class for filters that just need to set the
  */
 public class MessageFilter extends TabFilter {
 
-    public MessageFilter() {
+    MessageFilter() {
         super(MessageAction.ID);
     }
 
+    @Nonnull
     @Override
     public Pattern getPattern() {
         try {
@@ -35,7 +37,7 @@ public class MessageFilter extends TabFilter {
 
     public static class MessageAction implements IFilterAction {
 
-        public static final String ID = "Message";
+        static final String ID = "Message";
 
         @Override
         public void action(Filter filter, FilterEvent event) {

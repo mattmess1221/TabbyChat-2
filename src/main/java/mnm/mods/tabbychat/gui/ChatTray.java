@@ -1,12 +1,7 @@
 package mnm.mods.tabbychat.gui;
 
-import java.awt.Dimension;
-import java.awt.Rectangle;
-import java.util.Map;
-
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
-
 import mnm.mods.tabbychat.ChatChannel;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
@@ -23,17 +18,22 @@ import mnm.mods.util.gui.ILayout;
 import mnm.mods.util.gui.events.ActionPerformedEvent;
 import net.minecraft.client.gui.Gui;
 
+import java.awt.Dimension;
+import java.awt.Rectangle;
+import java.util.Map;
+import javax.annotation.Nonnull;
+
 public class ChatTray extends GuiPanel implements IGui {
 
     private GuiPanel tabList = new GuiPanel(new FlowLayout());
-    private ChatPanel controls = new ChatPanel(new FlowLayout());
     private GuiComponent handle = new ChatHandle();
 
     private Map<Channel, GuiComponent> map = Maps.newHashMap();
 
-    public ChatTray() {
+    ChatTray() {
         super(new BorderLayout());
         this.addComponent(tabList, BorderLayout.Position.CENTER);
+        ChatPanel controls = new ChatPanel(new FlowLayout());
         controls.addComponent(new ToggleButton());
         controls.addComponent(handle);
         this.addComponent(controls, BorderLayout.Position.EAST);
@@ -52,9 +52,10 @@ public class ChatTray extends GuiPanel implements IGui {
     @Override
     public void updateComponent() {
         super.updateComponent();
-        Color color = getParent().getSecondaryColorProperty();
-        Color bkg = Color.of(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() / 4 * 3);
-        this.setSecondaryColor(bkg);
+        getParent()
+                .map(GuiComponent::getSecondaryColorProperty)
+                .map(color -> Color.of(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() / 4 * 3))
+                .ifPresent(this::setSecondaryColor);
     }
 
     public void addChannel(Channel channel) {
@@ -76,6 +77,7 @@ public class ChatTray extends GuiPanel implements IGui {
         ChatChannel.DEFAULT_CHANNEL.setStatus(ChannelStatus.ACTIVE);
     }
 
+    @Nonnull
     @Override
     public Dimension getMinimumSize() {
         return tabList.getLayout()
@@ -83,7 +85,7 @@ public class ChatTray extends GuiPanel implements IGui {
                 .orElseGet(super::getMinimumSize);
     }
 
-    public boolean isHandleHovered() {
+    boolean isHandleHovered() {
         return handle.isHovered();
     }
 
@@ -96,7 +98,7 @@ public class ChatTray extends GuiPanel implements IGui {
 
         private Value<Boolean> value;
 
-        public ToggleButton() {
+        ToggleButton() {
             this.value = TabbyChat.getInstance().settings.advanced.keepChatOpen;
         }
 
@@ -115,6 +117,7 @@ public class ChatTray extends GuiPanel implements IGui {
         }
 
         @Override
+        @Nonnull
         public Dimension getMinimumSize() {
             return new Dimension(8, 8);
         }

@@ -1,12 +1,6 @@
 package mnm.mods.tabbychat;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.regex.Matcher;
-
 import com.google.common.collect.Lists;
-
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.ChannelStatus;
 import mnm.mods.tabbychat.api.Message;
@@ -18,9 +12,14 @@ import mnm.mods.tabbychat.util.ChatTextUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.ITextComponent;
 
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.regex.Matcher;
+
 public class ChatChannel implements Channel {
 
-    public static final Channel DEFAULT_CHANNEL = new ChatChannel("*") {
+    public static final Channel DEFAULT_CHANNEL = new ChatChannel("*", false) {
         // Don't mess with this channel
         @Override
         public void setAlias(String alias) {}
@@ -49,11 +48,7 @@ public class ChatChannel implements Channel {
 
     private transient ChannelStatus status;
 
-    public ChatChannel(String name) {
-        this(name, false);
-    }
-
-    public ChatChannel(String name, boolean pm) {
+    ChatChannel(String name, boolean pm) {
         this.name = name;
         this.isPm = pm;
         this.alias = this.name;
@@ -173,7 +168,7 @@ public class ChatChannel implements Channel {
         dirty();
     }
 
-    public void trim(int size) {
+    private void trim(int size) {
         Iterator<Message> iter = this.getMessages().iterator();
 
         for (int i = 0; iter.hasNext(); i++) {
@@ -193,13 +188,7 @@ public class ChatChannel implements Channel {
 
     @Override
     public void removeMessages(int id) {
-        Iterator<Message> iter = this.getMessages().iterator();
-        while (iter.hasNext()) {
-            Message msg = iter.next();
-            if (msg.getID() == id) {
-                iter.remove();
-            }
-        }
+        this.getMessages().removeIf(msg -> msg.getID() == id);
         ((ChatManager) TabbyChat.getInstance().getChat()).save();
         dirty();
     }

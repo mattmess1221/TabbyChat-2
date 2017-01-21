@@ -9,6 +9,7 @@ import mnm.mods.tabbychat.extra.spell.Spellcheck;
 import mnm.mods.tabbychat.extra.spell.SpellingFormatter;
 import mnm.mods.tabbychat.util.ChatProcessor;
 import mnm.mods.util.Color;
+import mnm.mods.util.gui.GuiComponent;
 import mnm.mods.util.gui.GuiText;
 import mnm.mods.util.gui.events.GuiMouseEvent;
 import mnm.mods.util.text.FancyFontRenderer;
@@ -18,9 +19,11 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 
 public class TextBox extends ChatGui implements ChatInput {
 
@@ -35,7 +38,7 @@ public class TextBox extends ChatGui implements ChatInput {
     private int cursorCounter;
     private Spellcheck spellcheck;
 
-    public TextBox() {
+    TextBox() {
         textField.getTextField().setMaxStringLength(ChatProcessor.MAX_CHAT_LENGTH * 3);
         textField.setFocused(true);
         textField.getTextField().setCanLoseFocus(false);
@@ -74,7 +77,8 @@ public class TextBox extends ChatGui implements ChatInput {
             }
 
             // Count up to the target position.
-            countLoop: for (String text : list) {
+            countLoop:
+            for (String text : list) {
                 xPos = 0;
                 yPos += HEIGHT;
                 for (char c : text.toCharArray()) {
@@ -162,10 +166,11 @@ public class TextBox extends ChatGui implements ChatInput {
         super.updateComponent();
         this.cursorCounter++;
 
-        Color color = getParent().getSecondaryColorProperty();
-        Color bkg = Color.of(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() / 4 * 3);
+        getParent()
+                .map(GuiComponent::getSecondaryColorProperty)
+                .map(color -> Color.of(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() / 4 * 3))
+                .ifPresent(this::setSecondaryColor);
 
-        this.setSecondaryColor(bkg);
     }
 
     @Override
@@ -173,7 +178,7 @@ public class TextBox extends ChatGui implements ChatInput {
         return fr.listFormattedStringToWidth(textField.getValue(), getBounds().width);
     }
 
-    public List<ITextComponent> getFormattedLines() {
+    private List<ITextComponent> getFormattedLines() {
         List<String> lines = getWrappedLines();
         if (TabbyChat.getInstance().settings.advanced.spelling.get()) {
             spellcheck.checkSpelling(textField.getValue());
@@ -187,6 +192,7 @@ public class TextBox extends ChatGui implements ChatInput {
     }
 
     @Override
+    @Nonnull
     public Dimension getMinimumSize() {
         return new Dimension(100, (fr.FONT_HEIGHT + 2) * getWrappedLines().size());
     }
@@ -216,17 +222,16 @@ public class TextBox extends ChatGui implements ChatInput {
 
             int width = bounds.width;
             int row = y / (fr.FONT_HEIGHT + 2);
-            int col = x;
 
             List<String> lines = getWrappedLines();
-            if (row < 0 || row >= lines.size() || col < 0 || col > width) {
+            if (row < 0 || row >= lines.size() || x < 0 || x > width) {
                 return;
             }
             int index = 0;
             for (int i = 0; i < row; i++) {
                 index += lines.get(i).length();
             }
-            index += fr.trimStringToWidth(lines.get(row), col).length();
+            index += fr.trimStringToWidth(lines.get(row), x).length();
             textField.getTextField().setCursorPosition(index + 1);
         }
     }

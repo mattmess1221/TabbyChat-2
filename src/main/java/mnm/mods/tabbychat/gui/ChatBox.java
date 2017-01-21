@@ -1,11 +1,8 @@
 package mnm.mods.tabbychat.gui;
 
-import java.awt.Point;
-import java.awt.Rectangle;
-
-import org.lwjgl.input.Mouse;
 import com.google.common.eventbus.Subscribe;
 import com.mumfrey.liteloader.core.LiteLoader;
+import mcp.MethodsReturnNonnullByDefault;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.gui.ChatGui;
 import mnm.mods.tabbychat.settings.ColorSettings;
@@ -21,7 +18,13 @@ import mnm.mods.util.gui.events.GuiMouseEvent.MouseEvent;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.math.MathHelper;
+import org.lwjgl.input.Mouse;
 
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.util.Optional;
+
+@MethodsReturnNonnullByDefault
 public class ChatBox extends GuiPanel implements ChatGui {
 
     private static ColorSettings colors = TabbyChat.getInstance().settings.colors;
@@ -82,13 +85,13 @@ public class ChatBox extends GuiPanel implements ChatGui {
     }
 
     @Override
-    public Color getPrimaryColor() {
-        return colors.chatBorderColor.get();
+    public Optional<Color> getPrimaryColor() {
+        return Optional.ofNullable(colors.chatBorderColor.get());
     }
 
     @Override
-    public Color getSecondaryColor() {
-        return colors.chatBoxColor.get();
+    public Optional<Color> getSecondaryColor() {
+        return Optional.ofNullable(colors.chatBoxColor.get());
     }
 
     @Override
@@ -113,8 +116,8 @@ public class ChatBox extends GuiPanel implements ChatGui {
         int x1 = x;
         int y1 = y;
 
-        w1 = Math.min(sr.getScaledWidth(), w);
-        h1 = Math.min(sr.getScaledHeight(), h);
+        w1 = Math.min(sr.getScaledWidth(), w1);
+        h1 = Math.min(sr.getScaledHeight(), h1);
         w1 = Math.max(50, w1);
         h1 = Math.max(50, h1);
 

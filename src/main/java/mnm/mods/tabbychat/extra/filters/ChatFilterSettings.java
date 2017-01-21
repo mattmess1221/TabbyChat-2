@@ -1,10 +1,11 @@
 package mnm.mods.tabbychat.extra.filters;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import mnm.mods.tabbychat.api.filters.FilterSettings;
 import net.minecraft.util.text.TextFormatting;
+
+import java.util.HashSet;
+import java.util.Set;
+import javax.annotation.Nonnull;
 
 /**
  * Defines the settings used by filters.
@@ -12,7 +13,7 @@ import net.minecraft.util.text.TextFormatting;
 public class ChatFilterSettings implements FilterSettings {
 
     // destinations
-    private final Set<String> channels = new HashSet<String>();
+    private final Set<String> channels = new HashSet<>();
     private boolean remove;
     private boolean isDestinationPm;
     // highlighting
@@ -23,6 +24,7 @@ public class ChatFilterSettings implements FilterSettings {
     private boolean soundNotification = false;
     private String soundName = "";
 
+    @Nonnull
     @Override
     public Set<String> getChannels() {
         return channels;
@@ -94,13 +96,14 @@ public class ChatFilterSettings implements FilterSettings {
         this.soundNotification = sound;
     }
 
+    @Nonnull
     @Override
     public String getSoundName() {
         return soundName;
     }
 
     @Override
-    public void setSoundName(String soundName) {
+    public void setSoundName(@Nonnull String soundName) {
         this.soundName = soundName;
     }
 }

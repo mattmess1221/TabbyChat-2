@@ -2,11 +2,7 @@ package mnm.mods.tabbychat.gui.settings;
 
 import static mnm.mods.tabbychat.util.Translation.*;
 
-import java.util.Optional;
-import java.util.function.Consumer;
-
 import com.google.common.eventbus.Subscribe;
-
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.filters.Filter;
 import mnm.mods.tabbychat.extra.filters.ChatFilter;
@@ -28,6 +24,8 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 
+import java.util.function.Consumer;
+
 public class GuiSettingsServer extends SettingPanel<ServerSettings> implements Consumer<Filter> {
 
     private int index = 0;
@@ -38,8 +36,8 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> implements C
     private GuiButton delete;
     private GuiLabel lblFilter;
 
-    public GuiSettingsServer() {
-        this.setLayout(Optional.of(new GuiGridLayout(10, 20)));
+    GuiSettingsServer() {
+        this.setLayout(new GuiGridLayout(10, 20));
         this.setDisplayString(I18n.format(SETTINGS_SERVER));
         this.setSecondaryColor(Color.of(255, 215, 0, 64));
     }
@@ -67,7 +65,7 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> implements C
 
         pos += 2;
         this.addComponent(new GuiLabel(new TextComponentTranslation(CHANNEL_PATTERN)), new int[] { 1, pos });
-        GuiSettingEnum<ChannelPatterns> enmChanPat = new GuiSettingEnum<ChannelPatterns>(sett.channelPattern,
+        GuiSettingEnum<ChannelPatterns> enmChanPat = new GuiSettingEnum<>(sett.channelPattern,
                 ChannelPatterns.values());
         enmChanPat.setCaption(new TextComponentTranslation(CHANNEL_PATTERN_DESC));
         this.addComponent(enmChanPat, new int[] { 5, pos, 4, 1 });
@@ -77,7 +75,7 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> implements C
         if (sett.messegePattern.get() == null) {
             sett.messegePattern.set(MessagePatterns.WHISPERS);
         }
-        GuiSettingEnum<MessagePatterns> enmMsg = new GuiSettingEnum<MessagePatterns>(sett.messegePattern, MessagePatterns.values());
+        GuiSettingEnum<MessagePatterns> enmMsg = new GuiSettingEnum<>(sett.messegePattern, MessagePatterns.values());
         enmMsg.setCaption(new TextComponentTranslation(MESSAGE_PATTERN_DESC));
         this.addComponent(enmMsg, new int[] { 5, pos, 4, 1 });
 
@@ -212,6 +210,6 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> implements C
 
     private void edit(int i) {
         Filter filter = getSettings().filters.get(i);
-        setOverlay(Optional.of(new GuiFilterEditor(filter, this)));
+        setOverlay(new GuiFilterEditor(filter, this));
     }
 }

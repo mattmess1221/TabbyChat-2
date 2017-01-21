@@ -1,15 +1,13 @@
 package mnm.mods.tabbychat.extra;
 
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
-
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.events.MessageAddedToChannelEvent;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Map;
 
 public class ChatAddonAntiSpam {
 
@@ -23,11 +21,7 @@ public class ChatAddonAntiSpam {
 
         if (enabled && event.id == 0) {
             Channel channel = event.channel;
-            Counter counter = this.messageMap.get(channel);
-            if (counter == null) {
-                counter = new Counter("");
-                messageMap.put(channel, counter);
-            }
+            Counter counter = this.messageMap.computeIfAbsent(channel, k -> new Counter());
             String chat = event.text.getUnformattedText();
 
             if (getDifference(chat, counter.lastMessage) <= prejudice) {
@@ -42,12 +36,8 @@ public class ChatAddonAntiSpam {
     }
 
     private class Counter {
-        private String lastMessage;
+        private String lastMessage = "";
         private int spamCounter = 1;
-
-        private Counter(String lastMessage) {
-            this.lastMessage = lastMessage;
-        }
     }
 
     private static double getDifference(String s1, String s2) {

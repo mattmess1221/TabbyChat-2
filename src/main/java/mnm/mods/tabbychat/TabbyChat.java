@@ -1,11 +1,13 @@
 package mnm.mods.tabbychat;
 
-import com.google.common.base.Function;
 import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import com.mumfrey.liteloader.core.LiteLoader;
-import mnm.mods.tabbychat.api.*;
+import mnm.mods.tabbychat.api.AddonManager;
+import mnm.mods.tabbychat.api.ChannelStatus;
+import mnm.mods.tabbychat.api.Chat;
+import mnm.mods.tabbychat.api.TabbyAPI;
+import mnm.mods.tabbychat.api.VersionData;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.core.api.TabbyAddonManager;
 import mnm.mods.tabbychat.core.overlays.IGuiIngame;
@@ -22,16 +24,14 @@ import mnm.mods.util.gui.config.SettingPanel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.resources.IReloadableResourceManager;
-import net.minecraft.entity.player.EntityPlayer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.util.List;
 import java.util.regex.Pattern;
+import javax.annotation.Nullable;
 
 public class TabbyChat extends TabbyAPI {
 
@@ -90,7 +90,7 @@ public class TabbyChat extends TabbyAPI {
         return spellcheck;
     }
 
-    public void openSettings(SettingPanel<?> setting) {
+    void openSettings(SettingPanel<?> setting) {
         GuiSettingsScreen screen = new GuiSettingsScreen(setting);
         Minecraft.getMinecraft().displayGuiScreen(screen);
     }
@@ -138,11 +138,12 @@ public class TabbyChat extends TabbyAPI {
     private void addFilterVariables() {
         final Minecraft mc = Minecraft.getMinecraft();
         addonManager.setFilterConstant("player", mc.getSession().getUsername());
-        final Function<EntityPlayer, String> names = player -> Pattern.quote(player.getName());
-        addonManager.setFilterVariable("onlineplayer", () -> {
-            List<String> playerNames = Lists.transform(mc.world.playerEntities, names);
-            return Joiner.on('|').appendTo(new StringBuilder("(?:"), playerNames).append(')').toString();
-        });
+        addonManager.setFilterVariable("onlineplayer", () -> Joiner.on('|')
+                .appendTo(new StringBuilder("(?:"), mc.world.playerEntities.stream()
+                        .map(player -> Pattern.quote(player.getName()))
+                        .iterator())
+                .append(')').toString()
+        );
     }
 
     public void onJoin(@Nullable SocketAddress address) {

@@ -2,8 +2,6 @@ package mnm.mods.tabbychat.gui.settings;
 
 import static mnm.mods.tabbychat.util.Translation.*;
 
-import java.util.Optional;
-
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.settings.TabbySettings;
 import mnm.mods.util.Color;
@@ -16,10 +14,10 @@ import net.minecraft.util.text.TextComponentTranslation;
 
 public class GuiSettingsColors extends SettingPanel<TabbySettings> {
 
-    public GuiSettingsColors() {
+    GuiSettingsColors() {
         setDisplayString(I18n.format(SETTINGS_COLORS));
         setSecondaryColor(Color.of(0, 255, 0, 64));
-        this.setLayout(Optional.of(new GuiGridLayout(50, 50)));
+        this.setLayout(new GuiGridLayout(50, 50));
     }
 
     @Override

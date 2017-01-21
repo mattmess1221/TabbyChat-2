@@ -1,15 +1,13 @@
 package mnm.mods.tabbychat.test;
 
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import com.google.common.collect.Lists;
+import mnm.mods.tabbychat.util.ChannelPatterns;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.google.common.collect.Lists;
-
-import mnm.mods.tabbychat.util.ChannelPatterns;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class PatternTests {
 
@@ -59,10 +57,10 @@ public class PatternTests {
                 "[Admin] <MrTCP> ur ba&ned"
         };
         List<ChanPattern> received = Lists.newArrayList();
-        for (int i = 0; i < channels.length; i++) {
-            for (int j = 0; j < messages.length; j++) {
-                String msg = String.format(chan, channels[i], messages[j]);
-                received.add(new ChanPattern(pattern, channels[i], msg));
+        for (String channel : channels) {
+            for (String message : messages) {
+                String msg = String.format(chan, channel, message);
+                received.add(new ChanPattern(pattern, channel, msg));
             }
         }
         return received;

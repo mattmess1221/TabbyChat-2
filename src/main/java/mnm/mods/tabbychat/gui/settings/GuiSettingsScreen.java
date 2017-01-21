@@ -1,11 +1,9 @@
 package mnm.mods.tabbychat.gui.settings;
 
-import java.util.List;
-
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
 import com.mumfrey.liteloader.core.LiteLoader;
-
 import mnm.mods.tabbychat.ChatManager;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.util.Color;
@@ -23,16 +21,20 @@ import mnm.mods.util.gui.events.ActionPerformedEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 
+import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
+
 public class GuiSettingsScreen extends ComponentScreen {
 
-    private static List<Class<? extends SettingPanel<?>>> settings = Lists.newArrayList();
+    private static Map<Class<? extends SettingPanel<?>>, Supplier<? extends SettingPanel<?>>> settings = Maps.newHashMap();
 
     static {
-        registerSetting(GuiSettingsGeneral.class);
-        registerSetting(GuiSettingsServer.class);
-        registerSetting(GuiSettingsChannel.class);
-        registerSetting(GuiSettingsColors.class);
-        registerSetting(GuiAdvancedSettings.class);
+        registerSetting(GuiSettingsGeneral.class, GuiSettingsGeneral::new);
+        registerSetting(GuiSettingsServer.class, GuiSettingsServer::new);
+        registerSetting(GuiSettingsChannel.class, GuiSettingsChannel::new);
+        registerSetting(GuiSettingsColors.class, GuiSettingsColors::new);
+        registerSetting(GuiAdvancedSettings.class, GuiAdvancedSettings::new);
     }
 
     private List<SettingPanel<?>> panels = Lists.newArrayList();
@@ -45,15 +47,15 @@ public class GuiSettingsScreen extends ComponentScreen {
     public GuiSettingsScreen(SettingPanel<?> setting) {
         this.selectedSetting = setting;
 
-        for (Class<? extends SettingPanel<?>> sett : settings) {
+        for (Map.Entry<Class<? extends SettingPanel<?>>, Supplier<? extends SettingPanel<?>>> sett : settings.entrySet()) {
             try {
-                if (setting != null && setting.getClass() == sett) {
+                if (setting != null && setting.getClass() == sett.getKey()) {
                     panels.add(setting);
                 } else {
-                    panels.add(sett.newInstance());
+                    panels.add(sett.getValue().get());
                 }
             } catch (Exception e) {
-                TabbyChat.getLogger().error("Unable to add " + sett.getName() + " as a setting.", e);
+                TabbyChat.getLogger().error("Unable to add " + sett.getKey().getName() + " as a setting.", e);
             }
         }
     }
@@ -141,7 +143,7 @@ public class GuiSettingsScreen extends ComponentScreen {
         super.drawScreen(mouseX, mouseY, tick);
     }
 
-    public void selectSetting(SettingPanel<?> setting) {
+    private void selectSetting(SettingPanel<?> setting) {
 //        setting.clearComponents();
         deactivateAll();
         panel.removeComponent(selectedSetting);
@@ -150,9 +152,9 @@ public class GuiSettingsScreen extends ComponentScreen {
         this.panel.addComponent(this.selectedSetting, BorderLayout.Position.CENTER);
     }
 
-    public static void registerSetting(Class<? extends SettingPanel<?>> settings) {
-        if (!GuiSettingsScreen.settings.contains(settings)) {
-            GuiSettingsScreen.settings.add(settings);
+    private static <T extends SettingPanel<?>> void registerSetting(Class<T> settings, Supplier<T> constructor) {
+        if (!GuiSettingsScreen.settings.containsKey(settings)) {
+            GuiSettingsScreen.settings.put(settings, constructor);
         }
     }
 

@@ -1,7 +1,5 @@
 package mnm.mods.tabbychat.extra.filters;
 
-import java.util.regex.Pattern;
-
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.TabbyAPI;
@@ -10,12 +8,16 @@ import mnm.mods.tabbychat.api.filters.FilterEvent;
 import mnm.mods.tabbychat.api.filters.IFilterAction;
 import mnm.mods.tabbychat.settings.GeneralServerSettings;
 
+import java.util.regex.Pattern;
+import javax.annotation.Nonnull;
+
 public class ChannelFilter extends TabFilter {
 
-    public ChannelFilter() {
+    ChannelFilter() {
         super(ChannelAction.ID);
     }
 
+    @Nonnull
     @Override
     public Pattern getPattern() {
         return TabbyChat.getInstance().serverSettings.general.channelPattern.get().getPattern();
@@ -23,7 +25,7 @@ public class ChannelFilter extends TabFilter {
 
     public static class ChannelAction implements IFilterAction {
 
-        public static final String ID = "Channel";
+        static final String ID = "Channel";
 
         @Override
         public void action(Filter filter, FilterEvent event) {

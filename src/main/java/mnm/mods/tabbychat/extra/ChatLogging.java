@@ -1,5 +1,16 @@
 package mnm.mods.tabbychat.extra;
 
+import com.google.common.eventbus.Subscribe;
+import mnm.mods.tabbychat.TabbyChat;
+import mnm.mods.tabbychat.api.events.ChatMessageEvent.ChatReceivedEvent;
+import mnm.mods.util.IPUtils;
+import net.minecraft.client.Minecraft;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
+import org.apache.commons.compress.compressors.gzip.GzipUtils;
+import org.apache.commons.io.Charsets;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -9,19 +20,6 @@ import java.net.InetSocketAddress;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
-
-import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
-import org.apache.commons.compress.compressors.gzip.GzipUtils;
-import org.apache.commons.io.Charsets;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-
-import com.google.common.eventbus.Subscribe;
-
-import mnm.mods.tabbychat.TabbyChat;
-import mnm.mods.tabbychat.api.events.ChatMessageEvent.ChatReceivedEvent;
-import mnm.mods.util.IPUtils;
-import net.minecraft.client.Minecraft;
 
 public class ChatLogging {
 
@@ -115,18 +113,15 @@ public class ChatLogging {
         }
         String name = GzipUtils.getCompressedFilename(file.getName());
         File dest = new File(file.getParentFile(), name);
-        FileOutputStream os = new FileOutputStream(dest);
-        OutputStream gzip = null;
-        try {
+        try (FileOutputStream os = new FileOutputStream(dest)) {
             // read the contents
             String contents = FileUtils.readFileToString(file, Charsets.UTF_8);
-            gzip = new GzipCompressorOutputStream(os);
-            // write / compress
-            IOUtils.write(contents, gzip, Charsets.UTF_8);
+            try (OutputStream gzip = new GzipCompressorOutputStream(os)) {
+                // write / compress
+                IOUtils.write(contents, gzip, Charsets.UTF_8);
+            }
 
         } finally {
-            IOUtils.closeQuietly(gzip);
-            os.close();
             file.delete(); // delete the file
         }
     }

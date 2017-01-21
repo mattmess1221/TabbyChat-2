@@ -2,12 +2,8 @@ package mnm.mods.tabbychat.gui.settings;
 
 import static mnm.mods.tabbychat.util.Translation.*;
 
-import java.text.NumberFormat;
-import java.util.Optional;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.settings.GeneralSettings;
 import mnm.mods.tabbychat.settings.TabbySettings;
@@ -23,10 +19,12 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 
+import java.text.NumberFormat;
+
 public class GuiSettingsGeneral extends SettingPanel<TabbySettings> {
 
     public GuiSettingsGeneral() {
-        setLayout(Optional.of(new GuiGridLayout(10, 20)));
+        setLayout(new GuiGridLayout(10, 20));
         setDisplayString(I18n.format(SETTINGS_GENERAL));
         setSecondaryColor(Color.of(255, 0, 255, 64));
     }
@@ -52,11 +50,11 @@ public class GuiSettingsGeneral extends SettingPanel<TabbySettings> {
 
         pos += 2;
         addComponent(new GuiLabel(new TextComponentTranslation(TIMESTAMP_STYLE)), new int[] { 3, pos });
-        addComponent(new GuiSettingEnum<TimeStamps>(sett.timestampStyle, TimeStamps.values()), new int[] { 5, pos, 4, 1 });
+        addComponent(new GuiSettingEnum<>(sett.timestampStyle, TimeStamps.values()), new int[] { 5, pos, 4, 1 });
 
         pos += 2;
         addComponent(new GuiLabel(new TextComponentTranslation(TIMESTAMP_COLOR)), new int[] { 3, pos });
-        addComponent(new GuiSettingEnum<TextFormatting>(sett.timestampColor, getColors(), getColorNames()), new int[] { 5, pos, 4, 1 });
+        addComponent(new GuiSettingEnum<>(sett.timestampColor, getColors(), getColorNames()), new int[] { 5, pos, 4, 1 });
 
         pos += 2;
         addComponent(new GuiLabel(new TextComponentTranslation(ANTI_SPAM)), new int[] { 2, pos });
@@ -85,7 +83,7 @@ public class GuiSettingsGeneral extends SettingPanel<TabbySettings> {
 
     private static TextFormatting[] getColors() {
         return Sets.newHashSet(TextFormatting.values()).stream()
-                .filter(input -> input.isColor())
+                .filter(TextFormatting::isColor)
                 .toArray(TextFormatting[]::new);
     }
 

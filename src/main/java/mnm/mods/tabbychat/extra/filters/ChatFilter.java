@@ -148,8 +148,10 @@ public class ChatFilter implements Filter {
                 String sname = settings.getSoundName();
                 ResourceLocation loc = new ResourceLocation(sname);
                 SoundEvent sndEvent = SoundEvent.REGISTRY.getObject(loc);
-                ISound sound = PositionedSoundRecord.getMasterRecord(sndEvent, 1.0F);
-                Minecraft.getMinecraft().getSoundHandler().playSound(sound);
+                if (sndEvent != null) {
+                    ISound sound = PositionedSoundRecord.getMasterRecord(sndEvent, 1.0F);
+                    Minecraft.getMinecraft().getSoundHandler().playSound(sound);
+                }
             }
         }
     }

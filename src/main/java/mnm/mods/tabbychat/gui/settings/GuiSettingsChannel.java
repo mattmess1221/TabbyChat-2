@@ -2,10 +2,7 @@ package mnm.mods.tabbychat.gui.settings;
 
 import static mnm.mods.tabbychat.util.Translation.*;
 
-import java.util.Optional;
-
 import com.google.common.eventbus.Subscribe;
-
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.TabbyAPI;
@@ -38,13 +35,13 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
     private GuiText prefix;
     private GuiCheckbox hidePrefix;
 
-    public GuiSettingsChannel() {
+    GuiSettingsChannel() {
         this(null);
     }
 
     public GuiSettingsChannel(Channel channel) {
         this.channel = channel;
-        this.setLayout(Optional.of(new BorderLayout()));
+        this.setLayout(new BorderLayout());
         this.setDisplayString(I18n.format(CHANNEL_TITLE));
         this.setSecondaryColor(Color.of(0, 15, 100, 65));
 
@@ -54,13 +51,13 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
     public void initGUI() {
         channels = new GuiScrollingPanel();
         channels.setLocation(new Location(0, 0, 60, 200));
-        channels.getContentPanel().setLayout(Optional.of(new VerticalLayout()));
+        channels.getContentPanel().setLayout(new VerticalLayout());
         for (Channel channel : getSettings().channels.get().values()) {
             channels.getContentPanel().addComponent(new ChannelButton(channel));
         }
         this.addComponent(channels, BorderLayout.Position.WEST);
         panel = new GuiPanel();
-        panel.setLayout(Optional.of(new GuiGridLayout(8, 20)));
+        panel.setLayout(new GuiGridLayout(8, 20));
         this.addComponent(panel, BorderLayout.Position.CENTER);
 
         this.select(channel);
@@ -157,7 +154,7 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
 
         private Channel channel;
 
-        public ChannelButton(Channel channel) {
+        ChannelButton(Channel channel) {
             super(channel.getName());
             this.channel = channel;
             setLocation(new Location(0, 0, 60, 15));

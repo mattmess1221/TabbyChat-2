@@ -1,23 +1,5 @@
 package mnm.mods.tabbychat;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.reflect.Type;
-import java.time.Instant;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
-import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
-import org.apache.commons.io.Charsets;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.reflect.TypeUtils;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -27,7 +9,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.ChannelStatus;
 import mnm.mods.tabbychat.api.Chat;
@@ -42,6 +23,23 @@ import net.minecraft.util.EnumTypeAdapterFactory;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextFormatting;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
+import org.apache.commons.io.Charsets;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.reflect.TypeUtils;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.reflect.Type;
+import java.time.Instant;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class ChatManager implements Chat {
 
@@ -267,7 +265,7 @@ public class ChatManager implements Chat {
         }
     }
 
-    public void save() {
+    void save() {
         if (loading) {
             return;
         }
@@ -278,7 +276,7 @@ public class ChatManager implements Chat {
         }
     }
 
-    public synchronized void saveTo(File dir) throws IOException {
+    private synchronized void saveTo(File dir) throws IOException {
         JsonObject root = new JsonObject();
         root.addProperty("datetime", Instant.now().getEpochSecond());
         root.add("default", gson.toJsonTree(ChatChannel.DEFAULT_CHANNEL.getMessages()));

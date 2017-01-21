@@ -15,7 +15,7 @@ public interface FilterVariable {
     /**
      * A FilterVariable that returns a constant empty string.
      */
-    public static final FilterVariable NULL = new FilterConstant("");
+    FilterVariable NULL = new FilterConstant("");
 
     /**
      * Gets the value for this variable.
@@ -27,7 +27,7 @@ public interface FilterVariable {
     /**
      * A FilterVariable that returns a constant value.
      */
-    public static final class FilterConstant implements FilterVariable {
+    final class FilterConstant implements FilterVariable {
 
         private final String constant;
 

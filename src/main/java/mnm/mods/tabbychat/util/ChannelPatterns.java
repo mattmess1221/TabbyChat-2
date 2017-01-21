@@ -1,8 +1,8 @@
 package mnm.mods.tabbychat.util;
 
-import java.util.regex.Pattern;
-
 import net.minecraft.client.resources.I18n;
+
+import java.util.regex.Pattern;
 
 public enum ChannelPatterns {
 
@@ -16,7 +16,7 @@ public enum ChannelPatterns {
     private final String translation;
     private final Pattern pattern;
 
-    private ChannelPatterns(String title, String pattern) {
+    ChannelPatterns(String title, String pattern) {
         this.translation = title;
         this.pattern = Pattern.compile(String.format(pattern, "(.{1,16}?)"));
     }
