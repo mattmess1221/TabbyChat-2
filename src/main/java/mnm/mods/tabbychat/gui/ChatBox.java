@@ -2,7 +2,6 @@ package mnm.mods.tabbychat.gui;
 
 import com.google.common.eventbus.Subscribe;
 import com.mumfrey.liteloader.core.LiteLoader;
-import mcp.MethodsReturnNonnullByDefault;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.gui.ChatGui;
 import mnm.mods.tabbychat.settings.ColorSettings;
@@ -24,7 +23,6 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.Optional;
 
-@MethodsReturnNonnullByDefault
 public class ChatBox extends GuiPanel implements ChatGui {
 
     private static ColorSettings colors = TabbyChat.getInstance().settings.colors;
