@@ -5,7 +5,6 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
-import joptsimple.internal.Strings;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.events.ChatMessageEvent.ChatReceivedEvent;
 import mnm.mods.tabbychat.api.filters.Filter;
@@ -49,7 +48,7 @@ public class FilterAddon {
     public static String getVariable(String key) {
         return variables.getOrDefault(key, Optional.empty())
                 .map(Supplier::get)
-                .orElse(Strings.EMPTY);
+                .orElse("");
     }
 
     @Subscribe

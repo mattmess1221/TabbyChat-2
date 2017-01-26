@@ -1,6 +1,6 @@
 package mnm.mods.tabbychat.api.filters;
 
-import org.apache.logging.log4j.core.helpers.Strings;
+import com.google.common.base.Strings;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -89,7 +89,7 @@ public class FilterSettings {
     }
 
     public void setSoundName(@Nullable String soundName) {
-        this.soundName = Strings.isEmpty(soundName) ? null : soundName;
+        this.soundName = Strings.isNullOrEmpty(soundName) ? null : soundName;
     }
 
 }
