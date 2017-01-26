@@ -1,16 +1,13 @@
 package mnm.mods.tabbychat;
 
-import com.google.common.base.Joiner;
 import com.google.common.eventbus.EventBus;
 import com.mumfrey.liteloader.core.LiteLoader;
-import mnm.mods.tabbychat.api.AddonManager;
 import mnm.mods.tabbychat.api.ChannelStatus;
 import mnm.mods.tabbychat.api.Chat;
 import mnm.mods.tabbychat.api.TabbyAPI;
 import mnm.mods.tabbychat.api.VersionData;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
-import mnm.mods.tabbychat.core.api.TabbyAddonManager;
-import mnm.mods.tabbychat.core.overlays.IGuiIngame;
+import mnm.mods.tabbychat.core.mixin.IGuiIngame;
 import mnm.mods.tabbychat.extra.ChatAddonAntiSpam;
 import mnm.mods.tabbychat.extra.ChatLogging;
 import mnm.mods.tabbychat.extra.filters.FilterAddon;
@@ -30,7 +27,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
 public class TabbyChat extends TabbyAPI {
@@ -39,7 +35,6 @@ public class TabbyChat extends TabbyAPI {
 
     private ChatManager chatManager;
     private GuiNewChatTC chatGui;
-    private AddonManager addonManager;
     private EventBus bus = new EventBus();
     private Spellcheck spellcheck;
 
@@ -77,11 +72,6 @@ public class TabbyChat extends TabbyAPI {
     }
 
     @Override
-    public AddonManager getAddonManager() {
-        return this.addonManager;
-    }
-
-    @Override
     public EventBus getBus() {
         return bus;
     }
@@ -111,8 +101,6 @@ public class TabbyChat extends TabbyAPI {
 
         spellcheck = new Spellcheck(getDataFolder());
 
-        addonManager = new TabbyAddonManager();
-
         // Keeps the current language updated whenever it is changed.
         IReloadableResourceManager irrm = (IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager();
         irrm.registerReloadListener(spellcheck);
@@ -120,8 +108,6 @@ public class TabbyChat extends TabbyAPI {
         bus.register(new ChatAddonAntiSpam());
         bus.register(new FilterAddon());
         bus.register(new ChatLogging(new File("logs/chat")));
-
-        addFilterVariables();
 
     }
 
@@ -133,17 +119,6 @@ public class TabbyChat extends TabbyAPI {
         chatGui = new GuiNewChatTC(Minecraft.getMinecraft(), chatManager);
 
         utils.setChatProxy(new TabbedChatProxy());
-    }
-
-    private void addFilterVariables() {
-        final Minecraft mc = Minecraft.getMinecraft();
-        addonManager.setFilterConstant("player", mc.getSession().getUsername());
-        addonManager.setFilterVariable("onlineplayer", () -> Joiner.on('|')
-                .appendTo(new StringBuilder("(?:"), mc.world.playerEntities.stream()
-                        .map(player -> Pattern.quote(player.getName()))
-                        .iterator())
-                .append(')').toString()
-        );
     }
 
     public void onJoin(@Nullable SocketAddress address) {
@@ -171,6 +146,7 @@ public class TabbyChat extends TabbyAPI {
         }
     }
 
+    @SuppressWarnings("MixinClassReference")
     private void hookIntoChat(GuiIngame guiIngame) throws Exception {
         if (!GuiNewChatTC.class.isAssignableFrom(guiIngame.getChatGUI().getClass())) {
             ((IGuiIngame) guiIngame).setPersistantChatGUI(chatGui);

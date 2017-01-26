@@ -5,7 +5,6 @@ import static mnm.mods.tabbychat.util.Translation.*;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.eventbus.Subscribe;
-import mnm.mods.tabbychat.api.filters.Filter;
 import mnm.mods.tabbychat.api.filters.FilterSettings;
 import mnm.mods.util.Color;
 import mnm.mods.util.gui.GuiButton;
@@ -21,37 +20,56 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.input.Keyboard;
 
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 
 public class GuiFilterEditor extends GuiPanel {
 
-    private Filter filter;
-    private Consumer<Filter> consumer;
+    private class ToggleButton extends GuiButton {
+        private boolean active;
+
+        private ToggleButton(String text) {
+            super(text);
+        }
+
+        @Override
+        public String getText() {
+            String text = super.getText();
+            TextFormatting color = active ? TextFormatting.GREEN : TextFormatting.RED;
+            return color + text;
+        }
+
+        @Subscribe
+        public void actionPerformed(ActionPerformedEvent event) {
+            active ^= true;
+        }
+    }
+
+    private UserFilter filter;
+    private Consumer<UserFilter> consumer;
 
     private GuiText txtName;
     private GuiCheckbox chkRemove;
     private GuiText txtDestinations;
-    private GuiCheckbox chkPm;
     private GuiCheckbox chkSound;
     private GuiText txtSound;
     private GuiText txtPattern;
     private GuiLabel lblError;
 
-    private GuiButton btnRegexp;
-    private GuiButton btnIgnoreCase;
+    private ToggleButton btnRegexp;
+    private ToggleButton btnIgnoreCase;
+    private ToggleButton btnClean;
 
-    public GuiFilterEditor(Filter filter, Consumer<Filter> consumer) {
+    public GuiFilterEditor(UserFilter filter, Consumer<UserFilter> consumer) {
         this.setLayout(new GuiGridLayout(20, 15));
         this.filter = filter;
         this.consumer = consumer;
 
-        String pattern = filter.getUnresolvedPattern();
+        String pattern = filter.getRawPattern();
         FilterSettings settings = filter.getSettings();
 
         int pos = 0;
@@ -66,15 +84,21 @@ public class GuiFilterEditor extends GuiPanel {
         pos += 2;
         this.addComponent(new GuiLabel(new TextComponentTranslation(FILTER_DESTINATIONS)), new int[]{1, pos});
         this.addComponent(txtDestinations = new GuiText(), new int[]{8, pos, 10, 1});
-        txtDestinations.setValue(Joiner.on(", ").join(filter.getSettings().getChannels()));
+        txtDestinations.setValue(Joiner.on(", ").join(settings.getChannels()));
         txtDestinations.setCaption(new TextComponentTranslation(FILTER_DESTIONATIONS_DESC));
 
         pos += 1;
-        this.addComponent(new GuiLabel(new TextComponentTranslation(FILTER_IS_PM)), new int[]{2, pos});
-        this.addComponent(chkPm = new GuiCheckbox(), new int[]{1, pos});
-        chkPm.setValue(filter.getSettings().isDestinationPm());
+        this.addComponent(btnRegexp = new ToggleButton(".*"), new int[]{1, pos, 2, 1});
+        btnRegexp.active = filter.getSettings().isRegex();
+        btnRegexp.setCaption(new TextComponentTranslation(FILTER_REGEX));
+        this.addComponent(btnIgnoreCase = new ToggleButton("Aa"), new int[]{3, pos, 2, 1});
+        btnIgnoreCase.active = settings.isCaseInsensitive();
+        btnIgnoreCase.setCaption(new TextComponentTranslation(FILTER_IGNORE_CASE));
+        this.addComponent(btnClean = new ToggleButton("&0"), new int[]{5, pos, 2, 1});
+        btnClean.active = settings.isClean();
+        btnClean.setCaption(new TextComponentTranslation(FILTER_STRIP_FORMAT));
 
-        pos += 1;
+        pos += 2;
         this.addComponent(new GuiLabel(new TextComponentTranslation(FILTER_HIDE)), new int[]{2, pos});
         this.addComponent(chkRemove = new GuiCheckbox(), new int[]{1, pos});
         chkRemove.setValue(settings.isRemove());
@@ -86,7 +110,7 @@ public class GuiFilterEditor extends GuiPanel {
 
         pos += 1;
         this.addComponent(txtSound = new GuiText(), new int[]{3, pos, 14, 1});
-        txtSound.setValue(settings.getSoundName());
+        txtSound.setValue(settings.getSoundName().orElse(""));
         txtSound.getBus().register(new Object() {
             private int pos;
 
@@ -135,7 +159,7 @@ public class GuiFilterEditor extends GuiPanel {
         txtPattern.setValue(pattern == null ? "" : pattern);
 
         pos++;
-        this.addComponent(lblError = new GuiLabel(), new int[]{6, pos});
+        this.addComponent(lblError = new GuiLabel(), new int[]{4, pos});
 
         GuiButton accept = new GuiButton(I18n.format("gui.done"));
         accept.getBus().register(new Object() {
@@ -165,8 +189,10 @@ public class GuiFilterEditor extends GuiPanel {
                 .omitEmptyStrings()
                 .trimResults()
                 .splitToList(txtDestinations.getValue()));
-        sett.setDestinationPm(chkPm.getValue());
         sett.setRemove(chkRemove.getValue());
+        sett.setCaseInsensitive(btnIgnoreCase.active);
+        sett.setRegex(btnRegexp.active);
+        sett.setClean(btnClean.active);
 
         sett.setSoundNotification(chkSound.getValue());
         sett.setSoundName(txtSound.getValue());
@@ -179,19 +205,17 @@ public class GuiFilterEditor extends GuiPanel {
         getParent().ifPresent(p -> p.setOverlay(null));
     }
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Subscribe
     public void updateError(GuiKeyboardEvent event) {
-        if (txtPattern.isFocused()) {
+        txtPattern.setPrimaryColor(Color.WHITE);
+        lblError.setText(null);
+        if (txtPattern.isFocused() && btnRegexp.active) {
             // check valid regex
             try {
-                String resolved = ChatFilter.resolveVariables(txtPattern.getValue());
-                Pattern.compile(resolved);
-                txtPattern.setPrimaryColor(Color.WHITE);
-                lblError.setText(null);
-            } catch (PatternSyntaxException e) {
+                filter.testPattern(txtPattern.getValue());
+            } catch (UserFilter.UserPatternException e) {
                 txtPattern.setPrimaryColor(Color.RED);
-                String string = e.getLocalizedMessage();
+                String string = e.getCause().getLocalizedMessage();
                 lblError.setText(new TextComponentString(string));
             }
         }

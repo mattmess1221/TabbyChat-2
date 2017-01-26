@@ -5,9 +5,9 @@
 	"package": "mnm.mods.tabbychat.core.mixin",
 	"refmap": "mixin.tabbychat.refmap.json",
 	"mixins": [
-		"MixinTabCompleter",
+		"IChatTabCompleter",
 		"MixinChatTabCompleter",
 		"MixinGuiChat",
-		"MixinGuiIngame"
+		"IGuiIngame"
 	]
 }

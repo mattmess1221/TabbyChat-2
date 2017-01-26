@@ -7,7 +7,6 @@ import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.events.ChatMessageEvent.ChatSentEvent;
 import mnm.mods.tabbychat.api.events.ChatScreenEvents.ChatInitEvent;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
-import mnm.mods.tabbychat.core.overlays.IChatTabCompleter;
 import mnm.mods.tabbychat.util.BackgroundChatThread;
 import mnm.mods.tabbychat.util.ChatProcessor;
 import mnm.mods.util.gui.GuiComponent;
@@ -70,6 +69,7 @@ public abstract class MixinGuiChat extends GuiScreen implements ITabCompleter {
         this.componentList.add(chat.getChatBox());
     }
 
+    @SuppressWarnings("MixinClassReference")
     @Inject(method = "initGui()V", at = @At("RETURN"))
     private void onInitGui(CallbackInfo ci) {
         this.inputField = this.textBox.getTextField();

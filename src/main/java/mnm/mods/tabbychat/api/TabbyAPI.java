@@ -38,13 +38,6 @@ public abstract class TabbyAPI {
     public abstract Chat getChat();
 
     /**
-     * Gets the {@link AddonManager} used to register listeners.
-     *
-     * @return The addon manager
-     */
-    public abstract AddonManager getAddonManager();
-
-    /**
      * Gets the common event bus used for chat messages. For gui related things,
      * use the Component's.
      *

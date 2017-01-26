@@ -56,10 +56,12 @@ tabbychat.filter.title=Edit Filter
 tabbychat.filter.name=Name
 tabbychat.filter.destinations=Destinations
 tabbychat.filter.destinations.desc=A comma separated list of channels.
-tabbychat.filter.destinationIsPm=Destination is PM
 tabbychat.filter.hideMatches=Hide Matches
 tabbychat.filter.audioNotify=Audio Notification
 tabbychat.filter.expression=Expression
+tabbychat.filter.regex=Regular Expression
+tabbychat.filter.ignoreCase=Ignore Case
+tabbychat.filter.stripFormat=Strip Formatting Codes
 
 tabbychat.channel.title=Channels
 tabbychat.channel.label=Channel: %s

@@ -1,26 +1,55 @@
 package mnm.mods.tabbychat.extra.filters;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
-
+import joptsimple.internal.Strings;
 import mnm.mods.tabbychat.TabbyChat;
-import mnm.mods.tabbychat.api.AddonManager;
-import mnm.mods.tabbychat.api.TabbyAPI;
 import mnm.mods.tabbychat.api.events.ChatMessageEvent.ChatReceivedEvent;
-import mnm.mods.tabbychat.extra.filters.ChannelFilter.ChannelAction;
-import mnm.mods.tabbychat.extra.filters.ChatFilter.DefaultAction;
-import mnm.mods.tabbychat.extra.filters.MessageFilter.MessageAction;
+import mnm.mods.tabbychat.api.filters.Filter;
+import mnm.mods.tabbychat.api.filters.FilterEvent;
 import mnm.mods.tabbychat.settings.ServerSettings;
+import net.minecraft.client.Minecraft;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Supplier;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class FilterAddon {
 
-    private ChatFilter channelFilter = new ChannelFilter();
-    private ChatFilter messageFilter = new MessageFilter();
+    private static Map<String, Optional<Supplier<String>>> variables = Maps.newHashMap();
+
+    private List<Filter> filters = Lists.newArrayList();
 
     public FilterAddon() {
-        AddonManager addons = TabbyAPI.getAPI().getAddonManager();
-        addons.registerFilterAction(MessageAction.ID, new MessageAction());
-        addons.registerFilterAction(ChannelAction.ID, new ChannelAction());
-        addons.registerFilterAction(DefaultAction.ID, new DefaultAction());
+        filters.add(new ChannelFilter());
+        filters.add(new MessageFilter());
+
+        variables.clear();
+
+        Minecraft mc = Minecraft.getMinecraft();
+        setVariable("player", () -> Pattern.quote(mc.player.getName()));
+        setVariable("onlineplayer", () -> Joiner.on('|')
+                .appendTo(new StringBuilder("(?:"), mc.world.playerEntities.stream()
+                        .map(player -> Pattern.quote(player.getName()))
+                        .iterator())
+                .append(')').toString()
+        );
+    }
+
+    private static void setVariable(String key, Supplier<String> supplier) {
+        variables.put(key, Optional.of(supplier));
+    }
+
+    public static String getVariable(String key) {
+        return variables.getOrDefault(key, Optional.empty())
+                .map(Supplier::get)
+                .orElse(Strings.EMPTY);
     }
 
     @Subscribe
@@ -31,10 +60,14 @@ public class FilterAddon {
             return;
         }
 
-        channelFilter.applyFilter(message);
-        messageFilter.applyFilter(message);
-        for (ChatFilter filter : settings.filters) {
-            filter.applyFilter(message);
+        for (Filter filter : Iterables.concat(filters, settings.filters)) {
+            Matcher matcher = filter.getPattern().matcher(filter.prepareText(message.text));
+            while (matcher.find()) {
+                FilterEvent event = new FilterEvent(matcher, message.channels, message.text);
+                filter.action(event);
+                message.text = event.text; // Set the new chat
+                message.channels = event.channels; // Add new channels.
+            }
         }
     }
 }

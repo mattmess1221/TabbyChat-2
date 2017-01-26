@@ -64,10 +64,12 @@ public final class Translation {
     public static final String FILTER_NAME = "tabbychat.filter.name";
     public static final String FILTER_DESTINATIONS = "tabbychat.filter.destinations";
     public static final String FILTER_DESTIONATIONS_DESC = "tabbychat.filter.destinations.desc";
-    public static final String FILTER_IS_PM = "tabbychat.filter.destinationIsPm";
     public static final String FILTER_HIDE = "tabbychat.filter.hideMatches";
     public static final String FILTER_AUDIO_NOTIFY = "tabbychat.filter.audioNotify";
     public static final String FILTER_EXPRESSION = "tabbychat.filter.expression";
+    public static final String FILTER_REGEX = "tabbychat.filter.regex";
+    public static final String FILTER_IGNORE_CASE = "tabbychat.filter.ignoreCase";
+    public static final String FILTER_STRIP_FORMAT = "tabbychat.filter.stripFormat";
 
     // channel settings
     public static final String CHANNEL_TITLE = "tabbychat.channel.title";

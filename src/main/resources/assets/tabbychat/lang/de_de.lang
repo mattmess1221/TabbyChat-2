@@ -56,7 +56,6 @@ tabbychat.filter.title=Filter Anpassen
 tabbychat.filter.name=Name
 tabbychat.filter.destinations=Ziele
 tabbychat.filter.destinations.desc=Eine Komma seperierte Liste von Kanälen.
-tabbychat.filter.destinationIsPm=Ziel ist PN
 tabbychat.filter.hideMatches=Verstecke Übereinstimmungen
 tabbychat.filter.audioNotify=Audio Benachrichtigungen
 tabbychat.filter.expression=Ausdruck

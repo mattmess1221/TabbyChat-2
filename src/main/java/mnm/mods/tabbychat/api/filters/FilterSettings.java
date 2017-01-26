@@ -1,130 +1,95 @@
 package mnm.mods.tabbychat.api.filters;
 
-import java.util.Set;
+import org.apache.logging.log4j.core.helpers.Strings;
 
-import javax.annotation.Nonnull;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
-import net.minecraft.util.text.TextFormatting;
-
 /**
- * Settings used for filters. Contains settings such as what channels they are
- * in, how they are formatted, and how notifications are handled.
+ * Defines the settings used by filters.
  */
-public interface FilterSettings {
+public class FilterSettings {
 
-    /**
-     * Gets the {@link Set} of channels the message will be sent to. Channels
-     * are represented by their String id.
-     *
-     * @return A set of channels
-     */
-    @Nonnull
-    Set<String> getChannels();
+    // destinations
+    private final Set<String> channels = new HashSet<>();
+    private boolean remove;
+    private boolean clean = true;
+    private boolean regex;
+    private int flags;
 
-    /**
-     * Gets whether or not to remove the match from chat.
-     *
-     * @return True if should remove
-     */
-    boolean isRemove();
+    // notifications
+    private boolean soundNotification = false;
+    private String soundName = "";
 
-    /**
-     * Sets whether or not to remove the match from chat.
-     *
-     * @param value new value
-     */
-    void setRemove(boolean value);
+    public Set<String> getChannels() {
+        return channels;
+    }
 
-    /**
-     * Returns true if the destination channel should be a PM.
-     *
-     * @return pm
-     */
-    boolean isDestinationPm();
+    public boolean isRemove() {
+        return remove;
+    }
 
-    /**
-     * Sets whether the destination channel should be a PM.
-     *
-     * @param isDestinationPm pm
-     */
-    void setDestinationPm(boolean isDestinationPm);
+    public void setRemove(boolean value) {
+        this.remove = value;
+    }
 
-    /**
-     * Returns whether highlighting should be enabled for this filter.
-     *
-     * @return True if highlighting is enabled
-     */
-    boolean isHighlight();
+    public boolean isClean() {
+        return clean;
+    }
 
-    /**
-     * Sets whether highlighting should be enabled for this filter.
-     *
-     * @param highlight The new value
-     */
-    void setHighlight(boolean highlight);
+    public void setClean(boolean clean) {
+        this.clean = clean;
+    }
 
-    /**
-     * Gets the color used for highlighting.
-     *
-     * @return The color used for highlighting
-     */
-    @Nullable
-    TextFormatting getColor();
+    public boolean isRegex() {
+        return regex;
+    }
 
-    /**
-     * Sets the color used for highlighting. Only use colors.
-     *
-     * @param color The color of the highlight.
-     * @throws IllegalArgumentException if the color is not a color
-     */
-    void setColor(@Nullable TextFormatting color);
+    public void setRegex(boolean regex) {
+        this.regex = regex;
+    }
 
-    /**
-     * Gets the formatting used for highlighting.
-     *
-     * @return The formatting used for highlighting
-     */
-    @Nullable
-    TextFormatting getFormat();
+    public boolean isCaseInsensitive() {
+        return getFlag(Pattern.CASE_INSENSITIVE);
+    }
 
-    /**
-     * Sets the formatting for highlighting. Only use formatting.
-     *
-     * @param format The format of the highlight.
-     * @throws IllegalArgumentException if the format is not a format.
-     */
-    void setFormat(@Nullable TextFormatting format);
+    public void setCaseInsensitive(boolean value) {
+        setFlag(Pattern.CASE_INSENSITIVE, value);
+    }
 
-    /**
-     * Gets if this filter has a sound notification.
-     *
-     * @return True if there is a sound notification.
-     */
-    boolean isSoundNotification();
+    private void setFlag(int flag, boolean value) {
+        if (value) {
+            this.flags |= flag;
+        } else {
+            this.flags &= ~flag;
+        }
+    }
 
-    /**
-     * Sets whether to use a sound notification.
-     *
-     * @param sound The sound's name
-     */
-    void setSoundNotification(boolean sound);
+    private boolean getFlag(int flag) {
+        return (flags & flag) != 0;
+    }
 
-    /**
-     * Gets the name of the sound to play.
-     *
-     * @return The sound's name
-     */
-    @Nonnull
-    String getSoundName();
+    public int getFlags() {
+        return flags;
+    }
 
-    /**
-     * Sets the sound name for the sound notification. For example, to use an
-     * orb sound, use {@code random.orb} and to use the anvil land sound,
-     * {@code random.anvil_land}.
-     *
-     * @param soundName The new sound notification's name.
-     */
-    void setSoundName(@Nonnull String soundName);
+    public boolean isSoundNotification() {
+        return soundNotification;
+    }
+
+    public void setSoundNotification(boolean sound) {
+        this.soundNotification = sound;
+    }
+
+    public Optional<String> getSoundName() {
+        return Optional.ofNullable(soundName);
+    }
+
+    public void setSoundName(@Nullable String soundName) {
+        this.soundName = Strings.isEmpty(soundName) ? null : soundName;
+    }
 
 }

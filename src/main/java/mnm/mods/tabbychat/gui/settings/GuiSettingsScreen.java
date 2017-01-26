@@ -27,7 +27,7 @@ import java.util.function.Supplier;
 
 public class GuiSettingsScreen extends ComponentScreen {
 
-    private static Map<Class<? extends SettingPanel<?>>, Supplier<? extends SettingPanel<?>>> settings = Maps.newHashMap();
+    private static Map<Class<? extends SettingPanel<?>>, Supplier<? extends SettingPanel<?>>> settings = Maps.newLinkedHashMap();
 
     static {
         registerSetting(GuiSettingsGeneral.class, GuiSettingsGeneral::new);
