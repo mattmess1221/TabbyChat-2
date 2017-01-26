@@ -60,10 +60,10 @@ litemod.json {
 	dependsOn = ['mnmutils']
 	description = 'Chat overhaul.'
 	mixinConfigs = ['mixin.tabbychat.json']
-	metadata {
-		url = 'https://minecraft.curseforge.com/projects/tabbychat-2'
-		updateUrl = 'https://raw.githubusercontent.com/killjoy1221/Version/master/TabbyChat2.json'
-	}
+//	metadata {
+//		url = 'https://minecraft.curseforge.com/projects/tabbychat-2'
+//		updateUrl = 'https://raw.githubusercontent.com/killjoy1221/Version/master/TabbyChat2.json'
+//	}
 }
 def fromDeps = {
 	from litemod
@@ -71,10 +71,11 @@ def fromDeps = {
 		from it
 	}
 }
+//
 jar {
 	with fromDeps
 }
-task srgJar(type:Jar) {
+task srgJar(type: Jar) {
 	classifier 'srg'
 	with fromDeps
 	baseName = "mod-${archivesBaseName.toLowerCase()}"
@@ -88,7 +89,7 @@ reobf {
 mixin {
 	defaultObfuscationEnv notch
 }
-task dist(type:Copy) {
+task dist(type: Copy) {
 	from jar, utils.jar
 	dependsOn assemble, utils.assemble
 	into 'build/dist'
