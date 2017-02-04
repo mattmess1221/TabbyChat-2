@@ -99,7 +99,18 @@ public class GuiNewChatTC extends GuiNewChat implements ChatScreen {
     }
 
     @Override
-    public synchronized void printChatMessageWithOptionalDeletion(ITextComponent ichat, int id) {
+    public void printChatMessageWithOptionalDeletion(ITextComponent ichat, int id) {
+        try {
+            addMessage(ichat, id);
+        } catch (WrongThreadException e) {
+            TabbyChat.getLogger().warn("Tried to add message to chat from thread {}. It has been scheduled on the main thread.",
+                    Thread.currentThread().getName(), e);
+        }
+
+    }
+
+    public void addMessage(ITextComponent ichat, int id) throws WrongThreadException {
+        tryEnqueueMessage(ichat, id);
         // chat listeners
         ChatReceivedEvent chatevent = new ChatReceivedEvent(ichat, id);
         chatevent.channels.add(ChatChannel.DEFAULT_CHANNEL);
@@ -130,6 +141,13 @@ public class GuiNewChatTC extends GuiNewChat implements ChatScreen {
             }
             TabbyChat.getLogger().info("[CHAT] " + ichat.getUnformattedText());
             this.chat.getChatBox().updateComponent();
+        }
+    }
+
+    private void tryEnqueueMessage(ITextComponent text, int flags) throws WrongThreadException {
+        if (!mc.isCallingFromMinecraftThread()) {
+            mc.addScheduledTask(() -> addMessage(text, flags));
+            throw new WrongThreadException();
         }
     }
 
