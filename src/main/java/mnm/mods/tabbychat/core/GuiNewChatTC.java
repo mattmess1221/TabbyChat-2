@@ -144,6 +144,11 @@ public class GuiNewChatTC extends GuiNewChat implements ChatScreen {
         }
     }
 
+    @Override
+    public void deleteChatLine(int id) {
+        this.chat.removeMessages(id);
+    }
+
     private void tryEnqueueMessage(ITextComponent text, int flags) throws WrongThreadException {
         if (!mc.isCallingFromMinecraftThread()) {
             mc.addScheduledTask(() -> addMessage(text, flags));
