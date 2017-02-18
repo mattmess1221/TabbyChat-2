@@ -20,7 +20,8 @@ ext {
 }
 apply plugin: 'net.minecraftforge.gradle.liteloader'
 apply plugin: 'org.spongepowered.mixin'
-version = '2.2.0-SNAPSHOT'
+
+version = '2.2.0'
 
 apply from: utils.file('gradle/minecraft.gradle')
 
@@ -58,6 +59,7 @@ litemod.json {
 	author = 'killjoy1221'
 	revision = ext.gitRevision
 	dependsOn = ['mnmutils']
+	displayName = 'TabbyChat 2'
 	description = 'Chat overhaul.'
 	mixinConfigs = ['mixin.tabbychat.json']
 //	metadata {
