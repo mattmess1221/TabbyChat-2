@@ -69,7 +69,7 @@ public final class Translation {
     public static final String FILTER_EXPRESSION = "tabbychat.filter.expression";
     public static final String FILTER_REGEX = "tabbychat.filter.regex";
     public static final String FILTER_IGNORE_CASE = "tabbychat.filter.ignoreCase";
-    public static final String FILTER_STRIP_FORMAT = "tabbychat.filter.stripFormat";
+    public static final String FILTER_RAW_INPUT = "tabbychat.filter.rawInput";
 
     // channel settings
     public static final String CHANNEL_TITLE = "tabbychat.channel.title";

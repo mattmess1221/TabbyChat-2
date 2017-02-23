@@ -61,7 +61,7 @@ tabbychat.filter.audioNotify=Audio Notification
 tabbychat.filter.expression=Expression
 tabbychat.filter.regex=Regular Expression
 tabbychat.filter.ignoreCase=Ignore Case
-tabbychat.filter.stripFormat=Strip Formatting Codes
+tabbychat.filter.rawInput=Raw input
 
 tabbychat.channel.title=Channels
 tabbychat.channel.label=Channel: %s

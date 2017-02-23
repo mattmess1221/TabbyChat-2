@@ -16,7 +16,7 @@ public class FilterSettings {
     // destinations
     private final Set<String> channels = new HashSet<>();
     private boolean remove;
-    private boolean clean = true;
+    private boolean raw = true;
     private boolean regex;
     private int flags;
 
@@ -36,12 +36,12 @@ public class FilterSettings {
         this.remove = value;
     }
 
-    public boolean isClean() {
-        return clean;
+    public boolean isRaw() {
+        return raw;
     }
 
-    public void setClean(boolean clean) {
-        this.clean = clean;
+    public void setRaw(boolean raw) {
+        this.raw = raw;
     }
 
     public boolean isRegex() {

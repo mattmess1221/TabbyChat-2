@@ -122,7 +122,7 @@ public class UserFilter implements Filter {
 
     @Override
     public String prepareText(ITextComponent string) {
-        return settings.isClean() ? Filter.super.prepareText(string) : string.getFormattedText();
+        return settings.isRaw() ? string.getFormattedText() : Filter.super.prepareText(string);
     }
 
     public void setName(String name) {

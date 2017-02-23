@@ -62,7 +62,7 @@ public class GuiFilterEditor extends GuiPanel {
 
     private ToggleButton btnRegexp;
     private ToggleButton btnIgnoreCase;
-    private ToggleButton btnClean;
+    private ToggleButton btnRaw;
 
     public GuiFilterEditor(UserFilter filter, Consumer<UserFilter> consumer) {
         this.setLayout(new GuiGridLayout(20, 15));
@@ -94,9 +94,9 @@ public class GuiFilterEditor extends GuiPanel {
         this.addComponent(btnIgnoreCase = new ToggleButton("Aa"), new int[]{3, pos, 2, 1});
         btnIgnoreCase.active = settings.isCaseInsensitive();
         btnIgnoreCase.setCaption(new TextComponentTranslation(FILTER_IGNORE_CASE));
-        this.addComponent(btnClean = new ToggleButton("&0"), new int[]{5, pos, 2, 1});
-        btnClean.active = settings.isClean();
-        btnClean.setCaption(new TextComponentTranslation(FILTER_STRIP_FORMAT));
+        this.addComponent(btnRaw = new ToggleButton("&0"), new int[]{5, pos, 2, 1});
+        btnRaw.active = settings.isRaw();
+        btnRaw.setCaption(new TextComponentTranslation(FILTER_RAW_INPUT));
 
         pos += 2;
         this.addComponent(new GuiLabel(new TextComponentTranslation(FILTER_HIDE)), new int[]{2, pos});
@@ -192,7 +192,7 @@ public class GuiFilterEditor extends GuiPanel {
         sett.setRemove(chkRemove.getValue());
         sett.setCaseInsensitive(btnIgnoreCase.active);
         sett.setRegex(btnRegexp.active);
-        sett.setClean(btnClean.active);
+        sett.setRaw(btnRaw.active);
 
         sett.setSoundNotification(chkSound.getValue());
         sett.setSoundName(txtSound.getValue());
