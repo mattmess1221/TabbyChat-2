@@ -10,6 +10,7 @@ import mnm.mods.tabbychat.gui.settings.GuiSettingsChannel;
 import mnm.mods.tabbychat.util.ChannelPatterns;
 import mnm.mods.tabbychat.util.ChatTextUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.StringUtils;
 import net.minecraft.util.text.ITextComponent;
 
 import java.util.Collections;
@@ -81,7 +82,7 @@ public class ChatChannel implements Channel {
 
     @Override
     public void setPrefix(String prefix) {
-        this.prefix = prefix;
+        this.prefix = StringUtils.stripControlCodes(prefix);
     }
 
     @Override
