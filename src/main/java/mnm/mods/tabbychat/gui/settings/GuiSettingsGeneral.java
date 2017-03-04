@@ -2,7 +2,6 @@ package mnm.mods.tabbychat.gui.settings;
 
 import static mnm.mods.tabbychat.util.Translation.*;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.settings.GeneralSettings;
@@ -54,7 +53,7 @@ public class GuiSettingsGeneral extends SettingPanel<TabbySettings> {
 
         pos += 2;
         addComponent(new GuiLabel(new TextComponentTranslation(TIMESTAMP_COLOR)), new int[] { 3, pos });
-        addComponent(new GuiSettingEnum<>(sett.timestampColor, getColors(), getColorNames()), new int[] { 5, pos, 4, 1 });
+        addComponent(new GuiSettingEnum<>(sett.timestampColor, getColors(), GuiSettingsGeneral::getColorName), new int[] { 5, pos, 4, 1 });
 
         pos += 2;
         addComponent(new GuiLabel(new TextComponentTranslation(ANTI_SPAM)), new int[] { 2, pos });
@@ -87,10 +86,8 @@ public class GuiSettingsGeneral extends SettingPanel<TabbySettings> {
                 .toArray(TextFormatting[]::new);
     }
 
-    private static String[] getColorNames() {
-        return Lists.newArrayList(getColors()).stream()
-                .map(input -> "colors." + input.getFriendlyName())
-                .toArray(String[]::new);
+    private static String getColorName(TextFormatting input) {
+        return "colors." + input.getFriendlyName();
     }
 
     @Override
