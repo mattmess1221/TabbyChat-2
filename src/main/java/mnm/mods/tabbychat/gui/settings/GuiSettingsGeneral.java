@@ -2,7 +2,6 @@ package mnm.mods.tabbychat.gui.settings;
 
 import static mnm.mods.tabbychat.util.Translation.*;
 
-import com.google.common.collect.Sets;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.settings.GeneralSettings;
 import mnm.mods.tabbychat.settings.TabbySettings;
@@ -19,6 +18,9 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 
 import java.text.NumberFormat;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class GuiSettingsGeneral extends SettingPanel<TabbySettings> {
 
@@ -80,10 +82,10 @@ public class GuiSettingsGeneral extends SettingPanel<TabbySettings> {
         addComponent(new GuiSettingBoolean(sett.checkUpdates), new int[] { 1, pos });
     }
 
-    private static TextFormatting[] getColors() {
-        return Sets.newHashSet(TextFormatting.values()).stream()
+    private static List<TextFormatting> getColors() {
+        return Stream.of(TextFormatting.values())
                 .filter(TextFormatting::isColor)
-                .toArray(TextFormatting[]::new);
+                .collect(Collectors.toList());
     }
 
     private static String getColorName(TextFormatting input) {
