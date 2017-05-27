@@ -74,7 +74,6 @@ tabbychat.settings.colors.chatborder=Chat Rahmenfarbe
 tabbychat.settings.colors.chattext=Chat Textfarbe
 
 tabbychat.settings.advanced.fadetime=Ausblendzeit (Ticks)
-tabbychat.settings.advanced.chatdelay=Chat Verzögerung (ms)
 tabbychat.settings.advanced.chatvisibility=Chat Sichtbarkeit
 tabbychat.settings.advanced.hidedelims=Kanalbegrenzer ausblenden*
 tabbychat.settings.advanced.spellcheck=Rechtschreibprüfung aktivieren

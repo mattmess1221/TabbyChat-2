@@ -1,13 +1,11 @@
 package mnm.mods.tabbychat.gui;
 
 import com.google.common.eventbus.Subscribe;
+import mnm.mods.tabbychat.ChatManager;
 import mnm.mods.tabbychat.TabbyChat;
-import mnm.mods.tabbychat.api.Channel;
-import mnm.mods.tabbychat.api.TabbyAPI;
 import mnm.mods.tabbychat.api.gui.ChatInput;
 import mnm.mods.tabbychat.extra.spell.Spellcheck;
 import mnm.mods.tabbychat.extra.spell.SpellingFormatter;
-import mnm.mods.tabbychat.util.ChatProcessor;
 import mnm.mods.util.Color;
 import mnm.mods.util.gui.GuiComponent;
 import mnm.mods.util.gui.GuiText;
@@ -39,7 +37,7 @@ public class TextBox extends ChatGui implements ChatInput {
     private Spellcheck spellcheck;
 
     TextBox() {
-        textField.getTextField().setMaxStringLength(ChatProcessor.MAX_CHAT_LENGTH * 3);
+        textField.getTextField().setMaxStringLength(ChatManager.MAX_CHAT_LENGTH);
         textField.setFocused(true);
         textField.getTextField().setCanLoseFocus(false);
 
@@ -144,21 +142,7 @@ public class TextBox extends ChatGui implements ChatInput {
             }
             yPos += fr.FONT_HEIGHT + 2;
         }
-        // write the num of sends
-        Channel active = TabbyAPI.getAPI().getChat().getActiveChannel();
-        String chat = textField.getText().trim().replaceAll("  +", " ");
-        String[] msg = ChatProcessor.processChatSends(chat, active.getPrefix(), active.isPrefixHidden());
 
-        if (msg != null && msg.length > 0) {
-            int size = msg.length;
-            int color = 0x666666;
-            if (!chat.endsWith(msg[size - 1])) {
-                // WARNING! Message will get cut off!
-                color = 0xff6666;
-            }
-            int sizeW = fr.getStringWidth(size + "");
-            fr.drawString(size + "", getBounds().width - sizeW, 2, color);
-        }
     }
 
     @Override

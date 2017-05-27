@@ -43,6 +43,8 @@ import java.util.Map.Entry;
 
 public class ChatManager implements Chat {
 
+    public static final int MAX_CHAT_LENGTH = 256;
+
     private Gson gson = new GsonBuilder()
             .excludeFieldsWithoutExposeAnnotation()
             .registerTypeHierarchyAdapter(ITextComponent.class, new ITextComponent.Serializer())
@@ -164,6 +166,8 @@ public class ChatManager implements Chat {
     @Override
     public void setActiveChannel(Channel channel) {
         TextBox text = chatbox.getChatInput();
+
+
         if (active.isPrefixHidden()
                 ? text.getText().trim().isEmpty()
                 : text.getText().trim().equals(active.getPrefix())) {
@@ -171,9 +175,15 @@ public class ChatManager implements Chat {
             text.setText("");
             if (!channel.isPrefixHidden() && !channel.getPrefix().isEmpty()) {
                 // target has prefix visible
-                text.setText(channel.getPrefix() + " ");
+                text.getTextField().getTextField().setText(channel.getPrefix() + " ");
             }
         }
+        // set max text length
+        boolean hidden = channel.isPrefixHidden();
+        int prefLength = hidden ? channel.getPrefix().length() + 1 : 0;
+
+        text.getTextField().getTextField().setMaxStringLength(MAX_CHAT_LENGTH - prefLength);
+
         // reset scroll
         // TODO per-channel scroll settings?
         if (channel != active) {

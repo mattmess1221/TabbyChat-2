@@ -88,7 +88,6 @@ public final class Translation {
 
     // advanced
     public static final String ADVANCED_FADE_TIME = "tabbychat.settings.advanced.fadetime";
-    public static final String ADVANCED_CHAT_DELAY = "tabbychat.settings.advanced.chatdelay";
     public static final String ADVANCED_CHAT_VISIBILITY = "tabbychat.settings.advanced.chatvisibility";
     public static final String ADVANCED_HIDE_DELIMS = "tabbychat.settings.advanced.hidedelims";
     public static final String ADVANCED_SPELLCHECK = "tabbychat.settings.advanced.spellcheck";

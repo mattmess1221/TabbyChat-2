@@ -3,7 +3,6 @@ package mnm.mods.tabbychat;
 import com.google.common.eventbus.EventBus;
 import com.mumfrey.liteloader.core.LiteLoader;
 import mnm.mods.tabbychat.api.ChannelStatus;
-import mnm.mods.tabbychat.api.Chat;
 import mnm.mods.tabbychat.api.TabbyAPI;
 import mnm.mods.tabbychat.api.VersionData;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
@@ -63,7 +62,7 @@ public class TabbyChat extends TabbyAPI {
     }
 
     @Override
-    public Chat getChat() {
+    public ChatManager getChat() {
         return chatManager;
     }
 
