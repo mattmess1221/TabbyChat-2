@@ -16,9 +16,11 @@ import mnm.mods.tabbychat.api.Message;
 import mnm.mods.tabbychat.gui.ChatBox;
 import mnm.mods.tabbychat.gui.TextBox;
 import mnm.mods.tabbychat.settings.AdvancedSettings;
+import mnm.mods.tabbychat.settings.GeneralServerSettings;
 import mnm.mods.util.Location;
 import mnm.mods.util.config.ValueMap;
 import mnm.mods.util.text.TextBuilder;
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.EnumTypeAdapterFactory;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.Style;
@@ -192,6 +194,35 @@ public class ChatManager implements Chat {
         active.setStatus(null);
         active = channel;
         active.setStatus(ChannelStatus.ACTIVE);
+
+        runActivationCommand(channel);
+
+    }
+
+    private void runActivationCommand(Channel channel) {
+        String cmd = channel.getCommand();
+        if (cmd.isEmpty()) {
+
+            GeneralServerSettings settings = TabbyChat.getInstance().serverSettings.general;
+            String pat = channel.isPm() ? settings.messageCommand.get() : settings.channelCommand.get();
+
+            if (pat.isEmpty()) {
+                return;
+            }
+            String name = channel.getName();
+            if (channel == ChatChannel.DEFAULT_CHANNEL) {
+                name = TabbyChat.getInstance().serverSettings.general.defaultChannel.get();
+            }
+            // insert the channel name
+            cmd = pat.replace("{}", name);
+
+        }
+        if (cmd.startsWith("/")) {
+            if (cmd.length() > MAX_CHAT_LENGTH) {
+                cmd = cmd.substring(0, MAX_CHAT_LENGTH);
+            }
+            Minecraft.getMinecraft().player.sendChatMessage(cmd);
+        }
     }
 
     private boolean loading;

@@ -47,8 +47,9 @@ tabbychat.settings.server.messagePattern.desc=Preset or custom patterns to match
 tabbychat.settings.server.useDefault=Use default channel
 tabbychat.settings.server.ignoredChannels=Ignored Channels
 tabbychat.settings.server.ignoredChannels.desc=Channels to ignore.
-tabbychat.settings.server.defaultChannels=Default Channels
-tabbychat.settings.server.defaultChannels.desc=Channels to start with. Unimplemented
+tabbychat.settings.server.channelCommand=Channel Command
+tabbychat.settings.server.channelCommand.desc=The command to run when the a channel is activated.\
+  `{}` will be replaced with the channel name.
 tabbychat.settings.server.filters=Filters
 tabbychat.settings.server.filters.new=New
 
@@ -68,6 +69,7 @@ tabbychat.channel.label=Channel: %s
 tabbychat.channel.alias=Alias
 tabbychat.channel.prefix=Prefix
 tabbychat.channel.hidePrefix=Hide Prefix
+tabbychat.channel.command=Cmd
 tabbychat.channel.select=Select a channel
 tabbychat.channel.none=No channels discovered
 tabbychat.channel.forget=Forget
