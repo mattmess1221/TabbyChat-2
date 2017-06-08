@@ -82,37 +82,36 @@ public class UserFilter implements Filter {
         if (settings.isRemove()) {
             // remove
             event.channels.clear();
-        } else {
-            // add channels
-            for (String name : settings.getChannels()) {
-                // replace group tokens in channel name
-                Matcher matcher = Pattern.compile("\\$(\\d+)").matcher(name);
-                while (matcher.find()) {
-                    // find groups
-                    int group = Integer.parseInt(matcher.group(1));
-                    if (group > 0 && event.matcher.groupCount() >= group) {
-                        String groupText = event.matcher.group(group);
-                        if (groupText != null) {
-                            name = name.replace(matcher.group(), groupText);
-                            continue;
-                        }
+        }
+        // add channels
+        for (String name : settings.getChannels()) {
+            // replace group tokens in channel name
+            Matcher matcher = Pattern.compile("\\$(\\d+)").matcher(name);
+            while (matcher.find()) {
+                // find groups
+                int group = Integer.parseInt(matcher.group(1));
+                if (group > 0 && event.matcher.groupCount() >= group) {
+                    String groupText = event.matcher.group(group);
+                    if (groupText != null) {
+                        name = name.replace(matcher.group(), groupText);
+                        continue;
                     }
-                    name = null;
-                    break;
                 }
-                // skip this because there were missing or out of bounds groups.
-                if (name == null)
-                    continue;
-
-                // PMs start with a '@' character
-                boolean pm = name.startsWith("@");
-                // remove # or @ from the start of the channel name
-                if (name.startsWith("#") || name.startsWith("@"))
-                    name = name.substring(1);
-
-                Channel channel = TabbyAPI.getAPI().getChat().getChannel(name, pm);
-                event.channels.add(channel);
+                name = null;
+                break;
             }
+            // skip this because there were missing or out of bounds groups.
+            if (name == null)
+                continue;
+
+            // PMs start with a '@' character
+            boolean pm = name.startsWith("@");
+            // remove # or @ from the start of the channel name
+            if (name.startsWith("#") || name.startsWith("@"))
+                name = name.substring(1);
+
+            Channel channel = TabbyAPI.getAPI().getChat().getChannel(name, pm);
+            event.channels.add(channel);
         }
         // play sound
         if (settings.isSoundNotification()) {
