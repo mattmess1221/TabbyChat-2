@@ -4,9 +4,12 @@ import com.google.common.eventbus.Subscribe;
 import mnm.mods.tabbychat.ChatManager;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.gui.ChatInput;
+import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.extra.spell.Spellcheck;
 import mnm.mods.tabbychat.extra.spell.SpellingFormatter;
 import mnm.mods.util.Color;
+import mnm.mods.util.ILocation;
+import mnm.mods.util.TexturedModal;
 import mnm.mods.util.gui.GuiComponent;
 import mnm.mods.util.gui.GuiText;
 import mnm.mods.util.gui.events.GuiMouseEvent;
@@ -14,6 +17,7 @@ import mnm.mods.util.text.FancyFontRenderer;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 
@@ -23,7 +27,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
-public class TextBox extends ChatGui implements ChatInput {
+public class TextBox extends GuiComponent implements ChatInput {
+
+    private static final TexturedModal MODAL = new TexturedModal(ChatBox.GUI_LOCATION, 0, 219, 254, 37);
 
     private FontRenderer fr = mc.fontRendererObj;
     // Dummy textField
@@ -52,12 +58,40 @@ public class TextBox extends ChatGui implements ChatInput {
 
     @Override
     public void drawComponent(int mouseX, int mouseY) {
-        Gui.drawRect(0, 0, getBounds().width, getBounds().height, getSecondaryColorProperty().getHex());
+        GlStateManager.enableBlend();
+        drawModalCorners(MODAL, getLocation());
+        GlStateManager.disableBlend();
+
         drawText();
         drawCursor();
-        drawBorders(0, 0, getBounds().width, getBounds().height, getPrimaryColorProperty().getHex());
-        super.drawComponent(mouseX, mouseY);
 
+    }
+
+    private void drawModalCorners(TexturedModal modal, ILocation location) {
+        int x = 0;
+        int y = -1;
+
+        int w = location.getWidth() / 2;
+        int w2 = location.getWidth() - w;
+        int h = location.getHeight() / 2;
+        int h2 = location.getHeight() - h;
+
+        int mx = modal.getXPos();
+        int my = modal.getYPos();
+        int mw = modal.getWidth() - w2;
+        int mh = modal.getHeight() - h2;
+
+        // bind the texture
+        mc.getTextureManager().bindTexture(modal.getResourceLocation());
+
+        // top left
+        drawTexturedModalRect(x, y, mx, my, w, h);
+        // top right
+        drawTexturedModalRect(x + w, y, mx + mw, my, w2, h);
+        // bottom left
+        drawTexturedModalRect(x, y + h, mx, my + mh, w, h2);
+        // bottom right
+        drawTexturedModalRect(x + w, y + h, mx + mw, my + mh, w2, h2);
     }
 
     private void drawCursor() {
@@ -65,7 +99,7 @@ public class TextBox extends ChatGui implements ChatInput {
         if (cursorBlink) {
             final int HEIGHT = fr.FONT_HEIGHT + 2;
             int xPos = 0;
-            int yPos = -2;
+            int yPos = -4;
             int counter = -1;
             List<String> list = getWrappedLines();
             GuiTextField textField = this.textField.getTextField();
@@ -108,12 +142,12 @@ public class TextBox extends ChatGui implements ChatInput {
         boolean ended = false;
         GuiTextField textField = this.textField.getTextField();
 
-        int yPos = 2;
+        int yPos = 0;
         int pos = 0;
         List<ITextComponent> lines = getFormattedLines();
         for (ITextComponent line : lines) {
-            Color color = TabbyChat.getInstance().settings.colors.chatTextColor.get();
-            ffr.drawChat(line, 1, yPos, color.getHex(), false);
+            Color color = Color.WHITE;
+            ffr.drawChat(line, 2, yPos, color.getHex(), false);
             int xPos = 1;
             for (Character c : line.getUnformattedText().toCharArray()) {
                 int width = fr.getCharWidth(c);
@@ -147,14 +181,7 @@ public class TextBox extends ChatGui implements ChatInput {
 
     @Override
     public void updateComponent() {
-        super.updateComponent();
         this.cursorCounter++;
-
-        getParent()
-                .map(GuiComponent::getSecondaryColorProperty)
-                .map(color -> Color.of(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() / 4 * 3))
-                .ifPresent(this::setSecondaryColor);
-
     }
 
     @Override
@@ -215,7 +242,7 @@ public class TextBox extends ChatGui implements ChatInput {
             for (int i = 0; i < row; i++) {
                 index += lines.get(i).length();
             }
-            index += fr.trimStringToWidth(lines.get(row), x).length();
+            index += fr.trimStringToWidth(lines.get(row), x - 2).length();
             textField.getTextField().setCursorPosition(index + 1);
         }
     }
@@ -223,5 +250,10 @@ public class TextBox extends ChatGui implements ChatInput {
     @Override
     public Rectangle getBounds() {
         return this.getLocation().asRectangle();
+    }
+
+    @Override
+    public boolean isVisible() {
+        return super.isVisible() && GuiNewChatTC.getInstance().getChatOpen();
     }
 }

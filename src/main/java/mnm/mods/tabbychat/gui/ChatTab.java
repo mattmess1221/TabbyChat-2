@@ -6,18 +6,24 @@ import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.ChannelStatus;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.util.ChatVisibility;
-import mnm.mods.util.Color;
 import mnm.mods.util.ILocation;
+import mnm.mods.util.TexturedModal;
 import mnm.mods.util.gui.GuiButton;
 import mnm.mods.util.gui.events.GuiMouseEvent;
 import mnm.mods.util.gui.events.GuiMouseEvent.MouseEvent;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.GlStateManager;
 
 import java.awt.Dimension;
 import javax.annotation.Nonnull;
 
 public class ChatTab extends GuiButton {
+
+    private static final TexturedModal ACTIVE = new TexturedModal(ChatBox.GUI_LOCATION, 0, 0, 50, 12);
+    private static final TexturedModal UNREAD = new TexturedModal(ChatBox.GUI_LOCATION, 50, 0, 50, 12);
+    private static final TexturedModal PINGED = new TexturedModal(ChatBox.GUI_LOCATION, 100, 0, 50, 12);
+    private static final TexturedModal HOVERED = new TexturedModal(ChatBox.GUI_LOCATION, 150, 0, 50, 12);
+    private static final TexturedModal NONE = new TexturedModal(ChatBox.GUI_LOCATION, 200, 0, 50, 12);
 
     private final Channel channel;
 
@@ -54,13 +60,41 @@ public class ChatTab extends GuiButton {
                 || (status != null && status.compareTo(ChannelStatus.PINGED) > 0)
                 || TabbyChat.getInstance().settings.advanced.visibility.get() == ChatVisibility.ALWAYS) {
             ILocation loc = getLocation();
-            Gui.drawRect(0, 0, loc.getWidth(), loc.getHeight(), getSecondaryColorProperty().getHex());
-            int txtX = loc.getWidth() / 2;
-            int txtY = loc.getHeight() / 2 - this.mc.fontRendererObj.FONT_HEIGHT / 2;
-            this.drawCenteredString(mc.fontRendererObj, this.getText(), txtX, txtY, getPrimaryColorProperty().getHex());
+            GlStateManager.enableBlend();
+            drawModalCorners(getStatusModal(), loc);
+            GlStateManager.disableBlend();
 
-            this.drawVerticalLine(loc.getWidth(), -1, loc.getHeight(), super.getPrimaryColorProperty().getHex());
+            int txtX = loc.getWidth() / 2;
+            int txtY = loc.getHeight() / 2 - 2;
+            this.drawCenteredString(mc.fontRendererObj, this.getText(), txtX, txtY, getPrimaryColorProperty().getHex());
         }
+    }
+
+    private void drawModalCorners(TexturedModal modal, ILocation location) {
+        int x = 0;
+        int y = 1;
+
+        int w = location.getWidth() / 2;
+        int w2 = location.getWidth() - w;
+        int h = location.getHeight() / 2;
+        int h2 = location.getHeight() - h;
+
+        int mx = modal.getXPos();
+        int my = modal.getYPos();
+        int mw = modal.getWidth() - w2;
+        int mh = modal.getHeight() - h2;
+
+        // bind the texture
+        mc.getTextureManager().bindTexture(modal.getResourceLocation());
+
+        // top left
+        drawTexturedModalRect(x, y, mx, my, w, h);
+        // top right
+        drawTexturedModalRect(x + w, y, mx + mw, my, w2, h);
+        // bottom left
+        drawTexturedModalRect(x, y + h, mx, my + mh, w, h2);
+        // bottom right
+        drawTexturedModalRect(x + w, y + h, mx + mw, my + mh, w2, h2);
     }
 
     @Override
@@ -73,97 +107,40 @@ public class ChatTab extends GuiButton {
         ChannelStatus status = channel.getStatus();
         if (status != null) {
             switch (status) {
-            case ACTIVE:
-                alias = "[" + alias + "]";
-                break;
-            case UNREAD:
-                alias = "<" + alias + ">";
-                break;
-            default:
-                break;
+                case ACTIVE:
+                    alias = "[" + alias + "]";
+                    break;
+                case UNREAD:
+                    alias = "<" + alias + ">";
+                    break;
+                default:
+                    break;
             }
         }
         return alias;
     }
 
-    @Nonnull
-    @Override
-    public Color getSecondaryColorProperty() {
-        int back = super.getSecondaryColorProperty().getHex();
+    private TexturedModal getStatusModal() {
+        if (isHovered()) {
+            return HOVERED;
+        }
         ChannelStatus status = channel.getStatus();
         if (status != null) {
             switch (status) {
-            case ACTIVE:
-                // Cyan
-                back = 0xff5b7c7b;
-                break;
-            case UNREAD:
-                // Red
-                back = 0xff720000;
-                break;
-            case PINGED:
-                // green
-                back = 0xff00aa00;
-                break;
-            case JOINED:
-                // aqua
-                back = 0xff00aaaa;
-                break;
+                case ACTIVE:
+                    return ACTIVE;
+                case UNREAD:
+                    return UNREAD;
+                case PINGED:
+                    return PINGED;
             }
         }
-        if (isHovered()) {
-            // Yellow
-            back = 0xff7f8052;
-        }
-        return applyTransparency(Color.of(back));
-    }
-
-    @Nonnull
-    @Override
-    public Color getPrimaryColorProperty() {
-        int fore = 0xfff0f0f0;
-        ChannelStatus status = channel.getStatus();
-        if (status != null) {
-            switch (status) {
-            case ACTIVE:
-                // Cyan
-                fore = 0xffa5e7e4;
-                break;
-            case UNREAD:
-                // Red
-                fore = 0xffff0000;
-                break;
-            case PINGED:
-                // green
-                fore = 0xff55ff55;
-                break;
-            case JOINED:
-                // aqua
-                fore = 0xff55ffff;
-                break;
-            }
-        }
-
-        if (isHovered()) {
-            // Yellow
-            fore = 0xffffffa0;
-        }
-        return applyTransparency(Color.of(fore));
-    }
-
-    private Color applyTransparency(Color color) {
-        float perc = (mc.gameSettings.chatOpacity * 0.9F + 0.1F) / 2;
-        int opacity = (int) (perc * color.getAlpha());
-        return Color.of(color.getRed(), color.getGreen(), color.getBlue(), opacity);
+        return NONE;
     }
 
     @Nonnull
     @Override
     public Dimension getMinimumSize() {
-        String alias = channel.getAlias();
-        if (channel.isPm()) {
-            alias = "@" + alias;
-        }
-        return new Dimension(mc.fontRendererObj.getStringWidth("<" + alias + ">") + 8, 14);
+        return new Dimension(mc.fontRendererObj.getStringWidth(getText()) + 8, 14);
     }
 }

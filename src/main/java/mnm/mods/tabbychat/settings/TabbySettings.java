@@ -13,7 +13,6 @@ public class TabbySettings extends SettingsFile {
 
     public GeneralSettings general = new GeneralSettings();
     public AdvancedSettings advanced = new AdvancedSettings();
-    public ColorSettings colors = new ColorSettings();
 
     public TabbySettings() {
         super(TabbyRef.MOD_ID, "tabbychat");

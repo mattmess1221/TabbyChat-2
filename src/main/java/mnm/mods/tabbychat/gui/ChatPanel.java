@@ -13,6 +13,7 @@ public class ChatPanel extends GuiPanel {
     public ChatPanel(ILayout layout) {
         super(layout);
     }
+
     @Override
     public boolean isVisible() {
         return super.isVisible() && GuiNewChatTC.getInstance().getChatOpen();
