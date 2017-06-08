@@ -11,24 +11,28 @@ buildscript {
 		}
 	}
 	dependencies {
-		classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+		classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
 		classpath 'org.spongepowered:mixingradle:0.4-SNAPSHOT'
+		classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.0'
 	}
 }
-ext {
-	utils = rootProject.project(':MnM-Utils')
-}
+apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'net.minecraftforge.gradle.liteloader'
 apply plugin: 'org.spongepowered.mixin'
 
-version = '2.2.1'
 
-apply from: utils.file('gradle/minecraft.gradle')
+ext.gitRevision = cmd('git rev-list --count HEAD')
+ext.gitHash = cmd('git rev-parse --short HEAD')
+
+version = "2.3.0-SNAPSHOT-$gitRevision"
 
 archivesBaseName = 'tabbychat'
 group = 'mnm.mods'
 
 minecraft {
+	version = '1.12'
+	mappings = 'snapshot_20170608'
+	runDir = 'run'
 	// Replace the version string
 	replace(
 		"@VERSION@": project.version,
@@ -41,15 +45,9 @@ sourceSets {
 		refMap = 'mixin.tabbychat.refmap.json'
 	}
 }
-configurations {
-	shade
-	compile.extendsFrom shade
-}
 dependencies {
-	// basic dependencies
-	compile utils
 
-	shade 'net.sf.jazzy:jazzy:0.5.2-rtext-1.4.1-2'
+	compile 'net.sf.jazzy:jazzy:0.5.2-rtext-1.4.1-2'
 
 	testCompile 'junit:junit:4.12'
 
@@ -58,7 +56,6 @@ litemod.json {
 	name = 'tabbychat'
 	author = 'killjoy1221'
 	revision = ext.gitRevision
-	dependsOn = ['mnmutils']
 	displayName = 'TabbyChat 2'
 	description = 'Chat overhaul.'
 	mixinConfigs = ['mixin.tabbychat.json']
@@ -67,20 +64,18 @@ litemod.json {
 //		updateUrl = 'https://raw.githubusercontent.com/killjoy1221/Version/master/TabbyChat2.json'
 //	}
 }
-def fromDeps = {
-	from litemod
-	configurations.shade.collect {it.directory ? it : zipTree(it)}.each {
-		from it
-	}
-}
-//
 jar {
-	with fromDeps
+	from litemod
+	manifest {
+		attributes 'Implementation-Version': "$version (git $gitHash)"
+	}
 }
 task srgJar(type: Jar) {
 	classifier 'srg'
-	with fromDeps
 	baseName = "mod-${archivesBaseName.toLowerCase()}"
+	manifest {
+		attributes 'Implementation-Version': "$version (git $gitHash)"
+	}
 }
 
 reobf {
@@ -91,9 +86,11 @@ reobf {
 mixin {
 	defaultObfuscationEnv notch
 }
-task dist(type: Copy) {
-	from jar, utils.jar
-	dependsOn assemble, utils.assemble
-	into 'build/dist'
+
+def cmd(s) {
+	try {
+		s.execute(null, file('.')).text.trim()
+	} catch(e) {
+		'null'
+	}
 }
-build.dependsOn dist

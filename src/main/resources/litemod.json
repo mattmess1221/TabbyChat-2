@@ -1,7 +1,5 @@
 {
 	"name": "tabbychat",
-	"mcversion": "1.11.2",
-	"mixinConfigs": ["mixin.tabbychat.json"],
-	"url": "http://www.minecraftforum.net/forums/mapping-and-modding/minecraft-mods/2181597-t",
-	"updateUrl": "https://raw.githubusercontent.com/killjoy1221/Version/master/TabbyChat2.json"
+	"mcversion": "1.12",
+	"mixinConfigs": ["mixin.tabbychat.json"]
 }
