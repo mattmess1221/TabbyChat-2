@@ -231,13 +231,13 @@ public class ChatArea extends GuiComponent implements ReceivedChat {
             Point point = scalePoint(new Point(clickX, clickY), mc.currentScreen);
             ILocation actual = getActualLocation();
             // check that cursor is in bounds.
-            if (point.x >= actual.getXPos() && point.y >= actual.getYPos()
-                    && point.x <= actual.getXPos() + actual.getWidth()
-                    && point.y <= actual.getYPos() + actual.getHeight()) {
+            if (point.x > actual.getXPos() && point.y > actual.getYPos()
+                    && point.x < actual.getXPos() + actual.getWidth()
+                    && point.y < actual.getYPos() + actual.getHeight()) {
 
                 float scale = getActualScale();
                 float size = mc.fontRenderer.FONT_HEIGHT * scale;
-                float bottom = (actual.getYPos() + actual.getHeight());
+                float bottom = (actual.getYPos() + actual.getHeight() - 2);
 
                 // The line to get
                 int linePos = MathHelper.floor((point.y - bottom) / -size) + scrollPos;
@@ -247,7 +247,7 @@ public class ChatArea extends GuiComponent implements ReceivedChat {
                 List<Message> list = this.getChat();
                 if (linePos >= 0 && linePos < list.size()) {
                     Message chatline = list.get(linePos);
-                    float x = actual.getXPos();
+                    float x = actual.getXPos() + 3;
 
                     for (ITextComponent ichatcomponent : chatline.getMessageWithOptionalTimestamp()) {
                         if (ichatcomponent instanceof TextComponentString) {
