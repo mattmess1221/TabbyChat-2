@@ -81,9 +81,9 @@ public abstract class GuiComponent extends Gui {
         int w = 0;
         // find the largest width
         for (String s : list) {
-            w = Math.max(w, (int) (mc.fontRendererObj.getStringWidth(s) * getActualScale()));
+            w = Math.max(w, (int) (mc.fontRenderer.getStringWidth(s) * getActualScale()));
         }
-        y -= mc.fontRendererObj.FONT_HEIGHT * list.length;
+        y -= mc.fontRenderer.FONT_HEIGHT * list.length;
 
         Point point = getActualLocation().getPoint();
         ScaledResolution sr = new ScaledResolution(mc);
@@ -95,13 +95,13 @@ public abstract class GuiComponent extends Gui {
         }
         // put it on top
         GlStateManager.pushMatrix();
-        Gui.drawRect(x - 2, y - 2, x + w + 2, y + mc.fontRendererObj.FONT_HEIGHT * list.length + 1,
+        Gui.drawRect(x - 2, y - 2, x + w + 2, y + mc.fontRenderer.FONT_HEIGHT * list.length + 1,
                 0xcc333333);
-        drawBorders(x - 2, y - 2, x + w + 2, y + mc.fontRendererObj.FONT_HEIGHT * list.length + 1,
+        drawBorders(x - 2, y - 2, x + w + 2, y + mc.fontRenderer.FONT_HEIGHT * list.length + 1,
                 0xccaaaaaa);
         for (String s : list) {
-            mc.fontRendererObj.drawStringWithShadow(s, x, y, this.getPrimaryColorProperty().getHex());
-            y += mc.fontRendererObj.FONT_HEIGHT;
+            mc.fontRenderer.drawStringWithShadow(s, x, y, this.getPrimaryColorProperty().getHex());
+            y += mc.fontRenderer.FONT_HEIGHT;
         }
         GlStateManager.popMatrix();
     }

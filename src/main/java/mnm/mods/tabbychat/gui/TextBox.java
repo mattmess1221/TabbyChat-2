@@ -27,9 +27,9 @@ import javax.annotation.Nonnull;
 
 public class TextBox extends ChatGui implements ChatInput {
 
-    private FontRenderer fr = mc.fontRendererObj;
+    private FontRenderer fr = mc.fontRenderer;
     // Dummy textField
-    private GuiText textField = new GuiText(new GuiTextField(0, mc.fontRendererObj, 0, 0, 0, 0) {
+    private GuiText textField = new GuiText(new GuiTextField(0, fr, 0, 0, 0, 0) {
         @Override
         public void drawTextBox() {
             // noop
@@ -104,7 +104,7 @@ public class TextBox extends ChatGui implements ChatInput {
     }
 
     private void drawText() {
-        FancyFontRenderer ffr = new FancyFontRenderer(mc.fontRendererObj);
+        FancyFontRenderer ffr = new FancyFontRenderer(fr);
         // selection
         boolean started = false;
         boolean ended = false;

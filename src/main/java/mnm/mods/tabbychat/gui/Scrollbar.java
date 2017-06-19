@@ -17,7 +17,7 @@ public class Scrollbar extends GuiComponent {
         if (GuiNewChatTC.getInstance().getChatOpen()) {
             int scroll = chat.getScrollPos();
             int max = chat.getBounds().height;
-            int lines = max / mc.fontRendererObj.FONT_HEIGHT;
+            int lines = max / mc.fontRenderer.FONT_HEIGHT;
             int total = chat.getChat().size();
             if (total <= lines) {
                 return;

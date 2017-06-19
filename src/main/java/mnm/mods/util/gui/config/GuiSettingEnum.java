@@ -85,10 +85,10 @@ public class GuiSettingEnum<T> extends GuiSetting<T> {
     public void drawComponent(int mouseX, int mouseY) {
         ILocation loc = this.getLocation();
         Gui.drawRect(0, 0, loc.getWidth(), loc.getHeight(), 0xff000000);
-        String string = mc.fontRendererObj.trimStringToWidth(text, loc.getWidth());
-        int xPos = loc.getWidth() / 2 - mc.fontRendererObj.getStringWidth(string) / 2;
+        String string = mc.fontRenderer.trimStringToWidth(text, loc.getWidth());
+        int xPos = loc.getWidth() / 2 - mc.fontRenderer.getStringWidth(string) / 2;
         int yPos = loc.getHeight() / 2 - 4;
-        mc.fontRendererObj.drawString(string, xPos, yPos, getPrimaryColorProperty().getHex());
+        mc.fontRenderer.drawString(string, xPos, yPos, getPrimaryColorProperty().getHex());
         drawBorders(0, -1, loc.getWidth(), loc.getHeight() + 1);
     }
 

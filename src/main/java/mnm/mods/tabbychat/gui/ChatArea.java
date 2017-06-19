@@ -73,7 +73,7 @@ public class ChatArea extends GuiComponent implements ReceivedChat {
             int fore = getPrimaryColorProperty().getHex();
             int back = getSecondaryColorProperty().getHex();
             List<Message> visible = getVisibleChat();
-            int height = visible.size() * mc.fontRendererObj.FONT_HEIGHT;
+            int height = visible.size() * mc.fontRenderer.FONT_HEIGHT;
             ChatVisibility vis = TabbyChat.getInstance().settings.advanced.visibility.get();
             if (GuiNewChatTC.getInstance().getChatOpen()) {
                 Gui.drawRect(0, 0, getBounds().width, getBounds().height, back);
@@ -90,7 +90,7 @@ public class ChatArea extends GuiComponent implements ReceivedChat {
             int xPos = getBounds().x + 1;
             int yPos = getBounds().height;
             for (Message line : visible) {
-                yPos -= mc.fontRendererObj.FONT_HEIGHT;
+                yPos -= mc.fontRenderer.FONT_HEIGHT;
                 drawChatLine(line, xPos, yPos);
             }
         }
@@ -101,7 +101,7 @@ public class ChatArea extends GuiComponent implements ReceivedChat {
         GlStateManager.enableBlend();
         String text = line.getMessageWithOptionalTimestamp().getFormattedText();
         Color color = TabbyChat.getInstance().settings.colors.chatTextColor.get();
-        mc.fontRendererObj.drawStringWithShadow(text, xPos, yPos, (color.getHex()) + (getLineOpacity(line) << 24));
+        mc.fontRenderer.drawStringWithShadow(text, xPos, yPos, (color.getHex()) + (getLineOpacity(line) << 24));
         GlStateManager.disableAlpha();
         GlStateManager.disableBlend();
     }
@@ -146,7 +146,7 @@ public class ChatArea extends GuiComponent implements ReceivedChat {
             }
 
             pos++;
-            length += mc.fontRendererObj.FONT_HEIGHT;
+            length += mc.fontRenderer.FONT_HEIGHT;
         }
 
         return messages;
@@ -210,7 +210,7 @@ public class ChatArea extends GuiComponent implements ReceivedChat {
                     && point.y <= actual.getYPos() + actual.getHeight()) {
 
                 float scale = getActualScale();
-                float size = mc.fontRendererObj.FONT_HEIGHT * scale;
+                float size = mc.fontRenderer.FONT_HEIGHT * scale;
                 float bottom = (actual.getYPos() + actual.getHeight());
 
                 // The line to get
@@ -231,7 +231,7 @@ public class ChatArea extends GuiComponent implements ReceivedChat {
                             // clean it up
                             String clean = GuiUtilRenderComponents.removeTextColorsIfConfigured(text, false);
                             // get it's width, then scale it.
-                            x += this.mc.fontRendererObj.getStringWidth(clean) * scale;
+                            x += this.mc.fontRenderer.getStringWidth(clean) * scale;
 
                             if (x > point.x) {
                                 return ichatcomponent;

@@ -1,15 +1,13 @@
 package mnm.mods.util.gui;
 
-import org.lwjgl.input.Mouse;
-
 import com.google.common.eventbus.Subscribe;
-
 import mnm.mods.util.ILocation;
 import mnm.mods.util.gui.events.GuiMouseEvent;
 import mnm.mods.util.gui.events.GuiMouseEvent.MouseEvent;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.input.Mouse;
 
 /**
  * A slider for double values. Click and drag or scroll to change the value.
@@ -47,7 +45,7 @@ public class GuiSlider extends GuiComponent implements IGuiInput<Double> {
         }
         int midX = loc.getWidth() / 2;
         int midY = loc.getHeight() / 2;
-        drawCenteredString(mc.fontRendererObj, getFormattedValue(), midX, midY, -1);
+        drawCenteredString(mc.fontRenderer, getFormattedValue(), midX, midY, -1);
         GlStateManager.disableAlpha();
         GlStateManager.disableBlend();
         super.drawComponent(mouseX, mouseY);

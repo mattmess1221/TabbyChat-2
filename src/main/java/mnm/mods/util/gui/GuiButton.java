@@ -78,7 +78,7 @@ public class GuiButton extends GuiComponent {
 
     @Override
     public void drawComponent(int mouseX, int mouseY) {
-        FontRenderer fontrenderer = mc.fontRendererObj;
+        FontRenderer fontrenderer = mc.fontRenderer;
         ILocation bounds = getLocation();
 
         mc.getTextureManager().bindTexture(WIDGETS);
@@ -147,7 +147,7 @@ public class GuiButton extends GuiComponent {
     @Nonnull
     @Override
     public Dimension getMinimumSize() {
-        return new Dimension(mc.fontRendererObj.getStringWidth(this.getText()) + 8, 20);
+        return new Dimension(mc.fontRenderer.getStringWidth(this.getText()) + 8, 20);
     }
 
 }

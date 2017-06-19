@@ -16,46 +16,53 @@ buildscript {
 		classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.0'
 	}
 }
-apply plugin: 'com.github.johnrengelman.shadow'
+plugins {
+	id 'org.ajoberstar.grgit' version '1.7.2'
+}
+
 apply plugin: 'net.minecraftforge.gradle.liteloader'
 apply plugin: 'org.spongepowered.mixin'
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'org.ajoberstar.grgit'
 
-
-ext.gitRevision = cmd('git rev-list --count HEAD')
-ext.gitHash = cmd('git rev-parse --short HEAD')
-
-version = "2.3.0-SNAPSHOT-$gitRevision"
+ext.revision = grgit.log().size()
+ext.hash = grgit.head().abbreviatedId
+version = "2.3.0-SNAPSHOT-$ext.revision"
 
 archivesBaseName = 'tabbychat'
 group = 'mnm.mods'
 
 minecraft {
 	version = '1.12'
-	mappings = 'snapshot_20170608'
+	mappings = 'snapshot_20170615'
 	runDir = 'run'
 	// Replace the version string
 	replace(
 		"@VERSION@": project.version,
-		"@REVISION@": project.gitRevision,
+		"@REVISION@": project.revision,
 		"@MCVERSION@": project.minecraft.version
 	)
 }
 sourceSets {
 	main {
-		refMap = 'mixin.tabbychat.refmap.json'
+//		refMap = 'mixin.tabbychat.refmap.json'
 	}
 }
 dependencies {
-
 	compile 'net.sf.jazzy:jazzy:0.5.2-rtext-1.4.1-2'
-
 	testCompile 'junit:junit:4.12'
+}
+afterEvaluate {
+	println '==========================================='
+	println "   TabbyChat $version ($ext.hash)"
+	println '==========================================='
 
+	file('build.number').delete()
 }
 litemod.json {
 	name = 'tabbychat'
 	author = 'killjoy1221'
-	revision = ext.gitRevision
+	revision = ext.revision
 	displayName = 'TabbyChat 2'
 	description = 'Chat overhaul.'
 	mixinConfigs = ['mixin.tabbychat.json']
@@ -67,14 +74,14 @@ litemod.json {
 jar {
 	from litemod
 	manifest {
-		attributes 'Implementation-Version': "$version (git $gitHash)"
+		attributes 'Implementation-Version': "$version (git ${project.hash})"
 	}
 }
 task srgJar(type: Jar) {
 	classifier 'srg'
 	baseName = "mod-${archivesBaseName.toLowerCase()}"
 	manifest {
-		attributes 'Implementation-Version': "$version (git $gitHash)"
+		attributes 'Implementation-Version': "$version (git ${project.hash})"
 	}
 }
 
@@ -85,12 +92,4 @@ reobf {
 }
 mixin {
 	defaultObfuscationEnv notch
-}
-
-def cmd(s) {
-	try {
-		s.execute(null, file('.')).text.trim()
-	} catch(e) {
-		'null'
-	}
 }

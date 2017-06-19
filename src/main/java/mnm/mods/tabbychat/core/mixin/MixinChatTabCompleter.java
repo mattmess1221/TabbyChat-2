@@ -19,7 +19,7 @@ public abstract class MixinChatTabCompleter extends TabCompleter {
 
     @Shadow
     @Final
-    private Minecraft clientInstance;
+    private Minecraft client;
 
     public MixinChatTabCompleter(GuiTextField textFieldIn) {
         super(textFieldIn, false);
@@ -36,7 +36,7 @@ public abstract class MixinChatTabCompleter extends TabCompleter {
                 ci.cancel();
 
                 ITextComponent chat = new TextComponentTranslation(Translation.WARN_COMPLETIONS, this.completions.size());
-                clientInstance.ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion(chat, 1);
+                client.ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion(chat, 1);
             }
         }
     }

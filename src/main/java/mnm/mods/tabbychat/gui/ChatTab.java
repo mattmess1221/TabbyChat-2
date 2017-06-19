@@ -56,8 +56,8 @@ public class ChatTab extends GuiButton {
             ILocation loc = getLocation();
             Gui.drawRect(0, 0, loc.getWidth(), loc.getHeight(), getSecondaryColorProperty().getHex());
             int txtX = loc.getWidth() / 2;
-            int txtY = loc.getHeight() / 2 - this.mc.fontRendererObj.FONT_HEIGHT / 2;
-            this.drawCenteredString(mc.fontRendererObj, this.getText(), txtX, txtY, getPrimaryColorProperty().getHex());
+            int txtY = loc.getHeight() / 2 - this.mc.fontRenderer.FONT_HEIGHT / 2;
+            this.drawCenteredString(mc.fontRenderer, this.getText(), txtX, txtY, getPrimaryColorProperty().getHex());
 
             this.drawVerticalLine(loc.getWidth(), -1, loc.getHeight(), super.getPrimaryColorProperty().getHex());
         }
@@ -164,6 +164,6 @@ public class ChatTab extends GuiButton {
         if (channel.isPm()) {
             alias = "@" + alias;
         }
-        return new Dimension(mc.fontRendererObj.getStringWidth("<" + alias + ">") + 8, 14);
+        return new Dimension(mc.fontRenderer.getStringWidth("<" + alias + ">") + 8, 14);
     }
 }

@@ -1,13 +1,7 @@
 package mnm.mods.util.gui;
 
-import javax.annotation.Nonnull;
-
-import org.apache.commons.lang3.StringUtils;
-import org.lwjgl.input.Keyboard;
-
 import com.google.common.eventbus.Subscribe;
 import com.mumfrey.liteloader.client.overlays.IGuiTextField;
-
 import mnm.mods.util.Color;
 import mnm.mods.util.ILocation;
 import mnm.mods.util.gui.events.GuiKeyboardEvent;
@@ -15,6 +9,10 @@ import mnm.mods.util.gui.events.GuiMouseEvent;
 import mnm.mods.util.gui.events.GuiMouseEvent.MouseEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiTextField;
+import org.apache.commons.lang3.StringUtils;
+import org.lwjgl.input.Keyboard;
+
+import javax.annotation.Nonnull;
 
 /**
  * A gui component that wraps {@link GuiTextField}.
@@ -27,7 +25,7 @@ public class GuiText extends GuiComponent implements IGuiInput<String> {
     private String hint;
 
     public GuiText() {
-        this(new GuiTextField(0, Minecraft.getMinecraft().fontRendererObj, 0, 0, 1, 1));
+        this(new GuiTextField(0, Minecraft.getMinecraft().fontRenderer, 0, 0, 1, 1));
     }
 
     public GuiText(@Nonnull GuiTextField textField) {

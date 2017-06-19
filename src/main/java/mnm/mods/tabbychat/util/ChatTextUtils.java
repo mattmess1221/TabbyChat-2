@@ -1,10 +1,6 @@
 package mnm.mods.tabbychat.util;
 
-import java.util.Iterator;
-import java.util.List;
-
 import com.google.common.collect.Lists;
-
 import mnm.mods.tabbychat.ChatMessage;
 import mnm.mods.tabbychat.api.Message;
 import net.minecraft.client.Minecraft;
@@ -13,10 +9,13 @@ import net.minecraft.client.gui.GuiUtilRenderComponents;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 
+import java.util.Iterator;
+import java.util.List;
+
 public class ChatTextUtils {
 
     public static List<ITextComponent> split(ITextComponent chat, int width) {
-        FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
+        FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
         return GuiUtilRenderComponents.splitText(chat, width, fr, false, false);
     }
 

@@ -17,7 +17,7 @@ public class GuiLabel extends GuiComponent {
     private float angle;
 
     public GuiLabel() {
-        this.fr = new FancyFontRenderer(Minecraft.getMinecraft().fontRendererObj);
+        this.fr = new FancyFontRenderer(Minecraft.getMinecraft().fontRenderer);
     }
 
     /**

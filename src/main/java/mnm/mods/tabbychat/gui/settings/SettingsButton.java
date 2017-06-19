@@ -42,8 +42,8 @@ public class SettingsButton extends GuiButton {
         GlStateManager.enableAlpha();
         getSecondaryColor().ifPresent(color ->
                 Gui.drawRect(displayX - 30, 2, loc.getWidth() + displayX - 30, loc.getHeight() - 2, color.getHex()));
-        String string = mc.fontRendererObj.trimStringToWidth(getText(), loc.getWidth());
-        mc.fontRendererObj.drawString(string, displayX - 20, 6, getPrimaryColorProperty().getHex());
+        String string = mc.fontRenderer.trimStringToWidth(getText(), loc.getWidth());
+        mc.fontRenderer.drawString(string, displayX - 20, 6, getPrimaryColorProperty().getHex());
     }
 
     @Nonnull
