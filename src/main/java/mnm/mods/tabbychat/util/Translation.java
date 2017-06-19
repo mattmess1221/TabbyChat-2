@@ -54,8 +54,8 @@ public final class Translation {
     public static final String MESSAGE_PATTERN_DESC = "tabbychat.settings.server.messagePattern.desc";
     public static final String IGNORED_CHANNELS = "tabbychat.settings.server.ignoredChannels";
     public static final String IGNORED_CHANNELS_DESC = "tabbychat.settings.server.ignoredChannels.desc";
-    public static final String DEFAULT_CHANNELS = "tabbychat.settings.server.defaultChannels";
-    public static final String DEFAULT_CHANNELS_DESC = "tabbychat.settings.server.defaultChannels.desc";
+    public static final String DEFAULT_CHANNEL_COMMAND = "tabbychat.settings.server.channelCommand";
+    public static final String DEFAULT_CHANNEL_COMMAND_DESC = "tabbychat.settings.server.channelCommand.desc";
     public static final String FILTERS = "tabbychat.settings.server.filters";
     public static final String FILTERS_NEW = "tabbychat.settings.server.filters.new";
 
@@ -77,6 +77,7 @@ public final class Translation {
     public static final String CHANNEL_ALIAS = "tabbychat.channel.alias";
     public static final String CHANNEL_PREFIX = "tabbychat.channel.prefix";
     public static final String CHANNEL_HIDE_PREFIX = "tabbychat.channel.hidePrefix";
+    public static final String CHANNEL_COMMAND = "tabbychat.channel.command";
     public static final String CHANNEL_NONE = "tabbychat.channel.none";
     public static final String CHANNEL_SELECT = "tabbychat.channel.select";
     public static final String CHANNEL_FORGET = "tabbychat.channel.forget";
@@ -88,7 +89,6 @@ public final class Translation {
 
     // advanced
     public static final String ADVANCED_FADE_TIME = "tabbychat.settings.advanced.fadetime";
-    public static final String ADVANCED_CHAT_DELAY = "tabbychat.settings.advanced.chatdelay";
     public static final String ADVANCED_CHAT_VISIBILITY = "tabbychat.settings.advanced.chatvisibility";
     public static final String ADVANCED_HIDE_DELIMS = "tabbychat.settings.advanced.hidedelims";
     public static final String ADVANCED_SPELLCHECK = "tabbychat.settings.advanced.spellcheck";

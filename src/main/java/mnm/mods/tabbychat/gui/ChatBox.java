@@ -4,10 +4,8 @@ import com.google.common.eventbus.Subscribe;
 import com.mumfrey.liteloader.core.LiteLoader;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.gui.ChatGui;
-import mnm.mods.tabbychat.settings.ColorSettings;
 import mnm.mods.tabbychat.settings.TabbySettings;
 import mnm.mods.tabbychat.util.ScaledDimension;
-import mnm.mods.util.Color;
 import mnm.mods.util.ILocation;
 import mnm.mods.util.Location;
 import mnm.mods.util.gui.BorderLayout;
@@ -16,16 +14,16 @@ import mnm.mods.util.gui.events.GuiMouseEvent;
 import mnm.mods.util.gui.events.GuiMouseEvent.MouseEvent;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.input.Mouse;
 
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.util.Optional;
 
 public class ChatBox extends GuiPanel implements ChatGui {
 
-    private static ColorSettings colors = TabbyChat.getInstance().settings.colors;
+    public static final ResourceLocation GUI_LOCATION = new ResourceLocation("tabbychat", "textures/chatbox.png");
 
     private ChatArea chatArea;
     private ChatTray pnlTray;
@@ -80,16 +78,6 @@ public class ChatBox extends GuiPanel implements ChatGui {
                 }
             }
         }
-    }
-
-    @Override
-    public Optional<Color> getPrimaryColor() {
-        return Optional.ofNullable(colors.chatBorderColor.get());
-    }
-
-    @Override
-    public Optional<Color> getSecondaryColor() {
-        return Optional.ofNullable(colors.chatBoxColor.get());
     }
 
     @Override

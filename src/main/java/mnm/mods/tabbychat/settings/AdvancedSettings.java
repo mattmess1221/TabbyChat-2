@@ -13,7 +13,6 @@ public class AdvancedSettings extends ValueObject {
     public Value<Float> unfocHeight = value(0.5F);
     public Value<Integer> fadeTime = value(200);
     public Value<Integer> historyLen = value(100);
-    public Value<Integer> msgDelay = value(500);
     public Value<Boolean> hideTag = value(false);
     public Value<Boolean> keepChatOpen = value(false);
     public Value<Boolean> spelling = value(true);

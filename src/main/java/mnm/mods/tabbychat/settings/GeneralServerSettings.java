@@ -14,5 +14,7 @@ public class GeneralServerSettings extends ValueObject {
     public Value<MessagePatterns> messegePattern = value(MessagePatterns.WHISPERS);
     public Value<Boolean> useDefaultTab = value(true);
     public ValueList<String> ignoredChannels = list();
-    public ValueList<String> defaultChannels = list();
+    public Value<String> defaultChannel = value("");
+    public Value<String> channelCommand = value("");
+    public Value<String> messageCommand = value("");
 }

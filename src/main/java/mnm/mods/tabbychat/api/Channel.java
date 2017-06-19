@@ -1,10 +1,9 @@
 package mnm.mods.tabbychat.api;
 
-import java.util.List;
-
-import javax.annotation.Nullable;
-
 import net.minecraft.util.text.ITextComponent;
+
+import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * Represents a channel.
@@ -68,6 +67,10 @@ public interface Channel {
      * @param hidden Whether to hide the prefix
      */
     void setPrefixHidden(boolean hidden);
+
+    String getCommand();
+
+    void setCommand(String cmd);
 
     /**
      * Gets the channel's current status. A null indicates that there is no

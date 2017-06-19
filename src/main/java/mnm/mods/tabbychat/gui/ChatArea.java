@@ -11,10 +11,10 @@ import mnm.mods.tabbychat.util.ChatTextUtils;
 import mnm.mods.tabbychat.util.ChatVisibility;
 import mnm.mods.util.Color;
 import mnm.mods.util.ILocation;
+import mnm.mods.util.TexturedModal;
 import mnm.mods.util.gui.GuiComponent;
 import mnm.mods.util.gui.events.GuiMouseEvent;
 import mnm.mods.util.gui.events.GuiMouseEvent.MouseEvent;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiUtilRenderComponents;
 import net.minecraft.client.renderer.GlStateManager;
@@ -29,6 +29,8 @@ import java.awt.Rectangle;
 import java.util.List;
 
 public class ChatArea extends GuiComponent implements ReceivedChat {
+
+    private static final TexturedModal MODAL = new TexturedModal(ChatBox.GUI_LOCATION, 0, 14, 254, 205);
 
     private ChatChannel channel;
     private List<Message> messages = Lists.newLinkedList();
@@ -70,40 +72,64 @@ public class ChatArea extends GuiComponent implements ReceivedChat {
     @Override
     public void drawComponent(int mouseX, int mouseY) {
         if (mc.gameSettings.chatVisibility != EnumChatVisibility.HIDDEN) {
-            int fore = getPrimaryColorProperty().getHex();
-            int back = getSecondaryColorProperty().getHex();
+
             List<Message> visible = getVisibleChat();
             int height = visible.size() * mc.fontRenderer.FONT_HEIGHT;
             ChatVisibility vis = TabbyChat.getInstance().settings.advanced.visibility.get();
-            if (GuiNewChatTC.getInstance().getChatOpen()) {
-                Gui.drawRect(0, 0, getBounds().width, getBounds().height, back);
-                this.drawVerticalLine(-1, -1, getBounds().height, fore);
-                this.drawVerticalLine(getBounds().width, -1, getBounds().height, fore);
-            } else if (vis == ChatVisibility.ALWAYS) {
-                Gui.drawRect(0, 0, getBounds().width, getBounds().height, back);
-                drawBorders(0, 0, getBounds().width, getBounds().height, fore);
+
+            GlStateManager.enableBlend();
+
+            if (GuiNewChatTC.getInstance().getChatOpen() || vis == ChatVisibility.ALWAYS) {
+                drawModalCorners(MODAL, getLocation().copy().setYPos(0));
             } else if (height != 0) {
                 int y = getBounds().height - height;
-                Gui.drawRect(getBounds().x, y - 1, getBounds().width, y + height, back);
-                drawBorders(getBounds().x, y - 1, getBounds().width, y + height, fore);
+                drawModalCorners(MODAL, getLocation().copy().setYPos(y - 3).setHeight(height + 3));
             }
-            int xPos = getBounds().x + 1;
-            int yPos = getBounds().height;
+
+            zLevel = 100;
+            int xPos = getBounds().x + 3;
+            int yPos = getBounds().height - 1;
             for (Message line : visible) {
                 yPos -= mc.fontRenderer.FONT_HEIGHT;
                 drawChatLine(line, xPos, yPos);
             }
+            zLevel = 0;
+            GlStateManager.disableAlpha();
+            GlStateManager.disableBlend();
         }
-        super.drawComponent(mouseX, mouseY);
+    }
+
+    private void drawModalCorners(TexturedModal modal, ILocation location) {
+        int x = location.getXPos();
+        int y = location.getYPos();
+
+        int w = location.getWidth() / 2;
+        int w2 = location.getWidth() - w;
+        int h = location.getHeight() / 2;
+        int h2 = location.getHeight() - h;
+
+        int mx = modal.getXPos();
+        int my = modal.getYPos();
+        int mw = modal.getWidth() - w2;
+        int mh = modal.getHeight() - h2;
+
+        // bind the texture
+        mc.getTextureManager().bindTexture(modal.getResourceLocation());
+
+        // top left
+        drawTexturedModalRect(x, y, mx, my, w, h);
+        // top right
+        drawTexturedModalRect(x + w, y, mx + mw, my, w2, h);
+        // bottom left
+        drawTexturedModalRect(x, y + h, mx, my + mh, w, h2);
+        // bottom right
+        drawTexturedModalRect(x + w, y + h, mx + mw, my + mh, w2, h2);
+
     }
 
     private void drawChatLine(Message line, int xPos, int yPos) {
-        GlStateManager.enableBlend();
         String text = line.getMessageWithOptionalTimestamp().getFormattedText();
-        Color color = TabbyChat.getInstance().settings.colors.chatTextColor.get();
-        mc.fontRenderer.drawStringWithShadow(text, xPos, yPos, (color.getHex()) + (getLineOpacity(line) << 24));
-        GlStateManager.disableAlpha();
-        GlStateManager.disableBlend();
+        mc.fontRenderer.drawStringWithShadow(text, xPos, yPos, Color.WHITE.getHex() + (getLineOpacity(line) << 24));
     }
 
     public void setChannel(ChatChannel channel) {
@@ -134,7 +160,7 @@ public class ChatArea extends GuiComponent implements ReceivedChat {
         int pos = getScrollPos();
         float unfoc = TabbyChat.getInstance().settings.advanced.unfocHeight.get();
         float div = GuiNewChatTC.getInstance().getChatOpen() ? 1 : unfoc;
-        while (pos < lines.size() && length < getBounds().height * div - 8) {
+        while (pos < lines.size() && length < getBounds().height * div - 10) {
             Message line = lines.get(pos);
 
             if (GuiNewChatTC.getInstance().getChatOpen()) {
@@ -158,7 +184,7 @@ public class ChatArea extends GuiComponent implements ReceivedChat {
             return 4;
         if (vis == ChatVisibility.HIDDEN && !GuiNewChatTC.getInstance().getChatOpen())
             return 0;
-        int opacity = TabbyChat.getInstance().settings.colors.chatTextColor.get().getAlpha();
+        int opacity = 255;
 
         double age = mc.ingameGUI.getUpdateCounter() - line.getCounter();
         if (!mc.ingameGUI.getChatGUI().getChatOpen()) {
@@ -248,4 +274,5 @@ public class ChatArea extends GuiComponent implements ReceivedChat {
     public Rectangle getBounds() {
         return getLocation().asRectangle();
     }
+
 }

@@ -43,8 +43,8 @@ public class ChatTray extends GuiPanel implements IGui {
     @Override
     public void drawComponent(int mouseX, int mouseY) {
         if (GuiNewChatTC.getInstance().getChatOpen()) {
-            Gui.drawRect(0, 0, getBounds().width, getBounds().height, getSecondaryColorProperty().getHex());
-            drawBorders(0, 0, getBounds().width, getBounds().height, getPrimaryColorProperty().getHex());
+//            Gui.drawRect(0, 0, getBounds().width, getBounds().height, getSecondaryColorProperty().getHex());
+//            drawBorders(0, 0, getBounds().width, getBounds().height, getPrimaryColorProperty().getHex());
         }
         super.drawComponent(mouseX, mouseY);
     }

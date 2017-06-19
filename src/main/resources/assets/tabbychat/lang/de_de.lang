@@ -47,8 +47,8 @@ tabbychat.settings.server.messagePattern.desc=Voreinstellungen oder benutzerdefi
 tabbychat.settings.server.useDefault=Verwende Standardkanal
 tabbychat.settings.server.ignoredChannels=Ignorierte Kanäle
 tabbychat.settings.server.ignoredChannels.desc=Kanäle die ignoriert werden können.
-tabbychat.settings.server.defaultChannels=Standardkanäle
-tabbychat.settings.server.defaultChannels.desc=Kanäle mit denen begonnen werden kann. Unimplementiert
+#tabbychat.settings.server.defaultCommand=Standardkanäle
+#tabbychat.settings.server.defaultCommand.desc=Kanäle mit denen begonnen werden kann. Unimplementiert
 tabbychat.settings.server.filters=Filter
 tabbychat.settings.server.filters.new=Neu
 
@@ -74,7 +74,6 @@ tabbychat.settings.colors.chatborder=Chat Rahmenfarbe
 tabbychat.settings.colors.chattext=Chat Textfarbe
 
 tabbychat.settings.advanced.fadetime=Ausblendzeit (Ticks)
-tabbychat.settings.advanced.chatdelay=Chat Verzögerung (ms)
 tabbychat.settings.advanced.chatvisibility=Chat Sichtbarkeit
 tabbychat.settings.advanced.hidedelims=Kanalbegrenzer ausblenden*
 tabbychat.settings.advanced.spellcheck=Rechtschreibprüfung aktivieren

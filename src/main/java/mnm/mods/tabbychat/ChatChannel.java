@@ -1,5 +1,6 @@
 package mnm.mods.tabbychat;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.ChannelStatus;
@@ -32,6 +33,9 @@ public class ChatChannel implements Channel {
         public void setPrefixHidden(boolean hidden) {}
 
         @Override
+        public void setCommand(String command) {}
+
+        @Override
         public void openSettings() {
             // There are no settings for this channel
             TabbyChat.getInstance().openSettings(null);
@@ -46,6 +50,8 @@ public class ChatChannel implements Channel {
 
     private String prefix = "";
     private boolean prefixHidden = false;
+
+    private String command = "";
 
     private transient ChannelStatus status;
 
@@ -77,7 +83,7 @@ public class ChatChannel implements Channel {
 
     @Override
     public String getPrefix() {
-        return this.prefix;
+        return Strings.nullToEmpty(this.prefix);
     }
 
     @Override
@@ -93,6 +99,16 @@ public class ChatChannel implements Channel {
     @Override
     public void setPrefixHidden(boolean hidden) {
         this.prefixHidden = hidden;
+    }
+
+    @Override
+    public String getCommand() {
+        return Strings.nullToEmpty(command);
+    }
+
+    @Override
+    public void setCommand(String command) {
+        this.command = command;
     }
 
     @Override

@@ -34,6 +34,7 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
     private GuiText alias;
     private GuiText prefix;
     private GuiCheckbox hidePrefix;
+    private GuiText command;
 
     GuiSettingsChannel() {
         this(null);
@@ -104,6 +105,11 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
         hidePrefix.setValue(channel.isPrefixHidden());
         this.panel.addComponent(new GuiLabel(new TextComponentTranslation(CHANNEL_HIDE_PREFIX)), new int[] { 2, pos });
 
+        pos += 2;
+        this.panel.addComponent(command = new GuiText(), new int[] { 3, pos, 4, 1 });
+        command.setValue(channel.getCommand());
+        this.panel.addComponent(new GuiLabel(new TextComponentTranslation(CHANNEL_COMMAND)), new int[] { 1, pos });
+
         GuiButton accept = new GuiButton(I18n.format("gui.done"));
         accept.getBus().register(new Object() {
             @Subscribe
@@ -143,6 +149,7 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
         channel.setAlias(alias.getValue());
         channel.setPrefix(prefix.getValue());
         channel.setPrefixHidden(hidePrefix.getValue());
+        channel.setCommand(command.getValue());
     }
 
     @Override
