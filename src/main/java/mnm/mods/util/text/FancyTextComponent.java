@@ -1,13 +1,12 @@
 package mnm.mods.util.text;
 
-import java.util.Iterator;
-import java.util.List;
-
-import com.google.common.collect.Iterators;
-
+import com.google.common.collect.Streams;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
+
+import java.util.Iterator;
+import java.util.List;
 
 public class FancyTextComponent implements ITextComponent {
 
@@ -78,8 +77,9 @@ public class FancyTextComponent implements ITextComponent {
     @Override
     public Iterator<ITextComponent> iterator() {
         // don't iterate using the vanilla components
-        return Iterators.transform(this.text.iterator(), it -> it instanceof FancyTextComponent ? it
-                : new FancyTextComponent(it).setFancyStyle(this.getFancyStyle()));
+        return Streams.stream(this.text.iterator())
+                .map(it -> it instanceof FancyTextComponent ? it
+                        : new FancyTextComponent(it).setFancyStyle(this.getFancyStyle())).iterator();
     }
 
     public ITextComponent getText() {
