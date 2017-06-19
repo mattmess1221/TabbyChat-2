@@ -27,7 +27,7 @@ apply plugin: 'org.ajoberstar.grgit'
 
 ext.revision = grgit.log().size()
 ext.hash = grgit.head().abbreviatedId
-version = "2.3.0-SNAPSHOT-$ext.revision"
+version = "2.3.0-beta-$ext.revision"
 
 archivesBaseName = 'tabbychat'
 group = 'mnm.mods'
@@ -71,7 +71,11 @@ litemod.json {
 //		updateUrl = 'https://raw.githubusercontent.com/killjoy1221/Version/master/TabbyChat2.json'
 //	}
 }
+sourceJar {
+	baseName = "mod-${archivesBaseName.toLowerCase()}"
+}
 jar {
+	baseName = "mod-${archivesBaseName.toLowerCase()}"
 	from litemod
 	manifest {
 		attributes 'Implementation-Version': "$version (git ${project.hash})"
