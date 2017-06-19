@@ -8,6 +8,8 @@ import net.minecraft.util.text.ITextComponent;
 
 public class TabbedChatProxy implements IChatProxy {
 
+    public static final IChatProxy INSTANCE = new TabbedChatProxy();
+
     @Override
     public void addToChat(String strchannel, ITextComponent msg) {
         Channel channel = TabbyAPI.getAPI().getChat().getChannel(strchannel);

@@ -17,6 +17,7 @@ import mnm.mods.tabbychat.settings.TabbySettings;
 import mnm.mods.tabbychat.util.TabbyRef;
 import mnm.mods.util.MnmUtils;
 import mnm.mods.util.gui.config.SettingPanel;
+import mnm.mods.util.update.UpdateChecker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.resources.IReloadableResourceManager;
@@ -42,6 +43,8 @@ public class TabbyChat extends TabbyAPI {
 
     private File dataFolder;
     private InetSocketAddress currentServer;
+
+    private boolean updateChecked;
 
     public TabbyChat(File configPath) {
         super();
@@ -142,6 +145,11 @@ public class TabbyChat extends TabbyAPI {
             chatManager.loadFrom(conf);
         } catch (Exception e) {
             LOGGER.warn("Unable to load chat data.", e);
+        }
+
+        if (this.settings.general.checkUpdates.get() && !updateChecked) {
+            UpdateChecker.runUpdateCheck(TabbedChatProxy.INSTANCE, TabbyRef.getVersionData());
+            updateChecked = true;
         }
     }
 

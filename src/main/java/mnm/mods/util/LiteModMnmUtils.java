@@ -1,15 +1,10 @@
 package mnm.mods.util;
 
-import com.mojang.realmsclient.dto.RealmsServer;
-import com.mumfrey.liteloader.JoinGameListener;
-import mnm.mods.util.update.UpdateChecker;
-import net.minecraft.client.multiplayer.ServerData;
-import net.minecraft.network.INetHandler;
-import net.minecraft.network.play.server.SPacketJoinGame;
+import com.mumfrey.liteloader.LiteMod;
 
 import java.io.File;
 
-public class LiteModMnmUtils implements JoinGameListener {
+public class LiteModMnmUtils implements LiteMod {
 
     private MnmUtils utils;
 
@@ -30,11 +25,7 @@ public class LiteModMnmUtils implements JoinGameListener {
     }
 
     @Override
-    public void upgradeSettings(String arg0, File arg1, File arg2) {}
-
-    @Override
-    public void onJoinGame(INetHandler netHandler, SPacketJoinGame joinGamePacket, ServerData serverData, RealmsServer realmsServer) {
-        UpdateChecker.runUpdateChecks(utils.getChatProxy(), utils.getDisabledUpdates());
+    public void upgradeSettings(String arg0, File arg1, File arg2) {
     }
 
     public MnmUtils getUtils() {

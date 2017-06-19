@@ -1,9 +1,6 @@
 package mnm.mods.util.update;
 
-import com.google.common.collect.Lists;
 import com.google.gson.Gson;
-import com.mumfrey.liteloader.LiteMod;
-import com.mumfrey.liteloader.core.LiteLoader;
 import mnm.mods.util.IChatProxy;
 import mnm.mods.util.text.ITextBuilder;
 import mnm.mods.util.text.TextBuilder;
@@ -19,8 +16,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Update checker for several mods.
@@ -32,9 +27,9 @@ public class UpdateChecker extends Thread {
     private static final Logger logger = LogManager.getLogger("Updates");
 
     private IChatProxy chatProxy;
-    private VersionData[] data;
+    private VersionData data;
 
-    private UpdateChecker(IChatProxy chat, VersionData[] data) {
+    private UpdateChecker(IChatProxy chat, VersionData data) {
         super("Update Checker");
         this.chatProxy = chat;
         this.data = data;
@@ -42,13 +37,6 @@ public class UpdateChecker extends Thread {
 
     @Override
     public void run() {
-        for (VersionData data : this.data) {
-            runCheck(data);
-        }
-
-    }
-
-    private void runCheck(VersionData data) {
         InputStream in = null;
         Reader reader = null;
         UpdateResponse response;
@@ -94,16 +82,8 @@ public class UpdateChecker extends Thread {
         this.chatProxy.addToChat("Updates", msg);
     }
 
-    public static void runUpdateChecks(IChatProxy chat, Set<Class<? extends LiteMod>> disabled) {
+    public static void runUpdateCheck(IChatProxy chat, VersionData version) {
+        new UpdateChecker(chat, version).start();
 
-        List<VersionData> list = Lists.newArrayList();
-        for (LiteMod mod : LiteLoader.getInstance().getLoadedMods()) {
-            VersionData data = VersionData.fromLiteMod(mod);
-            if (data != null && !disabled.contains(mod.getClass()))
-                list.add(data);
-        }
-        if (!list.isEmpty()) {
-            new UpdateChecker(chat, list.toArray(new VersionData[0])).start();
-        }
     }
 }
