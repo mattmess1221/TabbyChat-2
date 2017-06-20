@@ -1,99 +1,98 @@
 buildscript {
-	repositories {
-		jcenter()
-		maven {
-			name 'forge'
-			url 'http://files.minecraftforge.net/maven'
-		}
-		maven {
-			name = 'sponge'
-			url = 'http://repo.spongepowered.org/maven'
-		}
-	}
-	dependencies {
-		classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
-		classpath 'org.spongepowered:mixingradle:0.4-SNAPSHOT'
-		classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.0'
-	}
+    repositories {
+        jcenter()
+        maven {
+            name 'forge'
+            url 'http://files.minecraftforge.net/maven'
+        }
+        maven {
+            name = 'sponge'
+            url = 'http://repo.spongepowered.org/maven'
+        }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath 'org.spongepowered:mixingradle:0.4-SNAPSHOT'
+    }
 }
 plugins {
-	id 'org.ajoberstar.grgit' version '1.7.2'
+    id 'org.ajoberstar.grgit' version '1.7.2'
 }
 
 apply plugin: 'net.minecraftforge.gradle.liteloader'
 apply plugin: 'org.spongepowered.mixin'
-apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'org.ajoberstar.grgit'
 
 ext.revision = grgit.log().size()
 ext.hash = grgit.head().abbreviatedId
-version = "2.3.0-beta-$ext.revision"
 
-archivesBaseName = 'tabbychat'
-group = 'mnm.mods'
+if (release != 'release')
+    version += "-$release-$ext.revision"
 
 minecraft {
-	version = '1.12'
-	mappings = 'snapshot_20170615'
-	runDir = 'run'
-	// Replace the version string
-	replace(
-		"@VERSION@": project.version,
-		"@REVISION@": project.revision,
-		"@MCVERSION@": project.minecraft.version
-	)
+    version = minecraft_version
+    mappings = minecraft_mappings
+    runDir = 'run'
+    // Replace the version string
+    replace(
+            "@VERSION@": project.version,
+            "@REVISION@": project.revision,
+            "@MCVERSION@": project.minecraft.version
+    )
 }
 sourceSets {
-	main {
-//		refMap = 'mixin.tabbychat.refmap.json'
-	}
+    main {
+        ext.refMap = 'mixin.tabbychat.refmap.json'
+    }
+}
+configurations {
+    // shadow plugin doesn't play well with liteloader
+    shadow
+    compile.extendsFrom shadow
 }
 dependencies {
-	compile 'net.sf.jazzy:jazzy:0.5.2-rtext-1.4.1-2'
-	testCompile 'junit:junit:4.12'
+    shadow 'net.sf.jazzy:jazzy:0.5.2-rtext-1.4.1-2'
+    testCompile 'junit:junit:4.12'
+
 }
 afterEvaluate {
-	println '==========================================='
-	println "   TabbyChat $version ($ext.hash)"
-	println '==========================================='
+    println '==========================================='
+    println "   TabbyChat $version ($ext.hash)"
+    println '==========================================='
 
-	file('build.number').delete()
+    file('build.number').delete()
 }
 litemod.json {
-	name = 'tabbychat'
-	author = 'killjoy1221'
-	revision = ext.revision
-	displayName = 'TabbyChat 2'
-	description = 'Chat overhaul.'
-	mixinConfigs = ['mixin.tabbychat.json']
-//	metadata {
-//		url = 'https://minecraft.curseforge.com/projects/tabbychat-2'
-//		updateUrl = 'https://raw.githubusercontent.com/killjoy1221/Version/master/TabbyChat2.json'
-//	}
+    name = 'tabbychat'
+    author = 'killjoy1221'
+    revision = ext.revision
+    displayName = 'TabbyChat 2'
+    description = 'Chat overhaul.'
+    mixinConfigs = ['mixin.tabbychat.json']
 }
-sourceJar {
-	baseName = "mod-${archivesBaseName.toLowerCase()}"
+manifest {
+    attributes 'Implementation-Version': "$version (git ${project.hash})"
 }
 jar {
-	baseName = "mod-${archivesBaseName.toLowerCase()}"
-	from litemod
-	manifest {
-		attributes 'Implementation-Version': "$version (git ${project.hash})"
-	}
+    from litemod
+    from configurations.shadow.collect { it.isDirectory() ? it : zipTree(it) }
 }
 task srgJar(type: Jar) {
-	classifier 'srg'
-	baseName = "mod-${archivesBaseName.toLowerCase()}"
-	manifest {
-		attributes 'Implementation-Version': "$version (git ${project.hash})"
-	}
+    classifier 'srg'
+    from sourceSets.main.output
+    from configurations.shadow.collect { it.isDirectory() ? it : zipTree(it) }
 }
 
+// XXX Do a PR to fg about removing these dumb defaults.
+tasks.withType(Jar)*.baseName = archivesBaseName
+
+artifacts.archives srgJar
+
 reobf {
-	srgJar {
-		mappingType = 'SEARGE'
-	}
+    srgJar {
+        mappingType = 'SEARGE'
+    }
 }
 mixin {
-	defaultObfuscationEnv notch
+    defaultObfuscationEnv notch
 }
