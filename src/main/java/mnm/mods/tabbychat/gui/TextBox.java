@@ -15,11 +15,14 @@ import mnm.mods.util.gui.GuiText;
 import mnm.mods.util.gui.events.GuiMouseEvent;
 import mnm.mods.util.text.FancyFontRenderer;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
+import org.lwjgl.opengl.GL11;
 
 import java.awt.Dimension;
 import java.awt.Rectangle;
@@ -95,89 +98,145 @@ public class TextBox extends GuiComponent implements ChatInput {
     }
 
     private void drawCursor() {
-        boolean cursorBlink = this.cursorCounter / 6 % 3 != 0;
-        if (cursorBlink) {
-            final int HEIGHT = fr.FONT_HEIGHT + 2;
-            int xPos = 0;
-            int yPos = -4;
-            int counter = -1;
-            List<String> list = getWrappedLines();
-            GuiTextField textField = this.textField.getTextField();
-            int size = textField.getSelectedText().length();
-            if (textField.getSelectionEnd() < textField.getCursorPosition()) {
-                size *= -1;
-            }
+        GuiTextField textField = this.textField.getTextField();
 
-            // Count up to the target position.
-            countLoop:
-            for (String text : list) {
-                xPos = 0;
-                yPos += HEIGHT;
-                for (char c : text.toCharArray()) {
-                    counter++;
-                    // should only happen with spaces
-                    while (c != ' ' && textField.getText().charAt(counter) == ' ') {
-                        counter++;// skip
+        // keeps track of all the characters. Used to compensate for spaces
+        int totalPos = 0;
+
+        // The current pixel row. adds FONT_HEIGHT each iteration
+        int line = -1;
+
+        // The position of the cursor
+        int pos = textField.getCursorPosition();
+        // the position of the selection
+        int sel = textField.getSelectionEnd();
+
+        // make the position and selection in order
+        int start = Math.min(pos, sel);
+        int end = Math.max(pos, sel);
+
+        for (String text : getWrappedLines()) {
+
+            // cursor drawing
+            if (pos >= 0 && pos <= text.length()) {
+                // cursor is on this line
+                int c = fr.getStringWidth(text.substring(0, pos));
+                boolean cursorBlink = this.cursorCounter / 6 % 3 != 0;
+                if (cursorBlink) {
+                    if (textField.getCursorPosition() < this.textField.getValue().length()) {
+                        drawVerticalLine(c + 1, line - 1, line + fr.FONT_HEIGHT + 1, 0xffd0d0d0);
+                    } else {
+                        fr.drawString("_", c + 2, line + 1, getPrimaryColorProperty().getHex());
                     }
-                    if (counter >= textField.getCursorPosition() + size) {
-                        break countLoop;
-                    }
-                    xPos += fr.getCharWidth(c);
+
                 }
             }
 
-            if (textField.getCursorPosition() + size < this.textField.getValue().length()) {
-                drawVerticalLine(xPos, yPos - fr.FONT_HEIGHT, yPos, 0xffd0d0d0);
-            } else {
-                drawHorizontalLine(xPos + 1, xPos + 6, yPos, 0xffd0d0d0);
+            // selection highlighting
+
+            // the start of the highlight.
+            int x = -1;
+            // the end of the highlight.
+            int w = -1;
+
+            // test the start
+            if (start >= 0 && start <= text.length()) {
+                x = fr.getStringWidth(text.substring(0, start));
             }
+
+            // test the end
+            if (end >= 0 && end <= text.length()) {
+                w = fr.getStringWidth(text.substring(start < 0 ? 0 : start, end));
+            }
+
+            if (w != 0) {
+                if (x >= 0 && w > 0) {
+                    // start and end on same line
+                    drawSelectionBox(x + 2, line, x + w + 1, line + fr.FONT_HEIGHT);
+                } else {
+                    if (x > 0) {
+                        // started on this line
+                        drawSelectionBox(x + 2, line, x + fr.getStringWidth(text.substring(start)), line + fr.FONT_HEIGHT);
+                    }
+                    if (w > 0) {
+                        // ends on this line
+                        drawSelectionBox(1, line, w, line + fr.FONT_HEIGHT);
+                    }
+                    if (start < 0 && end > text.length()) {
+                        // full line
+                        drawSelectionBox(1, line, fr.getStringWidth(text), line + fr.FONT_HEIGHT);
+                    }
+                }
+            }
+
+            // keep track of the lines
+            totalPos += text.length();
+            boolean space = getText().length() > totalPos && getText().charAt(totalPos) == ' ';
+
+            // prepare all the markers for the next line.
+            pos -= text.length();
+            start -= text.length();
+            end -= text.length();
+
+            if (space) {
+                // compensate for spaces
+                pos--;
+                start--;
+                end--;
+                totalPos++;
+            }
+            line += fr.FONT_HEIGHT + 2;
         }
 
     }
 
     private void drawText() {
         FancyFontRenderer ffr = new FancyFontRenderer(fr);
-        // selection
-        boolean started = false;
-        boolean ended = false;
-        GuiTextField textField = this.textField.getTextField();
-
         int yPos = 0;
-        int pos = 0;
         List<ITextComponent> lines = getFormattedLines();
         for (ITextComponent line : lines) {
             Color color = Color.WHITE;
             ffr.drawChat(line, 2, yPos, color.getHex(), false);
-            int xPos = 1;
-            for (Character c : line.getUnformattedText().toCharArray()) {
-                int width = fr.getCharWidth(c);
-                int cursorPos = textField.getCursorPosition();
-                int selectDist = textField.getSelectedText().length();
-                if (textField.getSelectionEnd() < textField.getCursorPosition()) {
-                    selectDist *= -1;
-                }
-                if (textField.getSelectedText().length() > 0) {
-                    if (!started && pos == Math.min(cursorPos, cursorPos + selectDist)) {
-                        // Mark for highlighting
-                        started = true;
-                    }
-
-                    if (started && !ended) {
-                        Gui.drawRect(xPos, yPos - 1, xPos + width, yPos + fr.FONT_HEIGHT + 1, getSecondaryColorProperty().getHex());
-                    }
-
-                    if (!ended && pos == Math.max(cursorPos, selectDist + cursorPos) - 1) {
-                        // unmark for highlighting
-                        ended = true;
-                    }
-                }
-                xPos += width;
-                pos++;
-            }
             yPos += fr.FONT_HEIGHT + 2;
         }
 
     }
+
+    /**
+     * Draws the blue selection box. Adapted from {@link GuiTextField#drawSelectionBox(int, int, int, int)}
+     */
+    private void drawSelectionBox(int x1, int y1, int x2, int y2) {
+        if (x1 < x2) {
+            int i = x1;
+            x1 = x2;
+            x2 = i;
+        }
+
+        if (y1 < y2) {
+            int j = y1;
+            y1 = y2;
+            y2 = j;
+        }
+
+        x2 = Math.min(x2, this.getLocation().getXWidth());
+        x1 = Math.min(x1, this.getLocation().getXWidth());
+
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder bufferbuilder = tessellator.getBuffer();
+        GlStateManager.color(0.0F, 0.0F, 255.0F, 255.0F);
+        GlStateManager.disableTexture2D();
+        GlStateManager.enableColorLogic();
+        GlStateManager.colorLogicOp(GlStateManager.LogicOp.OR_REVERSE);
+        bufferbuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
+        bufferbuilder.pos(x1, y2, 0.0D).endVertex();
+        bufferbuilder.pos(x2, y2, 0.0D).endVertex();
+        bufferbuilder.pos(x2, y1, 0.0D).endVertex();
+        bufferbuilder.pos(x1, y1, 0.0D).endVertex();
+        tessellator.draw();
+        GlStateManager.disableColorLogic();
+        GlStateManager.enableTexture2D();
+    }
+
 
     @Override
     public void updateComponent() {
@@ -226,6 +285,7 @@ public class TextBox extends GuiComponent implements ChatInput {
     public void onMouseClick(GuiMouseEvent event) {
         mouseClicked(event.getMouseX(), event.getMouseY(), event.getButton());
     }
+
 
     private void mouseClicked(int x, int y, int mouseButton) {
         if (mouseButton == 0) {
