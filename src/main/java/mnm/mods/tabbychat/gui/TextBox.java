@@ -154,11 +154,11 @@ public class TextBox extends GuiComponent implements ChatInput {
                     // start and end on same line
                     drawSelectionBox(x + 2, line, x + w + 1, line + fr.FONT_HEIGHT);
                 } else {
-                    if (x > 0) {
+                    if (x >= 0) {
                         // started on this line
                         drawSelectionBox(x + 2, line, x + fr.getStringWidth(text.substring(start)), line + fr.FONT_HEIGHT);
                     }
-                    if (w > 0) {
+                    if (w >= 0) {
                         // ends on this line
                         drawSelectionBox(1, line, w, line + fr.FONT_HEIGHT);
                     }
