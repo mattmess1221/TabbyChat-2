@@ -88,35 +88,8 @@ public class GuiButton extends GuiComponent {
         GlStateManager.enableBlend();
         OpenGlHelper.glBlendFunc(770, 771, 1, 0);
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        // draw top left
-        this.drawTexturedModalRect(0, 0, modal.getXPos(), modal.getYPos(), bounds.getWidth() / 2, 2);
-        // draw top right
-        this.drawTexturedModalRect(bounds.getWidth() / 2, 0, modal.getXPos() + modal.getWidth()
-                - bounds.getWidth() / 2, modal.getYPos(), bounds.getWidth() / 2, 2);
-        int pos = 2;
-        // draw middles
-        while (pos < bounds.getHeight()) {
-            int p = pos % 16;
-            if (p < 2) {
-                p += 2;
-            }
-            if (p > 14) {
-                p -= 2;
-            }
-            // draw left
-            this.drawTexturedModalRect(0, pos, modal.getXPos(), modal.getYPos() + p,
-                    bounds.getWidth() / 2, 1);
-            // draw right
-            this.drawTexturedModalRect(bounds.getWidth() / 2, pos, modal.getXPos() + modal.getWidth()
-                    - bounds.getWidth() / 2, modal.getYPos() + p, bounds.getWidth() / 2, 1);
-            pos++;
-        }
-        // draw bottom left
-        this.drawTexturedModalRect(0, bounds.getHeight() - 2, 0, modal.getYPos() + (18),
-                bounds.getWidth() / 2, 2);
-        // draw bottom right
-        this.drawTexturedModalRect(bounds.getWidth() / 2, bounds.getHeight() - 2, 200 - bounds.getWidth() / 2,
-                modal.getYPos() + 18, bounds.getWidth() / 2, 2);
+
+        this.drawModalCorners(modal);
 
         int textColor = 0xE0E0E0;
 

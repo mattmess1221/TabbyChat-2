@@ -9,6 +9,7 @@ import mnm.mods.tabbychat.api.ChannelStatus;
 import mnm.mods.tabbychat.api.gui.IGui;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.util.Color;
+import mnm.mods.util.TexturedModal;
 import mnm.mods.util.config.Value;
 import mnm.mods.util.gui.BorderLayout;
 import mnm.mods.util.gui.FlowLayout;
@@ -25,10 +26,13 @@ import javax.annotation.Nonnull;
 
 public class ChatTray extends GuiPanel implements IGui {
 
+    private final static TexturedModal MODAL = new TexturedModal(ChatBox.GUI_LOCATION, 0, 14, 254, 202);
+
     private GuiPanel tabList = new GuiPanel(new FlowLayout());
     private GuiComponent handle = new ChatHandle();
 
     private Map<Channel, GuiComponent> map = Maps.newHashMap();
+
 
     ChatTray() {
         super(new BorderLayout());
@@ -43,8 +47,7 @@ public class ChatTray extends GuiPanel implements IGui {
     @Override
     public void drawComponent(int mouseX, int mouseY) {
         if (GuiNewChatTC.getInstance().getChatOpen()) {
-//            Gui.drawRect(0, 0, getBounds().width, getBounds().height, getSecondaryColorProperty().getHex());
-//            drawBorders(0, 0, getBounds().width, getBounds().height, getPrimaryColorProperty().getHex());
+            drawModalCorners(MODAL);
         }
         super.drawComponent(mouseX, mouseY);
     }
@@ -104,10 +107,9 @@ public class ChatTray extends GuiPanel implements IGui {
 
         @Override
         public void drawComponent(int mouseX, int mouseY) {
-            drawBorders(2, 2, 7, 7, 0xff999999);
-            Gui.drawRect(2, 2, 7, 7, getSecondaryColorProperty().getHex());
+            drawBorders(4, 4, 8, 8, 0xff999999);
             if (value.get()) {
-                Gui.drawRect(3, 3, 6, 6, 0xffaaaaaa);
+                Gui.drawRect(5, 5, 7, 7, 0xffaaaaaa);
             }
         }
 

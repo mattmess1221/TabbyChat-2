@@ -8,7 +8,6 @@ import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.extra.spell.Spellcheck;
 import mnm.mods.tabbychat.extra.spell.SpellingFormatter;
 import mnm.mods.util.Color;
-import mnm.mods.util.ILocation;
 import mnm.mods.util.TexturedModal;
 import mnm.mods.util.gui.GuiComponent;
 import mnm.mods.util.gui.GuiText;
@@ -62,39 +61,12 @@ public class TextBox extends GuiComponent implements ChatInput {
     @Override
     public void drawComponent(int mouseX, int mouseY) {
         GlStateManager.enableBlend();
-        drawModalCorners(MODAL, getLocation());
+        drawModalCorners(MODAL);
         GlStateManager.disableBlend();
 
         drawText();
         drawCursor();
 
-    }
-
-    private void drawModalCorners(TexturedModal modal, ILocation location) {
-        int x = 0;
-        int y = -1;
-
-        int w = location.getWidth() / 2;
-        int w2 = location.getWidth() - w;
-        int h = location.getHeight() / 2;
-        int h2 = location.getHeight() - h;
-
-        int mx = modal.getXPos();
-        int my = modal.getYPos();
-        int mw = modal.getWidth() - w2;
-        int mh = modal.getHeight() - h2;
-
-        // bind the texture
-        mc.getTextureManager().bindTexture(modal.getResourceLocation());
-
-        // top left
-        drawTexturedModalRect(x, y, mx, my, w, h);
-        // top right
-        drawTexturedModalRect(x + w, y, mx + mw, my, w2, h);
-        // bottom left
-        drawTexturedModalRect(x, y + h, mx, my + mh, w, h2);
-        // bottom right
-        drawTexturedModalRect(x + w, y + h, mx + mw, my + mh, w2, h2);
     }
 
     private void drawCursor() {

@@ -4,6 +4,7 @@ import com.google.common.eventbus.EventBus;
 import mnm.mods.util.Color;
 import mnm.mods.util.ILocation;
 import mnm.mods.util.Location;
+import mnm.mods.util.TexturedModal;
 import mnm.mods.util.gui.events.ActionPerformedEvent;
 import mnm.mods.util.gui.events.GuiKeyboardEvent;
 import mnm.mods.util.gui.events.GuiMouseEvent;
@@ -488,4 +489,32 @@ public abstract class GuiComponent extends Gui {
         return new Point(x, y);
     }
 
+    protected void drawModalCorners(TexturedModal modal) {
+        ILocation location = getLocation();
+        int x = 0;
+        int y = 0;
+
+        int w = location.getWidth() / 2;
+        int w2 = location.getWidth() - w;
+        int h = location.getHeight() / 2;
+        int h2 = location.getHeight() - h + 1;
+
+        int mx = modal.getXPos();
+        int my = modal.getYPos();
+        int mw = modal.getWidth() - w2;
+        int mh = modal.getHeight() - h2;
+
+        // bind the texture
+        mc.getTextureManager().bindTexture(modal.getResourceLocation());
+
+        // top left
+        drawTexturedModalRect(x, y, mx, my, w, h);
+        // top right
+        drawTexturedModalRect(x + w, y, mx + mw, my, w2, h);
+        // bottom left
+        drawTexturedModalRect(x, y + h, mx, my + mh, w, h2);
+        // bottom right
+        drawTexturedModalRect(x + w, y + h, mx + mw, my + mh, w2, h2);
+
+    }
 }

@@ -19,11 +19,11 @@ import javax.annotation.Nonnull;
 
 public class ChatTab extends GuiButton {
 
-    private static final TexturedModal ACTIVE = new TexturedModal(ChatBox.GUI_LOCATION, 0, 0, 50, 12);
-    private static final TexturedModal UNREAD = new TexturedModal(ChatBox.GUI_LOCATION, 50, 0, 50, 12);
-    private static final TexturedModal PINGED = new TexturedModal(ChatBox.GUI_LOCATION, 100, 0, 50, 12);
-    private static final TexturedModal HOVERED = new TexturedModal(ChatBox.GUI_LOCATION, 150, 0, 50, 12);
-    private static final TexturedModal NONE = new TexturedModal(ChatBox.GUI_LOCATION, 200, 0, 50, 12);
+    private static final TexturedModal ACTIVE = new TexturedModal(ChatBox.GUI_LOCATION, 0, 0, 50, 14);
+    private static final TexturedModal UNREAD = new TexturedModal(ChatBox.GUI_LOCATION, 50, 0, 50, 14);
+    private static final TexturedModal PINGED = new TexturedModal(ChatBox.GUI_LOCATION, 100, 0, 50, 14);
+    private static final TexturedModal HOVERED = new TexturedModal(ChatBox.GUI_LOCATION, 150, 0, 50, 14);
+    private static final TexturedModal NONE = new TexturedModal(ChatBox.GUI_LOCATION, 200, 0, 50, 14);
 
     private final Channel channel;
 
@@ -61,40 +61,13 @@ public class ChatTab extends GuiButton {
                 || TabbyChat.getInstance().settings.advanced.visibility.get() == ChatVisibility.ALWAYS) {
             ILocation loc = getLocation();
             GlStateManager.enableBlend();
-            drawModalCorners(getStatusModal(), loc);
+            drawModalCorners(getStatusModal());
             GlStateManager.disableBlend();
 
             int txtX = loc.getWidth() / 2;
             int txtY = loc.getHeight() / 2 - 2;
             this.drawCenteredString(mc.fontRenderer, this.getText(), txtX, txtY, getPrimaryColorProperty().getHex());
         }
-    }
-
-    private void drawModalCorners(TexturedModal modal, ILocation location) {
-        int x = 0;
-        int y = 1;
-
-        int w = location.getWidth() / 2;
-        int w2 = location.getWidth() - w;
-        int h = location.getHeight() / 2;
-        int h2 = location.getHeight() - h;
-
-        int mx = modal.getXPos();
-        int my = modal.getYPos();
-        int mw = modal.getWidth() - w2;
-        int mh = modal.getHeight() - h2;
-
-        // bind the texture
-        mc.getTextureManager().bindTexture(modal.getResourceLocation());
-
-        // top left
-        drawTexturedModalRect(x, y, mx, my, w, h);
-        // top right
-        drawTexturedModalRect(x + w, y, mx + mw, my, w2, h);
-        // bottom left
-        drawTexturedModalRect(x, y + h, mx, my + mh, w, h2);
-        // bottom right
-        drawTexturedModalRect(x + w, y + h, mx + mw, my + mh, w2, h2);
     }
 
     @Override
