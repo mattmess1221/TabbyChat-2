@@ -79,10 +79,6 @@ public class GuiNewChatTC extends GuiNewChat implements ChatScreen {
 
         GlStateManager.popMatrix(); // ignore what GuiIngame did.
         GlStateManager.pushMatrix();
-        // translate to above the itemrenderer
-        // before push so it effects the tab list too.
-        GlStateManager.translate(0, 0, 200);
-        // TODO use zLevel
 
         // Scale it accordingly
         GlStateManager.scale(scale, scale, 1.0F);

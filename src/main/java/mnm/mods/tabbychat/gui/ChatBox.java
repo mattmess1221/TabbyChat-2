@@ -89,29 +89,54 @@ public class ChatBox extends GuiPanel implements ChatGui {
     public void updateComponent() {
         ILocation bounds = getLocation();
         ILocation point = getActualLocation();
+
         float scale = getActualScale();
         ScaledResolution sr = new ScaledResolution(mc);
 
-        int x = point.getXPos();
-        int y = point.getYPos();
-        int w = (int) (bounds.getWidth() * scale);
-        int h = (int) (bounds.getHeight() * scale);
+        // original dims
+        final int x = point.getXPos();
+        final int y = point.getYPos();
+        final int w = (int) (bounds.getWidth() * scale);
+        final int h = (int) (bounds.getHeight() * scale);
 
+        // the new dims
         int w1 = w;
         int h1 = h;
         int x1 = x;
         int y1 = y;
 
-        w1 = Math.min(sr.getScaledWidth(), w1);
-        h1 = Math.min(sr.getScaledHeight(), h1);
-        w1 = Math.max(50, w1);
-        h1 = Math.max(50, h1);
+        final int SCREEN_W = sr.getScaledWidth();
+        final int SCREEN_H = sr.getScaledHeight();
 
-        x1 = Math.max(0, x1);
-        x1 = Math.min(x1, sr.getScaledWidth() - w1);
-        y1 = Math.max(0, y1);
-        y1 = Math.min(y1, sr.getScaledHeight() - h1);
+        // limits for sizes
+        // FIXME 500 and 400 max is because of texture limit
+        final int MIN_W = 50;
+        final int MIN_H = 50;
+        final int MAX_W = Math.min(500, SCREEN_W);
+        final int MAX_H = Math.min(400, SCREEN_H);
 
+        final int HOTBAR = 25;
+
+        // calculate width and height first
+        // used to calculate max x and y
+        w1 = Math.max(MIN_W, w1);
+        w1 = Math.min(MAX_W, w1);
+        h1 = Math.max(MIN_H, h1);
+        h1 = Math.min(MAX_H, h1);
+
+        // limits for position
+        final int MIN_X = 0;
+        final int MIN_Y = 0;
+        final int MAX_X = SCREEN_W - w1;
+        final int MAX_Y = SCREEN_H - h1 - HOTBAR;
+
+        // calculate x and y coordinates
+        x1 = Math.max(MIN_X, x1);
+        x1 = Math.min(MAX_X, x1);
+        y1 = Math.max(MIN_Y, y1);
+        y1 = Math.min(MAX_Y, y1);
+
+        // reset the location if it changed.
         if (x1 != x || y1 != y || w1 != w || h1 != h) {
             setLocation(new Location(
                     MathHelper.ceil(x1 / scale),
