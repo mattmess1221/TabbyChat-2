@@ -79,7 +79,7 @@ public class ChatArea extends GuiComponent implements ReceivedChat {
             return super.getLocation();
         } else if (height != 0) {
             int y = super.getLocation().getHeight() - height;
-            return super.getLocation().copy().setYPos(y - 3).setHeight(height + 3);
+            return super.getLocation().copy().move(0, y - 2).setHeight(height + 2);
         }
         return super.getLocation();
     }
@@ -225,6 +225,7 @@ public class ChatArea extends GuiComponent implements ReceivedChat {
             if (point.x > actual.getXPos() && point.y > actual.getYPos()
                     && point.x < actual.getXPos() + actual.getWidth()
                     && point.y < actual.getYPos() + actual.getHeight()) {
+
 
                 float scale = getActualScale();
                 float size = mc.fontRenderer.FONT_HEIGHT * scale;
