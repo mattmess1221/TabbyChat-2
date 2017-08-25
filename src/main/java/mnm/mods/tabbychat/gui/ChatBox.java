@@ -121,8 +121,16 @@ public class ChatBox extends GuiPanel implements ChatGui {
         // used to calculate max x and y
         w1 = Math.max(MIN_W, w1);
         w1 = Math.min(MAX_W, w1);
-        h1 = Math.max(MIN_H, h1);
-        h1 = Math.min(MAX_H, h1);
+        // this is different because height anchor is at the top
+        // so is affected at the bottom.
+        if (h1 < MIN_H) {
+            y1 -= MIN_H - h1;
+            h1 = MIN_H;
+        }
+        if (h1 > MAX_H) {
+            y1 += h1 - MAX_H;
+            h1 = MAX_H;
+        }
 
         // limits for position
         final int MIN_X = 0;
