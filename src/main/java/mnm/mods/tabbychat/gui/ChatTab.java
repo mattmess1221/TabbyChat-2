@@ -6,6 +6,7 @@ import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.ChannelStatus;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.util.ChatVisibility;
+import mnm.mods.util.Color;
 import mnm.mods.util.ILocation;
 import mnm.mods.util.TexturedModal;
 import mnm.mods.util.gui.GuiButton;
@@ -61,12 +62,16 @@ public class ChatTab extends GuiButton {
                 || TabbyChat.getInstance().settings.advanced.visibility.get() == ChatVisibility.ALWAYS) {
             ILocation loc = getLocation();
             GlStateManager.enableBlend();
+            GlStateManager.color(1, 1, 1, mc.gameSettings.chatOpacity);
             drawModalCorners(getStatusModal());
-            GlStateManager.disableBlend();
 
             int txtX = loc.getWidth() / 2;
             int txtY = loc.getHeight() / 2 - 2;
-            this.drawCenteredString(mc.fontRenderer, this.getText(), txtX, txtY, getPrimaryColorProperty().getHex());
+
+            Color primary = getPrimaryColorProperty();
+            int color = Color.getColor(primary.getRed(), primary.getGreen(), primary.getBlue(), (int) (mc.gameSettings.chatOpacity * 255));
+            this.drawCenteredString(mc.fontRenderer, this.getText(), txtX, txtY, color);
+            GlStateManager.disableBlend();
         }
     }
 

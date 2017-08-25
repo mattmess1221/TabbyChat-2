@@ -100,7 +100,8 @@ public class ChatArea extends GuiComponent implements ReceivedChat {
 
         List<Message> visible = getVisibleChat();
         GlStateManager.enableBlend();
-        GlStateManager.color(1, 1, 1, 1);
+        float opac = mc.gameSettings.chatOpacity;
+        GlStateManager.color(1, 1, 1, opac);
 
         drawModalCorners(MODAL);
 
@@ -174,7 +175,7 @@ public class ChatArea extends GuiComponent implements ReceivedChat {
             return 4;
         if (vis == ChatVisibility.HIDDEN && !GuiNewChatTC.getInstance().getChatOpen())
             return 0;
-        int opacity = 255;
+        int opacity = (int) (mc.gameSettings.chatOpacity * 255);
 
         double age = mc.ingameGUI.getUpdateCounter() - line.getCounter();
         if (!mc.ingameGUI.getChatGUI().getChatOpen()) {

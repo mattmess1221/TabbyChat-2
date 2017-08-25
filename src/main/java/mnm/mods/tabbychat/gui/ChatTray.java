@@ -18,6 +18,7 @@ import mnm.mods.util.gui.GuiPanel;
 import mnm.mods.util.gui.ILayout;
 import mnm.mods.util.gui.events.ActionPerformedEvent;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.GlStateManager;
 
 import java.awt.Dimension;
 import java.awt.Rectangle;
@@ -46,6 +47,7 @@ public class ChatTray extends GuiPanel implements IGui {
 
     @Override
     public void drawComponent(int mouseX, int mouseY) {
+        GlStateManager.color(1, 1, 1, mc.gameSettings.chatOpacity);
         if (GuiNewChatTC.getInstance().getChatOpen()) {
             drawModalCorners(MODAL);
         }
@@ -107,9 +109,11 @@ public class ChatTray extends GuiPanel implements IGui {
 
         @Override
         public void drawComponent(int mouseX, int mouseY) {
-            drawBorders(4, 4, 8, 8, 0xff999999);
+            GlStateManager.enableBlend();
+            int opac = (int)(mc.gameSettings.chatOpacity * 255) << 24;
+            drawBorders(4, 4, 8, 8, 0x999999 | opac);
             if (value.get()) {
-                Gui.drawRect(5, 5, 7, 7, 0xffaaaaaa);
+                Gui.drawRect(5, 5, 7, 7, 0xaaaaaa | opac);
             }
         }
 

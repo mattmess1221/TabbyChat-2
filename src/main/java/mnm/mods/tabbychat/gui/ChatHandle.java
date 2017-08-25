@@ -24,7 +24,8 @@ public class ChatHandle extends GuiComponent {
     @Nonnull
     @Override
     public Color getPrimaryColorProperty() {
-        return isHovered() ? Color.of(0xaaffffa0) : super.getPrimaryColorProperty();
+        int opac = (int)(mc.gameSettings.chatOpacity * 255);
+        return isHovered() ? Color.of(255, 255, 160, opac) : Color.of(255, 255, 255, opac);
     }
 
     @Nonnull
