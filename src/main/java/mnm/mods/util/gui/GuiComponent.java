@@ -165,8 +165,8 @@ public abstract class GuiComponent extends Gui {
             int button = Mouse.getEventButton();
             int scroll = Mouse.getEventDWheel();
 
-            this.hovered = x >= 0 && x <= actual.getWidth()
-                    && y >= 0 && y <= actual.getHeight();
+            this.hovered = point.x >= actual.getXPos() && point.x <= actual.getXWidth()
+                    && point.y >= actual.getYPos() && point.y <= actual.getYHeight();
 
             getBus().post(new GuiMouseEvent(this, MouseEvent.RAW, x, y, button, scroll));
 
@@ -278,7 +278,7 @@ public abstract class GuiComponent extends Gui {
      */
     private Optional<GuiPanel> getRootPanel() {
         Optional<GuiPanel> panel = getParent();
-        while(true) {
+        while (true) {
             Optional<GuiPanel> parent = panel.flatMap(GuiComponent::getParent);
             if (!parent.isPresent())
                 break;
@@ -294,7 +294,7 @@ public abstract class GuiComponent extends Gui {
 
     public ILocation getActualLocation() {
         Location location = this.getLocation().copy();
-        location.scale(getScale());
+        location.scale(getActualScale());
         getParent().map(GuiComponent::getActualLocation).ifPresent(loc1 ->
                 location.move(loc1.getXPos(), loc1.getYPos())
         );
