@@ -1,7 +1,7 @@
 package mnm.mods.util.gui;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Queues;
 import com.google.common.eventbus.Subscribe;
 import mnm.mods.util.ILocation;
 import mnm.mods.util.gui.events.GuiMouseEvent;
@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.Queue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -27,8 +26,6 @@ public class GuiPanel extends GuiComponent implements Iterable<GuiComponent> {
     private List<GuiComponent> components = Lists.newArrayList();
     private GuiComponent overlay;
     private ILayout layout;
-
-    private Queue<Runnable> actionQueue = Queues.newLinkedBlockingDeque();
 
     public GuiPanel(ILayout layout) {
         setLayout(layout);
@@ -98,10 +95,6 @@ public class GuiPanel extends GuiComponent implements Iterable<GuiComponent> {
 
     @Override
     public void updateComponent() {
-        // run the queue
-        for (Runnable r = actionQueue.poll(); r != null; r = actionQueue.poll()) {
-            r.run();
-        }
         getOverlayOrChildren().forEach(GuiComponent::updateComponent);
 
     }
@@ -144,11 +137,9 @@ public class GuiPanel extends GuiComponent implements Iterable<GuiComponent> {
      */
     public void addComponent(GuiComponent guiComponent, Object constraints) {
         if (guiComponent != null) {
-            this.actionQueue.offer(() -> {
                 guiComponent.setParent(this);
                 components.add(guiComponent);
                 getLayout().ifPresent(layout -> layout.addComponent(guiComponent, constraints));
-            });
         }
     }
 
@@ -156,14 +147,12 @@ public class GuiPanel extends GuiComponent implements Iterable<GuiComponent> {
      * Removes all components from this panel.
      */
     public void clearComponents() {
-        this.actionQueue.offer(() -> {
             components.forEach(comp -> {
                 comp.setParent(null);
                 getLayout().ifPresent(layout -> layout.removeComponent(comp));
             });
             components.clear();
             setOverlay((GuiComponent) null);
-        });
     }
 
     /**
@@ -172,10 +161,8 @@ public class GuiPanel extends GuiComponent implements Iterable<GuiComponent> {
      * @param guiComp The component to remove
      */
     public void removeComponent(GuiComponent guiComp) {
-        this.actionQueue.offer(() -> {
             components.remove(guiComp);
             getLayout().ifPresent(layout -> layout.removeComponent(guiComp));
-        });
     }
 
     /**
@@ -220,7 +207,7 @@ public class GuiPanel extends GuiComponent implements Iterable<GuiComponent> {
     }
 
     private List<GuiComponent> getOverlayOrChildren() {
-        return getOverlay().map(Arrays::asList).orElse(this.components);
+        return getOverlay().map(Arrays::asList).orElse(ImmutableList.copyOf(this.components));
     }
 
     /**
