@@ -62,6 +62,7 @@ public class GuiSettingsScreen extends ComponentScreen {
     @Override
     public void initGui() {
 
+
         getPanel().addComponent(panel = new GuiPanel(new BorderLayout()));
 
         int x = this.width / 2 - 300 / 2;
@@ -114,6 +115,12 @@ public class GuiSettingsScreen extends ComponentScreen {
             LiteLoader.getInstance().writeConfig(config);
         }
         ((ChatManager) TabbyChat.getInstance().getChat()).getChatBox().getChatArea().markDirty();
+    }
+
+    @Override
+    public void setWorldAndResolution(Minecraft mc, int width, int height) {
+        this.panels.forEach(GuiPanel::clearComponents);
+        super.setWorldAndResolution(mc, width, height);
     }
 
     private void deactivateAll() {
