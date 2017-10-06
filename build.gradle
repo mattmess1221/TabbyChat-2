@@ -26,7 +26,7 @@ apply plugin: 'org.ajoberstar.grgit'
 ext.revision = grgit.log().size()
 ext.hash = grgit.head().abbreviatedId
 
-if (release != 'release')
+if (release != 'RELEASE')
     version += "-$release-$ext.revision"
 
 minecraft {
