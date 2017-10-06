@@ -12,7 +12,7 @@ buildscript {
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
-        classpath 'org.spongepowered:mixingradle:0.5-SNAPSHOT'
+        classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
     }
 }
 plugins {
@@ -66,6 +66,7 @@ litemod.json {
     name = 'tabbychat'
     author = 'killjoy1221'
     revision = ext.revision
+    mcversion = '1.12.r2'
     displayName = 'TabbyChat 2'
     description = 'Chat overhaul.'
     mixinConfigs = ['mixin.tabbychat.json']
