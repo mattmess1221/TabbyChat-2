@@ -76,7 +76,7 @@ public class TextBox extends GuiComponent implements ChatInput {
         int totalPos = 0;
 
         // The current pixel row. adds FONT_HEIGHT each iteration
-        int line = -1;
+        int line = 0;
 
         // The position of the cursor
         int pos = textField.getCursorPosition();
@@ -96,7 +96,7 @@ public class TextBox extends GuiComponent implements ChatInput {
                 boolean cursorBlink = this.cursorCounter / 6 % 3 != 0;
                 if (cursorBlink) {
                     if (textField.getCursorPosition() < this.textField.getValue().length()) {
-                        drawVerticalLine(c + 1, line - 1, line + fr.FONT_HEIGHT + 1, 0xffd0d0d0);
+                        drawVerticalLine(c + 3, line - 2, line + fr.FONT_HEIGHT + 1, 0xffd0d0d0);
                     } else {
                         fr.drawString("_", c + 2, line + 1, getPrimaryColorProperty().getHex());
                     }
@@ -118,25 +118,27 @@ public class TextBox extends GuiComponent implements ChatInput {
 
             // test the end
             if (end >= 0 && end <= text.length()) {
-                w = fr.getStringWidth(text.substring(start < 0 ? 0 : start, end));
+                w = fr.getStringWidth(text.substring(start < 0 ? 0 : start, end)) + 2;
             }
+
+            final int LINE_Y = line + fr.FONT_HEIGHT + 2;
 
             if (w != 0) {
                 if (x >= 0 && w > 0) {
                     // start and end on same line
-                    drawSelectionBox(x + 2, line, x + w + 1, line + fr.FONT_HEIGHT);
+                    drawSelectionBox(x + 2, line, x + w, LINE_Y);
                 } else {
                     if (x >= 0) {
                         // started on this line
-                        drawSelectionBox(x + 2, line, x + fr.getStringWidth(text.substring(start)), line + fr.FONT_HEIGHT);
+                        drawSelectionBox(x + 2, line, x + fr.getStringWidth(text.substring(start)) + 1, LINE_Y);
                     }
                     if (w >= 0) {
                         // ends on this line
-                        drawSelectionBox(1, line, w, line + fr.FONT_HEIGHT);
+                        drawSelectionBox(2, line, w, LINE_Y);
                     }
                     if (start < 0 && end > text.length()) {
                         // full line
-                        drawSelectionBox(1, line, fr.getStringWidth(text), line + fr.FONT_HEIGHT);
+                        drawSelectionBox(1, line, fr.getStringWidth(text), LINE_Y);
                     }
                 }
             }
@@ -157,18 +159,18 @@ public class TextBox extends GuiComponent implements ChatInput {
                 end--;
                 totalPos++;
             }
-            line += fr.FONT_HEIGHT + 2;
+            line = LINE_Y;
         }
 
     }
 
     private void drawText() {
         FancyFontRenderer ffr = new FancyFontRenderer(fr);
-        int yPos = 0;
+        int yPos = 1;
         List<ITextComponent> lines = getFormattedLines();
         for (ITextComponent line : lines) {
             Color color = Color.WHITE;
-            ffr.drawChat(line, 2, yPos, color.getHex(), false);
+            ffr.drawChat(line, 3, yPos, color.getHex(), false);
             yPos += fr.FONT_HEIGHT + 2;
         }
 
@@ -263,7 +265,7 @@ public class TextBox extends GuiComponent implements ChatInput {
         if (mouseButton == 0) {
             Rectangle bounds = this.getBounds();
 
-            int width = bounds.width;
+            int width = bounds.width - 1;
             int row = y / (fr.FONT_HEIGHT + 2);
 
             List<String> lines = getWrappedLines();
@@ -273,9 +275,13 @@ public class TextBox extends GuiComponent implements ChatInput {
             int index = 0;
             for (int i = 0; i < row; i++) {
                 index += lines.get(i).length();
+                // check for spaces because trailing spaces are trimmed
+                if (getText().charAt(index)==' ') {
+                    index++;
+                }
             }
-            index += fr.trimStringToWidth(lines.get(row), x - 2).length();
-            textField.getTextField().setCursorPosition(index + 1);
+            index += fr.trimStringToWidth(lines.get(row), x - 3).length();
+            textField.getTextField().setCursorPosition(index);
         }
     }
 
