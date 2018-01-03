@@ -2,6 +2,7 @@ package mnm.mods.tabbychat.core;
 
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
+import com.google.common.util.concurrent.Runnables;
 import mnm.mods.tabbychat.ChatChannel;
 import mnm.mods.tabbychat.ChatManager;
 import mnm.mods.tabbychat.TabbyChat;
@@ -55,10 +56,12 @@ public class GuiNewChatTC extends GuiNewChat implements ChatScreen {
 
     @Override
     public void clearChatMessages(boolean sent) {
-        chat.clearMessages();
-        if (sent) {
-            this.getSentMessages().clear();
-        }
+        checkThread(() -> {
+            chat.clearMessages();
+            if (sent) {
+                this.getSentMessages().clear();
+            }
+        }).run();
     }
 
     @Override
@@ -96,17 +99,10 @@ public class GuiNewChatTC extends GuiNewChat implements ChatScreen {
 
     @Override
     public void printChatMessageWithOptionalDeletion(ITextComponent ichat, int id) {
-        try {
-            addMessage(ichat, id);
-        } catch (WrongThreadException e) {
-            TabbyChat.getLogger().warn("Tried to add message to chat from thread {}. It has been scheduled on the main thread.",
-                    Thread.currentThread().getName(), e);
-        }
-
+        checkThread(() -> this.addMessage(ichat, id)).run();
     }
 
-    public void addMessage(ITextComponent ichat, int id) throws WrongThreadException {
-        tryEnqueueMessage(ichat, id);
+    public void addMessage(ITextComponent ichat, int id) {
         // chat listeners
         ChatReceivedEvent chatevent = new ChatReceivedEvent(ichat, id);
         chatevent.channels.add(ChatChannel.DEFAULT_CHANNEL);
@@ -142,14 +138,16 @@ public class GuiNewChatTC extends GuiNewChat implements ChatScreen {
 
     @Override
     public void deleteChatLine(int id) {
-        this.chat.removeMessages(id);
+        checkThread(() -> chat.removeMessages(id)).run();
     }
 
-    private void tryEnqueueMessage(ITextComponent text, int flags) throws WrongThreadException {
+    private Runnable checkThread(Runnable runnable) {
         if (!mc.isCallingFromMinecraftThread()) {
-            mc.addScheduledTask(() -> addMessage(text, flags));
-            throw new WrongThreadException();
+            mc.addScheduledTask(runnable);
+            TabbyChat.getLogger().warn("Tried to modify chat from thread {}. To prevent a crash, it has been scheduled on the main thread.", Thread.currentThread().getName(), new Exception());
+            return Runnables.doNothing();
         }
+        return runnable;
     }
 
     @Override
