@@ -1,18 +1,20 @@
 package mnm.mods.tabbychat.settings;
 
-import com.mumfrey.liteloader.modconfig.ConfigStrategy;
-import com.mumfrey.liteloader.modconfig.ExposableOptions;
+import io.netty.channel.local.LocalAddress;
 import mnm.mods.tabbychat.ChatChannel;
+import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.extra.filters.UserFilter;
-import mnm.mods.tabbychat.util.TabbyRef;
 import mnm.mods.util.IPUtils;
 import mnm.mods.util.config.SettingsFile;
 import mnm.mods.util.config.ValueList;
 import mnm.mods.util.config.ValueMap;
 
+import javax.annotation.Nullable;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
-@ExposableOptions(strategy = ConfigStrategy.Unversioned)
 public class ServerSettings extends SettingsFile {
 
     public GeneralServerSettings general = new GeneralServerSettings();
@@ -20,25 +22,21 @@ public class ServerSettings extends SettingsFile {
     public ValueMap<ChatChannel> channels = map();
     public ValueMap<ChatChannel> pms = map();
 
-    private transient final InetSocketAddress ip;
+    private transient final SocketAddress ip;
 
-    public ServerSettings(InetSocketAddress url) {
-        super(TabbyRef.MOD_ID + "/" + getIPForFileName(url), "server");
+    public ServerSettings(Path parent, SocketAddress url) {
+        super(parent.resolve(getIPForFileName(url)).resolve("server.json"));
         this.ip = url;
     }
 
-    private static String getIPForFileName(InetSocketAddress addr) {
-        String ip;
-        if (addr == null) {
-            ip = "singleplayer";
-        } else {
-            String url = addr.getHostName();
-            ip = "multiplayer/" + IPUtils.parse(url).getFileSafeAddress();
+    private static Path getIPForFileName(SocketAddress addr) {
+        if (addr instanceof LocalAddress) {
+            return Paths.get("singleplayer");
         }
-        return ip;
+        return Paths.get("multiplayer", IPUtils.getFileSafeAddress((InetSocketAddress) addr));
     }
 
-    public InetSocketAddress getIP() {
+    public SocketAddress getSocket() {
         return this.ip;
     }
 

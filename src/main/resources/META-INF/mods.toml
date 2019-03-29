@@ -1,0 +1,26 @@
+
+modLoader="javafml" #mandatory
+loaderVersion="[25,)" #mandatory (24 is current forge version)
+issueTrackerURL="https://github.com/killjoy1221/TabbyChat-2/issues/" #optional
+url="https://minecraft.curseforge.com/projects/tabbychat-2"
+
+[[mods]]
+modId="tabbychat"
+version="${file.jarVersion}"
+displayName="TabbyChat 2"
+authors="killjoy1221"
+description="Chat overhaul"
+
+# Dependencies
+[[dependencies.tabbychat]] #optional
+    modId="forge" #mandatory
+    mandatory=true #mandatory
+    versionRange="[25,)" #mandatory
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.tabbychat]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.13.2]"
+    ordering="NONE"
+    side="BOTH"

@@ -1,31 +1,28 @@
 package mnm.mods.util.gui;
 
-import com.google.common.eventbus.Subscribe;
-import com.mumfrey.liteloader.client.overlays.IGuiTextField;
 import mnm.mods.util.Color;
 import mnm.mods.util.ILocation;
-import mnm.mods.util.gui.events.GuiKeyboardEvent;
-import mnm.mods.util.gui.events.GuiMouseEvent;
-import mnm.mods.util.gui.events.GuiMouseEvent.MouseEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.gui.IGuiEventListener;
+import net.minecraft.client.gui.IGuiEventListenerDeferred;
 import org.apache.commons.lang3.StringUtils;
-import org.lwjgl.input.Keyboard;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * A gui component that wraps {@link GuiTextField}.
  *
  * @author Matthew
  */
-public class GuiText extends GuiComponent implements IGuiInput<String> {
+public class GuiText extends GuiComponent implements IGuiInput<String>, IGuiEventListenerDeferred {
 
     private final GuiTextField textField;
     private String hint;
 
     public GuiText() {
-        this(new GuiTextField(0, Minecraft.getMinecraft().fontRenderer, 0, 0, 1, 1));
+        this(new GuiTextField(0, Minecraft.getInstance().fontRenderer, 0, 0, 1, 1));
     }
 
     public GuiText(@Nonnull GuiTextField textField) {
@@ -39,24 +36,10 @@ public class GuiText extends GuiComponent implements IGuiInput<String> {
 
     }
 
-    @Subscribe
-    public void textboxClick(GuiMouseEvent event) {
-        if (event.getType() == MouseEvent.CLICK) {
-            setFocused(true);
-
-            int x = event.getMouseX();
-            int y = event.getMouseY();
-
-            // send to text field.
-            textField.mouseClicked(x, y, 0);
-        }
-    }
-
-    @Subscribe
-    public void textboxType(GuiKeyboardEvent event) {
-        if (Keyboard.isKeyDown(event.getKey())) {
-            textField.textboxKeyTyped(event.getCharacter(), event.getKey());
-        }
+    @Nullable
+    @Override
+    public IGuiEventListener getFocused() {
+        return this.textField;
     }
 
     @Override
@@ -66,37 +49,23 @@ public class GuiText extends GuiComponent implements IGuiInput<String> {
     }
 
     private void updateTextbox(ILocation loc) {
-        int width = loc.getWidth();
-        int height = loc.getHeight();
-        // this interface is provided by liteloader. (Thanks, mum)
-        IGuiTextField field = (IGuiTextField) this.textField;
-        field.setInternalWidth(width);
-        field.setHeight(height);
+        this.textField.x = loc.getXPos();
+        this.textField.y = loc.getYPos();
+        this.textField.width = loc.getWidth();
+        this.textField.height = loc.getHeight();
     }
 
     @Override
-    public boolean isFocusable() {
-        return true;
+    public void tick() {
+        textField.tick();
     }
 
     @Override
-    public void setFocused(boolean focused) {
-        super.setFocused(focused);
-        textField.setFocused(focused);
-    }
+    public void render(int mouseX, int mouseY, float parTicks) {
+        textField.drawTextField(mouseX, mouseY, parTicks);
 
-    @Override
-    public void updateComponent() {
-        super.updateComponent();
-        textField.updateCursorCounter();
-    }
-
-    @Override
-    public void drawComponent(int mouseX, int mouseY) {
-        textField.drawTextBox();
-
-        super.drawComponent(mouseX, mouseY);
-        if (isFocused() && !StringUtils.isEmpty(getHint())) {
+        super.render(mouseX, mouseY, parTicks);
+        if (textField.isFocused() && !StringUtils.isEmpty(getHint())) {
             // draw the hint above.
             drawCaption(getHint(), 1, -5);
         }
@@ -116,7 +85,6 @@ public class GuiText extends GuiComponent implements IGuiInput<String> {
     @Override
     public void setValue(String value) {
         textField.setText(value);
-        textField.setCursorPositionZero();
     }
 
     public String getHint() {

@@ -2,8 +2,7 @@ package mnm.mods.tabbychat.gui.settings;
 
 import static mnm.mods.tabbychat.util.Translation.*;
 
-import com.google.common.eventbus.Subscribe;
-import mnm.mods.tabbychat.TabbyChat;
+import mnm.mods.tabbychat.TabbyChatClient;
 import mnm.mods.tabbychat.extra.filters.GuiFilterEditor;
 import mnm.mods.tabbychat.extra.filters.UserFilter;
 import mnm.mods.tabbychat.settings.GeneralServerSettings;
@@ -19,7 +18,6 @@ import mnm.mods.util.gui.config.GuiSettingEnum;
 import mnm.mods.util.gui.config.GuiSettingString;
 import mnm.mods.util.gui.config.GuiSettingStringList;
 import mnm.mods.util.gui.config.SettingPanel;
-import mnm.mods.util.gui.events.ActionPerformedEvent;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -91,9 +89,9 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> {
         this.addComponent(strChannels, new int[]{5, pos, 5, 1});
 
         pos += 2;
-        this.addComponent(new GuiLabel(new TextComponentTranslation("Default channel")), new int[]{0, pos});
+        this.addComponent(new GuiLabel(new TextComponentTranslation(DEFAULT_CHANNEL)), new int[]{0, pos});
         GuiSettingString strMessages = new GuiSettingString(sett.defaultChannel);
-        strMessages.setCaption(new TextComponentTranslation(""));
+        strMessages.setCaption(new TextComponentTranslation(DEFAULT_CHANNEL_DESC));
         this.addComponent(strMessages, new int[]{5, pos, 5, 1});
 
         // Filters
@@ -101,52 +99,47 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> {
         this.addComponent(new GuiLabel(new TextComponentTranslation(FILTERS)), new int[]{4, pos, 1, 2});
 
         pos += 2;
-        prev = new GuiButton("<");
-        prev.getBus().register(new Object() {
-            @Subscribe
-            public void goBackwards(ActionPerformedEvent event) {
+        prev = new GuiButton("<") {
+            @Override
+            public void onClick(double mouseX, double mouseY) {
                 select(index - 1);
             }
-        });
+        };
         this.addComponent(prev, new int[]{0, pos, 1, 2});
 
-        edit = new GuiButton(I18n.format("selectServer.edit"));
-        edit.getBus().register(new Object() {
-            @Subscribe
-            public void goEditwords(ActionPerformedEvent event) {
+        edit = new GuiButton(I18n.format("selectServer.edit")){
+            @Override
+            public void onClick(double mouseX, double mouseY) {
                 edit(index);
             }
-        });
+        };
         this.addComponent(edit, new int[]{1, pos, 2, 2});
 
-        next = new GuiButton(">");
-        next.getBus().register(new Object() {
-            @Subscribe
-            public void goForwards(ActionPerformedEvent event) {
+        next = new GuiButton(">") {
+            @Override
+            public void onClick(double mouseX, double mouseY) {
                 select(index + 1);
             }
-        });
+        };
         this.addComponent(next, new int[]{3, pos, 1, 2});
 
-        this.addComponent(lblFilter = new GuiLabel(), new int[]{5, pos+1});
+        this.addComponent(lblFilter = new GuiLabel(), new int[]{5, pos + 1});
         this.addComponent(lblPattern = new GuiLabel(), new int[]{5, pos + 2});
-        GuiButton _new = new GuiButton(I18n.format(FILTERS_NEW));
-        _new.getBus().register(new Object() {
-            @Subscribe
-            public void goAddwords(ActionPerformedEvent event) {
+        GuiButton _new = new GuiButton(I18n.format(FILTERS_NEW)) {
+            @Override
+            public void onClick(double mouseX, double mouseY) {
                 add();
             }
-        });
+        };
 
         pos += 2;
         this.addComponent(_new, new int[]{0, pos, 2, 2});
-        delete = new GuiButton(I18n.format("selectServer.delete"));
-        delete.getBus().register(new Object() {
-            @Subscribe
-            public void goDelwords(ActionPerformedEvent event) {
+        delete = new GuiButton(I18n.format("selectServer.delete")){
+            @Override
+            public void onClick(double mouseX, double mouseY) {
                 delete(index);
             }
-        });
+        };
         this.addComponent(delete, new int[]{2, pos, 2, 2});
         prev.setEnabled(false);
         if (index == -1) {
@@ -160,7 +153,7 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> {
 
     @Override
     public ServerSettings getSettings() {
-        return TabbyChat.getInstance().serverSettings;
+        return TabbyChatClient.getInstance().getServerSettings();
     }
 
     // Filters

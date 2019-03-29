@@ -12,34 +12,38 @@ public class FancyFontRenderer extends Gui {
         this.fontRenderer = fr;
     }
 
-    public void drawChat(ITextComponent chat, int x, int y) {
+    public void drawChat(ITextComponent chat, float x, float y) {
         this.drawChat(chat, x, y, true);
     }
 
-    public void drawChat(ITextComponent chat, int x, int y, boolean shadow) {
+    public void drawChat(ITextComponent chat, float x, float y, boolean shadow) {
         drawChat(chat, x, y, -1, shadow);
     }
 
-    public void drawChat(ITextComponent chat, int x, int y, int color) {
+    public void drawChat(ITextComponent chat, float x, float y, int color) {
         this.drawChat(chat, x, y, color, true);
     }
 
-    public void drawChat(ITextComponent chat, int x, int y, int color, boolean shadow) {
+    public void drawChat(ITextComponent chat, float x, float y, int color, boolean shadow) {
 
-        int x1 = x;
+        float x1 = x;
         for (ITextComponent c : chat) {
             if (c instanceof FancyTextComponent) {
                 FancyTextComponent fcc = (FancyTextComponent) c;
-                for (String s : c.getUnformattedText().split("\r?\n")) {
+                for (String s : c.getString().split("\r?\n")) {
                     int length = fontRenderer.getStringWidth(s);
-                    drawRect(x1, y, x1 + length, y - fontRenderer.FONT_HEIGHT, fcc.getFancyStyle().getHighlight().getHex());
-                    drawHorizontalLine(x1, x1 + length, y + fontRenderer.FONT_HEIGHT - 1, fcc.getFancyStyle().getUnderline().getHex());
+                    drawRect((int) x1, (int) y, (int) x1 + length, (int) y - fontRenderer.FONT_HEIGHT, fcc.getFancyStyle().getHighlight().getHex());
+                    drawHorizontalLine((int) x1, (int) x1 + length, (int) y + fontRenderer.FONT_HEIGHT - 1, fcc.getFancyStyle().getUnderline().getHex());
                 }
             }
             x1 += fontRenderer.getStringWidth(c.getUnformattedComponentText());
         }
-        for (String s : chat.getUnformattedText().split("\r?\n")) {
-            fontRenderer.drawString(s, x, y, color, shadow);
+        for (String s : chat.getString().split("\r?\n")) {
+            if (shadow) {
+                fontRenderer.drawStringWithShadow(s, x, y, color);
+            }else {
+                fontRenderer.drawString(s, x, y, color);
+            }
             y += fontRenderer.FONT_HEIGHT;
         }
     }

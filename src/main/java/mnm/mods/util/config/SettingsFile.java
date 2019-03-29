@@ -1,56 +1,54 @@
 package mnm.mods.util.config;
 
-import com.google.common.io.Files;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.internal.Excluder;
-import com.mumfrey.liteloader.core.runtime.Obf;
-import com.mumfrey.liteloader.modconfig.AdvancedExposable;
-import com.mumfrey.liteloader.util.PrivateFields;
+import com.google.gson.InstanceCreator;
 import net.minecraft.util.EnumTypeAdapterFactory;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * Used for creating settings and saving/loading them in the JSON format. Start
  * by creating fields. Mark anything you don't wish to be serialized with {@code transient}.
- * If your setting requires special handling for serialization, override
- * {@link #setupGsonSerialiser(GsonBuilder)} and use it to customize the {@link Gson}
- * object to your liking.
  *
  * @author Matthew Messinger
  */
-public abstract class SettingsFile extends ValueObject implements AdvancedExposable {
+public abstract class SettingsFile extends ValueObject {
 
-    private transient final String path;
-    private transient File file;
+    private transient final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(getClass(), (InstanceCreator) type -> this)
+            .setPrettyPrinting()
+            .registerTypeAdapterFactory(new EnumTypeAdapterFactory())
+            .create();
 
-    public SettingsFile(String path, String name) {
-        this.path = String.format("%s/%s.json", path, name);
+    private transient final Path path;
+
+    public SettingsFile(Path path) {
+        this.path = path;
     }
 
-    @Override
-    public void setupGsonSerialiser(GsonBuilder gsonBuilder) {
-        new PrivateFields<GsonBuilder, Excluder>(GsonBuilder.class, new Obf("excluder") {}) {}
-                .set(gsonBuilder, Excluder.DEFAULT); // grr
-        gsonBuilder
-                .registerTypeAdapterFactory(new EnumTypeAdapterFactory())
-                .registerTypeHierarchyAdapter(Value.class, new ValueSerializer());
+    public Path getPath() {
+        return path;
     }
 
-    @Override
-    public File getConfigFile(File configFile, File configFileLocation, String defaultFileName) {
-        if (file == null)
-            file = new File(configFileLocation, path);
-        try {
-            // create the paths to it
-            Files.createParentDirs(file);
-        } catch (IOException ignored) {}
-        return file;
+    public final void save() throws IOException {
+        Files.createDirectories(path.getParent());
+        try (Writer w = Files.newBufferedWriter(path)) {
+            gson.toJson(this, w);
+        }
     }
 
-    public File getFile() {
-        return file;
+    public final void load() throws IOException {
+        if (Files.notExists(path)) {
+            save();
+        } else {
+            try (Reader r = Files.newBufferedReader(path)) {
+                gson.fromJson(r, getClass());
+            }
+        }
     }
 }

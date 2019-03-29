@@ -21,6 +21,7 @@ public interface Message {
      *
      * @return The time-stamped message
      */
+    @Deprecated // impl detail
     ITextComponent getMessageWithOptionalTimestamp();
 
     /**
@@ -28,6 +29,7 @@ public interface Message {
      *
      * @return The counter
      */
+    @Deprecated // impl detail
     int getCounter();
 
     /**
@@ -35,6 +37,7 @@ public interface Message {
      *
      * @return The ID of this message
      */
+    @Deprecated // impl detail
     int getID();
 
     /**

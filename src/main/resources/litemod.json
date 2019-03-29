@@ -1,5 +1,0 @@
-{
-	"name": "tabbychat",
-	"mcversion": "1.12",
-	"mixinConfigs": ["mixin.tabbychat.json"]
-}

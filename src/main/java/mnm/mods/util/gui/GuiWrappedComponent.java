@@ -1,45 +1,42 @@
 package mnm.mods.util.gui;
 
-import com.google.common.eventbus.EventBus;
 import mnm.mods.util.Color;
+import mnm.mods.util.Dim;
 import mnm.mods.util.ILocation;
+import net.minecraft.client.gui.IGuiEventListener;
+import net.minecraft.client.gui.IGuiEventListenerDeferred;
 import net.minecraft.util.text.ITextComponent;
 
-import java.awt.Dimension;
 import java.util.Optional;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-public class GuiWrappedComponent<T extends GuiComponent> extends GuiComponent {
+public class GuiWrappedComponent<T extends GuiComponent> extends GuiComponent implements IGuiEventListenerDeferred {
 
     private final T wrapper;
 
     public GuiWrappedComponent(@Nonnull T wrap) {
         this.wrapper = wrap;
-        this.getBus().register(this);
     }
 
     public T getComponent() {
         return wrapper;
     }
 
+    @Nullable
     @Override
-    public void drawComponent(int mouseX, int mouseY) {
-        wrapper.drawComponent(mouseX, mouseY);
+    public IGuiEventListener getFocused() {
+        return wrapper;
     }
 
     @Override
-    public void updateComponent() {
-        wrapper.updateComponent();
+    public void render(int mouseX, int mouseY, float parTicks) {
+        wrapper.render(mouseX, mouseY, parTicks);
     }
 
     @Override
-    public void handleMouseInput() {
-        wrapper.handleMouseInput();
-    }
-
-    @Override
-    public void handleKeyboardInput() {
-        wrapper.handleKeyboardInput();
+    public void tick() {
+        wrapper.tick();
     }
 
     @Override
@@ -53,11 +50,6 @@ public class GuiWrappedComponent<T extends GuiComponent> extends GuiComponent {
     }
 
     @Override
-    public EventBus getBus() {
-        return wrapper.getBus();
-    }
-
-    @Override
     public Optional<GuiPanel> getParent() {
         return wrapper.getParent();
     }
@@ -68,23 +60,13 @@ public class GuiWrappedComponent<T extends GuiComponent> extends GuiComponent {
     }
 
     @Override
-    public void setMinimumSize(Dimension size) {
+    public void setMinimumSize(Dim size) {
         wrapper.setMinimumSize(size);
     }
 
     @Override
-    public Dimension getMinimumSize() {
+    public Dim getMinimumSize() {
         return wrapper.getMinimumSize();
-    }
-
-    @Override
-    public void setScale(float scale) {
-        wrapper.setScale(scale);
-    }
-
-    @Override
-    public float getScale() {
-        return wrapper.getScale();
     }
 
     @Override
@@ -140,21 +122,6 @@ public class GuiWrappedComponent<T extends GuiComponent> extends GuiComponent {
     @Override
     public Optional<ITextComponent> getCaptionText() {
         return wrapper.getCaptionText();
-    }
-
-    @Override
-    public boolean isFocusable() {
-        return wrapper.isFocusable();
-    }
-
-    @Override
-    public boolean isFocused() {
-        return wrapper.isFocused();
-    }
-
-    @Override
-    public void setFocused(boolean focused) {
-        wrapper.setFocused(focused);
     }
 
 }

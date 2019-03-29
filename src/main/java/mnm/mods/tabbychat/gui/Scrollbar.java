@@ -1,6 +1,7 @@
 package mnm.mods.tabbychat.gui;
 
 import mnm.mods.tabbychat.core.GuiNewChatTC;
+import mnm.mods.util.ILocation;
 import mnm.mods.util.gui.GuiComponent;
 import net.minecraft.client.gui.Gui;
 
@@ -13,10 +14,10 @@ public class Scrollbar extends GuiComponent {
     }
 
     @Override
-    public void drawComponent(int mouseX, int mouseY) {
-        if (GuiNewChatTC.getInstance().getChatOpen()) {
+    public void render(int mouseX, int mouseY, float parTicks) {
+        if (mc.ingameGUI.getChatGUI().getChatOpen()) {
             int scroll = chat.getScrollPos();
-            int max = chat.getBounds().height;
+            int max = chat.getLocation().getHeight();
             int lines = max / mc.fontRenderer.FONT_HEIGHT;
             int total = chat.getChat().size();
             if (total <= lines) {
@@ -27,8 +28,9 @@ public class Scrollbar extends GuiComponent {
             float perc = Math.abs((float) scroll / (float) total - 1) * Math.abs((float) size / (float) max - 1);
             int pos = (int) (perc * max);
 
-            Gui.drawRect(0, pos, 1, pos + size, -1);
-            super.drawComponent(mouseX, mouseY);
+            ILocation loc = getLocation();
+            Gui.drawRect(loc.getXPos(), loc.getYPos() + pos, loc.getXPos() + 1, loc.getYPos() + pos + size, -1);
+            super.render(mouseX, mouseY, parTicks);
         }
     }
 

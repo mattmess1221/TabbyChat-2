@@ -91,6 +91,7 @@ public interface Channel {
     /**
      * Opens the settings panel for this channel.
      */
+    @Deprecated
     void openSettings();
 
     /**
@@ -98,6 +99,7 @@ public interface Channel {
      *
      * @return A list of messages
      */
+    @Deprecated
     List<Message> getMessages();
 
     /**
@@ -105,6 +107,7 @@ public interface Channel {
      *
      * @param text The message
      */
+    @Deprecated
     void addMessage(ITextComponent text);
 
     /**
@@ -114,6 +117,7 @@ public interface Channel {
      * @param text The message to send
      * @param id The id of the message
      */
+    @Deprecated
     void addMessage(ITextComponent text, int id);
 
     /**
@@ -121,6 +125,7 @@ public interface Channel {
      *
      * @param pos The position
      */
+    @Deprecated
     void removeMessageAt(int pos);
 
     /**
@@ -128,11 +133,13 @@ public interface Channel {
      *
      * @param id The id
      */
+    @Deprecated
     void removeMessages(int id);
 
     /**
      * Clears this channel of all message.
      */
+    @Deprecated
     void clear();
 
 }

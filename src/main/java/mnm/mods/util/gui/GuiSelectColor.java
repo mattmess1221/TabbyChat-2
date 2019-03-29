@@ -1,19 +1,13 @@
 package mnm.mods.util.gui;
 
-import com.google.common.eventbus.Subscribe;
 import mnm.mods.util.Color;
 import mnm.mods.util.config.Value;
 import mnm.mods.util.gui.config.GuiSettingString;
-import mnm.mods.util.gui.events.ActionPerformedEvent;
-import mnm.mods.util.gui.events.GuiKeyboardEvent;
-import mnm.mods.util.gui.events.GuiMouseEvent;
-import mnm.mods.util.gui.events.GuiMouseEvent.MouseEvent;
 import mnm.mods.util.text.TextBuilder;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
-import org.lwjgl.input.Keyboard;
+import org.lwjgl.glfw.GLFW;
 
-import java.math.BigInteger;
 import java.util.function.Consumer;
 
 /**
@@ -32,7 +26,13 @@ public class GuiSelectColor extends GuiPanel {
 
     private GuiSettingString string;
 
-    private GuiRectangle current = new GuiRectangle();
+    private GuiRectangle current = new GuiRectangle() {
+        @Override
+        public boolean mouseClicked(double p_mouseClicked_1_, double p_mouseClicked_3_, int p_mouseClicked_5_) {
+            setColor(getPrimaryColorProperty());
+            return true;
+        }
+    };
     private GuiRectangle selected = new GuiRectangle();
 
     /**
@@ -44,15 +44,6 @@ public class GuiSelectColor extends GuiPanel {
     public GuiSelectColor(final Consumer<Color> callback_, Color color) {
         this.current.setPrimaryColor(color);
         this.selected.setPrimaryColor(color);
-        this.current.getBus().register(new Object() {
-            @Subscribe
-            public void accept(GuiMouseEvent event) {
-                if (event.getType() == MouseEvent.CLICK) {
-                    Color color = current.getPrimaryColorProperty();
-                    setColor(color);
-                }
-            }
-        });
         this.setLayout(new GuiGridLayout(20, 20));
 
         this.addComponent(sliderRed = new GuiSliderColor(color.getRed() / 255D, true, GuiSliderColor.Model.RED, color), new int[] { 1, 1, 2, 10 });
@@ -85,47 +76,44 @@ public class GuiSelectColor extends GuiPanel {
         this.addComponent(current, new int[] { 14, 1, 6, 3 });
         this.addComponent(selected, new int[] { 14, 4, 6, 3 });
 
-        string = new GuiSettingString(new Value<>(""));
-        string.getComponent().getTextField().setMaxStringLength(8);
-        string.getBus().register(new Object() {
-            @Subscribe
-            public void accept(GuiKeyboardEvent event) {
-                if (string.isFocused() && event.getKey() == Keyboard.KEY_RETURN) {
-                    String hex = string.getValue();
+        string = new GuiSettingString(new Value<>("")){
+            @Override
+            public boolean keyPressed(int p_keyPressed_1_, int p_keyPressed_2_, int p_keyPressed_3_) {
+                if (p_keyPressed_1_ == GLFW.GLFW_KEY_ENTER) {
+                    String hex = getValue();
                     if (hex.matches("^[0-9a-fA-F]{1,8}$")) { // valid hex
-                        int c = new BigInteger(hex, 16).intValue();
+                        int c = Integer.parseInt(hex, 16);
                         setColor(Color.of(c));
+                        return true;
                     }
                 }
+                return false;
             }
-        });
+        };
+        string.getComponent().getTextField().setMaxStringLength(8);
         this.addComponent(string, new int[] { 14, 8, 6, 2 });
 
-        GuiButton random = new GuiButton(I18n.format("createWorld.customize.custom.randomize"));
-        random.getBus().register(new Object() {
-            @Subscribe
-            public void action(ActionPerformedEvent event) {
+        GuiButton random = new GuiButton(I18n.format("createWorld.customize.custom.randomize")){
+            @Override
+            public void onClick(double mouseX, double mouseY) {
                 setColor(Color.random());
             }
-        });
+        };
         this.addComponent(random, new int[] { 13, 11, 8, 2 });
 
-        GuiButton cancel = new GuiButton(I18n.format("gui.cancel"));
-        cancel.getBus().register(new Object() {
-            @Subscribe
-            public void action(ActionPerformedEvent event) {
-                // Close
+        GuiButton cancel = new GuiButton(I18n.format("gui.cancel")){
+            @Override
+            public void onClick(double mouseX, double mouseY) {
                 getParent().ifPresent(parent -> parent.setOverlay(null));
             }
-        });
+        };
         this.addComponent(cancel, new int[] { 13, 13, 4, 2 });
-        GuiButton apply = new GuiButton(I18n.format("gui.done"));
-        apply.getBus().register(new Object() {
-            @Subscribe
-            public void action(ActionPerformedEvent event) {
+        GuiButton apply = new GuiButton(I18n.format("gui.done")){
+            @Override
+            public void onClick(double mouseX, double mouseY) {
                 callback_.accept(GuiSelectColor.this.color);
             }
-        });
+        };
         this.addComponent(apply, new int[] { 17, 13, 4, 2 });
 
         setColor(color);
@@ -139,8 +127,8 @@ public class GuiSelectColor extends GuiPanel {
     }
 
     @Override
-    public void updateComponent() {
-        super.updateComponent();
+    public void tick() {
+        super.tick();
 
         int r = (int) (sliderRed.getValue() * 255);
         int g = (int) (sliderGreen.getValue() * 255);

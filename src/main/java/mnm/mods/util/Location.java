@@ -1,6 +1,5 @@
 package mnm.mods.util;
 
-
 public class Location implements ILocation {
 
     private int xPos;

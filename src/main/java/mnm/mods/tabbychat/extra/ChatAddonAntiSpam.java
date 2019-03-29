@@ -1,10 +1,10 @@
 package mnm.mods.tabbychat.extra;
 
 import com.google.common.collect.Maps;
-import com.google.common.eventbus.Subscribe;
-import mnm.mods.tabbychat.TabbyChat;
+import mnm.mods.tabbychat.TabbyChatClient;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.events.MessageAddedToChannelEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
@@ -13,16 +13,16 @@ public class ChatAddonAntiSpam {
 
     private Map<Channel, Counter> messageMap = Maps.newHashMap();
 
-    @Subscribe
+    @SubscribeEvent
     public void onMessageAdded(MessageAddedToChannelEvent event) {
 
-        boolean enabled = TabbyChat.getInstance().settings.general.antiSpam.get();
-        double prejudice = TabbyChat.getInstance().settings.general.antiSpamPrejudice.get();
+        boolean enabled = TabbyChatClient.getInstance().getSettings().general.antiSpam.get();
+        double prejudice = TabbyChatClient.getInstance().getSettings().general.antiSpamPrejudice.get();
 
         if (enabled && event.id == 0) {
             Channel channel = event.channel;
             Counter counter = this.messageMap.computeIfAbsent(channel, k -> new Counter());
-            String chat = event.text.getUnformattedText();
+            String chat = event.text.getString();
 
             if (getDifference(chat, counter.lastMessage) <= prejudice) {
                 counter.spamCounter++;

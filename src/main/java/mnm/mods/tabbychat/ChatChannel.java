@@ -13,6 +13,7 @@ import mnm.mods.tabbychat.util.ChatTextUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.StringUtils;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.common.MinecraftForge;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -38,7 +39,7 @@ public class ChatChannel implements Channel {
         @Override
         public void openSettings() {
             // There are no settings for this channel
-            TabbyChat.getInstance().openSettings(null);
+            TabbyChatClient.getInstance().openSettings(null);
         }
     };
 
@@ -130,14 +131,14 @@ public class ChatChannel implements Channel {
 
     @Override
     public void openSettings() {
-        TabbyChat.getInstance().openSettings(new GuiSettingsChannel(this));
+        TabbyChatClient.getInstance().openSettings(new GuiSettingsChannel(this));
     }
 
     @Override
     public List<Message> getMessages() {
         if (messages == null) {
             // dumb gson
-            messages = Collections.synchronizedList(Lists.<Message> newArrayList());
+            messages = Collections.synchronizedList(Lists.newArrayList());
         }
         return messages;
     }
@@ -149,39 +150,39 @@ public class ChatChannel implements Channel {
 
     @Override
     public void addMessage(ITextComponent chat, int id) {
-        List<Channel> channels = TabbyChat.getInstance().getChat().getChannels();
+        List<Channel> channels = TabbyChatClient.getInstance().getChat().getChannels();
         if (!channels.contains(this)) {
-            TabbyChat.getInstance().getChat().addChannel(this);
+            TabbyChatClient.getInstance().getChat().addChannel(this);
         }
         if (id != 0) {
             removeMessages(id);
         }
-        MessageAddedToChannelEvent event = new MessageAddedToChannelEvent(chat.createCopy(), id, this);
-        TabbyChat.getInstance().getBus().post(event);
+        MessageAddedToChannelEvent event = new MessageAddedToChannelEvent(chat.deepCopy(), id, this);
+        MinecraftForge.EVENT_BUS.post(event);
         if (event.text == null) {
             return;
         }
-        if (TabbyChat.getInstance().settings.advanced.hideTag.get() && this != DEFAULT_CHANNEL) {
-            ChannelPatterns pattern = TabbyChat.getInstance().serverSettings.general.channelPattern.get();
-            Matcher matcher = pattern.getPattern().matcher(event.text.getUnformattedText());
+        if (TabbyChatClient.getInstance().getSettings().advanced.hideTag.get() && this != DEFAULT_CHANNEL) {
+            ChannelPatterns pattern = TabbyChatClient.getInstance().getServerSettings().general.channelPattern.get();
+            Matcher matcher = pattern.getPattern().matcher(event.text.getString());
             if (matcher.find()) {
                 event.text = ChatTextUtils.subChat(event.text, matcher.end());
             }
         }
 
-        int uc = Minecraft.getMinecraft().ingameGUI.getUpdateCounter();
+        int uc = Minecraft.getInstance().ingameGUI.getTicks();
         Message msg = new ChatMessage(uc, event.text, id, true);
         this.getMessages().add(0, msg);
 
         // compensate scrolling
-        ChatArea chatbox = ((ChatManager) TabbyChat.getInstance().getChat()).getChatBox().getChatArea();
+        ChatArea chatbox = TabbyChatClient.getInstance().getChat().getChatBox().getChatArea();
         if (getStatus() == ChannelStatus.ACTIVE && chatbox.getScrollPos() > 0 && id == 0) {
             chatbox.scroll(1);
         }
 
-        trim(TabbyChat.getInstance().settings.advanced.historyLen.get());
+        trim(TabbyChatClient.getInstance().getSettings().advanced.historyLen.get());
 
-        ((ChatManager) TabbyChat.getInstance().getChat()).save();
+        TabbyChatClient.getInstance().getChat().save();
         dirty();
     }
 
@@ -199,14 +200,14 @@ public class ChatChannel implements Channel {
     @Override
     public void removeMessageAt(int pos) {
         this.getMessages().remove(pos);
-        ((ChatManager) TabbyChat.getInstance().getChat()).save();
+        TabbyChatClient.getInstance().getChat().save();
         dirty();
     }
 
     @Override
     public void removeMessages(int id) {
         this.getMessages().removeIf(msg -> msg.getID() == id);
-        ((ChatManager) TabbyChat.getInstance().getChat()).save();
+        TabbyChatClient.getInstance().getChat().save();
         dirty();
     }
 
@@ -222,7 +223,7 @@ public class ChatChannel implements Channel {
     }
 
     private static ChatManager getManager() {
-        return (ChatManager) TabbyChat.getInstance().getChat();
+        return TabbyChatClient.getInstance().getChat();
     }
 
     @Override
@@ -238,19 +239,14 @@ public class ChatChannel implements Channel {
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
-        if (obj == null)
-            return false;
         if (!(obj instanceof ChatChannel))
             return false;
         ChatChannel other = (ChatChannel) obj;
         if (isPm != other.isPm)
             return false;
         if (name == null) {
-            if (other.name != null)
-                return false;
-        } else if (!name.equals(other.name))
-            return false;
-        return true;
+            return other.name == null;
+        } else return name.equals(other.name);
     }
 
     @Override

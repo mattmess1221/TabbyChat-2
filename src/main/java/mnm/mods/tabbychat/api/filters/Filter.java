@@ -27,7 +27,7 @@ public interface Filter {
      * @return The string which will be used for the
      */
     default String prepareText(ITextComponent string) {
-        return StringUtils.stripControlCodes(string.getUnformattedText());
+        return StringUtils.stripControlCodes(string.getString());
     }
 
 }

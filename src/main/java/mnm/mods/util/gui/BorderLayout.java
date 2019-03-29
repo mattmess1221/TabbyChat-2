@@ -1,8 +1,10 @@
 package mnm.mods.util.gui;
 
 import com.google.common.collect.Maps;
+import mnm.mods.util.Dim;
 import mnm.mods.util.ILocation;
 import mnm.mods.util.Location;
+import mnm.mods.util.Vec;
 
 import java.awt.Dimension;
 import java.util.EnumMap;
@@ -54,15 +56,15 @@ public class BorderLayout implements ILayout {
         GuiComponent east = components.get(Position.EAST);
 
         if (north != null) {
-            north.setLocation(new Location(0, 0, pbounds.getWidth(), north.getMinimumSize().height));
+            north.setLocation(new Location(pbounds.getXPos(), pbounds.getYPos(), pbounds.getWidth(), north.getMinimumSize().height));
         }
 
         if (west != null) {
-            Location bounds = new Location();
+            Location bounds = pbounds.copy();
             bounds.setWidth(west.getMinimumSize().width);
 
             if (north != null) {
-                bounds.setYPos(north.getLocation().getHeight());
+                bounds.setYPos(north.getLocation().getYHeight());
             }
 
             if (south == null) {
@@ -82,14 +84,14 @@ public class BorderLayout implements ILayout {
         }
 
         if (center != null) {
-            Location bounds = new Location();
+            Location bounds = pbounds.copy();
 
             if (north != null) {
-                bounds.setYPos(north.getLocation().getHeight() + 1);
+                bounds.setYPos(north.getLocation().getYHeight() + 1);
             }
 
             if (west != null) {
-                bounds.setXPos(west.getLocation().getWidth());
+                bounds.setXPos(west.getLocation().getXWidth());
             }
 
             if (east == null) {
@@ -123,12 +125,12 @@ public class BorderLayout implements ILayout {
         }
 
         if (east != null) {
-            Location bounds = new Location();
+            Location bounds = pbounds.copy();
 
-            bounds.setXPos(pbounds.getWidth() - east.getMinimumSize().width);
+            bounds.setXPos(pbounds.getXWidth() - east.getMinimumSize().width);
             bounds.setWidth(east.getMinimumSize().width);
             if (north != null) {
-                bounds.setYPos(north.getLocation().getHeight());
+                bounds.setYPos(north.getLocation().getYHeight());
             }
             if (south == null) {
                 if (north == null) {
@@ -148,8 +150,8 @@ public class BorderLayout implements ILayout {
 
         if (south != null) {
 
-            int x = 0;
-            int y = pbounds.getHeight() - south.getLocation().getHeight();
+            int x = pbounds.getXPos();
+            int y = pbounds.getYHeight() - south.getLocation().getHeight();
             int width = pbounds.getWidth();
             int height = south.getMinimumSize().height;
 
@@ -158,11 +160,11 @@ public class BorderLayout implements ILayout {
     }
 
     @Override
-    public Dimension getLayoutSize() {
+    public Dim getLayoutSize() {
         int width = 0;
         int height = 0;
         for (Entry<Position, GuiComponent> comp : components.entrySet()) {
-            Dimension size = comp.getValue().getMinimumSize();
+            Dim size = comp.getValue().getMinimumSize();
             switch (comp.getKey()) {
             case CENTER:
                 width += size.width;
@@ -178,7 +180,7 @@ public class BorderLayout implements ILayout {
                 break;
             }
         }
-        return new Dimension(width, height);
+        return new Dim(width, height);
     }
 
     public enum Position {

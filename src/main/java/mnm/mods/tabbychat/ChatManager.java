@@ -27,18 +27,18 @@ import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextFormatting;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
-import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Instant;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -52,6 +52,7 @@ public class ChatManager implements Chat {
             .registerTypeHierarchyAdapter(ITextComponent.class, new ITextComponent.Serializer())
             .registerTypeAdapter(Style.class, new Style.Serializer())
             .registerTypeAdapterFactory(new EnumTypeAdapterFactory())
+            .registerTypeAdapter(Instant.class, new InstantTypeAdapter())
             .create();
 
     private ChatBox chatbox;
@@ -63,8 +64,8 @@ public class ChatManager implements Chat {
 
     private Map<Channel, List<Message>> messages = Maps.newHashMap();
 
-    public ChatManager(TabbyChat tc) {
-        AdvancedSettings settings = tc.settings.advanced;
+    public ChatManager(TabbyChatClient tc) {
+        AdvancedSettings settings = tc.getSettings().advanced;
         int x = settings.chatX.get();
         int y = settings.chatY.get();
         int width = settings.chatW.get();
@@ -89,11 +90,11 @@ public class ChatManager implements Chat {
     }
 
     private Channel getChatChannel(String name) {
-        return getChannel(name, false, this.allChannels, TabbyChat.getInstance().serverSettings.channels);
+        return getChannel(name, false, this.allChannels, TabbyChatClient.getInstance().getServerSettings().channels);
     }
 
     private Channel getPmChannel(String name) {
-        Channel channel = getChannel(name, true, this.allPms, TabbyChat.getInstance().serverSettings.pms);
+        Channel channel = getChannel(name, true, this.allPms, TabbyChatClient.getInstance().getServerSettings().pms);
         if (channel.getPrefix().isEmpty()) {
             channel.setPrefix("/msg " + name);
         }
@@ -109,7 +110,7 @@ public class ChatManager implements Chat {
                 setting.get().put(chan.getName(), chan);
             }
             from.put(name, chan);
-            messages.put(chan, chan.getMessages());
+            messages.put(chan, new LinkedList<>());
         }
         return from.get(name);
     }
@@ -203,7 +204,7 @@ public class ChatManager implements Chat {
         String cmd = channel.getCommand();
         if (cmd.isEmpty()) {
 
-            GeneralServerSettings settings = TabbyChat.getInstance().serverSettings.general;
+            GeneralServerSettings settings = TabbyChatClient.getInstance().getServerSettings().general;
             String pat = channel.isPm() ? settings.messageCommand.get() : settings.channelCommand.get();
 
             if (pat.isEmpty()) {
@@ -211,7 +212,7 @@ public class ChatManager implements Chat {
             }
             String name = channel.getName();
             if (channel == ChatChannel.DEFAULT_CHANNEL) {
-                name = TabbyChat.getInstance().serverSettings.general.defaultChannel.get();
+                name = TabbyChatClient.getInstance().getServerSettings().general.defaultChannel.get();
             }
             // insert the channel name
             cmd = pat.replace("{}", name);
@@ -221,36 +222,26 @@ public class ChatManager implements Chat {
             if (cmd.length() > MAX_CHAT_LENGTH) {
                 cmd = cmd.substring(0, MAX_CHAT_LENGTH);
             }
-            Minecraft.getMinecraft().player.sendChatMessage(cmd);
+            Minecraft.getInstance().player.sendChatMessage(cmd);
         }
     }
 
-    private boolean loading;
+    private static final Object lock = new Object();
 
-    public void loadFrom(File dir) throws IOException {
-        loading = true;
-        try {
+    public void loadFrom(Path dir) throws IOException {
+        synchronized (lock) {
             loadFrom_(dir);
-        } finally {
-            loading = false;
         }
     }
 
-    private synchronized void loadFrom_(File dir) throws IOException {
-        File file = new File(dir, "data.gz");
-        if (!file.exists()) {
+    private synchronized void loadFrom_(Path dir) throws IOException {
+        Path file = dir.resolve("data.gz");
+        if (Files.notExists(file)) {
             return;
         }
-        InputStream fin = null;
-        InputStream gzin = null;
         String data;
-        try {
-            fin = new FileInputStream(file);
-            gzin = new GzipCompressorInputStream(fin);
-            data = IOUtils.toString(gzin, Charsets.UTF_8);
-        } finally {
-            IOUtils.closeQuietly(fin);
-            IOUtils.closeQuietly(gzin);
+        try (InputStream gzin = new GzipCompressorInputStream(Files.newInputStream(file))) {
+            data = IOUtils.toString(gzin, StandardCharsets.UTF_8);
         }
 
         clearMessages();
@@ -307,17 +298,16 @@ public class ChatManager implements Chat {
     }
 
     void save() {
-        if (loading) {
-            return;
-        }
-        try {
-            saveTo(TabbyChat.getInstance().serverSettings.getFile().getParentFile());
-        } catch (IOException e) {
-            TabbyChat.getLogger().warn("Error while saving chat data", e);
+        synchronized (lock) {
+            try {
+                saveTo(TabbyChatClient.getInstance().getServerSettings().getPath().getParent());
+            } catch (IOException e) {
+                TabbyChat.logger.warn("Error while saving chat data", e);
+            }
         }
     }
 
-    private synchronized void saveTo(File dir) throws IOException {
+    private synchronized void saveTo(Path dir) throws IOException {
         JsonObject root = new JsonObject();
         root.addProperty("datetime", Instant.now().getEpochSecond());
         root.add("default", gson.toJsonTree(ChatChannel.DEFAULT_CHANNEL.getMessages()));
@@ -349,19 +339,11 @@ public class ChatManager implements Chat {
             array.add(new JsonPrimitive(c.getName()));
         }
 
-        OutputStream fout = null;
-        GzipCompressorOutputStream gzout = null;
-        try {
-            File file = new File(dir, "data.gz");
-            file.getParentFile().mkdirs();
-            fout = new FileOutputStream(file);
-            gzout = new GzipCompressorOutputStream(fout);
+        Path file = dir.resolve("data.gz");
+        Files.createDirectories(dir);
+        try (OutputStream gzout = new GzipCompressorOutputStream(Files.newOutputStream(file))) {
             String data = gson.toJson(root);
-            IOUtils.write(data, gzout, Charsets.UTF_8);
-            gzout.finish();
-        } finally {
-            IOUtils.closeQuietly(fout);
-            IOUtils.closeQuietly(gzout);
+            IOUtils.write(data, gzout, StandardCharsets.UTF_8);
         }
     }
 

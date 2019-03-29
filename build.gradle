@@ -5,95 +5,68 @@ buildscript {
             name 'forge'
             url 'http://files.minecraftforge.net/maven'
         }
-        maven {
-            name = 'sponge'
-            url = 'http://repo.spongepowered.org/maven'
-        }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
-        classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
     }
 }
 plugins {
-    id 'org.ajoberstar.grgit' version '1.7.2'
+    id 'java'
+    id 'org.ajoberstar.grgit' version '3.1.1'
 }
 
-apply plugin: 'net.minecraftforge.gradle.liteloader'
-apply plugin: 'org.spongepowered.mixin'
-apply plugin: 'org.ajoberstar.grgit'
+apply plugin: 'net.minecraftforge.gradle'
 
-ext.revision = grgit.log().size()
-ext.hash = grgit.head().abbreviatedId
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
 
+ext {
+    revision = grgit.log().size()
+    hash = grgit.head().abbreviatedId
+}
+version += ".$revision"
 if (release != 'RELEASE')
-    version += "-$release-$ext.revision"
+    version += "-$release"
 
 minecraft {
-    version = minecraft_version
-    mappings = minecraft_mappings
-    runDir = 'run'
-    // Replace the version string
-    replace(
-            "@VERSION@": project.version,
-            "@REVISION@": project.revision,
-            "@MCVERSION@": project.minecraft.version
-    )
-}
-sourceSets {
-    main {
-        ext.refMap = 'mixin.tabbychat.refmap.json'
+    mappings channel: mappings_channel, version: mappings_version
+    accessTransformer file("src/main/resources/META-INF/tabbychat_at.cfg")
+    runs {
+        client {
+            workingDirectory file('run')
+
+            properties('forge.logging.markers': 'SCAN', 'forge.logging.console.level': 'info')
+
+            mods {
+                tabbychat {
+                    source sourceSets.main
+                }
+            }
+        }
     }
 }
-configurations {
-    // shadow plugin doesn't play well with liteloader
-    shadow
-    compile.extendsFrom shadow
+repositories {
+    jcenter()
 }
 dependencies {
-    shadow 'net.sf.jazzy:jazzy:0.5.2-rtext-1.4.1-2'
+    minecraft "net.minecraftforge:forge:$forge_version"
+    compile 'net.sf.jazzy:jazzy:0.5.2-rtext-1.4.1-2'
     testCompile 'junit:junit:4.12'
-
 }
 afterEvaluate {
     println '==========================================='
-    println "   TabbyChat $version ($ext.hash)"
+    println "   TabbyChat $version ($hash)"
     println '==========================================='
-
-    file('build.number').delete()
-}
-litemod.json {
-    name = 'tabbychat'
-    author = 'killjoy1221'
-    revision = ext.revision
-    mcversion = '1.12.r2'
-    displayName = 'TabbyChat 2'
-    description = 'Chat overhaul.'
-    mixinConfigs = ['mixin.tabbychat.json']
 }
 manifest {
-    attributes 'Implementation-Version': "$version (git ${project.hash})"
-}
-jar {
-    from litemod
-    from configurations.shadow.collect { it.isDirectory() ? it : zipTree(it) }
-}
-task srgJar(type: Jar) {
-    classifier 'srg'
-    from sourceSets.main.output
-    from configurations.shadow.collect { it.isDirectory() ? it : zipTree(it) }
-}
-
-// XXX Do a PR to fg about removing these dumb defaults.
-tasks.withType(Jar)*.baseName = archivesBaseName
-
-artifacts.archives srgJar
-
-reobf {
-    srgJar {
-        mappingType = 'SEARGE'
-    }
-}
-mixin {
-    defaultObfuscationEnv notch
+    attributes(
+            'Specification-Title': "tabbychat",
+            'Specification-Vendor': "killjoy1221",
+            'Specification-Version': "$version (git ${project.hash}",
+            'Implementation-Title': project.name,
+            'Implementation-Version': "$version",
+            'Implementation-Vendor': "killjoy1221",
+            'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+            FMLAT: 'tabbychat_at.cfg'
+    )
 }

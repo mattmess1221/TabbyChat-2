@@ -1,6 +1,6 @@
 package mnm.mods.util.gui;
 
-import java.awt.Dimension;
+import mnm.mods.util.Dim;
 
 /**
  * A layout is used on a {@link GuiPanel} to easily arrange it's components in a
@@ -33,6 +33,6 @@ public interface ILayout {
      *
      * @return The size.
      */
-    Dimension getLayoutSize();
+    Dim getLayoutSize();
 
 }

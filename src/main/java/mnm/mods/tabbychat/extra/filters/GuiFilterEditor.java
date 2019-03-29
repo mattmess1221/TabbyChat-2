@@ -4,25 +4,25 @@ import static mnm.mods.tabbychat.util.Translation.*;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
-import com.google.common.eventbus.Subscribe;
 import mnm.mods.tabbychat.api.filters.FilterSettings;
 import mnm.mods.util.Color;
 import mnm.mods.util.gui.GuiButton;
 import mnm.mods.util.gui.GuiCheckbox;
+import mnm.mods.util.gui.GuiComponent;
 import mnm.mods.util.gui.GuiGridLayout;
 import mnm.mods.util.gui.GuiLabel;
 import mnm.mods.util.gui.GuiPanel;
 import mnm.mods.util.gui.GuiText;
-import mnm.mods.util.gui.events.ActionPerformedEvent;
-import mnm.mods.util.gui.events.GuiKeyboardEvent;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
-import org.lwjgl.input.Keyboard;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import org.lwjgl.glfw.GLFW;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -43,8 +43,8 @@ public class GuiFilterEditor extends GuiPanel {
             return color + text;
         }
 
-        @Subscribe
-        public void actionPerformed(ActionPerformedEvent event) {
+        @Override
+        public void onClick(double mouseX, double mouseY) {
             active ^= true;
         }
     }
@@ -109,24 +109,21 @@ public class GuiFilterEditor extends GuiPanel {
         chkSound.setValue(settings.isSoundNotification());
 
         pos += 1;
-        this.addComponent(txtSound = new GuiText(), new int[]{3, pos, 14, 1});
-        txtSound.setValue(settings.getSoundName().orElse(""));
-        txtSound.getBus().register(new Object() {
+        this.addComponent(txtSound = new GuiText() {
             private int pos;
 
-            @Subscribe
-            public void suggestSounds(GuiKeyboardEvent event) {
+            @Override
+            public boolean charTyped(char c, int key) {
                 final int max = 10;
-                if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
+                if (key == GLFW.GLFW_KEY_DOWN) {
                     pos++;
-                } else if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {
+                } else if (key == GLFW.GLFW_KEY_UP) {
                     pos--;
                 }
-
                 // suggest sounds
-                final String val = txtSound.getValue().toLowerCase()
-                        .substring(0, txtSound.getTextField().getCursorPosition());
-                List<String> list = SoundEvent.REGISTRY.getKeys().stream()
+                final String val = getValue().toLowerCase()
+                        .substring(0, getTextField().getCursorPosition());
+                List<String> list = GameRegistry.findRegistry(SoundEvent.class).getKeys().stream()
                         .map(Object::toString)
                         .filter(s -> s.contains(val))
                         .collect(Collectors.toList());
@@ -136,47 +133,65 @@ public class GuiFilterEditor extends GuiPanel {
                 if (list.size() > max) {
                     list = list.subList(pos, pos + max);
                 }
-                txtSound.setHint(Joiner.on('\n').join(list));
-                if ((Keyboard.isKeyDown(Keyboard.KEY_RETURN) || Keyboard.isKeyDown(Keyboard.KEY_NUMPADENTER)) && !list.isEmpty()) {
-                    txtSound.setValue(list.get(0));
-                    txtSound.setFocused(false);
+                setHint(Joiner.on('\n').join(list));
+                if ((key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER) && !list.isEmpty()) {
+                    setValue(list.get(0));
+                    GuiFilterEditor.this.setFocused(null);
                 }
+                return super.charTyped(c, key);
             }
-        });
+        }, new int[]{3, pos, 14, 1});
+        txtSound.setValue(settings.getSoundName().orElse(""));
 
         GuiButton play = new GuiButton("\u25b6") {
             @Override
             public SoundEvent getSound() {
-                return SoundEvent.REGISTRY.getObject(new ResourceLocation(txtSound.getValue()));
+                return GameRegistry.findRegistry(SoundEvent.class).getValue(new ResourceLocation(txtSound.getValue()));
             }
         };
         this.addComponent(play, new int[]{18, pos, 2, 1});
 
         pos += 2;
         this.addComponent(new GuiLabel(new TextComponentTranslation(FILTER_EXPRESSION)), new int[]{1, pos});
-        this.addComponent(txtPattern = new GuiText(), new int[]{8, pos, 12, 1});
+        this.addComponent(txtPattern = new GuiText() {
+            @Override
+            public boolean charTyped(char c, int key) {
+                boolean r = super.charTyped(c, key);
+                setPrimaryColor(Color.WHITE);
+                lblError.setText(null);
+                if (btnRegexp.active) {
+                    // check valid regex
+                    try {
+                        filter.testPattern(getValue());
+                    } catch (UserFilter.UserPatternException e) {
+                        setPrimaryColor(Color.RED);
+                        String string = e.getCause().getLocalizedMessage();
+                        lblError.setText(new TextComponentString(string));
+                    }
+                }
+                return r;
+            }
+        }, new int[]{8, pos, 12, 1});
 
         txtPattern.setValue(pattern == null ? "" : pattern);
 
         pos++;
         this.addComponent(lblError = new GuiLabel(), new int[]{4, pos});
 
-        GuiButton accept = new GuiButton(I18n.format("gui.done"));
-        accept.getBus().register(new Object() {
-            @Subscribe
-            public void finish(ActionPerformedEvent event) {
+        GuiButton accept = new GuiButton(I18n.format("gui.done")) {
+            @Override
+            public void onClick(double mouseX, double mouseY) {
                 accept();
             }
-        });
+        };
         this.addComponent(accept, new int[]{5, 14, 4, 1});
 
-        GuiButton cancel = new GuiButton(I18n.format("gui.cancel"));
-        cancel.getBus().register(new Object() {
-            @Subscribe
-            public void stopEverything(ActionPerformedEvent event) {
+        GuiButton cancel = new GuiButton(I18n.format("gui.cancel")) {
+            @Override
+            public void onClick(double mouseX, double mouseY) {
                 cancel();
             }
-        });
+        };
         this.addComponent(cancel, new int[]{1, 14, 4, 1});
     }
 
@@ -205,19 +220,10 @@ public class GuiFilterEditor extends GuiPanel {
         getParent().ifPresent(p -> p.setOverlay(null));
     }
 
-    @Subscribe
-    public void updateError(GuiKeyboardEvent event) {
-        txtPattern.setPrimaryColor(Color.WHITE);
-        lblError.setText(null);
-        if (txtPattern.isFocused() && btnRegexp.active) {
-            // check valid regex
-            try {
-                filter.testPattern(txtPattern.getValue());
-            } catch (UserFilter.UserPatternException e) {
-                txtPattern.setPrimaryColor(Color.RED);
-                String string = e.getCause().getLocalizedMessage();
-                lblError.setText(new TextComponentString(string));
-            }
-        }
+    @Nullable
+    @Override
+    public GuiComponent getFocused() {
+        return txtPattern;
     }
+
 }

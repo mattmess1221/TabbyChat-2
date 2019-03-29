@@ -1,11 +1,12 @@
 package mnm.mods.util.gui;
 
 import com.google.common.collect.Maps;
+import mnm.mods.util.Dim;
 import mnm.mods.util.ILocation;
 import mnm.mods.util.Location;
+import mnm.mods.util.Vec;
 import org.apache.logging.log4j.LogManager;
 
-import java.awt.Dimension;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -107,22 +108,22 @@ public class GuiGridLayout implements ILayout {
 
     @Override
     public void layoutComponents(GuiPanel parent) {
-        Dimension size = parent.getLocation().getSize();
-        int colW = size.width / cols;
-        int rowH = size.height / rows;
+        ILocation loc = parent.getLocation();
+        int colW = loc.getWidth() / cols;
+        int rowH = loc.getHeight() / rows;
         for (Map.Entry<ILocation, GuiComponent> entry : grid.entrySet()) {
             ILocation bounds = entry.getKey();
-            int x = bounds.getXPos() * colW;
+            int x = loc.getXPos() + bounds.getXPos() * colW;
             int width = bounds.getWidth() * colW;
-            int y = bounds.getYPos() * rowH;
+            int y = loc.getYPos() + bounds.getYPos() * rowH;
             int height = bounds.getHeight() * rowH;
             entry.getValue().setLocation(new Location(x, y, width, height));
         }
     }
 
     @Override
-    public Dimension getLayoutSize() {
-        return new Dimension(cols, rows);
+    public Dim getLayoutSize() {
+        return new Dim(cols, rows);
     }
 
 }

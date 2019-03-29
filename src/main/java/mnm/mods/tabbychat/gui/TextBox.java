@@ -1,20 +1,21 @@
 package mnm.mods.tabbychat.gui;
 
-import com.google.common.eventbus.Subscribe;
 import mnm.mods.tabbychat.ChatManager;
-import mnm.mods.tabbychat.TabbyChat;
-import mnm.mods.tabbychat.api.gui.ChatInput;
+import mnm.mods.tabbychat.TabbyChatClient;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.extra.spell.Spellcheck;
 import mnm.mods.tabbychat.extra.spell.SpellingFormatter;
 import mnm.mods.util.Color;
+import mnm.mods.util.Dim;
+import mnm.mods.util.ILocation;
 import mnm.mods.util.TexturedModal;
 import mnm.mods.util.gui.GuiComponent;
 import mnm.mods.util.gui.GuiText;
-import mnm.mods.util.gui.events.GuiMouseEvent;
 import mnm.mods.util.text.FancyFontRenderer;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.gui.IGuiEventListener;
+import net.minecraft.client.gui.IGuiEventListenerDeferred;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -23,13 +24,12 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import org.lwjgl.opengl.GL11;
 
-import java.awt.Dimension;
-import java.awt.Rectangle;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-public class TextBox extends GuiComponent implements ChatInput {
+public class TextBox extends GuiComponent implements IGuiEventListenerDeferred {
 
     private static final TexturedModal MODAL = new TexturedModal(ChatBox.GUI_LOCATION, 0, 219, 254, 37);
 
@@ -37,7 +37,7 @@ public class TextBox extends GuiComponent implements ChatInput {
     // Dummy textField
     private GuiText textField = new GuiText(new GuiTextField(0, fr, 0, 0, 0, 0) {
         @Override
-        public void drawTextBox() {
+        public void drawTextField(int x, int y, float parTicks) {
             // noop
         }
     });
@@ -46,10 +46,17 @@ public class TextBox extends GuiComponent implements ChatInput {
 
     TextBox() {
         textField.getTextField().setMaxStringLength(ChatManager.MAX_CHAT_LENGTH);
-        textField.setFocused(true);
         textField.getTextField().setCanLoseFocus(false);
+        textField.getTextField().setEnableBackgroundDrawing(false);
+        textField.getTextField().setFocused(true);
 
-        spellcheck = TabbyChat.getInstance().getSpellcheck();
+        spellcheck = TabbyChatClient.getInstance().getSpellcheck();
+    }
+
+    @Nullable
+    @Override
+    public IGuiEventListener getFocused() {
+        return textField;
     }
 
     @Override
@@ -59,7 +66,7 @@ public class TextBox extends GuiComponent implements ChatInput {
     }
 
     @Override
-    public void drawComponent(int mouseX, int mouseY) {
+    public void render(int mouseX, int mouseY, float parTicks) {
         GlStateManager.enableBlend();
         drawModalCorners(MODAL);
         GlStateManager.disableBlend();
@@ -87,6 +94,8 @@ public class TextBox extends GuiComponent implements ChatInput {
         int start = Math.min(pos, sel);
         int end = Math.max(pos, sel);
 
+        ILocation loc = getLocation();
+
         for (String text : getWrappedLines()) {
 
             // cursor drawing
@@ -96,9 +105,11 @@ public class TextBox extends GuiComponent implements ChatInput {
                 boolean cursorBlink = this.cursorCounter / 6 % 3 != 0;
                 if (cursorBlink) {
                     if (textField.getCursorPosition() < this.textField.getValue().length()) {
-                        drawVerticalLine(c + 3, line - 2, line + fr.FONT_HEIGHT + 1, 0xffd0d0d0);
+                        drawVerticalLine(loc.getXPos() + c + 3,
+                                loc.getYPos() + line - 2,
+                                loc.getYPos() + line + fr.FONT_HEIGHT + 1, 0xffd0d0d0);
                     } else {
-                        fr.drawString("_", c + 2, line + 1, getPrimaryColorProperty().getHex());
+                        fr.drawString("_", loc.getXPos() + c + 2, loc.getYPos() + line + 1, getPrimaryColorProperty().getHex());
                     }
 
                 }
@@ -168,18 +179,25 @@ public class TextBox extends GuiComponent implements ChatInput {
         FancyFontRenderer ffr = new FancyFontRenderer(fr);
         int yPos = 1;
         List<ITextComponent> lines = getFormattedLines();
+        ILocation loc = getLocation();
         for (ITextComponent line : lines) {
             Color color = Color.WHITE;
-            ffr.drawChat(line, 3, yPos, color.getHex(), false);
+            ffr.drawChat(line, loc.getXPos() + 3, loc.getYPos() + yPos, color.getHex(), false);
             yPos += fr.FONT_HEIGHT + 2;
         }
 
     }
 
     /**
-     * Draws the blue selection box. Adapted from {@link GuiTextField#drawSelectionBox(int, int, int, int)}
+     * Draws the blue selection box. Adapted from {@code GuiTextField#drawSelectionBox(int, int, int, int)}
      */
     private void drawSelectionBox(int x1, int y1, int x2, int y2) {
+        ILocation loc = getLocation();
+        x1 += loc.getXPos();
+        x2 += loc.getXPos();
+        y1 += loc.getYPos();
+        y2 += loc.getYPos();
+
         if (x1 < x2) {
             int i = x1;
             x1 = x2;
@@ -197,10 +215,10 @@ public class TextBox extends GuiComponent implements ChatInput {
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
-        GlStateManager.color(0.0F, 0.0F, 255.0F, 255.0F);
+        GlStateManager.color4f(0.0F, 0.0F, 255.0F, 255.0F);
         GlStateManager.disableTexture2D();
         GlStateManager.enableColorLogic();
-        GlStateManager.colorLogicOp(GlStateManager.LogicOp.OR_REVERSE);
+        GlStateManager.logicOp(GlStateManager.LogicOp.OR_REVERSE);
         bufferbuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
         bufferbuilder.pos(x1, y2, 0.0D).endVertex();
         bufferbuilder.pos(x2, y2, 0.0D).endVertex();
@@ -213,18 +231,17 @@ public class TextBox extends GuiComponent implements ChatInput {
 
 
     @Override
-    public void updateComponent() {
+    public void tick() {
         this.cursorCounter++;
     }
 
-    @Override
     public List<String> getWrappedLines() {
-        return fr.listFormattedStringToWidth(textField.getValue(), getBounds().width);
+        return fr.listFormattedStringToWidth(textField.getValue(), getLocation().getWidth());
     }
 
     private List<ITextComponent> getFormattedLines() {
         List<String> lines = getWrappedLines();
-        if (TabbyChat.getInstance().settings.advanced.spelling.get()) {
+        if (TabbyChatClient.getInstance().getSettings().advanced.spelling.get()) {
             spellcheck.checkSpelling(textField.getValue());
             return lines.stream()
                     .map(new SpellingFormatter(spellcheck))
@@ -237,40 +254,33 @@ public class TextBox extends GuiComponent implements ChatInput {
 
     @Override
     @Nonnull
-    public Dimension getMinimumSize() {
-        return new Dimension(100, (fr.FONT_HEIGHT + 2) * getWrappedLines().size());
+    public Dim getMinimumSize() {
+        return new Dim(100, (fr.FONT_HEIGHT + 2) * getWrappedLines().size());
     }
 
     public GuiText getTextField() {
         return textField;
     }
 
-    @Override
     public String getText() {
         return textField.getValue();
     }
 
-    @Override
     public void setText(String text) {
         textField.setValue(text);
     }
 
-    @Subscribe
-    public void onMouseClick(GuiMouseEvent event) {
-        mouseClicked(event.getMouseX(), event.getMouseY(), event.getButton());
-    }
-
-
-    private void mouseClicked(int x, int y, int mouseButton) {
+    @Override
+    public boolean mouseClicked(double x, double y, int mouseButton) {
         if (mouseButton == 0) {
-            Rectangle bounds = this.getBounds();
+            ILocation bounds = this.getLocation();
 
-            int width = bounds.width - 1;
-            int row = y / (fr.FONT_HEIGHT + 2);
+            int width = bounds.getWidth() - 1;
+            int row = (int) y / (fr.FONT_HEIGHT + 2);
 
             List<String> lines = getWrappedLines();
             if (row < 0 || row >= lines.size() || x < 0 || x > width) {
-                return;
+                return false;
             }
             int index = 0;
             for (int i = 0; i < row; i++) {
@@ -280,18 +290,15 @@ public class TextBox extends GuiComponent implements ChatInput {
                     index++;
                 }
             }
-            index += fr.trimStringToWidth(lines.get(row), x - 3).length();
+            index += fr.trimStringToWidth(lines.get(row), (int) x - 3).length();
             textField.getTextField().setCursorPosition(index);
+            return true;
         }
-    }
-
-    @Override
-    public Rectangle getBounds() {
-        return this.getLocation().asRectangle();
+        return false;
     }
 
     @Override
     public boolean isVisible() {
-        return super.isVisible() && GuiNewChatTC.getInstance().getChatOpen();
+        return super.isVisible() && mc.ingameGUI.getChatGUI().getChatOpen();
     }
 }

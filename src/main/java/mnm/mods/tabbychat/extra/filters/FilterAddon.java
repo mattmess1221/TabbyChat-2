@@ -4,13 +4,13 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.eventbus.Subscribe;
-import mnm.mods.tabbychat.TabbyChat;
+import mnm.mods.tabbychat.TabbyChatClient;
 import mnm.mods.tabbychat.api.events.ChatMessageEvent.ChatReceivedEvent;
 import mnm.mods.tabbychat.api.filters.Filter;
 import mnm.mods.tabbychat.api.filters.FilterEvent;
 import mnm.mods.tabbychat.settings.ServerSettings;
 import net.minecraft.client.Minecraft;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.List;
 import java.util.Map;
@@ -31,11 +31,11 @@ public class FilterAddon {
 
         variables.clear();
 
-        Minecraft mc = Minecraft.getMinecraft();
-        setVariable("player", () -> Pattern.quote(mc.player.getName()));
+        Minecraft mc = Minecraft.getInstance();
+        setVariable("player", () -> Pattern.quote(mc.getSession().getUsername()));
         setVariable("onlineplayer", () -> Joiner.on('|')
                 .appendTo(new StringBuilder("(?:"), mc.world.playerEntities.stream()
-                        .map(player -> Pattern.quote(player.getName()))
+                        .map(player -> Pattern.quote(player.getName().getString()))
                         .iterator())
                 .append(')').toString()
         );
@@ -51,9 +51,9 @@ public class FilterAddon {
                 .orElse("");
     }
 
-    @Subscribe
+    @SubscribeEvent
     public void onChatRecieved(ChatReceivedEvent message) {
-        ServerSettings settings = TabbyChat.getInstance().serverSettings;
+        ServerSettings settings = TabbyChatClient.getInstance().getServerSettings();
         if (settings == null) {
             // We're possibly not in game.
             return;

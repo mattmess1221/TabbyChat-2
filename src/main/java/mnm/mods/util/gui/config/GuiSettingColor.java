@@ -1,11 +1,9 @@
 package mnm.mods.util.gui.config;
 
-import com.google.common.eventbus.Subscribe;
 import mnm.mods.util.Color;
 import mnm.mods.util.ILocation;
 import mnm.mods.util.config.Value;
 import mnm.mods.util.gui.GuiSelectColor;
-import mnm.mods.util.gui.events.ActionPerformedEvent;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.util.ResourceLocation;
 
@@ -27,13 +25,17 @@ public class GuiSettingColor extends GuiSetting<Color> implements Consumer<Color
         super(setting);
     }
 
-    @Subscribe
-    public void selectColor(ActionPerformedEvent event) {
-        getParent().ifPresent(p -> p.setOverlay(new GuiSelectColor(GuiSettingColor.this, getValue())));
+    @Override
+    public boolean mouseClicked(double x, double y, int button) {
+        if (getLocation().contains(x, y) && button == 0) {
+            getParent().ifPresent(p -> p.setOverlay(new GuiSelectColor(GuiSettingColor.this, getValue())));
+            return true;
+        }
+        return false;
     }
 
     @Override
-    public void drawComponent(int mouseX, int mouseY) {
+    public void render(int mouseX, int mouseY, float parTicks) {
         ILocation loc = getLocation();
         mc.getTextureManager().bindTexture(TRANSPARENCY);
         Gui.drawModalRectWithCustomSizedTexture(0, 0, 0, 0, loc.getWidth(), loc.getHeight(), 6, 6);
@@ -47,7 +49,7 @@ public class GuiSettingColor extends GuiSetting<Color> implements Consumer<Color
     @Override
     public void accept(Color input) {
         setValue(input);
-        getParent().ifPresent( p -> p.setOverlay(null));
+        getParent().ifPresent(p -> p.setOverlay(null));
     }
 
     @Override

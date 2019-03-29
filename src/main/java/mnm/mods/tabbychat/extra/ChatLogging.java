@@ -1,52 +1,59 @@
 package mnm.mods.tabbychat.extra;
 
-import com.google.common.eventbus.Subscribe;
+import io.netty.channel.local.LocalAddress;
+import javafx.scene.control.Tab;
 import mnm.mods.tabbychat.TabbyChat;
+import mnm.mods.tabbychat.TabbyChatClient;
 import mnm.mods.tabbychat.api.events.ChatMessageEvent.ChatReceivedEvent;
 import mnm.mods.util.IPUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.compress.compressors.gzip.GzipUtils;
-import org.apache.commons.io.Charsets;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Collection;
 
 public class ChatLogging {
 
     private static final SimpleDateFormat LOG_NAME_FORMAT = new SimpleDateFormat("yyyy'-'MM'-'dd");
     private static final SimpleDateFormat LOG_FORMAT = new SimpleDateFormat("'['HH':'mm':'ss'] '");
-    private final File directory;
+    private final Path directory;
 
     private Calendar date;
-    private InetSocketAddress server;
-    private File logFile;
+    private SocketAddress server;
+    private Path logFile;
     private PrintStream out;
 
-    public ChatLogging(File dir) {
+    public ChatLogging(Path dir) {
         this.directory = dir;
-        compressLogs();
+        try {
+            compressLogs();
+        } catch (IOException e) {
+            TabbyChat.logger.error("Errored while compressing logs", e);
+        }
     }
 
-    @Subscribe
+    @SubscribeEvent
     public void onChatRecieved(ChatReceivedEvent message) {
-        if (TabbyChat.getInstance().settings.general.logChat.get()) {
+        if (TabbyChatClient.getInstance().getSettings().general.logChat.get()) {
 
             checkLog();
             if (out == null) {
                 return;
             }
 
-            out.println(LOG_FORMAT.format(Calendar.getInstance().getTime()) + message.text.getUnformattedText());
+            out.println(LOG_FORMAT.format(Calendar.getInstance().getTime()) + message.text.getString());
         }
     }
 
@@ -59,16 +66,15 @@ public class ChatLogging {
         if (shouldChangeLogFile()) {
             Calendar prev = date;
             date = cal;
-            server = TabbyChat.getInstance().getCurrentServer();
+            server = Minecraft.getInstance().player.connection.getNetworkManager().getRemoteAddress();
             try {
-
-                File old = logFile;
+                Path old = logFile;
                 String server = getLogFolder();
-                logFile = findFile(new File(directory, server));
-                logFile.getParentFile().mkdirs();
-                logFile.createNewFile();
+                logFile = findFile(directory.resolve(server));
+                Files.createDirectories(logFile.getParent());
+                Files.createFile(logFile);
                 IOUtils.closeQuietly(out);
-                this.out = new PrintStream(new FileOutputStream(logFile, true), true, "UTF-8");
+                this.out = new PrintStream(Files.newOutputStream(logFile, StandardOpenOption.APPEND), true, "UTF-8");
 
                 // compress log
                 if (prev != null && prev.get(Calendar.DATE) != date.get(Calendar.DATE)) {
@@ -76,7 +82,7 @@ public class ChatLogging {
                 }
 
             } catch (IOException e) {
-                TabbyChat.getLogger().warn("Unable to create log file", e);
+                TabbyChat.logger.warn("Unable to create log file", e);
                 this.date = null;
                 this.out = null;
             }
@@ -89,71 +95,66 @@ public class ChatLogging {
             return true;
         }
         boolean day = Calendar.getInstance().get(Calendar.DATE) != date.get(Calendar.DATE);
-        boolean ip = TabbyChat.getInstance().getCurrentServer() != server;
+        boolean ip = TabbyChatClient.getInstance().getServerSettings().getSocket() != server;
         return day || ip;
     }
 
-    private void compressLogs() {
-        if (!directory.exists()) {
+    private void compressLogs() throws IOException {
+        if (Files.notExists(directory)) {
             return;
         }
-        Collection<File> logs = FileUtils.listFiles(directory, new String[] { "log" }, true);
-        for (File file : logs) {
+
+        Files.find(directory, 1, ChatLogging::isLogFile).forEach(file -> {
             try {
                 gzipFile(file);
             } catch (IOException e) {
-                e.printStackTrace();
+                TabbyChat.logger.warn("Unable to compress log {}.", file.getFileName(), e);
             }
-        }
+        });
+
     }
 
-    private static void gzipFile(File file) throws IOException {
-        if (file == null) {
-            return;
-        }
-        String name = GzipUtils.getCompressedFilename(file.getName());
-        File dest = new File(file.getParentFile(), name);
-        try (FileOutputStream os = new FileOutputStream(dest)) {
-            // read the contents
-            String contents = FileUtils.readFileToString(file, Charsets.UTF_8);
-            try (OutputStream gzip = new GzipCompressorOutputStream(os)) {
-                // write / compress
-                IOUtils.write(contents, gzip, Charsets.UTF_8);
-            }
+    private static boolean isLogFile(Path file, BasicFileAttributes attrs) {
+        return file.endsWith(".log");
+    }
 
-        } finally {
-            file.delete(); // delete the file
+    private static void gzipFile(Path file) throws IOException {
+        String name = GzipUtils.getCompressedFilename(file.getFileName().toString());
+        Path dest = file.resolveSibling(name);
+        try (OutputStream os = new GzipCompressorOutputStream(Files.newOutputStream(dest))) {
+            // Copy contents to gzip stream
+            Files.copy(file, os);
+            Files.delete(file); // delete the file
         }
     }
 
     private String getLogFolder() {
         String ip;
-        if (Minecraft.getMinecraft().isSingleplayer() || server == null) {
+        if (this.server instanceof LocalAddress || server == null) {
             ip = "singleplayer";
         } else {
-            String url = server.getHostName();
-            ip = IPUtils.parse(url).getFileSafeAddress();
+            ip = IPUtils.getFileSafeAddress((InetSocketAddress) server);
         }
         return ip;
     }
 
-    private static File findFile(File dir) {
+    private static Path findFile(Path dir) {
         String date = LOG_NAME_FORMAT.format(Calendar.getInstance().getTime());
-        File file = new File(dir, date + ".log");
+        Path file = dir.resolve(date + ".log");
         int i = 0;
         while (fileExists(file)) {
             i++;
-            file = new File(dir, date + "-" + i + ".log");
+            file = dir.resolve(String.format("%s-%d.log", date, i));
         }
 
         return file;
     }
 
-    private static boolean fileExists(File file) {
-        if (!file.exists()) {
-            String gzip = GzipUtils.getCompressedFilename(file.getName());
-            file = new File(file.getParentFile(), gzip);
+    private static boolean fileExists(Path file) {
+        if (Files.notExists(file)) {
+            String gzip = GzipUtils.getCompressedFilename(file.getFileName().toString());
+            file = file.resolveSibling(gzip);
         }
-        return file.exists();
+        return Files.exists(file);
     }
 }

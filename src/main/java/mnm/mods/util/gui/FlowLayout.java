@@ -1,8 +1,10 @@
 package mnm.mods.util.gui;
 
 import com.google.common.collect.Lists;
+import mnm.mods.util.Dim;
 import mnm.mods.util.ILocation;
 import mnm.mods.util.Location;
+import mnm.mods.util.Vec;
 
 import java.awt.Dimension;
 import java.util.List;
@@ -28,37 +30,38 @@ public class FlowLayout implements ILayout {
 
     @Override
     public void layoutComponents(GuiPanel parent) {
-        parent.getParent().ifPresent(p -> {
-            int xPos = 0;
-            int yPos = 0;
-            int maxH = 0;
-            for (GuiComponent comp : components) {
-                Dimension size = comp.getMinimumSize();
-                if (xPos + size.width >= p.getLocation().getWidth()) {
-                    // wrapping
-                    xPos = 0;
-                    yPos += maxH;
-                    maxH = 0;
-                }
-                comp.setLocation(new Location(xPos, yPos, size.width, size.height));
 
-                maxH = Math.max(maxH, size.height);
-                xPos += size.width;
+        ILocation loc = parent.getLocation();
+        int xPos = loc.getXPos();
+        int yPos = loc.getYPos();
+        int maxH = 0;
+        for (GuiComponent comp : components) {
+            Dim size = comp.getMinimumSize();
+            if (xPos + size.width > loc.getXWidth()) {
+                // wrapping
+                xPos = loc.getXPos();
+                yPos += maxH;
+                maxH = 0;
             }
-        });
+            comp.setLocation(new Location(xPos, yPos, size.width, size.height));
+
+            maxH = Math.max(maxH, size.height);
+            xPos += size.width;
+        }
+
     }
 
     @Override
-    public Dimension getLayoutSize() {
+    public Dim getLayoutSize() {
         int width = 0;
         int height = 0;
 
         for (GuiComponent comp : components) {
             ILocation loc = comp.getLocation();
-            width = Math.max(width, loc.getXPos() + loc.getWidth());
-            height = Math.max(height, loc.getYPos() + loc.getHeight());
+            width += loc.getWidth();
+            height = Math.max(height, loc.getHeight());
         }
-        return new Dimension(width, height);
+        return new Dim(width, height);
     }
 
 }

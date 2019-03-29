@@ -1,11 +1,13 @@
 package mnm.mods.util.gui;
 
-import java.awt.Dimension;
 import java.util.List;
 
 import com.google.common.collect.Lists;
 
+import mnm.mods.util.Dim;
+import mnm.mods.util.ILocation;
 import mnm.mods.util.Location;
+import mnm.mods.util.Vec;
 
 /**
  * Displays components top to bottom. Like {@link FlowLayout}, but vertical.
@@ -37,10 +39,11 @@ public class VerticalLayout implements ILayout {
 
     @Override
     public void layoutComponents(GuiPanel parent) {
-        int y = 0;
+        ILocation par = parent.getLocation();
+        int y = par.getYPos();
         for (GuiComponent comp : list) {
             Location loc = comp.getLocation().copy();
-            loc.setXPos(0);
+            loc.setXPos(par.getXPos());
             loc.setYPos(y);
             comp.setLocation(loc);
             y += comp.getMinimumSize().height;
@@ -48,13 +51,13 @@ public class VerticalLayout implements ILayout {
     }
 
     @Override
-    public Dimension getLayoutSize() {
+    public Dim getLayoutSize() {
         int width = 0;
         int height = 0;
         for (GuiComponent comp : list) {
             width = Math.max(width, comp.getLocation().getWidth());
             height += comp.getMinimumSize().height;
         }
-        return new Dimension(width, height);
+        return new Dim(width, height);
     }
 }

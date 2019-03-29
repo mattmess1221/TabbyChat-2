@@ -1,9 +1,8 @@
 package mnm.mods.util.gui;
 
-import com.google.common.eventbus.Subscribe;
 import mnm.mods.util.Color;
 import mnm.mods.util.ILocation;
-import mnm.mods.util.gui.events.ActionPerformedEvent;
+import mnm.mods.util.Location;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 
@@ -14,8 +13,8 @@ import javax.annotation.Nonnull;
  * Input for numbers, also known as a slider. Use {@link DoubleUpDown} for
  * doubles and {@link IntUpDown} for integers.
  *
- * @author Matthew
  * @param <T> The number type.
+ * @author Matthew
  */
 public abstract class GuiNumericUpDown<T extends Number> extends GuiPanel implements IGuiInput<T> {
 
@@ -31,7 +30,7 @@ public abstract class GuiNumericUpDown<T extends Number> extends GuiPanel implem
         setLayout(new BorderLayout());
 
         {
-            GuiPanel text = new GuiPanel();
+            GuiPanel text = new GuiPanel(new AbsoluteLayout());
             GuiRectangle rect = new GuiRectangle() {
                 @Nonnull
                 @Override
@@ -47,17 +46,16 @@ public abstract class GuiNumericUpDown<T extends Number> extends GuiPanel implem
                     return new TextComponentString(format.format(getValue()));
                 }
             };
-            label.setLocation(label.getLocation().copy().setXPos(5).setYPos(0));
-            text.addComponent(label);
+            text.addComponent(label, new Location(5, 1, 0, 0));
 
             addComponent(text, BorderLayout.Position.CENTER);
         }
         {
-            GuiPanel pnlButtons = new GuiPanel(new GuiGridLayout(1, 2));
+            GuiPanel pnlButtons = new GuiPanel(new AbsoluteLayout());
             GuiButton up = new UpDown("\u2191", 1); // up arrow
             GuiButton down = new UpDown("\u2193", -1); // down arrow
-            pnlButtons.addComponent(up, new int[] { 0, 0 });
-            pnlButtons.addComponent(down, new int[] { 0, 1 });
+            pnlButtons.addComponent(up, new Location(0, 0, 5, 5));
+            pnlButtons.addComponent(down, new Location(0, 5, 5, 5));
 
             addComponent(pnlButtons, BorderLayout.Position.EAST);
         }
@@ -170,16 +168,8 @@ public abstract class GuiNumericUpDown<T extends Number> extends GuiPanel implem
             setSecondaryColor(Color.DARK_GRAY);
         }
 
-        @Nonnull
         @Override
-        public ILocation getLocation() {
-            return super.getLocation().copy()
-                        .setWidth(6)
-                        .setHeight(6).asImmutable();
-        }
-
-        @Subscribe
-        public void action(ActionPerformedEvent event) {
+        public void onClick(double mouseX, double mouseY) {
             increment(direction);
         }
     }

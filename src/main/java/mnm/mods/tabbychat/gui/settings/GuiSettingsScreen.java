@@ -2,10 +2,8 @@ package mnm.mods.tabbychat.gui.settings;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.eventbus.Subscribe;
-import com.mumfrey.liteloader.core.LiteLoader;
-import mnm.mods.tabbychat.ChatManager;
 import mnm.mods.tabbychat.TabbyChat;
+import mnm.mods.tabbychat.TabbyChatClient;
 import mnm.mods.util.Color;
 import mnm.mods.util.ILocation;
 import mnm.mods.util.Location;
@@ -17,10 +15,10 @@ import mnm.mods.util.gui.GuiComponent;
 import mnm.mods.util.gui.GuiPanel;
 import mnm.mods.util.gui.VerticalLayout;
 import mnm.mods.util.gui.config.SettingPanel;
-import mnm.mods.util.gui.events.ActionPerformedEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -54,7 +52,7 @@ public class GuiSettingsScreen extends ComponentScreen {
                     panels.add(sett.getValue().get());
                 }
             } catch (Exception e) {
-                TabbyChat.getLogger().error("Unable to add " + sett.getKey().getName() + " as a setting.", e);
+                TabbyChat.logger.error("Unable to add {} as a setting.", sett.getKey(), e);
             }
         }
     }
@@ -73,27 +71,25 @@ public class GuiSettingsScreen extends ComponentScreen {
         this.panel.addComponent(panel, BorderLayout.Position.WEST);
         panel.addComponent(settingsList = new GuiPanel(new VerticalLayout()), BorderLayout.Position.WEST);
 
-        GuiButton close = new GuiButton("Close");
+        GuiButton close = new GuiButton("Close") {
+            @Override
+            public void onClick(double mouseX, double mouseY) {
+                mc.displayGuiScreen(null);
+            }
+        };
         close.setLocation(new Location(0, 0, 40, 10));
         close.setSecondaryColor(Color.of(0, 255, 0, 127));
-        close.getBus().register(new Object() {
-            @Subscribe
-            public void closeTheScreen(ActionPerformedEvent event) {
-                Minecraft.getMinecraft().displayGuiScreen(null);
-            }
-        });
         panel.addComponent(close, BorderLayout.Position.SOUTH);
 
         {
             // Populate the settings
             for (SettingPanel<?> sett : panels) {
-                SettingsButton button = new SettingsButton(sett);
-                button.getBus().register(new Object() {
-                    @Subscribe
-                    public void switchToThisPanel(ActionPerformedEvent event) {
-                        selectSetting(((SettingsButton) event.getComponent()).getSettings());
+                SettingsButton button = new SettingsButton(sett) {
+                    @Override
+                    public void onClick(double mouseX, double mouseY) {
+                        selectSetting(getSettings());
                     }
-                });
+                };
                 settingsList.addComponent(button);
                 sett.initGUI();
             }
@@ -112,9 +108,13 @@ public class GuiSettingsScreen extends ComponentScreen {
         super.onGuiClosed();
         for (SettingPanel<?> settingPanel : panels) {
             SettingsFile config = settingPanel.getSettings();
-            LiteLoader.getInstance().writeConfig(config);
+            try {
+                config.save();
+            } catch (IOException e) {
+                TabbyChat.logger.warn("Unable to save server config", e);
+            }
         }
-        ((ChatManager) TabbyChat.getInstance().getChat()).getChatBox().getChatArea().markDirty();
+        TabbyChatClient.getInstance().getChat().getChatBox().getChatArea().markDirty();
     }
 
     @Override
@@ -124,7 +124,7 @@ public class GuiSettingsScreen extends ComponentScreen {
     }
 
     private void deactivateAll() {
-        for (GuiComponent comp : settingsList) {
+        for (GuiComponent comp : settingsList.getChildren()) {
             if (comp instanceof SettingsButton) {
                 ((SettingsButton) comp).setActive(false);
             }
@@ -132,7 +132,7 @@ public class GuiSettingsScreen extends ComponentScreen {
     }
 
     private <T extends SettingPanel<?>> void activate(Class<T> settingClass) {
-        for (GuiComponent comp : settingsList) {
+        for (GuiComponent comp : settingsList.getChildren()) {
             if (comp instanceof SettingsButton
                     && ((SettingsButton) comp).getSettings().getClass().equals(settingClass)) {
                 ((SettingsButton) comp).setActive(true);
@@ -142,11 +142,11 @@ public class GuiSettingsScreen extends ComponentScreen {
     }
 
     @Override
-    public void drawScreen(int mouseX, int mouseY, float tick) {
+    public void render(int mouseX, int mouseY, float tick) {
         // drawDefaultBackground();
         ILocation rect = panel.getLocation();
         Gui.drawRect(rect.getXPos(), rect.getYPos(), rect.getXWidth(), rect.getYHeight(), Integer.MIN_VALUE);
-        super.drawScreen(mouseX, mouseY, tick);
+        super.render(mouseX, mouseY, tick);
     }
 
     private void selectSetting(SettingPanel<?> setting) {

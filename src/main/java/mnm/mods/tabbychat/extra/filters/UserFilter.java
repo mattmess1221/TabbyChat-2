@@ -1,15 +1,17 @@
 package mnm.mods.tabbychat.extra.filters;
 
+import mnm.mods.tabbychat.TabbyChatClient;
 import mnm.mods.tabbychat.api.Channel;
-import mnm.mods.tabbychat.api.TabbyAPI;
 import mnm.mods.tabbychat.api.filters.Filter;
 import mnm.mods.tabbychat.api.filters.FilterEvent;
 import mnm.mods.tabbychat.api.filters.FilterSettings;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.PositionedSoundRecord;
+import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,7 +32,7 @@ public class UserFilter implements Filter {
         this.expression = null;
     }
 
-    public void testPattern(String pattern) throws UserPatternException {
+    void testPattern(String pattern) throws UserPatternException {
         try {
             testPatternUnsafe(pattern);
         } catch (PatternSyntaxException e) {
@@ -42,6 +44,7 @@ public class UserFilter implements Filter {
         Pattern.compile(resolvePattern(pattern));
     }
 
+    @SuppressWarnings("MagicConstant")
     @Override
     public Pattern getPattern() {
         if (expression == null) {
@@ -110,16 +113,16 @@ public class UserFilter implements Filter {
             if (name.startsWith("#") || name.startsWith("@"))
                 name = name.substring(1);
 
-            Channel channel = TabbyAPI.getAPI().getChat().getChannel(name, pm);
+            Channel channel = TabbyChatClient.getInstance().getChat().getChannel(name, pm);
             event.channels.add(channel);
         }
         // play sound
         if (settings.isSoundNotification()) {
             settings.getSoundName()
                     .map(ResourceLocation::new)
-                    .map(SoundEvent.REGISTRY::getObject)
-                    .map(sndEvent -> PositionedSoundRecord.getMasterRecord(sndEvent, 1.0F))
-                    .ifPresent(Minecraft.getMinecraft().getSoundHandler()::playSound);
+                    .map(ForgeRegistries.SOUND_EVENTS::getValue)
+                    .map(sndEvent -> SimpleSound.master(sndEvent, 1.0F))
+                    .ifPresent(Minecraft.getInstance().getSoundHandler()::play);
 
         }
     }

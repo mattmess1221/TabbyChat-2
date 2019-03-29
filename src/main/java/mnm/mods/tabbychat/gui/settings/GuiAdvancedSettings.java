@@ -2,7 +2,7 @@ package mnm.mods.tabbychat.gui.settings;
 
 import static mnm.mods.tabbychat.util.Translation.*;
 
-import mnm.mods.tabbychat.TabbyChat;
+import mnm.mods.tabbychat.TabbyChatClient;
 import mnm.mods.tabbychat.settings.TabbySettings;
 import mnm.mods.tabbychat.util.ChatVisibility;
 import mnm.mods.util.Color;
@@ -49,6 +49,6 @@ public class GuiAdvancedSettings extends SettingPanel<TabbySettings> {
 
     @Override
     public TabbySettings getSettings() {
-        return TabbyChat.getInstance().settings;
+        return TabbyChatClient.getInstance().getSettings();
     }
 }

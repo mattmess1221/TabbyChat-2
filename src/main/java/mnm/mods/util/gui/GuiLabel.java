@@ -1,5 +1,6 @@
 package mnm.mods.util.gui;
 
+import mnm.mods.util.ILocation;
 import mnm.mods.util.text.FancyFontRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -17,7 +18,7 @@ public class GuiLabel extends GuiComponent {
     private float angle;
 
     public GuiLabel() {
-        this.fr = new FancyFontRenderer(Minecraft.getMinecraft().fontRenderer);
+        this.fr = new FancyFontRenderer(Minecraft.getInstance().fontRenderer);
     }
 
     /**
@@ -31,21 +32,22 @@ public class GuiLabel extends GuiComponent {
     }
 
     @Override
-    public void drawComponent(int mouseX, int mouseY) {
+    public void render(int mouseX, int mouseY, float parTicks) {
         if (getText() == null)
             return;
         GlStateManager.pushMatrix();
-        GlStateManager.rotate(angle, 0, 0, angle);
+
+        GlStateManager.rotatef(angle, 0, 0, angle);
         if (angle < 180) {
-            GlStateManager.translate(-angle / 1.5, -angle / 4, 0);
+            GlStateManager.translated(-angle / 1.5, -angle / 4, 0);
         } else {
-            GlStateManager.translate(-angle / 15, angle / 40, 0);
+            GlStateManager.translated(-angle / 15, angle / 40, 0);
         }
 
-        fr.drawChat(getText(), 0, 1, getPrimaryColorProperty().getHex(), true);
+        ILocation loc = getLocation();
+        fr.drawChat(getText(), loc.getXPos() + 3, loc.getYPos() + 3, getPrimaryColorProperty().getHex(), true);
 
         GlStateManager.popMatrix();
-        super.drawComponent(mouseX, mouseY);
     }
 
     /**

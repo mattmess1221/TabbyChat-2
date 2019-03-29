@@ -1,6 +1,5 @@
 package mnm.mods.util;
 
-
 import javax.annotation.concurrent.Immutable;
 
 @Immutable

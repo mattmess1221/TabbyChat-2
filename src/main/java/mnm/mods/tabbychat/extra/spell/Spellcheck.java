@@ -1,10 +1,6 @@
 package mnm.mods.tabbychat.extra.spell;
 
-import com.google.common.base.Charsets;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.common.io.Closeables;
-import com.google.common.io.Files;
 import com.swabunga.spell.engine.SpellDictionary;
 import com.swabunga.spell.engine.SpellDictionaryHashMap;
 import com.swabunga.spell.event.SpellCheckEvent;
@@ -12,70 +8,75 @@ import com.swabunga.spell.event.SpellChecker;
 import com.swabunga.spell.event.StringWordTokenizer;
 import mnm.mods.tabbychat.TabbyChat;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.IResourceManager;
-import net.minecraft.client.resources.IResourceManagerReloadListener;
+import net.minecraft.resources.IResourceManager;
 import net.minecraft.client.resources.Language;
+import net.minecraftforge.resource.IResourceType;
+import net.minecraftforge.resource.ISelectiveResourceReloadListener;
+import net.minecraftforge.resource.VanillaResourceType;
 
-import java.io.File;
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.Iterator;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nonnull;
+import java.util.function.Predicate;
 
-public class Spellcheck implements Iterable<SpellCheckEvent>, IResourceManagerReloadListener {
+public class Spellcheck implements ISelectiveResourceReloadListener {
 
-    private final File userFile;
+    private final Path userFile;
 
     private SpellChecker spellCheck;
-    private LangDict language;
     private SpellDictionary userDict;
     private List<SpellCheckEvent> errors = Lists.newArrayList();
 
-    public Spellcheck(File configDir) {
-        userFile = new File(configDir, "userdict.txt");
+    public Spellcheck(Path configDir) {
+        userFile = configDir.resolve("userdict.txt");
         this.loadCurrentLanguage();
     }
 
     public synchronized void loadDictionary(LangDict lang) throws IOException {
-        if (lang == null || lang.equals(language)) {
-            return;
-        }
-        InputStream in = null;
-        Reader read = null;
-        try {
-            try {
-                in = lang.openStream();
-            } catch (FileNotFoundException e) {
-                TabbyChat.getLogger().warn(e + " Falling back to English.");
-                lang = LangDict.ENGLISH;
-                in = lang.openStream();
-            }
-            read = new InputStreamReader(in);
+        try (Reader read = new InputStreamReader(openLangStream(lang))) {
             SpellDictionary dictionary = new SpellDictionaryHashMap(read);
             spellCheck = new SpellChecker(dictionary);
             spellCheck.setUserDictionary(userDict);
             spellCheck.addSpellCheckListener(errors::add);
-            this.language = lang;
-        } finally {
-            Closeables.closeQuietly(in);
-            Closeables.closeQuietly(read);
+        }
+    }
+
+    private InputStream openLangStream(LangDict lang) throws IOException {
+        try {
+            return lang.openStream();
+        } catch (FileNotFoundException e) {
+            if (lang == LangDict.ENGLISH) {
+                // Prevent StackOverflowException
+                throw e;
+            }
+            TabbyChat.logger.warn(e + " Falling back to English.");
+            return openLangStream(LangDict.ENGLISH);
         }
     }
 
     public synchronized void loadUserDictionary() throws IOException {
-        if (!userFile.exists()) {
-            userFile.getParentFile().mkdirs();
-            userFile.createNewFile();
-            Files.write("# User dictionary, one entry per line.", userFile, Charsets.UTF_8);
+        if (Files.notExists(userFile)) {
+            Files.createDirectories(userFile.getParent());
+            Files.createFile(userFile);
+            try (BufferedWriter w = Files.newBufferedWriter(userFile)) {
+                w.write("# User dictionary, one entry per line.");
+            }
         }
-        this.userDict = new UserDictionary(userFile);
-        // set it if it has been created yet.
-        if (this.spellCheck != null) {
-            this.spellCheck.setUserDictionary(this.userDict);
+        try (Reader r = Files.newBufferedReader(userFile)) {
+            this.userDict = new UserDictionary(r);
+
+            // set it if it has been created yet.
+            if (this.spellCheck != null) {
+                this.spellCheck.setUserDictionary(this.userDict);
+            }
         }
     }
 
@@ -84,12 +85,12 @@ public class Spellcheck implements Iterable<SpellCheckEvent>, IResourceManagerRe
         this.userDict.addWord(word);
     }
 
-    public LangDict getLanguage() {
-        return language;
+    public Path getUserDictionaryFile() {
+        return userFile;
     }
 
-    public File getUserDictionaryFile() {
-        return userFile;
+    public Iterable<SpellCheckEvent> getErrors() {
+        return Collections.unmodifiableList(this.errors);
     }
 
     public void checkSpelling(String string) {
@@ -100,23 +101,20 @@ public class Spellcheck implements Iterable<SpellCheckEvent>, IResourceManagerRe
     }
 
     @Override
-    public void onResourceManagerReload(@Nonnull IResourceManager resourceManager) {
-        loadCurrentLanguage();
-    }
-
-    private void loadCurrentLanguage() {
-        Language lang = Minecraft.getMinecraft().getLanguageManager().getCurrentLanguage();
-        try {
-            loadUserDictionary();
-            loadDictionary(LangDict.fromLanguage(lang));
-        } catch (IOException e) {
-            TabbyChat.getLogger().warn("Error while loading dictionary.", e);
+    public void onResourceManagerReload(IResourceManager resourceManager, Predicate<IResourceType> resourcePredicate) {
+        if (resourcePredicate.test(VanillaResourceType.LANGUAGES)) {
+            loadCurrentLanguage();
         }
     }
 
-    @Override
-    public Iterator<SpellCheckEvent> iterator() {
-        return ImmutableList.copyOf(errors).iterator();
+    private void loadCurrentLanguage() {
+        Language lang = Minecraft.getInstance().getLanguageManager().getCurrentLanguage();
+        try {
+            loadUserDictionary();
+            loadDictionary(LangDict.fromLanguage(lang.getLanguageCode()));
+        } catch (IOException e) {
+            TabbyChat.logger.warn("Error while loading dictionary {}.", lang.getLanguageCode(), e);
+        }
     }
 
 }

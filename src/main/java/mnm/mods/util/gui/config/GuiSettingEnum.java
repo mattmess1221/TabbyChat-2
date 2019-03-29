@@ -2,12 +2,9 @@ package mnm.mods.util.gui.config;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.eventbus.Subscribe;
 import mnm.mods.util.Color;
 import mnm.mods.util.ILocation;
 import mnm.mods.util.config.Value;
-import mnm.mods.util.gui.events.GuiMouseEvent;
-import mnm.mods.util.gui.events.GuiMouseEvent.MouseEvent;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.resources.I18n;
 import org.apache.commons.lang3.ArrayUtils;
@@ -56,17 +53,17 @@ public class GuiSettingEnum<T> extends GuiSetting<T> {
 
     }
 
-    @Subscribe
-    public void activate(GuiMouseEvent event) {
-        if (event.getType() == MouseEvent.CLICK) {
+    @Override
+    public boolean mouseClicked(double x, double y, int button) {
+        if (getLocation().contains(x, y)) {
             int selected = this.values.indexOf(value);
             int max = this.values.size();
             int mov = 0;
 
-            if (event.getButton() == 0) {
+            if (button == 0) {
                 // Left click, go forward
                 mov = 1;
-            } else if (event.getButton() == 1) {
+            } else if (button == 1) {
                 // Right click, go backward
                 mov = -1;
             }
@@ -78,18 +75,20 @@ public class GuiSettingEnum<T> extends GuiSetting<T> {
 
                 setValue(values.get(id));
             }
+            return true;
         }
+        return false;
     }
 
     @Override
-    public void drawComponent(int mouseX, int mouseY) {
+    public void render(int mouseX, int mouseY, float parTicks) {
         ILocation loc = this.getLocation();
-        Gui.drawRect(0, 0, loc.getWidth(), loc.getHeight(), 0xff000000);
+        Gui.drawRect(loc.getXPos(), loc.getYPos(), loc.getXWidth(), loc.getYHeight(), 0xff000000);
         String string = mc.fontRenderer.trimStringToWidth(text, loc.getWidth());
-        int xPos = loc.getWidth() / 2 - mc.fontRenderer.getStringWidth(string) / 2;
-        int yPos = loc.getHeight() / 2 - 4;
+        int xPos = loc.getXCenter() - mc.fontRenderer.getStringWidth(string) / 2;
+        int yPos = loc.getYCenter() - 4;
         mc.fontRenderer.drawString(string, xPos, yPos, getPrimaryColorProperty().getHex());
-        drawBorders(0, -1, loc.getWidth(), loc.getHeight() + 1);
+        drawBorders(loc.getXPos(), loc.getYPos(), loc.getXWidth(), loc.getYHeight());
     }
 
     @Override

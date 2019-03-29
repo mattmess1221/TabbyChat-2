@@ -3,12 +3,14 @@ package mnm.mods.util.text;
 import com.google.common.collect.Streams;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextComponentBase;
 import net.minecraft.util.text.TextComponentString;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Stream;
 
-public class FancyTextComponent implements ITextComponent {
+public class FancyTextComponent extends TextComponentBase {
 
     private final ITextComponent text;
     private FancyTextStyle style;
@@ -19,59 +21,17 @@ public class FancyTextComponent implements ITextComponent {
         this.text = parent;
     }
 
-    public FancyTextComponent(String string) {
-        this(new TextComponentString(string));
-    }
-
     @Override
     public String getUnformattedComponentText() {
         return text.getUnformattedComponentText();
     }
 
     @Override
-    public ITextComponent createCopy() {
-        ITextComponent text = this.text.createCopy();
+    public ITextComponent shallowCopy() {
+        ITextComponent text = this.text.shallowCopy();
         FancyTextComponent fcc = new FancyTextComponent(text);
         fcc.setFancyStyle(getFancyStyle().createCopy());
         return fcc;
-    }
-
-    @Override
-    public ITextComponent appendSibling(ITextComponent component) {
-        text.appendSibling(component);
-        return this;
-    }
-
-    @Override
-    public ITextComponent appendText(String text) {
-        this.text.appendText(text);
-        return this;
-    }
-
-    @Override
-    public Style getStyle() {
-        return text.getStyle();
-    }
-
-    @Override
-    public ITextComponent setStyle(Style style) {
-        text.setStyle(style);
-        return this;
-    }
-
-    @Override
-    public String getFormattedText() {
-        return text.getFormattedText();
-    }
-
-    @Override
-    public List<ITextComponent> getSiblings() {
-        return text.getSiblings();
-    }
-
-    @Override
-    public String getUnformattedText() {
-        return text.getUnformattedText();
     }
 
     @Override
@@ -80,6 +40,11 @@ public class FancyTextComponent implements ITextComponent {
         return Streams.stream(this.text.iterator())
                 .map(it -> it instanceof FancyTextComponent ? it
                         : new FancyTextComponent(it).setFancyStyle(this.getFancyStyle())).iterator();
+    }
+
+    @Override
+    public Stream<ITextComponent> stream() {
+        return Streams.concat(Stream.of(this), getSiblings().stream().flatMap(ITextComponent::stream));
     }
 
     public ITextComponent getText() {

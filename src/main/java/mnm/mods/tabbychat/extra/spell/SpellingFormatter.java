@@ -18,7 +18,7 @@ public class SpellingFormatter implements Function<String, ITextComponent> {
     private int totalLength;
 
     public SpellingFormatter(Spellcheck sp) {
-        spelling = sp.iterator();
+        spelling = sp.getErrors().iterator();
     }
 
     @Override

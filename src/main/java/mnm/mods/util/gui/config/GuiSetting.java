@@ -32,7 +32,7 @@ public abstract class GuiSetting<T> extends GuiComponent implements IGuiInput<T>
     }
 
     @Override
-    public void updateComponent() {
+    public void tick() {
         getSetting().set(getValue());
     }
 
@@ -50,8 +50,8 @@ public abstract class GuiSetting<T> extends GuiComponent implements IGuiInput<T>
         }
 
         @Override
-        public void updateComponent() {
-            super.updateComponent();
+        public void tick() {
+            super.tick();
             getSetting().set(getValue());
         }
 

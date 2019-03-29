@@ -1,70 +1,55 @@
 package mnm.mods.util.gui;
 
-import com.google.common.eventbus.EventBus;
 import mnm.mods.util.Color;
+import mnm.mods.util.Dim;
 import mnm.mods.util.ILocation;
 import mnm.mods.util.Location;
 import mnm.mods.util.TexturedModal;
-import mnm.mods.util.gui.events.ActionPerformedEvent;
-import mnm.mods.util.gui.events.GuiKeyboardEvent;
-import mnm.mods.util.gui.events.GuiMouseEvent;
-import mnm.mods.util.gui.events.GuiMouseEvent.MouseEvent;
+import mnm.mods.util.Vec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiEventHandler;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.fml.client.config.GuiUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.logging.log4j.LogManager;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 
-import java.awt.Dimension;
-import java.awt.Point;
+import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import javax.annotation.Nullable;
 
 /**
  * The base class for all gui components.
  *
  * @author Matthew
  */
-public abstract class GuiComponent extends Gui {
+public abstract class GuiComponent extends Gui implements IGuiEventListener {
 
     private boolean enabled = true;
     private boolean visible = true;
     private boolean hovered;
-    private boolean focused;
-    private int touchValue;
-    private int lastButton;
-    private long lastButtonTime;
 
-    protected Minecraft mc = Minecraft.getMinecraft();
+    protected Minecraft mc = Minecraft.getInstance();
 
     private Color secondaryColor;
     private Color primaryColor;
     private GuiPanel parent;
     private ILocation location = new Location();
-    private Dimension minimumSize = new Dimension();
-    private float scale = 1;
+    private Dim minimumSize = new Dim();
     private ITextComponent caption;
-
-    private EventBus bus = new EventBus((exception, context) -> LogManager.getLogger().throwing(exception));
-
-    public GuiComponent() {
-        this.bus.register(this);
-    }
 
     /**
      * Draws this component on screen.
-     *
-     * @param mouseX The mouse x
+     *  @param mouseX The mouse x
      * @param mouseY The mouse y
+     * @param parTicks
      */
-    public void drawComponent(int mouseX, int mouseY) {
+    public void render(int mouseX, int mouseY, float parTicks) {
     }
 
     public void drawCaption(int x, int y) {
@@ -82,18 +67,20 @@ public abstract class GuiComponent extends Gui {
         int w = 0;
         // find the largest width
         for (String s : list) {
-            w = Math.max(w, (int) (mc.fontRenderer.getStringWidth(s) * getActualScale()));
+            w = Math.max(w, (int) (mc.fontRenderer.getStringWidth(s)));
         }
         y -= mc.fontRenderer.FONT_HEIGHT * list.length;
 
-        Point point = getActualLocation().getPoint();
-        ScaledResolution sr = new ScaledResolution(mc);
+        Vec point = getLocation().getPoint();
+        int sw = mc.mainWindow.getScaledWidth();
         int w2 = w;
         int x2 = x;
-        while (x2 - 8 + point.x + w2 + 20 > sr.getScaledWidth()) {
+        while (x2 - 8 + point.x + w2 + 20 > sw) {
             x--;
             w2--;
         }
+        x += getLocation().getXPos();
+        y += getLocation().getYPos();
         // put it on top
         GlStateManager.pushMatrix();
         Gui.drawRect(x - 2, y - 2, x + w + 2, y + mc.fontRenderer.FONT_HEIGHT * list.length + 1,
@@ -143,70 +130,7 @@ public abstract class GuiComponent extends Gui {
     /**
      * Updates the component. Called when it is called on the {@link GuiScreen}.
      */
-    public void updateComponent() {
-    }
-
-    /**
-     * Handles the mouse input and sends it to the mouse and action listeners.
-     */
-    public void handleMouseInput() {
-        if (!isEnabled()) {
-            this.hovered = false;
-            return;
-        }
-        if (mc.currentScreen != null) {
-            float scale = getActualScale();
-            Point point = scalePoint(new Point(Mouse.getX(), Mouse.getY()), mc.currentScreen);
-            ILocation actual = getActualLocation();
-            // adjust for position and scale
-            int x = (int) ((point.x - actual.getXPos()) / scale);
-            int y = (int) ((point.y - actual.getYPos()) / scale);
-
-            int button = Mouse.getEventButton();
-            int scroll = Mouse.getEventDWheel();
-
-            this.hovered = point.x >= actual.getXPos() && point.x <= actual.getXWidth()
-                    && point.y >= actual.getYPos() && point.y <= actual.getYHeight();
-
-            getBus().post(new GuiMouseEvent(this, MouseEvent.RAW, x, y, button, scroll));
-
-            if (Mouse.getEventButtonState()) {
-                if (this.mc.gameSettings.touchscreen && this.touchValue++ > 0) {
-                    return;
-                }
-                lastButton = button;
-                lastButtonTime = Minecraft.getSystemTime();
-                if (isHovered()) {
-                    getBus().post(new GuiMouseEvent(this, MouseEvent.CLICK, x, y, button, 0));
-                    getBus().post(new ActionPerformedEvent(this));
-                }
-            } else if (button != -1) {
-                if (this.mc.gameSettings.touchscreen && --this.touchValue > 0) {
-                    return;
-                }
-                lastButton = -1;
-                if (isHovered())
-                    getBus().post(new GuiMouseEvent(this, MouseEvent.RELEASE, x, y, button, 0));
-            } else if (lastButton != -1 && lastButtonTime > 0) {
-                long buttonTime = Minecraft.getSystemTime() - this.lastButtonTime;
-                getBus().post(new GuiMouseEvent(this, MouseEvent.DRAG, x, y, this.lastButton, buttonTime));
-            }
-
-            if (scroll != 0) {
-                getBus().post(new GuiMouseEvent(this, MouseEvent.SCROLL, x, y, -1, -1, scroll));
-            }
-        }
-    }
-
-    /**
-     * Handles the keyboard input and sends it to the keyboard listeners.
-     */
-    public void handleKeyboardInput() {
-        int key = Keyboard.getEventKey();
-        char character = Keyboard.getEventCharacter();
-        long time = Keyboard.getEventNanoseconds();
-        GuiKeyboardEvent event = new GuiKeyboardEvent(this, key, character, time);
-        getBus().post(event);
+    public void tick() {
     }
 
     /**
@@ -233,18 +157,6 @@ public abstract class GuiComponent extends Gui {
      */
     public void setLocation(ILocation location) {
         this.location = location.asImmutable();
-    }
-
-    /**
-     * Gets the event bus used for the gui events for this component. This
-     * replaces the listener interfaces previously used. They should easily port
-     * over by adding a {@link com.google.common.eventbus.Subscribe} annotation
-     * to the method.
-     *
-     * @return The event bus
-     */
-    public EventBus getBus() {
-        return bus;
     }
 
     /**
@@ -292,49 +204,12 @@ public abstract class GuiComponent extends Gui {
             return Optional.empty();
     }
 
-    public ILocation getActualLocation() {
-        Location location = this.getLocation().copy();
-        location.scale(getActualScale());
-        getParent().map(GuiComponent::getActualLocation).ifPresent(loc1 ->
-                location.move(loc1.getXPos(), loc1.getYPos())
-        );
-        return location;
-    }
-
-    public void setMinimumSize(Dimension size) {
+    public void setMinimumSize(Dim size) {
         this.minimumSize = size;
     }
 
-    public Dimension getMinimumSize() {
+    public Dim getMinimumSize() {
         return minimumSize;
-    }
-
-    /**
-     * Sets the scale for this component.
-     *
-     * @param scale The scale
-     */
-    public void setScale(float scale) {
-        this.scale = scale;
-    }
-
-    /**
-     * Gets the scale for this component.
-     *
-     * @return The scale
-     */
-    public float getScale() {
-        return scale;
-    }
-
-    /**
-     * Gets the total scale of this component. Takes into account all the
-     * parents.
-     *
-     * @return The scale
-     */
-    protected float getActualScale() {
-        return getScale() * getParent().map(GuiComponent::getActualScale).orElse(1F);
     }
 
     public Optional<Color> getPrimaryColor() {
@@ -409,6 +284,7 @@ public abstract class GuiComponent extends Gui {
      *
      * @return THe hover state
      */
+    @Deprecated
     public boolean isHovered() {
         return hovered && getParent().map(GuiComponent::isHovered).orElse(true);
     }
@@ -434,41 +310,6 @@ public abstract class GuiComponent extends Gui {
         return Optional.ofNullable(caption);
     }
 
-    /**
-     * Gets the current focus of this component.
-     *
-     * @return The focus
-     */
-    public boolean isFocused() {
-        return focused;
-    }
-
-    /**
-     * Sets the component's focus
-     *
-     * @param focused The focus value
-     */
-    public void setFocused(boolean focused) {
-        // check if is focusable
-        if (isFocusable()) {
-            if (focused) {
-                // unfocus everything before focusing this one
-                getRootPanel().ifPresent(GuiPanel::unfocusAll);
-            }
-            this.focused = focused;
-        }
-        // otherwise ignore
-    }
-
-    /**
-     * Denotes if this is focusable. Override to change.
-     *
-     * @return Whether this is focusable
-     */
-    public boolean isFocusable() {
-        return false;
-    }
-
     private <T> T getProperty(final Function<GuiComponent, Optional<T>> prop, T def) {
         return getProperty(prop).orElse(def);
     }
@@ -482,20 +323,21 @@ public abstract class GuiComponent extends Gui {
         return result;
     }
 
-    protected static Point scalePoint(Point point, GuiScreen screen) {
-        Minecraft mc = Minecraft.getMinecraft();
-        int x = point.x * screen.width / mc.displayWidth;
-        int y = screen.height - point.y * screen.height / mc.displayHeight - 1;
-        return new Point(x, y);
+    protected static Vec scalePoint(Vec point, GuiScreen screen) {
+        Minecraft mc = Minecraft.getInstance();
+        int x = point.x * screen.width / mc.mainWindow.getWidth();
+        int y = screen.height - point.y * screen.height / mc.mainWindow.getHeight() - 1;
+        return new Vec(x, y);
     }
 
+    @Deprecated // use GuiUtils.drawContinuousTexturedModal
     protected void drawModalCorners(TexturedModal modal) {
         ILocation location = getLocation();
-        int x = 0;
-        int y = 0;
+        int x = location.getXPos();
+        int y = location.getYPos();
 
         int w = location.getWidth() / 2;
-        int w2 = location.getWidth() - w;
+        int w2 = location.getWidth() - w + 1;
         int h = location.getHeight() / 2;
         int h2 = location.getHeight() - h + 1;
 

@@ -2,15 +2,12 @@ package mnm.mods.util.gui;
 
 import static org.lwjgl.opengl.GL11.*;
 
-import com.google.common.eventbus.Subscribe;
+import mnm.mods.util.Dim;
 import mnm.mods.util.ILocation;
 import mnm.mods.util.Location;
 import mnm.mods.util.gui.BorderLayout.Position;
-import mnm.mods.util.gui.events.GuiMouseEvent;
-import mnm.mods.util.gui.events.GuiMouseEvent.MouseEvent;
 import net.minecraft.client.gui.Gui;
 
-import java.awt.Dimension;
 import javax.annotation.Nonnull;
 
 /**
@@ -33,36 +30,36 @@ public class GuiScrollingPanel extends GuiPanel {
     }
 
     @Override
-    public void drawComponent(int mouseX, int mouseY) {
-        ILocation actual = getActualLocation();
+    public void render(int mouseX, int mouseY, float parTicks) {
         ILocation rect = getLocation();
 
         glEnable(GL_SCISSOR_TEST);
-        glScissor(actual.getXPos() * 2, mc.displayHeight - rect.getHeight() * 2 - actual.getYPos() * 2, rect.getWidth() * 2, rect.getHeight() * 2);
+        glScissor(rect.getXPos(), mc.mainWindow.getHeight() - rect.getYPos(), rect.getWidth(), rect.getHeight());
 
-        super.drawComponent(mouseX, mouseY);
+        super.render(mouseX, mouseY, parTicks);
 
         glDisable(GL_SCISSOR_TEST);
     }
 
-    @Subscribe
-    public void scroll(GuiMouseEvent event) {
-        if (event.getType() == MouseEvent.SCROLL) {
-            Location rect = panel.getLocation().copy();
-            int scr = rect.getYPos() + event.getScroll() / 12;
-            rect.setYPos(scr);
+    @Override
+    public boolean mouseScrolled(double scroll) {
+        Location rect = panel.getLocation().copy();
+        int scr = (int) (rect.getYPos() + scroll / 12);
+        rect.setYPos(scr);
 
-            panel.getParent().map(GuiComponent::getLocation).ifPresent(prect -> {
-                Dimension dim = panel.getMinimumSize();
-                if (rect.getYPos() + dim.height < prect.getHeight()) {
-                    rect.setYPos(prect.getHeight() - dim.height);
-                }
-            });
-            if (rect.getYPos() > 0)
-                rect.setYPos(0);
-
-            panel.setLocation(rect);
-        }
+        panel.getParent().map(GuiComponent::getLocation).ifPresent(prect -> {
+            Dim dim = panel.getMinimumSize();
+            if (rect.getYPos() + dim.height < prect.getHeight()) {
+                rect.setYPos(prect.getHeight() - dim.height);
+            }
+        });
+        getParent().ifPresent(parent -> {
+            if (rect.getYPos() > parent.getLocation().getYPos()) {
+                rect.setYPos(parent.getLocation().getYPos());
+            }
+        });
+        panel.setLocation(rect);
+        return true;
     }
 
     public GuiPanel getContentPanel() {
@@ -71,7 +68,7 @@ public class GuiScrollingPanel extends GuiPanel {
 
     @Nonnull
     @Override
-    public Dimension getMinimumSize() {
+    public Dim getMinimumSize() {
         return getLocation().getSize();
     }
 
@@ -79,9 +76,11 @@ public class GuiScrollingPanel extends GuiPanel {
     private class Scrollbar extends GuiComponent {
 
         @Override
-        public void drawComponent(int mouseX, int mouseY) {
+        public void render(int mouseX, int mouseY, float parTicks) {
+            ILocation loc = GuiScrollingPanel.this.getLocation();
             int scroll = panel.getLocation().getYPos();
-            int max = GuiScrollingPanel.this.getLocation().getHeight();
+            int min = loc.getYPos();
+            int max = loc.getYHeight();
             int total = panel.getMinimumSize().height;
             if (total <= max) {
                 return;
@@ -92,8 +91,8 @@ public class GuiScrollingPanel extends GuiPanel {
             float perc = ((float) scroll / (float) total) * ((float) size / (float) max);
             int pos = (int) (-perc * max);
 
-            Gui.drawRect(-1, pos, 0, pos + size - 1, -1);
-            super.drawComponent(mouseX, mouseY);
+            Gui.drawRect(loc.getXPos()-1, loc.getYPos() + pos, loc.getXPos(), loc.getYPos() + pos + size - 1, -1);
+            super.render(mouseX, mouseY, parTicks);
         }
     }
 }

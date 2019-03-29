@@ -73,6 +73,7 @@ public interface Chat {
      *
      * @param id The id
      */
+    @Deprecated
     void removeMessages(int id);
 
 }

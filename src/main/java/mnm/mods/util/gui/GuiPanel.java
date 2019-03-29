@@ -2,15 +2,12 @@ package mnm.mods.util.gui;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.common.eventbus.Subscribe;
-import mnm.mods.util.ILocation;
-import mnm.mods.util.gui.events.GuiMouseEvent;
-import mnm.mods.util.gui.events.GuiMouseEvent.MouseEvent;
+import mnm.mods.util.Dim;
+import net.minecraft.client.gui.IGuiEventListener;
+import net.minecraft.client.gui.IGuiEventListenerDeferred;
 import net.minecraft.client.renderer.GlStateManager;
 
-import java.awt.Dimension;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
@@ -21,11 +18,14 @@ import javax.annotation.Nullable;
  *
  * @author Matthew
  */
-public class GuiPanel extends GuiComponent implements Iterable<GuiComponent> {
+public class GuiPanel extends GuiComponent implements IGuiEventListenerDeferred {
 
     private List<GuiComponent> components = Lists.newArrayList();
     private GuiComponent overlay;
     private ILayout layout;
+    private GuiComponent focused;
+
+    private boolean dragging;
 
     public GuiPanel(ILayout layout) {
         setLayout(layout);
@@ -34,38 +34,18 @@ public class GuiPanel extends GuiComponent implements Iterable<GuiComponent> {
     public GuiPanel() {
     }
 
-    @Subscribe
-    public void unfocus(GuiMouseEvent event) {
-        // Unfocuses all focusable on click
-        if (event.getType() == MouseEvent.CLICK) {
-            unfocusAll();
-        }
-    }
-
     @Override
-    public void drawComponent(int mouseX, int mouseY) {
+    public void render(int mouseX, int mouseY, float parTicks) {
         if (this.getOverlay().isPresent()) {
-            getOverlay().get().drawComponent(mouseX, mouseY);
+            getOverlay().get().render(mouseX, mouseY, parTicks);
             return;
         }
         getLayout().ifPresent(layout -> layout.layoutComponents(this));
         this.components.stream()
                 .filter(GuiComponent::isVisible)
-                .forEach(gc -> {
-                    GlStateManager.pushMatrix();
-                    ILocation location = gc.getLocation();
-                    int xPos = location.getXPos();
-                    int yPos = location.getYPos();
-                    int x = (int) (mouseX / gc.getScale()) - xPos;
-                    int y = (int) (mouseY / gc.getScale()) - yPos;
-                    GlStateManager.translate(xPos, yPos, 0F);
-                    GlStateManager.scale(gc.getScale(), gc.getScale(), 1F);
-                    gc.drawComponent(x, y);
+                .forEach(gc -> gc.render(mouseX, mouseY, parTicks));
 
-                    GlStateManager.popMatrix();
-                });
-
-        super.drawComponent(mouseX, mouseY);
+        super.render(mouseX, mouseY, parTicks);
     }
 
     @Override
@@ -77,38 +57,12 @@ public class GuiPanel extends GuiComponent implements Iterable<GuiComponent> {
         }
         this.components.stream()
                 .filter(GuiComponent::isVisible)
-                .forEach(gc -> {
-                    GlStateManager.pushMatrix();
-                    ILocation location = gc.getLocation();
-                    int xPos = location.getXPos();
-                    int yPos = location.getYPos();
-                    int x = (int) (mouseX / gc.getScale()) - xPos;
-                    int y = (int) (mouseY / gc.getScale()) - yPos;
-                    GlStateManager.translate(xPos, yPos, 0F);
-                    GlStateManager.scale(gc.getScale(), gc.getScale(), 1F);
-
-                    gc.drawCaption(x, y);
-
-                    GlStateManager.popMatrix();
-                });
+                .forEach(gc -> gc.drawCaption(mouseX, mouseY));
     }
 
     @Override
-    public void updateComponent() {
-        getOverlayOrChildren().forEach(GuiComponent::updateComponent);
-
-    }
-
-    @Override
-    public void handleMouseInput() {
-        super.handleMouseInput();
-        getOverlayOrChildren().forEach(GuiComponent::handleMouseInput);
-    }
-
-    @Override
-    public void handleKeyboardInput() {
-        super.handleKeyboardInput();
-        getOverlayOrChildren().forEach(GuiComponent::handleKeyboardInput);
+    public void tick() {
+        getOverlayOrChildren().forEach(GuiComponent::tick);
     }
 
     /**
@@ -137,9 +91,9 @@ public class GuiPanel extends GuiComponent implements Iterable<GuiComponent> {
      */
     public void addComponent(GuiComponent guiComponent, Object constraints) {
         if (guiComponent != null) {
-                guiComponent.setParent(this);
-                components.add(guiComponent);
-                getLayout().ifPresent(layout -> layout.addComponent(guiComponent, constraints));
+            guiComponent.setParent(this);
+            components.add(guiComponent);
+            getLayout().ifPresent(layout -> layout.addComponent(guiComponent, constraints));
         }
     }
 
@@ -147,12 +101,12 @@ public class GuiPanel extends GuiComponent implements Iterable<GuiComponent> {
      * Removes all components from this panel.
      */
     public void clearComponents() {
-            components.forEach(comp -> {
-                comp.setParent(null);
-                getLayout().ifPresent(layout -> layout.removeComponent(comp));
-            });
-            components.clear();
-            setOverlay((GuiComponent) null);
+        components.forEach(comp -> {
+            comp.setParent(null);
+            getLayout().ifPresent(layout -> layout.removeComponent(comp));
+        });
+        components.clear();
+        setOverlay((GuiComponent) null);
     }
 
     /**
@@ -161,8 +115,23 @@ public class GuiPanel extends GuiComponent implements Iterable<GuiComponent> {
      * @param guiComp The component to remove
      */
     public void removeComponent(GuiComponent guiComp) {
-            components.remove(guiComp);
-            getLayout().ifPresent(layout -> layout.removeComponent(guiComp));
+        components.remove(guiComp);
+        getLayout().ifPresent(layout -> layout.removeComponent(guiComp));
+    }
+
+    @Nonnull
+    public List<GuiComponent> getChildren() {
+        return components;
+    }
+
+    @Nullable
+    @Override
+    public GuiComponent getFocused() {
+        return getOverlay().orElse(focused);
+    }
+
+    public void setFocused(GuiComponent focused) {
+        this.focused = focused;
     }
 
     /**
@@ -196,8 +165,6 @@ public class GuiPanel extends GuiComponent implements Iterable<GuiComponent> {
             gui.setLocation(gui.getLocation().copy()
                     .setWidth(getLocation().getWidth())
                     .setHeight(getLocation().getHeight()));
-        } else {
-            this.unfocusAll();
         }
         this.overlay = gui;
     }
@@ -210,16 +177,58 @@ public class GuiPanel extends GuiComponent implements Iterable<GuiComponent> {
         return getOverlay().map(Arrays::asList).orElse(ImmutableList.copyOf(this.components));
     }
 
-    /**
-     * Unfocuses all components in this panel that are focusable.
-     */
-    public void unfocusAll() {
-        for (GuiComponent comp : components) {
-            if (comp.isFocusable()) {
-                comp.setFocused(false);
-            } else if (comp instanceof GuiPanel) {
-                ((GuiPanel) comp).unfocusAll();
+    private final boolean isDragging() {
+        return this.dragging;
+    }
+
+    protected final void setDragging(boolean p_195072_1_) {
+        this.dragging = p_195072_1_;
+    }
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        for(GuiComponent comp : this.getChildren()) {
+            boolean flag = comp.mouseClicked(mouseX, mouseY, button);
+            if (flag) {
+                this.focusOn(comp);
+                if (button == 0) {
+                    this.setDragging(true);
+                }
+
+                return true;
             }
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean mouseDragged(double mx, double my, int mb, double mxd, double myd) {
+        return this.getFocused() != null && this.isDragging() && mb == 0 && this.getFocused().mouseDragged(mx, my, mb, mxd, myd);
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        this.setDragging(false);
+        return IGuiEventListenerDeferred.super.mouseReleased(mouseX, mouseY, button);
+    }
+
+
+    public void focusOn(@Nullable GuiComponent comp) {
+        this.switchFocus(comp, this.getChildren().indexOf(this.getFocused()));
+    }
+
+    private void switchFocus(@Nullable GuiComponent comp, int indx) {
+        IGuiEventListener iguieventlistener = indx == -1 ? null : this.getChildren().get(indx);
+        if (iguieventlistener != comp) {
+            if (iguieventlistener != null) {
+                iguieventlistener.focusChanged(false);
+            }
+
+            if (comp != null) {
+                comp.focusChanged(true);
+            }
+
+            this.setFocused(comp);
         }
     }
 
@@ -231,25 +240,16 @@ public class GuiPanel extends GuiComponent implements Iterable<GuiComponent> {
 
     @Nonnull
     @Override
-    public Dimension getMinimumSize() {
-        Dimension size = getLayout().map(ILayout::getLayoutSize).orElseGet(() -> {
+    public Dim getMinimumSize() {
+
+        return getLayout().map(ILayout::getLayoutSize).orElseGet(() -> {
             int width = 0;
             int height = 0;
             for (GuiComponent gc : components) {
-                width = Math.max(width, gc.getLocation().getXPos() + gc.getLocation().getWidth());
-                height = Math.max(height, gc.getLocation().getYPos() + gc.getLocation().getHeight());
+                width = Math.max(width, gc.getLocation().getWidth());
+                height = Math.max(height, gc.getLocation().getHeight());
             }
-            return new Dimension(width, height);
+            return new Dim(width, height);
         });
-
-        return size;
-
     }
-
-    @Deprecated
-    @Override
-    public Iterator<GuiComponent> iterator() {
-        return components.iterator();
-    }
-
 }

@@ -1,11 +1,10 @@
 package mnm.mods.tabbychat.extra.spell;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.UncheckedIOException;
 
-import com.google.common.io.CharStreams;
-import com.google.common.io.Closeables;
 import com.swabunga.spell.engine.SpellDictionaryHashMap;
 
 /**
@@ -13,20 +12,18 @@ import com.swabunga.spell.engine.SpellDictionaryHashMap;
  */
 public class UserDictionary extends SpellDictionaryHashMap {
 
-    public UserDictionary(File file) throws IOException {
-        super(file);
+    UserDictionary(Reader reader) throws IOException {
+        super(reader);
     }
 
     @Override
     protected void createDictionary(BufferedReader in) throws IOException {
         try {
-            for (String line : CharStreams.readLines(in)) {
-                if (!line.startsWith("#") && !line.trim().isEmpty()) {
-                    putWord(line);
-                }
-            }
-        } finally {
-            Closeables.closeQuietly(in);
+            in.lines()
+                    .filter(line -> line.startsWith("#") && !line.trim().isEmpty())
+                    .forEach(this::putWord);
+        } catch (UncheckedIOException e) {
+            throw e.getCause();
         }
     }
 }

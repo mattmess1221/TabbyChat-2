@@ -1,27 +1,21 @@
 package mnm.mods.tabbychat.gui;
 
-import com.google.common.eventbus.Subscribe;
-import com.mumfrey.liteloader.core.LiteLoader;
 import mnm.mods.tabbychat.TabbyChat;
-import mnm.mods.tabbychat.api.gui.ChatGui;
+import mnm.mods.tabbychat.TabbyChatClient;
 import mnm.mods.tabbychat.settings.TabbySettings;
 import mnm.mods.tabbychat.util.ScaledDimension;
 import mnm.mods.util.ILocation;
 import mnm.mods.util.Location;
+import mnm.mods.util.Vec;
 import mnm.mods.util.gui.BorderLayout;
 import mnm.mods.util.gui.GuiPanel;
-import mnm.mods.util.gui.events.GuiMouseEvent;
-import mnm.mods.util.gui.events.GuiMouseEvent.MouseEvent;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
-import org.lwjgl.input.Mouse;
 
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.io.IOException;
 
-public class ChatBox extends GuiPanel implements ChatGui {
+public class ChatBox extends GuiPanel {
 
     public static final ResourceLocation GUI_LOCATION = new ResourceLocation("tabbychat", "textures/chatbox.png");
 
@@ -30,7 +24,7 @@ public class ChatBox extends GuiPanel implements ChatGui {
     private TextBox txtChatInput;
 
     private boolean dragMode;
-    private Point drag;
+    private Vec drag;
     private Location tempbox;
 
     public ChatBox(ILocation rect) {
@@ -40,62 +34,63 @@ public class ChatBox extends GuiPanel implements ChatGui {
         this.addComponent(txtChatInput = new TextBox(), BorderLayout.Position.SOUTH);
         this.addComponent(new Scrollbar(chatArea), BorderLayout.Position.EAST);
         super.setLocation(rect);
-        super.updateComponent();
+        super.tick();
     }
 
-    @Subscribe
-    public void killjoysMovingCompanyForAllYourFurnitureMovingNeeds(GuiMouseEvent event) {
-        ILocation bounds = getLocation();
-
-        // divide by scale because smaller scales make the point movement larger
-        int x = bounds.getXPos() + event.getMouseX();
-        int y = bounds.getYPos() + event.getMouseY();
-
-        if (event.getType() == MouseEvent.CLICK) {
-            if (Mouse.isButtonDown(0) && (pnlTray.isHovered() || (GuiScreen.isAltKeyDown() && isHovered()))) {
-                dragMode = !pnlTray.isHandleHovered();
-                drag = new Point(x, y);
-                tempbox = bounds.copy();
-            }
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (button == 0 && (pnlTray.getLocation().contains(mouseX, mouseY)
+                || GuiScreen.isAltKeyDown() && getLocation().contains(mouseX, mouseY))) {
+            dragMode = !pnlTray.isHandleHovered(mouseX, mouseY);
+            drag = new Vec((int) mouseX, (int) mouseY);
+            tempbox = getLocation().copy();
         }
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
 
+    @Override
+    public boolean mouseDragged(double mx, double my, int mb, double mxd, double myd) {
         if (drag != null) {
-            if (event.getType() == MouseEvent.RELEASE) {
-                drag = null;
-                tempbox = null;
-            } else if (event.getType() == MouseEvent.DRAG) {
-                if (!dragMode) {
-                    setLocation(new Location(
-                            tempbox.getXPos(),
-                            tempbox.getYPos() + y - drag.y,
-                            tempbox.getWidth() + x - drag.x,
-                            tempbox.getHeight() - y + drag.y));
-                    this.chatArea.markDirty();
-                } else {
-                    setLocation(getLocation().copy()
-                            .setXPos(tempbox.getXPos() + x - drag.x)
-                            .setYPos(tempbox.getYPos() + y - drag.y));
-                }
+
+            if (!dragMode) {
+                setLocation(new Location(
+                        tempbox.getXPos(),
+                        tempbox.getYPos() + (int) my - drag.y,
+                        tempbox.getWidth() + (int) mx - drag.x,
+                        tempbox.getHeight() - (int) my + drag.y));
+                this.chatArea.markDirty();
+            } else {
+                setLocation(getLocation().copy()
+                        .setXPos(tempbox.getXPos() + (int) mx - drag.x)
+                        .setYPos(tempbox.getYPos() + (int) my - drag.y));
             }
         }
+        return super.mouseDragged(mx, my, mb, mxd, myd);
     }
 
     @Override
-    public float getScale() {
-        return TabbyChat.getInstance().getChatGui().getChatScale();
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (drag != null) {
+            drag = null;
+            tempbox = null;
+        }
+        return super.mouseReleased(mouseX, mouseY, button);
     }
 
     @Override
-    public void updateComponent() {
+    public boolean mouseScrolled(double p_mouseScrolled_1_) {
+        return this.chatArea.mouseScrolled(p_mouseScrolled_1_);
+    }
+
+    @Override
+    public void tick() {
         ILocation bounds = getLocation();
-        ILocation point = getActualLocation();
 
-        float scale = getActualScale();
-        ScaledResolution sr = new ScaledResolution(mc);
+        double scale = mc.gameSettings.chatScale;
 
         // original dims
-        final int x = point.getXPos();
-        final int y = point.getYPos();
+        final int x = (int) (bounds.getXPos() * scale);
+        final int y = (int) (bounds.getYPos() * scale);
         final int w = (int) (bounds.getWidth() * scale);
         final int h = (int) (bounds.getHeight() * scale);
 
@@ -105,8 +100,8 @@ public class ChatBox extends GuiPanel implements ChatGui {
         int x1 = x;
         int y1 = y;
 
-        final int SCREEN_W = sr.getScaledWidth();
-        final int SCREEN_H = sr.getScaledHeight();
+        final int SCREEN_W = mc.mainWindow.getScaledWidth();
+        final int SCREEN_H = mc.mainWindow.getScaledHeight();
 
         // limits for sizes
         // FIXME 500 and 400 max is because of texture limit
@@ -152,42 +147,39 @@ public class ChatBox extends GuiPanel implements ChatGui {
                     MathHelper.ceil(w1 / scale),
                     MathHelper.ceil(h1 / scale)));
         }
-        super.updateComponent();
+        super.tick();
     }
 
     @Override
     public void setLocation(ILocation location) {
         super.setLocation(location);
         // save bounds
-        TabbySettings sett = TabbyChat.getInstance().settings;
+        TabbySettings sett = TabbyChatClient.getInstance().getSettings();
         sett.advanced.chatX.set(location.getXPos());
         sett.advanced.chatY.set(location.getYPos());
         sett.advanced.chatW.set(location.getWidth());
         sett.advanced.chatH.set(location.getHeight());
-        LiteLoader.getInstance().writeConfig(sett);
+        try {
+            sett.save();
+        } catch (IOException e) {
+            TabbyChat.logger.warn("Unable to save settings", e);
+        }
     }
 
     @Override
     public void onClosed() {
         super.onClosed();
-        updateComponent();
+        tick();
     }
 
-    public int getWidth() {
-        return getBounds().width;
-    }
-
-    @Override
     public ChatArea getChatArea() {
         return this.chatArea;
     }
 
-    @Override
     public ChatTray getTray() {
         return this.pnlTray;
     }
 
-    @Override
     public TextBox getChatInput() {
         return this.txtChatInput;
     }
@@ -205,12 +197,8 @@ public class ChatBox extends GuiPanel implements ChatGui {
         int bottom = oldDim.getScaledHeight() - getLocation().getYPos();
         int y = newDim.getScaledHeight() - bottom;
         this.setLocation(getLocation().copy().setYPos(y));
-        this.updateComponent();
+        this.tick();
     }
 
-    @Override
-    public Rectangle getBounds() {
-        return getLocation().asRectangle();
-    }
 
 }

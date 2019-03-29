@@ -20,8 +20,8 @@ public class ScaledDimension {
         this.scaledWidth = width;
         this.scaledHeight = height;
         this.scaleFactor = 1;
-        Minecraft mc = Minecraft.getMinecraft();
-        boolean unicode = mc.isUnicode();
+        Minecraft mc = Minecraft.getInstance();
+        boolean unicode = mc.getForceUnicodeFont();
         int scale = mc.gameSettings.guiScale;
 
         if (scale == 0) {

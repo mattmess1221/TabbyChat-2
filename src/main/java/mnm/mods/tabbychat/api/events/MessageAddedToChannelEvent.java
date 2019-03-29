@@ -2,8 +2,9 @@ package mnm.mods.tabbychat.api.events;
 
 import mnm.mods.tabbychat.api.Channel;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.eventbus.api.Event;
 
-public class MessageAddedToChannelEvent {
+public class MessageAddedToChannelEvent extends Event {
 
     public ITextComponent text;
     public int id;

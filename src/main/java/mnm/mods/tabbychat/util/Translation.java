@@ -56,6 +56,8 @@ public final class Translation {
     public static final String IGNORED_CHANNELS_DESC = "tabbychat.settings.server.ignoredChannels.desc";
     public static final String DEFAULT_CHANNEL_COMMAND = "tabbychat.settings.server.channelCommand";
     public static final String DEFAULT_CHANNEL_COMMAND_DESC = "tabbychat.settings.server.channelCommand.desc";
+    public static final String DEFAULT_CHANNEL = "tabbychat.settings.server.defaultChannel";
+    public static final String DEFAULT_CHANNEL_DESC = "tabbychat.settings.server.defaultChannel.desc";
     public static final String FILTERS = "tabbychat.settings.server.filters";
     public static final String FILTERS_NEW = "tabbychat.settings.server.filters.new";
 

@@ -2,7 +2,7 @@ package mnm.mods.tabbychat.gui.settings;
 
 import static mnm.mods.tabbychat.util.Translation.*;
 
-import mnm.mods.tabbychat.TabbyChat;
+import mnm.mods.tabbychat.TabbyChatClient;
 import mnm.mods.tabbychat.settings.GeneralSettings;
 import mnm.mods.tabbychat.settings.TabbySettings;
 import mnm.mods.tabbychat.util.TimeStamps;
@@ -94,7 +94,7 @@ public class GuiSettingsGeneral extends SettingPanel<TabbySettings> {
 
     @Override
     public TabbySettings getSettings() {
-        return TabbyChat.getInstance().settings;
+        return TabbyChatClient.getInstance().getSettings();
     }
 
 }

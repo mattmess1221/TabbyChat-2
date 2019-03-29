@@ -27,14 +27,14 @@ public class GuiSliderColor extends GuiSlider {
                 int color = (int) ((double) i / (double) loc.getHeight() * 255D);
                 color = Math.abs(color - 256);
                 color = getColor(color);
-                Gui.drawRect(0, i, loc.getWidth(), i + 1, color);
+                Gui.drawRect(loc.getXPos(), loc.getYPos() + i, loc.getXWidth(), loc.getYPos() + i + 1, color);
             }
         } else {
             for (int i = 0; i < loc.getWidth(); i++) {
                 int color = (int) ((double) i / (double) loc.getWidth() * 255D);
                 // color = Math.abs(color - 256);
                 color = getColor(color);
-                Gui.drawRect(i, 0, i + 1, loc.getHeight(), color);
+                Gui.drawRect(loc.getXPos() + i, loc.getYPos(), loc.getXPos() + i + 1, loc.getYHeight(), color);
             }
         }
     }
@@ -47,14 +47,14 @@ public class GuiSliderColor extends GuiSlider {
     private int getColor(int i) {
         i %= 256;
         switch (model) {
-        case RED:
-            return Color.getColor(i, base.getGreen(), base.getBlue(), base.getAlpha());
-        case GREEN:
-            return Color.getColor(base.getRed(), i, base.getBlue(), base.getAlpha());
-        case BLUE:
-            return Color.getColor(base.getRed(), base.getGreen(), i, base.getAlpha());
-        case ALPHA:
-            return Color.getColor(base.getRed(), base.getGreen(), base.getBlue(), i);
+            case RED:
+                return Color.getColor(i, base.getGreen(), base.getBlue(), base.getAlpha());
+            case GREEN:
+                return Color.getColor(base.getRed(), i, base.getBlue(), base.getAlpha());
+            case BLUE:
+                return Color.getColor(base.getRed(), base.getGreen(), i, base.getAlpha());
+            case ALPHA:
+                return Color.getColor(base.getRed(), base.getGreen(), base.getBlue(), i);
         }
         return -1;
     }

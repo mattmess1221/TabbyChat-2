@@ -2,10 +2,9 @@ package mnm.mods.tabbychat.gui.settings;
 
 import static mnm.mods.tabbychat.util.Translation.*;
 
-import com.google.common.eventbus.Subscribe;
-import mnm.mods.tabbychat.TabbyChat;
+import mnm.mods.tabbychat.ChatManager;
+import mnm.mods.tabbychat.TabbyChatClient;
 import mnm.mods.tabbychat.api.Channel;
-import mnm.mods.tabbychat.api.TabbyAPI;
 import mnm.mods.tabbychat.settings.ServerSettings;
 import mnm.mods.util.Color;
 import mnm.mods.util.Location;
@@ -20,7 +19,6 @@ import mnm.mods.util.gui.GuiScrollingPanel;
 import mnm.mods.util.gui.GuiText;
 import mnm.mods.util.gui.VerticalLayout;
 import mnm.mods.util.gui.config.SettingPanel;
-import mnm.mods.util.gui.events.ActionPerformedEvent;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextComponentTranslation;
 
@@ -66,7 +64,7 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
 
     private void select(Channel channel) {
 
-        for (GuiComponent comp : channels.getContentPanel()) {
+        for (GuiComponent comp : channels.getContentPanel().getChildren()) {
             if (((ChannelButton) comp).channel == channel) {
                 comp.setEnabled(false);
             } else {
@@ -110,22 +108,22 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
         command.setValue(channel.getCommand());
         this.panel.addComponent(new GuiLabel(new TextComponentTranslation(CHANNEL_COMMAND)), new int[] { 1, pos });
 
-        GuiButton accept = new GuiButton(I18n.format("gui.done"));
-        accept.getBus().register(new Object() {
-            @Subscribe
-            public void somebodySaveMe(ActionPerformedEvent event) {
+        GuiButton accept = new GuiButton(I18n.format("gui.done")){
+            @Override
+            public void onClick(double mouseX, double mouseY) {
                 save();
             }
-        });
+        };
         this.panel.addComponent(accept, new int[] { 2, 15, 4, 2 });
 
-        GuiButton forget = new GuiButton(I18n.format(CHANNEL_FORGET));
-        forget.getBus().register(new Object() {
-            @Subscribe
-            public void oohShinyObject(ActionPerformedEvent event) {
+        GuiButton forget = new GuiButton(I18n.format(CHANNEL_FORGET)){
+            @Override
+            public void onClick(double mouseX, double mouseY) {
+
+                ChatManager chat = TabbyChatClient.getInstance().getChat();
                 Channel channel = GuiSettingsChannel.this.channel;
                 // remove from chat
-                TabbyAPI.getAPI().getChat().removeChannel(channel);
+                chat.removeChannel(channel);
                 // remove from settings file
                 getSettings().channels.get().remove(channel.getName());
                 if (!channel.isPm()) {
@@ -133,7 +131,7 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
                     getSettings().general.ignoredChannels.add(channel.getName());
                 }
                 // remove from settings gui
-                for (GuiComponent comp : channels.getContentPanel()) {
+                for (GuiComponent comp : channels.getContentPanel().getChildren()) {
                     if (comp instanceof ChannelButton && ((ChannelButton) comp).channel == channel) {
                         channels.getContentPanel().removeComponent(comp);
                         break;
@@ -141,7 +139,7 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
                 }
                 select(null);
             }
-        });
+        };
         this.panel.addComponent(forget, new int[] { 2, 17, 4, 2 });
     }
 
@@ -154,7 +152,7 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
 
     @Override
     public ServerSettings getSettings() {
-        return TabbyChat.getInstance().serverSettings;
+        return TabbyChatClient.getInstance().getServerSettings();
     }
 
     public class ChannelButton extends GuiButton {
@@ -167,8 +165,8 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
             setLocation(new Location(0, 0, 60, 15));
         }
 
-        @Subscribe
-        public void margeChangeTheChannel(ActionPerformedEvent event) {
+        @Override
+        public void onClick(double mouseX, double mouseY) {
             select(channel);
         }
     }

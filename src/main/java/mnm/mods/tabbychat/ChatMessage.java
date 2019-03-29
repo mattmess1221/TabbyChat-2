@@ -1,5 +1,6 @@
 package mnm.mods.tabbychat;
 
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -10,7 +11,6 @@ import mnm.mods.tabbychat.settings.GeneralSettings;
 import mnm.mods.tabbychat.util.TimeStamps;
 import net.minecraft.client.gui.ChatLine;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 
@@ -46,9 +46,8 @@ public class ChatMessage implements Message {
     @Override
     public ITextComponent getMessageWithOptionalTimestamp() {
         ITextComponent chat;
-        GeneralSettings settings = TabbyChat.getInstance().settings.general;
+        GeneralSettings settings = TabbyChatClient.getInstance().getSettings().general;
         if (date != null && settings.timestampChat.get()) {
-            chat = new TextComponentString("");
 
             TimeStamps stamp = settings.timestampStyle.get();
             TextFormatting format = settings.timestampColor.get();
@@ -59,7 +58,6 @@ public class ChatMessage implements Message {
         return chat;
     }
 
-    @Override
     public int getCounter() {
         return this.counter;
     }
