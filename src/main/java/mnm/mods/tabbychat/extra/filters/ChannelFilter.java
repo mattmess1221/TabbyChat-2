@@ -12,7 +12,11 @@ import javax.annotation.Nonnull;
 
 public class ChannelFilter implements Filter {
 
-    private final ChatManager chat = TabbyChatClient.getInstance().getChat();
+    private final ChatManager chat;
+
+    public ChannelFilter(ChatManager chat) {
+        this.chat = chat;
+    }
 
     @Nonnull
     @Override

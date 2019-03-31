@@ -4,6 +4,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import mnm.mods.tabbychat.ChatManager;
 import mnm.mods.tabbychat.TabbyChatClient;
 import mnm.mods.tabbychat.api.events.ChatMessageEvent.ChatReceivedEvent;
 import mnm.mods.tabbychat.api.filters.Filter;
@@ -25,9 +26,9 @@ public class FilterAddon {
 
     private List<Filter> filters = Lists.newArrayList();
 
-    public FilterAddon() {
-        filters.add(new ChannelFilter());
-        filters.add(new MessageFilter());
+    public FilterAddon(ChatManager chat) {
+        filters.add(new ChannelFilter(chat));
+        filters.add(new MessageFilter(chat));
 
         variables.clear();
 
@@ -45,7 +46,7 @@ public class FilterAddon {
         variables.put(key, Optional.of(supplier));
     }
 
-    public static String getVariable(String key) {
+    static String getVariable(String key) {
         return variables.getOrDefault(key, Optional.empty())
                 .map(Supplier::get)
                 .orElse("");

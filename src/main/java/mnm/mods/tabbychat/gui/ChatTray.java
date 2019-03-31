@@ -1,11 +1,11 @@
 package mnm.mods.tabbychat.gui;
 
 import com.google.common.collect.Maps;
-import mnm.mods.tabbychat.ChatChannel;
+import mnm.mods.tabbychat.AbstractChannel;
+import mnm.mods.tabbychat.ChatManager;
 import mnm.mods.tabbychat.TabbyChatClient;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.ChannelStatus;
-import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.util.Color;
 import mnm.mods.util.Dim;
 import mnm.mods.util.ILocation;
@@ -16,7 +16,6 @@ import mnm.mods.util.gui.FlowLayout;
 import mnm.mods.util.gui.GuiComponent;
 import mnm.mods.util.gui.GuiPanel;
 import mnm.mods.util.gui.ILayout;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 
@@ -63,7 +62,7 @@ public class ChatTray extends GuiPanel {
                 .ifPresent(this::setSecondaryColor);
     }
 
-    public void addChannel(Channel channel) {
+    public void addChannel(AbstractChannel channel) {
         GuiComponent gc = new ChatTab(channel);
         map.put(channel, gc);
         tabList.addComponent(gc);
@@ -78,8 +77,8 @@ public class ChatTray extends GuiPanel {
     public void clear() {
         this.tabList.clearComponents();
 
-        addChannel(ChatChannel.DEFAULT_CHANNEL);
-        ChatChannel.DEFAULT_CHANNEL.setStatus(ChannelStatus.ACTIVE);
+        addChannel(ChatManager.DEFAULT_CHANNEL);
+        ChatBox.getInstance().setStatus(ChatManager.DEFAULT_CHANNEL, ChannelStatus.ACTIVE);
     }
 
     @Nonnull

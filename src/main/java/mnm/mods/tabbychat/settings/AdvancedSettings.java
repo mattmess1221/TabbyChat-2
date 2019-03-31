@@ -1,6 +1,8 @@
 package mnm.mods.tabbychat.settings;
 
 import mnm.mods.tabbychat.util.ChatVisibility;
+import mnm.mods.util.ILocation;
+import mnm.mods.util.Location;
 import mnm.mods.util.config.Value;
 import mnm.mods.util.config.ValueObject;
 
@@ -17,4 +19,11 @@ public class AdvancedSettings extends ValueObject {
     public Value<Boolean> keepChatOpen = value(false);
     public Value<Boolean> spelling = value(true);
     public Value<ChatVisibility> visibility = value(ChatVisibility.NORMAL);
+
+    public ILocation getChatboxLocation() {
+        return new Location(
+                chatX.get(), chatY.get(),
+                chatW.get(), chatH.get()
+        );
+    }
 }

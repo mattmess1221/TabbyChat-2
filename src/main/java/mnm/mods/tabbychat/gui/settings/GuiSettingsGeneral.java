@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 
 public class GuiSettingsGeneral extends SettingPanel<TabbySettings> {
 
-    public GuiSettingsGeneral() {
+    GuiSettingsGeneral() {
         setLayout(new GuiGridLayout(10, 20));
         setDisplayString(I18n.format(SETTINGS_GENERAL));
         setSecondaryColor(Color.of(255, 0, 255, 64));

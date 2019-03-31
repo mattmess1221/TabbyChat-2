@@ -3,6 +3,8 @@ package mnm.mods.util.config;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.InstanceCreator;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSyntaxException;
 import net.minecraft.util.EnumTypeAdapterFactory;
 
 import java.io.IOException;
@@ -48,6 +50,8 @@ public abstract class SettingsFile extends ValueObject {
         } else {
             try (Reader r = Files.newBufferedReader(path)) {
                 gson.fromJson(r, getClass());
+            } catch (JsonParseException e) {
+                throw new IOException(e);
             }
         }
     }

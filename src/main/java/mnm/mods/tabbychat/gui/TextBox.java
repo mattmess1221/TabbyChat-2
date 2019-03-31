@@ -2,7 +2,6 @@ package mnm.mods.tabbychat.gui;
 
 import mnm.mods.tabbychat.ChatManager;
 import mnm.mods.tabbychat.TabbyChatClient;
-import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.extra.spell.Spellcheck;
 import mnm.mods.tabbychat.extra.spell.SpellingFormatter;
 import mnm.mods.util.Color;
@@ -45,12 +44,12 @@ public class TextBox extends GuiComponent implements IGuiEventListenerDeferred {
     private Spellcheck spellcheck;
 
     TextBox() {
+        this.spellcheck = TabbyChatClient.getInstance().getSpellcheck();
+
         textField.getTextField().setMaxStringLength(ChatManager.MAX_CHAT_LENGTH);
         textField.getTextField().setCanLoseFocus(false);
         textField.getTextField().setEnableBackgroundDrawing(false);
         textField.getTextField().setFocused(true);
-
-        spellcheck = TabbyChatClient.getInstance().getSpellcheck();
     }
 
     @Nullable
@@ -235,7 +234,7 @@ public class TextBox extends GuiComponent implements IGuiEventListenerDeferred {
         this.cursorCounter++;
     }
 
-    public List<String> getWrappedLines() {
+    private List<String> getWrappedLines() {
         return fr.listFormattedStringToWidth(textField.getValue(), getLocation().getWidth());
     }
 

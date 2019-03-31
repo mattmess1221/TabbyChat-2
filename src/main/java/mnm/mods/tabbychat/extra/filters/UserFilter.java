@@ -1,16 +1,13 @@
 package mnm.mods.tabbychat.extra.filters;
 
 import mnm.mods.tabbychat.TabbyChatClient;
-import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.filters.Filter;
 import mnm.mods.tabbychat.api.filters.FilterEvent;
 import mnm.mods.tabbychat.api.filters.FilterSettings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.regex.Matcher;
@@ -107,14 +104,8 @@ public class UserFilter implements Filter {
             if (name == null)
                 continue;
 
-            // PMs start with a '@' character
-            boolean pm = name.startsWith("@");
-            // remove # or @ from the start of the channel name
-            if (name.startsWith("#") || name.startsWith("@"))
-                name = name.substring(1);
+            TabbyChatClient.getInstance().getChatManager().parseChannel(name).ifPresent(event.channels::add);
 
-            Channel channel = TabbyChatClient.getInstance().getChat().getChannel(name, pm);
-            event.channels.add(channel);
         }
         // play sound
         if (settings.isSoundNotification()) {

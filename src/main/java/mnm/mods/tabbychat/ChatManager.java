@@ -1,23 +1,23 @@
 package mnm.mods.tabbychat;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import com.google.common.collect.ImmutableSet;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.google.gson.reflect.TypeToken;
+import com.mojang.authlib.GameProfile;
 import mnm.mods.tabbychat.api.Channel;
-import mnm.mods.tabbychat.api.ChannelStatus;
 import mnm.mods.tabbychat.api.Chat;
-import mnm.mods.tabbychat.api.Message;
-import mnm.mods.tabbychat.gui.ChatBox;
-import mnm.mods.tabbychat.gui.TextBox;
-import mnm.mods.tabbychat.settings.AdvancedSettings;
-import mnm.mods.tabbychat.settings.GeneralServerSettings;
-import mnm.mods.util.Location;
+import mnm.mods.tabbychat.api.UserChannel;
+import mnm.mods.tabbychat.api.events.MessageAddedToChannelEvent;
+import mnm.mods.tabbychat.settings.ServerSettings;
+import mnm.mods.tabbychat.settings.TabbySettings;
+import mnm.mods.tabbychat.util.ChannelTypeAdapter;
+import mnm.mods.tabbychat.util.ChatTextUtils;
+import mnm.mods.tabbychat.util.DateTimeTypeAdapter;
 import mnm.mods.util.config.ValueMap;
 import mnm.mods.util.text.TextBuilder;
 import net.minecraft.client.Minecraft;
@@ -25,6 +25,7 @@ import net.minecraft.util.EnumTypeAdapterFactory;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.common.MinecraftForge;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.io.IOUtils;
@@ -32,198 +33,227 @@ import org.apache.commons.lang3.reflect.TypeUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
-import java.util.LinkedList;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
 
 public class ChatManager implements Chat {
 
     public static final int MAX_CHAT_LENGTH = 256;
+
+    private static ChatManager instance;
+
+    public static final AbstractChannel DEFAULT_CHANNEL = new AbstractChannel("*") {
+        @Override
+        public String getName() {
+            return getAlias();
+        }
+
+        @Override
+        public String toString() {
+            return "#" + getAlias();
+        }
+
+        // Don't mess with this channel
+        @Override
+        public void setAlias(String alias) {
+        }
+
+        @Override
+        public void setPrefix(String prefix) {
+        }
+
+        @Override
+        public void setPrefixHidden(boolean hidden) {
+        }
+
+        @Override
+        public void setCommand(String command) {
+        }
+    };
 
     private Gson gson = new GsonBuilder()
             .excludeFieldsWithoutExposeAnnotation()
             .registerTypeHierarchyAdapter(ITextComponent.class, new ITextComponent.Serializer())
             .registerTypeAdapter(Style.class, new Style.Serializer())
             .registerTypeAdapterFactory(new EnumTypeAdapterFactory())
-            .registerTypeAdapter(Instant.class, new InstantTypeAdapter())
+            .registerTypeAdapter(Channel.class, new ChannelTypeAdapter(this))
+            .registerTypeAdapter(LocalDateTime.class, new DateTimeTypeAdapter())
             .create();
 
-    private ChatBox chatbox;
+    private Map<String, Channel> allChannels = new HashMap<>();
+    private Map<GameProfile, UserChannel> allPms = new HashMap<>();
 
-    private Map<String, Channel> allChannels = Maps.newHashMap();
-    private Map<String, Channel> allPms = Maps.newHashMap();
-    private List<Channel> channels = Lists.newLinkedList();
-    private Channel active = ChatChannel.DEFAULT_CHANNEL;
+    private Set<Channel> channels = new HashSet<>();
+    private Map<Channel, List<ChatMessage>> messages = new HashMap<>();
+    private Map<Channel, List<ChatMessage>> msgsplit = new HashMap<>();
 
-    private Map<Channel, List<Message>> messages = Maps.newHashMap();
+    private ServerSettings server() {
+        return TabbyChatClient.getInstance().getServerSettings();
+    }
 
-    public ChatManager(TabbyChatClient tc) {
-        AdvancedSettings settings = tc.getSettings().advanced;
-        int x = settings.chatX.get();
-        int y = settings.chatY.get();
-        int width = settings.chatW.get();
-        int height = settings.chatH.get();
+    private TabbySettings settings() {
+        return TabbyChatClient.getInstance().getSettings();
+    }
 
-        this.chatbox = new ChatBox(new Location(x, y, width, height));
+    private ChatManager() {
+    }
 
-        if (!this.channels.contains(ChatChannel.DEFAULT_CHANNEL)) {
-            this.channels.add(ChatChannel.DEFAULT_CHANNEL);
-            chatbox.getTray().addChannel(ChatChannel.DEFAULT_CHANNEL);
+    public static ChatManager instance() {
+        if (instance == null) {
+            instance = new ChatManager();
         }
+        return instance;
     }
 
     @Override
     public Channel getChannel(String name) {
-        return getChannel(name, false);
+        return allChannels.computeIfAbsent(name, this.getChannel(name, server().channels, ChatChannel::new));
     }
 
     @Override
-    public Channel getChannel(String name, boolean pm) {
-        return pm ? getPmChannel(name) : getChatChannel(name);
+    public UserChannel getUserChannel(GameProfile gameProfile) {
+        return allPms.computeIfAbsent(gameProfile, this.getChannel(gameProfile.getName(), server().pms, DirectChannel::new));
     }
 
-    private Channel getChatChannel(String name) {
-        return getChannel(name, false, this.allChannels, TabbyChatClient.getInstance().getServerSettings().channels);
+    private <T, U> Function<U, T> getChannel(String name, ValueMap<T> config, Function<U, T> absent) {
+        return profile -> config.get().computeIfAbsent(name, k -> absent.apply(profile));
     }
 
-    private Channel getPmChannel(String name) {
-        Channel channel = getChannel(name, true, this.allPms, TabbyChatClient.getInstance().getServerSettings().pms);
-        if (channel.getPrefix().isEmpty()) {
-            channel.setPrefix("/msg " + name);
+    /**
+     * Parses a channel name and returns the channel. format must start with either # or @
+     *
+     * @param format The representation of the channel as a string
+     * @return The channel
+     */
+    public Optional<Channel> parseChannel(String format) {
+        if (format.length() <= 1) {
+            return Optional.empty();
         }
-        return channel;
+        String name = format.substring(1);
+        switch (format.charAt(0)) {
+            case '@':
+                return Optional.of(getUserChannel(new GameProfile(null, name)));
+            case '#':
+                return Optional.of(getChannel(name));
+            default:
+                throw new IllegalArgumentException();
+        }
+
     }
 
-    private Channel getChannel(String name, boolean pm, Map<String, Channel> from, ValueMap<ChatChannel> setting) {
-        if (!from.containsKey(name)) {
-            // fetch from settings
-            ChatChannel chan = setting.get(name);
-            if (chan == null || chan.getName() == null) {
-                chan = new ChatChannel(name, pm);
-                setting.get().put(chan.getName(), chan);
+    @Deprecated
+    public void addChannel(AbstractChannel channel) {
+        channels.add(channel);
+    }
+
+    @Deprecated
+    public void removeChannel(AbstractChannel channel) {
+        channels.remove(channel);
+    }
+
+    @Override
+    public Set<Channel> getChannels() {
+        // TODO only show visible channels.
+        return ImmutableSet.copyOf(channels);
+    }
+
+    @Override
+    public List<ChatMessage> getMessages(Channel channel) {
+        return Collections.unmodifiableList(getChannelMessages(channel));
+    }
+
+    private List<ChatMessage> getChannelMessages(Channel channel) {
+        return this.messages.computeIfAbsent(channel, k -> new ArrayList<>());
+    }
+
+    public List<ChatMessage> getVisible(Channel channel, int width) {
+        return this.msgsplit.computeIfAbsent(channel, a -> ChatTextUtils.split(getMessages(a), width));
+    }
+
+    public void markDirty(Channel channel) {
+        if (channel == null) {
+            this.msgsplit.clear();
+        } else {
+            this.msgsplit.remove(channel);
+        }
+    }
+
+    @Override
+    public void addMessage(Channel channel, ITextComponent message) {
+        addMessage(channel, message, 0);
+    }
+
+    public void addMessage(Channel channel, ITextComponent text, int id) {
+        MessageAddedToChannelEvent event = new MessageAddedToChannelEvent.Pre(text.deepCopy(), id, channel);
+        if (MinecraftForge.EVENT_BUS.post(event) || event.getText() == null) {
+            return;
+        }
+        text = event.getText();
+        id = event.getId();
+
+        if (id != 0) {
+            removeMessages(id);
+        }
+
+        int uc = Minecraft.getInstance().ingameGUI.getTicks();
+        ChatMessage msg = new ChatMessage(uc, text, id, true);
+        List<ChatMessage> messages = getChannelMessages(channel);
+        messages.add(0, msg);
+
+        trimMessages(messages, settings().advanced.historyLen.get());
+
+        save();
+
+        MinecraftForge.EVENT_BUS.post(new MessageAddedToChannelEvent.Post(text, id, channel));
+
+        markDirty(channel);
+    }
+
+    private void trimMessages(List<?> list, int size) {
+        Iterator<?> iter = list.iterator();
+
+        for (int i = 0; iter.hasNext(); i++) {
+            iter.next();
+            if (i > size) {
+                iter.remove();
             }
-            from.put(name, chan);
-            messages.put(chan, new LinkedList<>());
         }
-        return from.get(name);
     }
 
-    @Override
-    public void addChannel(Channel channel) {
-        if (!this.channels.contains(channel)) {
-            this.channels.add(channel);
-            chatbox.getTray().addChannel(channel);
-        }
-        save();
-    }
-
-    @Override
-    public void removeChannel(Channel channel) {
-        if (channels.contains(channel) && !channel.equals(ChatChannel.DEFAULT_CHANNEL)) {
-            channels.remove(channel);
-            chatbox.getTray().removeChannel(channel);
-        }
-        if (getActiveChannel() == channel) {
-            setActiveChannel(ChatChannel.DEFAULT_CHANNEL);
-        }
-        save();
-    }
-
-    @Override
-    public List<Channel> getChannels() {
-        return ImmutableList.copyOf(channels);
-    }
-
-    @Override
     public void removeMessages(int id) {
-        for (Channel channel : this.channels) {
-            channel.removeMessages(id);
+        for (List<ChatMessage> messages : this.messages.values()) {
+            messages.removeIf(m -> m.getID() == id);
         }
         save();
     }
 
-    @Override
+    public void removeMessageAt(AbstractChannel channel, int index) {
+        getChannelMessages(channel).remove(index);
+        save();
+    }
+
     public void clearMessages() {
-        for (Channel channel : channels) {
-            channel.clear();
-        }
-
-        this.channels.clear();
-        this.channels.add(ChatChannel.DEFAULT_CHANNEL);
-
-        chatbox.getTray().clear();
-    }
-
-    @Override
-    public Channel getActiveChannel() {
-        return active;
-    }
-
-    @Override
-    public void setActiveChannel(Channel channel) {
-        TextBox text = chatbox.getChatInput();
-
-
-        if (active.isPrefixHidden()
-                ? text.getText().trim().isEmpty()
-                : text.getText().trim().equals(active.getPrefix())) {
-            // text is the prefix, so remove it.
-            text.setText("");
-            if (!channel.isPrefixHidden() && !channel.getPrefix().isEmpty()) {
-                // target has prefix visible
-                text.getTextField().getTextField().setText(channel.getPrefix() + " ");
-            }
-        }
-        // set max text length
-        boolean hidden = channel.isPrefixHidden();
-        int prefLength = hidden ? channel.getPrefix().length() + 1 : 0;
-
-        text.getTextField().getTextField().setMaxStringLength(MAX_CHAT_LENGTH - prefLength);
-
-        // reset scroll
-        // TODO per-channel scroll settings?
-        if (channel != active) {
-            chatbox.getChatArea().resetScroll();
-        }
-        active.setStatus(null);
-        active = channel;
-        active.setStatus(ChannelStatus.ACTIVE);
-
-        runActivationCommand(channel);
-
-    }
-
-    private void runActivationCommand(Channel channel) {
-        String cmd = channel.getCommand();
-        if (cmd.isEmpty()) {
-
-            GeneralServerSettings settings = TabbyChatClient.getInstance().getServerSettings().general;
-            String pat = channel.isPm() ? settings.messageCommand.get() : settings.channelCommand.get();
-
-            if (pat.isEmpty()) {
-                return;
-            }
-            String name = channel.getName();
-            if (channel == ChatChannel.DEFAULT_CHANNEL) {
-                name = TabbyChatClient.getInstance().getServerSettings().general.defaultChannel.get();
-            }
-            // insert the channel name
-            cmd = pat.replace("{}", name);
-
-        }
-        if (cmd.startsWith("/")) {
-            if (cmd.length() > MAX_CHAT_LENGTH) {
-                cmd = cmd.substring(0, MAX_CHAT_LENGTH);
-            }
-            Minecraft.getInstance().player.sendChatMessage(cmd);
-        }
+        this.messages.clear();
     }
 
     private static final Object lock = new Object();
@@ -239,68 +269,71 @@ public class ChatManager implements Chat {
         if (Files.notExists(file)) {
             return;
         }
-        String data;
-        try (InputStream gzin = new GzipCompressorInputStream(Files.newInputStream(file))) {
-            data = IOUtils.toString(gzin, StandardCharsets.UTF_8);
-        }
+        try (Reader gzin = new InputStreamReader(new GzipCompressorInputStream(Files.newInputStream(file)), StandardCharsets.UTF_8)) {
+            JsonObject root = gson.fromJson(gzin, JsonObject.class);
 
-        clearMessages();
-        allChannels.clear();
-        allPms.clear();
+            clearMessages();
+            allChannels.clear();
+            allPms.clear();
 
-        JsonObject root = gson.fromJson(data, JsonObject.class);
-        Type type = TypeUtils.parameterize(List.class, ChatMessage.class);
+            Type type = new TypeToken<List<ChatMessage>>() {
+            }.getType();
 
-        List<Message> def = gson.fromJson(root.get("default"), type);
-        ChatChannel.DEFAULT_CHANNEL.getMessages().addAll(def);
+            List<ChatMessage> def = gson.fromJson(root.get("default"), type);
+            getChannelMessages(DEFAULT_CHANNEL).addAll(def);
 
-        JsonObject chans = root.get("chans").getAsJsonObject();
-        readJson(chans, false);
-        JsonObject pms = root.get("pms").getAsJsonObject();
-        readJson(pms, true);
+            readChannels(root.get("chans").getAsJsonObject());
 
-        // active channels
-        JsonObject active = root.get("active").getAsJsonObject();
-        JsonArray achans = active.get("chans").getAsJsonArray();
-        for (JsonElement e : achans) {
-            addChannel(getChannel(e.getAsString(), false));
-        }
-        JsonArray apms = active.get("pms").getAsJsonArray();
-        for (JsonElement e : apms) {
-            addChannel(getChannel(e.getAsString(), true));
-        }
+            // active channels
+            JsonObject active = root.get("active").getAsJsonObject();
+            JsonArray achans = active.get("chans").getAsJsonArray();
+            for (JsonElement e : achans) {
+                addChannel(gson.fromJson(e, AbstractChannel.class));
+            }
 
-        String time;
-        if (root.has("datetime")) {
-            Instant datetime = Instant.ofEpochSecond(root.get("datetime").getAsLong());
-            time = datetime.toString();
-        } else {
-            time = "UNKNOWN";
-        }
-        ITextComponent chat = new TextBuilder()
-                .text("Chat log from " + time)
-                .format(TextFormatting.GRAY)
-                .build();
-        for (Channel c : getChannels()) {
-            if (!c.getMessages().isEmpty()) {
-                c.addMessage(chat, -1);
+            String time;
+            if (root.has("datetime")) {
+                Instant datetime = Instant.ofEpochSecond(root.get("datetime").getAsLong());
+                time = datetime.toString();
+            } else {
+                time = "UNKNOWN";
+            }
+            ITextComponent chat = new TextBuilder()
+                    .text("Chat log from " + time)
+                    .format(TextFormatting.GRAY)
+                    .build();
+
+            for (Channel c : getChannels()) {
+                if (!getMessages(c).isEmpty()) {
+                    addMessage(c, chat, -1);
+                }
             }
         }
     }
 
-    private void readJson(JsonObject obj, boolean pm) {
+    private void readChannels(JsonObject obj) {
         for (Entry<String, JsonElement> entry : obj.entrySet()) {
-            Channel chan = getChannel(entry.getKey(), pm);
-            Type type = TypeUtils.parameterize(List.class, ChatMessage.class);
-            List<Message> list = gson.fromJson(entry.getValue(), type);
-            chan.getMessages().addAll(list);
+            Channel chan = getChannel(entry.getKey());
+            List<ChatMessage> list = gson.fromJson(entry.getValue(), new TypeToken<List<ChatMessage>>(){}.getType());
+            getChannelMessages(chan).addAll(list);
         }
     }
 
-    void save() {
+    private void readUserChannels(JsonObject obj) {
+        for (Entry<String, JsonElement> entry : obj.entrySet()) {
+            // profile is unsafe, but I'm not sent the uuid. Nothing I can do
+            GameProfile profile = new GameProfile(null, entry.getKey());
+            Channel chan = getUserChannel(profile);
+            Type type = TypeUtils.parameterize(List.class, ChatMessage.class);
+            List<ChatMessage> list = gson.fromJson(entry.getValue(), type);
+            getChannelMessages(chan).addAll(list);
+        }
+    }
+
+    public void save() {
         synchronized (lock) {
             try {
-                saveTo(TabbyChatClient.getInstance().getServerSettings().getPath().getParent());
+                saveTo(server().getPath().getParent());
             } catch (IOException e) {
                 TabbyChat.logger.warn("Error while saving chat data", e);
             }
@@ -310,44 +343,33 @@ public class ChatManager implements Chat {
     private synchronized void saveTo(Path dir) throws IOException {
         JsonObject root = new JsonObject();
         root.addProperty("datetime", Instant.now().getEpochSecond());
-        root.add("default", gson.toJsonTree(ChatChannel.DEFAULT_CHANNEL.getMessages()));
+        root.add("default", gson.toJsonTree(getMessages(DEFAULT_CHANNEL)));
 
         JsonObject chans = new JsonObject();
         root.add("chans", chans);
-        JsonObject pms = new JsonObject();
-        root.add("pms", pms);
 
         for (Channel c : messages.keySet()) {
-            JsonObject obj = c.isPm() ? pms : chans;
-            obj.add(c.getName(), gson.toJsonTree(c.getMessages()));
+            chans.add(c.toString(), gson.toJsonTree(getMessages(c)));
         }
 
         // active channels
         JsonObject active = new JsonObject();
         root.add("active", active);
 
-        JsonArray apms = new JsonArray();
         JsonArray achans = new JsonArray();
         active.add("chans", achans);
-        active.add("pms", apms);
 
         for (Channel c : channels) {
-            if (c == ChatChannel.DEFAULT_CHANNEL) {
+            if (c == DEFAULT_CHANNEL) {
                 continue;
             }
-            JsonArray array = c.isPm() ? apms : achans;
-            array.add(new JsonPrimitive(c.getName()));
+            achans.add(gson.toJson(c));
         }
 
         Path file = dir.resolve("data.gz");
         Files.createDirectories(dir);
-        try (OutputStream gzout = new GzipCompressorOutputStream(Files.newOutputStream(file))) {
-            String data = gson.toJson(root);
-            IOUtils.write(data, gzout, StandardCharsets.UTF_8);
+        try (Writer gzout = new OutputStreamWriter(new GzipCompressorOutputStream(Files.newOutputStream(file)), StandardCharsets.UTF_8)) {
+            gson.toJson(root, gzout);
         }
-    }
-
-    public ChatBox getChatBox() {
-        return this.chatbox;
     }
 }

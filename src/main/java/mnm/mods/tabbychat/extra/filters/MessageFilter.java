@@ -1,5 +1,6 @@
 package mnm.mods.tabbychat.extra.filters;
 
+import com.mojang.authlib.GameProfile;
 import mnm.mods.tabbychat.ChatManager;
 import mnm.mods.tabbychat.TabbyChatClient;
 import mnm.mods.tabbychat.api.Channel;
@@ -15,7 +16,11 @@ import javax.annotation.Nonnull;
  */
 public class MessageFilter implements Filter {
 
-    private final ChatManager chat = TabbyChatClient.getInstance().getChat();
+    private final ChatManager chat;
+
+    public MessageFilter(ChatManager chat) {
+        this.chat = chat;
+    }
 
     @Nonnull
     @Override
@@ -36,7 +41,7 @@ public class MessageFilter implements Filter {
             if (player == null) {
                 player = event.matcher.group(2);
             }
-            Channel dest = chat.getChannel(player, true);
+            Channel dest = chat.getUserChannel(new GameProfile(null, player));
             event.channels.add(dest);
         }
     }

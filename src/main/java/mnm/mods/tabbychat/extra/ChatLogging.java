@@ -1,12 +1,12 @@
 package mnm.mods.tabbychat.extra;
 
 import io.netty.channel.local.LocalAddress;
-import javafx.scene.control.Tab;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.TabbyChatClient;
 import mnm.mods.tabbychat.api.events.ChatMessageEvent.ChatReceivedEvent;
 import mnm.mods.util.IPUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.compress.compressors.gzip.GzipUtils;
@@ -44,7 +44,7 @@ public class ChatLogging {
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onChatRecieved(ChatReceivedEvent message) {
         if (TabbyChatClient.getInstance().getSettings().general.logChat.get()) {
 
@@ -111,7 +111,6 @@ public class ChatLogging {
                 TabbyChat.logger.warn("Unable to compress log {}.", file.getFileName(), e);
             }
         });
-
     }
 
     private static boolean isLogFile(Path file, BasicFileAttributes attrs) {

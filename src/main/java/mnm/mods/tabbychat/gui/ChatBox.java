@@ -1,7 +1,14 @@
 package mnm.mods.tabbychat.gui;
 
+import mnm.mods.tabbychat.AbstractChannel;
+import mnm.mods.tabbychat.ChatManager;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.TabbyChatClient;
+import mnm.mods.tabbychat.api.Channel;
+import mnm.mods.tabbychat.api.ChannelStatus;
+import mnm.mods.tabbychat.api.UserChannel;
+import mnm.mods.tabbychat.api.events.MessageAddedToChannelEvent;
+import mnm.mods.tabbychat.settings.ServerSettings;
 import mnm.mods.tabbychat.settings.TabbySettings;
 import mnm.mods.tabbychat.util.ScaledDimension;
 import mnm.mods.util.ILocation;
@@ -9,15 +16,27 @@ import mnm.mods.util.Location;
 import mnm.mods.util.Vec;
 import mnm.mods.util.gui.BorderLayout;
 import mnm.mods.util.gui.GuiPanel;
+import mnm.mods.util.gui.GuiText;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.common.MinecraftForge;
+import org.lwjgl.glfw.GLFW;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ChatBox extends GuiPanel {
 
     public static final ResourceLocation GUI_LOCATION = new ResourceLocation("tabbychat", "textures/chatbox.png");
+
+    private static ChatBox instance;
 
     private ChatArea chatArea;
     private ChatTray pnlTray;
@@ -27,14 +46,163 @@ public class ChatBox extends GuiPanel {
     private Vec drag;
     private Location tempbox;
 
-    public ChatBox(ILocation rect) {
+    private List<AbstractChannel> channels = new ArrayList<>();
+    private AbstractChannel active = ChatManager.DEFAULT_CHANNEL;
+    private Map<Channel, ChannelStatus> channelStatus = new HashMap<>();
+
+    public ChatBox(TabbySettings settings) {
         super(new BorderLayout());
+        instance = this;
         this.addComponent(pnlTray = new ChatTray(), BorderLayout.Position.NORTH);
         this.addComponent(chatArea = new ChatArea(), BorderLayout.Position.CENTER);
         this.addComponent(txtChatInput = new TextBox(), BorderLayout.Position.SOUTH);
         this.addComponent(new Scrollbar(chatArea), BorderLayout.Position.EAST);
-        super.setLocation(rect);
+        super.setLocation(settings.advanced.getChatboxLocation());
+
+        this.channels.add(ChatManager.DEFAULT_CHANNEL);
+        this.pnlTray.addChannel(ChatManager.DEFAULT_CHANNEL);
+
+        this.setStatus(ChatManager.DEFAULT_CHANNEL, ChannelStatus.ACTIVE);
+
         super.tick();
+
+        MinecraftForge.EVENT_BUS.addListener(this::messageScroller);
+        MinecraftForge.EVENT_BUS.addListener(this::addChatMessage);
+    }
+
+    public static ChatBox getInstance() {
+        return instance;
+    }
+
+    private void messageScroller(MessageAddedToChannelEvent.Post event) {
+
+        // compensate scrolling
+        ChatArea chatbox = getChatArea();
+        if (getActiveChannel() == event.getChannel() && chatbox.getScrollPos() > 0 && event.getId() == 0) {
+            chatbox.scroll(1);
+        }
+    }
+
+    private void addChatMessage(MessageAddedToChannelEvent.Post event) {
+        addChannel((AbstractChannel) event.getChannel());
+    }
+
+    private void addChannel(AbstractChannel channel) {
+        if (!this.channels.contains(channel)) {
+            this.channels.add(channel);
+            pnlTray.addChannel(channel);
+            ChatManager.instance().save();
+        }
+    }
+
+    public void removeChannel(AbstractChannel channel) {
+        if (channels.contains(channel) && !channel.equals(ChatManager.DEFAULT_CHANNEL)) {
+            channels.remove(channel);
+            pnlTray.removeChannel(channel);
+        }
+        if (getActiveChannel() == channel) {
+            setActiveChannel(ChatManager.DEFAULT_CHANNEL);
+        }
+        ChatManager.instance().save();
+    }
+
+    @Nullable
+    ChannelStatus getStatus(Channel chan) {
+        return channelStatus.get(chan);
+    }
+
+    public void setStatus(AbstractChannel chan, @Nullable ChannelStatus status) {
+
+        this.channelStatus.put(chan, status);
+
+        this.channelStatus.compute(chan, (key, old) -> {
+            if (status == null || old == null || status.ordinal() < old.ordinal()) {
+                return status;
+            }
+            if (status == ChannelStatus.ACTIVE) {
+                chatArea.setChannel(chan);
+            }
+            return old;
+        });
+    }
+
+    public void clearMessages() {
+        this.channels.clear();
+        this.channels.add(ChatManager.DEFAULT_CHANNEL);
+
+        pnlTray.clear();
+    }
+
+
+    public AbstractChannel getActiveChannel() {
+        return active;
+    }
+
+    public void setActiveChannel(AbstractChannel channel) {
+        TextBox text = this.txtChatInput;
+
+
+        if (active.isPrefixHidden()
+                ? text.getText().trim().isEmpty()
+                : text.getText().trim().equals(active.getPrefix())) {
+            // text is the prefix, so remove it.
+            text.setText("");
+            if (!channel.isPrefixHidden() && !channel.getPrefix().isEmpty()) {
+                // target has prefix visible
+                text.getTextField().getTextField().setText(channel.getPrefix() + " ");
+            }
+        }
+        // set max text length
+        boolean hidden = channel.isPrefixHidden();
+        int prefLength = hidden ? channel.getPrefix().length() + 1 : 0;
+
+        text.getTextField().getTextField().setMaxStringLength(ChatManager.MAX_CHAT_LENGTH - prefLength);
+
+        // reset scroll
+        // TODO per-channel scroll settings?
+        if (channel != active) {
+            getChatArea().resetScroll();
+        }
+        setStatus(active, null);
+        active = channel;
+        setStatus(active, ChannelStatus.ACTIVE);
+
+        runActivationCommand(channel);
+
+    }
+
+    private ServerSettings server() {
+        return TabbyChatClient.getInstance().getServerSettings();
+    }
+
+    private void runActivationCommand(AbstractChannel channel) {
+        String cmd = channel.getCommand();
+        if (cmd.isEmpty()) {
+
+
+            String pat;
+            if (channel instanceof UserChannel) {
+                pat = server().general.messageCommand.get();
+            } else {
+                pat = server().general.channelCommand.get();
+            }
+            if (pat.isEmpty()) {
+                return;
+            }
+            String name = channel.getName();
+            if (channel == ChatManager.DEFAULT_CHANNEL) {
+                name = server().general.defaultChannel.get();
+            }
+            // insert the channel name
+            cmd = pat.replace("{}", name);
+
+        }
+        if (cmd.startsWith("/")) {
+            if (cmd.length() > ChatManager.MAX_CHAT_LENGTH) {
+                cmd = cmd.substring(0, ChatManager.MAX_CHAT_LENGTH);
+            }
+            Minecraft.getInstance().player.sendChatMessage(cmd);
+        }
     }
 
     @Override

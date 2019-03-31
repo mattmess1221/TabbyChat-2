@@ -1,6 +1,10 @@
 package mnm.mods.tabbychat.api;
 
+import com.mojang.authlib.GameProfile;
+import net.minecraft.util.text.ITextComponent;
+
 import java.util.List;
+import java.util.Set;
 
 /**
  * Represents the Chat.
@@ -21,59 +25,40 @@ public interface Chat {
      * status. Creates a new one if it doesn't exist. This allows a channel to
      * have the same name as a player without their tabs being merged.
      *
-     * @param name The name of the channel
-     * @param pm Whether it is for PMs or not
+     * @param user The object representing the user
      * @return The channel
      */
-    Channel getChannel(String name, boolean pm);
+    UserChannel getUserChannel(GameProfile user);
 
     /**
-     * Adds a channel to be displayed on the tray.
-     *
-     * @param channel The channel to be added
-     */
-    void addChannel(Channel channel);
-
-    /**
-     * Removes a {@link Channel} from the tab list.
-     *
-     * @param channel The channel to remove
-     */
-    void removeChannel(Channel channel);
-
-    /**
-     * Gets an array of all {@link Channel}s currently displayed.
+     * Gets an immutable set of all {@link Channel}s currently displayed.
      *
      * @return An array of channels
      */
-    List<Channel> getChannels();
+    Set<? extends Channel> getChannels();
+
+    List<? extends Message> getMessages(Channel channel);
+
+    void addMessage(Channel channel, ITextComponent message);
+
+    default void addMessage(Set<? extends Channel> channels, ITextComponent message) {
+        for (Channel chan : channels) {
+            addMessage(chan, message);
+        }
+    }
+
+    default void addMessages(Channel channel, Iterable<ITextComponent> messages) {
+        for (ITextComponent msg : messages) {
+            addMessage(channel, msg);
+        }
+    }
 
     /**
-     * Gets the active {@link Channel}. The active channel is the channel whose
-     * messages are shown.
+     * Sends a message to every channel.
      *
-     * @return The active channel
+     * @param message
      */
-    Channel getActiveChannel();
-
-    /**
-     * Sets the active {@link Channel}.
-     *
-     * @param channel The new active channel
-     */
-    void setActiveChannel(Channel channel);
-
-    /**
-     * Clears all the messages in the chat and removes all channels.
-     */
-    void clearMessages();
-
-    /**
-     * Removes all messages with the given id.
-     *
-     * @param id The id
-     */
-    @Deprecated
-    void removeMessages(int id);
-
+    default void broadcast(ITextComponent message) {
+        addMessage(getChannels(), message);
+    }
 }

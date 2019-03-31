@@ -1,15 +1,17 @@
 package mnm.mods.tabbychat.gui;
 
+import mnm.mods.tabbychat.AbstractChannel;
 import mnm.mods.tabbychat.TabbyChatClient;
-import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.ChannelStatus;
-import mnm.mods.tabbychat.core.GuiNewChatTC;
+import mnm.mods.tabbychat.api.UserChannel;
+import mnm.mods.tabbychat.gui.settings.GuiSettingsScreen;
 import mnm.mods.tabbychat.util.ChatVisibility;
 import mnm.mods.util.Color;
 import mnm.mods.util.Dim;
 import mnm.mods.util.ILocation;
 import mnm.mods.util.TexturedModal;
 import mnm.mods.util.gui.GuiButton;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 
@@ -23,9 +25,10 @@ public class ChatTab extends GuiButton {
     private static final TexturedModal HOVERED = new TexturedModal(ChatBox.GUI_LOCATION, 150, 0, 50, 14);
     private static final TexturedModal NONE = new TexturedModal(ChatBox.GUI_LOCATION, 200, 0, 50, 14);
 
-    private final Channel channel;
+    private final ChatBox chat = ChatBox.getInstance();
+    private final AbstractChannel channel;
 
-    public ChatTab(Channel channel) {
+    ChatTab(AbstractChannel channel) {
         super(channel.getAlias());
         this.channel = channel;
     }
@@ -36,17 +39,17 @@ public class ChatTab extends GuiButton {
             if (button == 0) {
                 if (GuiScreen.isShiftKeyDown()) {
                     // Remove channel
-                    TabbyChatClient.getInstance().getChat().removeChannel(this.channel);
+                    chat.removeChannel(this.channel);
                 } else {
                     // Enable channel, disable others
-                    TabbyChatClient.getInstance().getChat().setActiveChannel(this.channel);
+                    chat.setActiveChannel(this.channel);
                 }
             } else if (button == 1) {
                 // Open channel options
-                this.channel.openSettings();
+                openSettings();
             } else if (button == 2) {
                 // middle click
-                TabbyChatClient.getInstance().getChat().removeChannel(this.channel);
+                chat.removeChannel(this.channel);
             } else {
                 return false;
             }
@@ -55,9 +58,13 @@ public class ChatTab extends GuiButton {
         return false;
     }
 
+    private void openSettings() {
+        Minecraft.getInstance().displayGuiScreen(new GuiSettingsScreen(channel));
+    }
+
     @Override
     public void render(int mouseX, int mouseY, float parTicks) {
-        ChannelStatus status = channel.getStatus();
+        ChannelStatus status = chat.getStatus(channel);
         if (mc.ingameGUI.getChatGUI().getChatOpen()
                 || (status != null && status.compareTo(ChannelStatus.PINGED) > 0)
                 || TabbyChatClient.getInstance().getSettings().advanced.visibility.get() == ChatVisibility.ALWAYS) {
@@ -80,20 +87,15 @@ public class ChatTab extends GuiButton {
     public String getText() {
         String alias = channel.getAlias();
 
-        if (channel.isPm()) {
+        if (channel instanceof UserChannel) {
             alias = "@" + alias;
         }
-        ChannelStatus status = channel.getStatus();
+        ChannelStatus status = chat.getStatus(channel);
         if (status != null) {
             switch (status) {
-                case ACTIVE:
-                    alias = "[" + alias + "]";
-                    break;
-                case UNREAD:
-                    alias = "<" + alias + ">";
-                    break;
-                default:
-                    break;
+                case ACTIVE: return "[" + alias + "]";
+                case UNREAD: return "<" + alias + ">";
+                default: return alias;
             }
         }
         return alias;
@@ -103,7 +105,7 @@ public class ChatTab extends GuiButton {
         if (isHovered()) {
             return HOVERED;
         }
-        ChannelStatus status = channel.getStatus();
+        ChannelStatus status = chat.getStatus(channel);
         if (status != null) {
             switch (status) {
                 case ACTIVE:

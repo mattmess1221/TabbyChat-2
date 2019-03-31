@@ -2,9 +2,11 @@ package mnm.mods.tabbychat.gui.settings;
 
 import static mnm.mods.tabbychat.util.Translation.*;
 
+import mnm.mods.tabbychat.AbstractChannel;
+import mnm.mods.tabbychat.ChatChannel;
 import mnm.mods.tabbychat.ChatManager;
 import mnm.mods.tabbychat.TabbyChatClient;
-import mnm.mods.tabbychat.api.Channel;
+import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.settings.ServerSettings;
 import mnm.mods.util.Color;
 import mnm.mods.util.Location;
@@ -24,7 +26,7 @@ import net.minecraft.util.text.TextComponentTranslation;
 
 public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
 
-    private Channel channel;
+    private AbstractChannel channel;
 
     private GuiScrollingPanel channels;
     private GuiPanel panel;
@@ -38,7 +40,7 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
         this(null);
     }
 
-    public GuiSettingsChannel(Channel channel) {
+    public GuiSettingsChannel(AbstractChannel channel) {
         this.channel = channel;
         this.setLayout(new BorderLayout());
         this.setDisplayString(I18n.format(CHANNEL_TITLE));
@@ -51,7 +53,7 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
         channels = new GuiScrollingPanel();
         channels.setLocation(new Location(0, 0, 60, 200));
         channels.getContentPanel().setLayout(new VerticalLayout());
-        for (Channel channel : getSettings().channels.get().values()) {
+        for (ChatChannel channel : getSettings().channels.get().values()) {
             channels.getContentPanel().addComponent(new ChannelButton(channel));
         }
         this.addComponent(channels, BorderLayout.Position.WEST);
@@ -62,7 +64,7 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
         this.select(channel);
     }
 
-    private void select(Channel channel) {
+    private void select(AbstractChannel channel) {
 
         for (GuiComponent comp : channels.getContentPanel().getChildren()) {
             if (((ChannelButton) comp).channel == channel) {
@@ -120,16 +122,13 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
             @Override
             public void onClick(double mouseX, double mouseY) {
 
-                ChatManager chat = TabbyChatClient.getInstance().getChat();
-                Channel channel = GuiSettingsChannel.this.channel;
+                AbstractChannel channel = GuiSettingsChannel.this.channel;
                 // remove from chat
-                chat.removeChannel(channel);
+                GuiNewChatTC.getInstance().getChatBox().removeChannel(channel);
                 // remove from settings file
                 getSettings().channels.get().remove(channel.getName());
-                if (!channel.isPm()) {
-                    // don't add this channel again.
-                    getSettings().general.ignoredChannels.add(channel.getName());
-                }
+                // don't add this channel again.
+                getSettings().general.ignoredChannels.add(channel.toString());
                 // remove from settings gui
                 for (GuiComponent comp : channels.getContentPanel().getChildren()) {
                     if (comp instanceof ChannelButton && ((ChannelButton) comp).channel == channel) {
@@ -157,9 +156,9 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
 
     public class ChannelButton extends GuiButton {
 
-        private Channel channel;
+        private ChatChannel channel;
 
-        ChannelButton(Channel channel) {
+        ChannelButton(ChatChannel channel) {
             super(channel.getName());
             this.channel = channel;
             setLocation(new Location(0, 0, 60, 15));

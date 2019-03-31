@@ -23,7 +23,7 @@ public class TabbyChat {
         DistExecutor.runWhenOn(Dist.CLIENT, () -> TabbyChat::initclient);
     }
 
-    public static void initclient() {
+    private static void initclient() {
         FMLJavaModLoadingContext.get().getModEventBus().register(TabbyChatClient.getInstance());
     }
 

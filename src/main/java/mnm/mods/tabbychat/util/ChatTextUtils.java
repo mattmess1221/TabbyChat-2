@@ -2,12 +2,16 @@ package mnm.mods.tabbychat.util;
 
 import com.google.common.collect.Lists;
 import mnm.mods.tabbychat.ChatMessage;
+import mnm.mods.tabbychat.TabbyChatClient;
 import mnm.mods.tabbychat.api.Message;
+import mnm.mods.tabbychat.settings.GeneralSettings;
+import mnm.mods.util.text.TextBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiUtilRenderComponents;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 
 import java.util.Iterator;
 import java.util.List;
@@ -19,16 +23,16 @@ public class ChatTextUtils {
         return GuiUtilRenderComponents.splitText(chat, width, fr, false, false);
     }
 
-    public static List<Message> split(List<Message> list, int width) {
+    public static List<ChatMessage> split(List<ChatMessage> list, int width) {
         if (width <= 8) // ignore, characters are larger than width
             return Lists.newArrayList(list);
         // prevent concurrent modification caused by chat thread
         synchronized (list) {
-            List<Message> result = Lists.newArrayList();
-            Iterator<Message> iter = list.iterator();
+            List<ChatMessage> result = Lists.newArrayList();
+            Iterator<ChatMessage> iter = list.iterator();
             while (iter.hasNext() && result.size() <= 100) {
-                Message line = iter.next();
-                List<ITextComponent> chatlist = split(line.getMessageWithOptionalTimestamp(), width);
+                ChatMessage line = iter.next();
+                List<ITextComponent> chatlist = split(getMessageWithOptionalTimestamp(line), width);
                 for (int i = chatlist.size() - 1; i >= 0; i--) {
                     ITextComponent chat = chatlist.get(i);
                     result.add(new ChatMessage(line.getCounter(), chat, line.getID(), false));
@@ -38,11 +42,26 @@ public class ChatTextUtils {
         }
     }
 
+    public static ITextComponent getMessageWithOptionalTimestamp(Message msg) {
+        GeneralSettings settings = TabbyChatClient.getInstance().getSettings().general;
+        if (msg.getDateTime() != null && settings.timestampChat.get()) {
+
+            TimeStamps stamp = settings.timestampStyle.get();
+            TextFormatting format = settings.timestampColor.get();
+            return new TextBuilder().text("")
+                    .text(stamp.format(msg.getDateTime()) + " ").format(format)
+                    .append(msg.getMessage())
+                    .build();
+        }
+        return msg.getMessage();
+
+    }
+
     /**
      * Returns a ChatComponent that is a sub-component of another one. It begins
      * at the specified index and extends to the end of the componenent.
      *
-     * @param chat The chat to subchat
+     * @param chat       The chat to subchat
      * @param beginIndex The beginning index, inclusive
      * @return The end of the chat
      * @see String#substring(int)

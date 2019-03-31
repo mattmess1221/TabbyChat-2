@@ -1,18 +1,11 @@
 package mnm.mods.tabbychat;
 
-import java.time.Instant;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import com.google.gson.annotations.Expose;
 
 import mnm.mods.tabbychat.api.Message;
-import mnm.mods.tabbychat.settings.GeneralSettings;
-import mnm.mods.tabbychat.util.TimeStamps;
-import net.minecraft.client.gui.ChatLine;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.util.text.TextFormatting;
 
 public class ChatMessage implements Message {
 
@@ -22,7 +15,7 @@ public class ChatMessage implements Message {
     private int id;
     private transient int counter;
     @Expose
-    private Date date;
+    private LocalDateTime instant;
 
     public ChatMessage(int updatedCounter, ITextComponent chat, int id, boolean isNew) {
         // super(updatedCounter, chat, id);
@@ -30,12 +23,8 @@ public class ChatMessage implements Message {
         this.id = id;
         this.counter = updatedCounter;
         if (isNew) {
-            this.date = Calendar.getInstance().getTime();
+            this.instant = LocalDateTime.now();
         }
-    }
-
-    public ChatMessage(ChatLine chatline) {
-        this(chatline.getUpdatedCounter(), chatline.getChatComponent(), chatline.getChatLineID(), true);
     }
 
     @Override
@@ -43,33 +32,17 @@ public class ChatMessage implements Message {
         return this.message;
     }
 
-    @Override
-    public ITextComponent getMessageWithOptionalTimestamp() {
-        ITextComponent chat;
-        GeneralSettings settings = TabbyChatClient.getInstance().getSettings().general;
-        if (date != null && settings.timestampChat.get()) {
-
-            TimeStamps stamp = settings.timestampStyle.get();
-            TextFormatting format = settings.timestampColor.get();
-            chat = new TextComponentTranslation("%s %s", format + stamp.format(date), getMessage());
-        } else {
-            chat = getMessage();
-        }
-        return chat;
-    }
-
     public int getCounter() {
         return this.counter;
     }
 
-    @Override
     public int getID() {
         return this.id;
     }
 
     @Override
-    public Date getDate() {
-        return this.date;
+    public LocalDateTime getDateTime() {
+        return this.instant;
     }
 
 }

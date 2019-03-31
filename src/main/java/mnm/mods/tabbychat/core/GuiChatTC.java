@@ -1,8 +1,10 @@
 package mnm.mods.tabbychat.core;
 
+import mnm.mods.tabbychat.AbstractChannel;
 import mnm.mods.tabbychat.ChatManager;
 import mnm.mods.tabbychat.TabbyChatClient;
 import mnm.mods.tabbychat.api.Channel;
+import mnm.mods.tabbychat.gui.ChatBox;
 import mnm.mods.util.gui.GuiText;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
@@ -18,13 +20,10 @@ import java.util.List;
 
 public class GuiChatTC {
 
-    private final TabbyChatClient tc;
-    private final ChatManager chat;
+    private final ChatBox chat;
 
-    public GuiChatTC(TabbyChatClient tc) {
-        this.tc = tc;
-        this.chat = tc.getChat();
-
+    public GuiChatTC(ChatBox chat) {
+        this.chat = chat;
     }
 
     @SuppressWarnings("unchecked")
@@ -32,13 +31,13 @@ public class GuiChatTC {
     public void initGui(GuiScreenEvent.InitGuiEvent.Post event) {
         if (event.getGui() instanceof GuiChat) {
             GuiChat guichat = (GuiChat) event.getGui();
-            Channel chan = chat.getActiveChannel();
+            AbstractChannel chan = chat.getActiveChannel();
             if (guichat.defaultInputFieldText.isEmpty()
                     && !chan.isPrefixHidden()
                     && !chan.getPrefix().isEmpty()) {
                 guichat.defaultInputFieldText = chan.getPrefix() + " ";
             }
-            GuiText text = chat.getChatBox().getChatInput().getTextField();
+            GuiText text = chat.getChatInput().getTextField();
             guichat.inputField = text.getTextField();
             text.setValue(guichat.defaultInputFieldText);
 
@@ -46,14 +45,14 @@ public class GuiChatTC {
             text.getTextField().setTextAcceptHandler(guichat::acceptMessage);
 
             List<IGuiEventListener> children = (List<IGuiEventListener>) guichat.getChildren();
-            children.set(0, chat.getChatBox());
+            children.set(0, chat);
         }
     }
 
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
         if (Minecraft.getInstance().currentScreen instanceof GuiChat && event.phase == TickEvent.Phase.END) {
-            chat.getChatBox().tick();
+            chat.tick();
         }
     }
 
@@ -61,7 +60,7 @@ public class GuiChatTC {
     public void onRenderChat(GuiScreenEvent.DrawScreenEvent.Pre event) {
         if (event.getGui() instanceof GuiChat) {
             event.setCanceled(true);
-            this.chat.getChatBox().render(event.getMouseX(), event.getMouseY(), event.getRenderPartialTicks());
+            this.chat.render(event.getMouseX(), event.getMouseY(), event.getRenderPartialTicks());
         }
     }
 
@@ -69,7 +68,7 @@ public class GuiChatTC {
     public void onKeyPressed(GuiScreenEvent.KeyboardKeyPressedEvent.Pre event) {
         if (event.getGui() instanceof GuiChat) {
             if (keyPressed((GuiChat) event.getGui(), event.getKeyCode())
-                    || this.chat.getChatBox().keyPressed(event.getKeyCode(), event.getScanCode(), event.getModifiers())) {
+                    || this.chat.keyPressed(event.getKeyCode(), event.getScanCode(), event.getModifiers())) {
                 event.setCanceled(true);
             }
         }
@@ -78,7 +77,7 @@ public class GuiChatTC {
     @SubscribeEvent
     public void onKeyReleased(GuiScreenEvent.KeyboardKeyReleasedEvent.Pre event) {
         if (event.getGui() instanceof GuiChat) {
-            if (this.chat.getChatBox().keyPressed(event.getKeyCode(), event.getScanCode(), event.getModifiers())) {
+            if (this.chat.keyPressed(event.getKeyCode(), event.getScanCode(), event.getModifiers())) {
                 event.setCanceled(true);
             }
         }
@@ -87,7 +86,7 @@ public class GuiChatTC {
     @SubscribeEvent
     public void onCharTyped(GuiScreenEvent.KeyboardCharTypedEvent.Pre event) {
         if (event.getGui() instanceof GuiChat) {
-            if (this.chat.getChatBox().charTyped(event.getCodePoint(), event.getModifiers())) {
+            if (this.chat.charTyped(event.getCodePoint(), event.getModifiers())) {
                 event.setCanceled(true);
             }
         }
@@ -96,7 +95,7 @@ public class GuiChatTC {
     @SubscribeEvent
     public void onMouseClicked(GuiScreenEvent.MouseClickedEvent.Pre event) {
         if (event.getGui() instanceof GuiChat) {
-            if (this.chat.getChatBox().mouseClicked(event.getMouseX(), event.getMouseY(), event.getButton())) {
+            if (this.chat.mouseClicked(event.getMouseX(), event.getMouseY(), event.getButton())) {
                 event.setCanceled(true);
             }
         }
@@ -104,7 +103,7 @@ public class GuiChatTC {
     @SubscribeEvent
     public void onMouseReleased(GuiScreenEvent.MouseReleasedEvent.Pre event) {
         if (event.getGui() instanceof GuiChat) {
-            if (this.chat.getChatBox().mouseReleased(event.getMouseX(), event.getMouseY(), event.getButton())) {
+            if (this.chat.mouseReleased(event.getMouseX(), event.getMouseY(), event.getButton())) {
                 event.setCanceled(true);
             }
         }
@@ -113,7 +112,7 @@ public class GuiChatTC {
     @SubscribeEvent
     public void onMouseDragged(GuiScreenEvent.MouseDragEvent.Pre event) {
         if (event.getGui() instanceof GuiChat) {
-            if (this.chat.getChatBox().mouseDragged(event.getMouseX(), event.getMouseY(), event.getMouseButton(), event.getDragX(), event.getDragY())) {
+            if (this.chat.mouseDragged(event.getMouseX(), event.getMouseY(), event.getMouseButton(), event.getDragX(), event.getDragY())) {
                 event.setCanceled(true);
             }
         }
@@ -123,7 +122,7 @@ public class GuiChatTC {
     @SubscribeEvent
     public void onMouseScrolled(GuiScreenEvent.MouseScrollEvent.Pre event) {
         if (event.getGui() instanceof GuiChat) {
-            if (this.chat.getChatBox().mouseScrolled(event.getScrollDelta())) {
+            if (this.chat.mouseScrolled(event.getScrollDelta())) {
                 event.setCanceled(true);
             }
         }
@@ -132,11 +131,11 @@ public class GuiChatTC {
     private boolean keyPressed(GuiChat guichat, int key) {
         if (key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER) {
             Minecraft.getInstance().ingameGUI.getChatGUI().resetScroll();
-            GuiText text = this.chat.getChatBox().getChatInput().getTextField();
+            GuiText text = this.chat.getChatInput().getTextField();
             guichat.sendChatMessage(text.getValue());
             text.setValue(guichat.defaultInputFieldText);
 
-            if (!tc.getSettings().advanced.keepChatOpen.get()) {
+            if (!TabbyChatClient.getInstance().getSettings().advanced.keepChatOpen.get()) {
                 Minecraft.getInstance().displayGuiScreen(null);
             }
             return true;

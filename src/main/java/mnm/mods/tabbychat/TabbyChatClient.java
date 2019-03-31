@@ -1,7 +1,7 @@
 package mnm.mods.tabbychat;
 
-import mnm.mods.tabbychat.api.ChannelStatus;
-import mnm.mods.tabbychat.core.GuiChatTC;
+import mnm.mods.tabbychat.api.Channel;
+import mnm.mods.tabbychat.api.events.MessageAddedToChannelEvent;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.extra.ChatAddonAntiSpam;
 import mnm.mods.tabbychat.extra.ChatLogging;
@@ -10,7 +10,8 @@ import mnm.mods.tabbychat.extra.spell.Spellcheck;
 import mnm.mods.tabbychat.gui.settings.GuiSettingsScreen;
 import mnm.mods.tabbychat.settings.ServerSettings;
 import mnm.mods.tabbychat.settings.TabbySettings;
-import mnm.mods.util.gui.config.SettingPanel;
+import mnm.mods.tabbychat.util.ChannelPatterns;
+import mnm.mods.tabbychat.util.ChatTextUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiConnecting;
 import net.minecraft.client.gui.GuiIngame;
@@ -19,10 +20,11 @@ import net.minecraft.client.gui.GuiNewChat;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.resources.IReloadableResourceManager;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.DeferredWorkQueue;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -30,9 +32,9 @@ import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.loading.FMLPaths;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.file.Path;
+import java.util.regex.Matcher;
 
 public class TabbyChatClient {
 
@@ -50,7 +52,7 @@ public class TabbyChatClient {
     private TabbyChatClient() {
     }
 
-    public ChatManager getChat() {
+    public ChatManager getChatManager() {
         return chatManager;
     }
 
@@ -80,11 +82,6 @@ public class TabbyChatClient {
         return serverSettings;
     }
 
-    void openSettings(SettingPanel<?> setting) {
-        GuiSettingsScreen screen = new GuiSettingsScreen(setting);
-        Minecraft.getInstance().displayGuiScreen(screen);
-    }
-
     @SubscribeEvent
     public void init(FMLClientSetupEvent event) {
         // Set global settings
@@ -107,15 +104,24 @@ public class TabbyChatClient {
         IReloadableResourceManager irrm = (IReloadableResourceManager) mc.getResourceManager();
         irrm.addReloadListener(spellcheck);
 
-        chatManager = new ChatManager(this);
+        chatManager = ChatManager.instance();
 
-        ChatChannel.DEFAULT_CHANNEL.setStatus(ChannelStatus.ACTIVE);
-
-
-        MinecraftForge.EVENT_BUS.register(new GuiChatTC(this));
-        MinecraftForge.EVENT_BUS.register(new ChatAddonAntiSpam());
-        MinecraftForge.EVENT_BUS.register(new FilterAddon());
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.LOW, this::removeChannelTags);
+        MinecraftForge.EVENT_BUS.register(new ChatAddonAntiSpam(chatManager));
+        MinecraftForge.EVENT_BUS.register(new FilterAddon(chatManager));
         MinecraftForge.EVENT_BUS.register(new ChatLogging(FMLPaths.GAMEDIR.get().resolve("logs/chat")));
+    }
+
+    private void removeChannelTags(MessageAddedToChannelEvent.Pre event) {
+        if (settings.advanced.hideTag.get() && event.getChannel() != ChatManager.DEFAULT_CHANNEL) {
+            ChannelPatterns pattern = getServerSettings().general.channelPattern.get();
+
+            ITextComponent text = event.getText();
+            Matcher matcher = pattern.getPattern().matcher(event.getText().getString());
+            if (matcher.find()) {
+                event.setText(ChatTextUtils.subChat(text, matcher.end()));
+            }
+        }
     }
 
     private void onJoinServer() {
@@ -144,7 +150,7 @@ public class TabbyChatClient {
             // check for both main menu and connecting because of launch args
             if (gui instanceof GuiMainMenu || gui instanceof GuiConnecting) {
                 Minecraft mc = Minecraft.getInstance();
-                hookIntoChat(mc.ingameGUI, new GuiNewChatTC(mc, instance.chatManager));
+                hookIntoChat(mc.ingameGUI, new GuiNewChatTC(mc, instance));
                 MinecraftForge.EVENT_BUS.unregister(StartListener.class);
             }
         }

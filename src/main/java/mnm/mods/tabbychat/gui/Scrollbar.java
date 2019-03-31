@@ -1,6 +1,5 @@
 package mnm.mods.tabbychat.gui;
 
-import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.util.ILocation;
 import mnm.mods.util.gui.GuiComponent;
 import net.minecraft.client.gui.Gui;

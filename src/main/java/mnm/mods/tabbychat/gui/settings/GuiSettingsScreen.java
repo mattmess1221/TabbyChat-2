@@ -2,8 +2,10 @@ package mnm.mods.tabbychat.gui.settings;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import mnm.mods.tabbychat.ChatManager;
 import mnm.mods.tabbychat.TabbyChat;
-import mnm.mods.tabbychat.TabbyChatClient;
+import mnm.mods.tabbychat.api.Channel;
+import mnm.mods.tabbychat.gui.ChatBox;
 import mnm.mods.util.Color;
 import mnm.mods.util.ILocation;
 import mnm.mods.util.Location;
@@ -18,6 +20,7 @@ import mnm.mods.util.gui.config.SettingPanel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -41,13 +44,15 @@ public class GuiSettingsScreen extends ComponentScreen {
     private GuiPanel settingsList;
     private SettingPanel<?> selectedSetting;
 
-    public GuiSettingsScreen(SettingPanel<?> setting) {
-        this.selectedSetting = setting;
+    public GuiSettingsScreen(@Nullable Channel channel) {
+        if (channel != ChatManager.DEFAULT_CHANNEL) {
+            selectedSetting = new GuiSettingsChannel();
+        }
 
         for (Map.Entry<Class<? extends SettingPanel<?>>, Supplier<? extends SettingPanel<?>>> sett : settings.entrySet()) {
             try {
-                if (setting != null && setting.getClass() == sett.getKey()) {
-                    panels.add(setting);
+                if (selectedSetting != null && selectedSetting.getClass() == sett.getKey()) {
+                    panels.add(selectedSetting);
                 } else {
                     panels.add(sett.getValue().get());
                 }
@@ -114,7 +119,7 @@ public class GuiSettingsScreen extends ComponentScreen {
                 TabbyChat.logger.warn("Unable to save server config", e);
             }
         }
-        TabbyChatClient.getInstance().getChat().getChatBox().getChatArea().markDirty();
+        ChatManager.instance().markDirty(null);
     }
 
     @Override
