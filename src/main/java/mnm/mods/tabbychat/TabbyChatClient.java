@@ -19,6 +19,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.resources.IReloadableResourceManager;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -140,7 +141,7 @@ public class TabbyChatClient {
 
     }
 
-    @Mod.EventBusSubscriber(modid = TabbyChat.MODID)
+    @Mod.EventBusSubscriber(modid = TabbyChat.MODID, value = Dist.CLIENT)
     private static class StartListener {
         @SubscribeEvent
         public static void onGuiOpen(GuiOpenEvent event) {
@@ -154,7 +155,7 @@ public class TabbyChatClient {
         }
     }
 
-    @Mod.EventBusSubscriber(modid = TabbyChat.MODID)
+    @Mod.EventBusSubscriber(modid = TabbyChat.MODID, value = Dist.CLIENT)
     private static class NullScreenListener {
         // Listens for a null GuiScreen. Null means we're in-game
         // TODO workaround for lack of client network events. Replace when possible
