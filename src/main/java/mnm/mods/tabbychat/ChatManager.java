@@ -3,16 +3,12 @@ package mnm.mods.tabbychat;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.reflect.TypeToken;
 import com.mojang.authlib.GameProfile;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.Chat;
 import mnm.mods.tabbychat.api.UserChannel;
 import mnm.mods.tabbychat.api.events.MessageAddedToChannelEvent;
+import mnm.mods.tabbychat.gui.ChatBox;
 import mnm.mods.tabbychat.settings.ServerSettings;
 import mnm.mods.tabbychat.settings.TabbySettings;
 import mnm.mods.tabbychat.util.ChannelTypeAdapter;
@@ -28,30 +24,23 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.reflect.TypeUtils;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
-import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -62,49 +51,25 @@ public class ChatManager implements Chat {
 
     private static ChatManager instance;
 
-    public static final AbstractChannel DEFAULT_CHANNEL = new AbstractChannel("*") {
-        @Override
-        public String getName() {
-            return getAlias();
-        }
-
-        @Override
-        public String toString() {
-            return "#" + getAlias();
-        }
-
-        // Don't mess with this channel
-        @Override
-        public void setAlias(String alias) {
-        }
-
-        @Override
-        public void setPrefix(String prefix) {
-        }
-
-        @Override
-        public void setPrefixHidden(boolean hidden) {
-        }
-
-        @Override
-        public void setCommand(String command) {
-        }
-    };
-
     private Gson gson = new GsonBuilder()
-            .excludeFieldsWithoutExposeAnnotation()
             .registerTypeHierarchyAdapter(ITextComponent.class, new ITextComponent.Serializer())
             .registerTypeAdapter(Style.class, new Style.Serializer())
             .registerTypeAdapterFactory(new EnumTypeAdapterFactory())
-            .registerTypeAdapter(Channel.class, new ChannelTypeAdapter(this))
+            .registerTypeHierarchyAdapter(Channel.class, new ChannelTypeAdapter(this))
             .registerTypeAdapter(LocalDateTime.class, new DateTimeTypeAdapter())
             .create();
 
     private Map<String, Channel> allChannels = new HashMap<>();
     private Map<GameProfile, UserChannel> allPms = new HashMap<>();
 
-    private Set<Channel> channels = new HashSet<>();
+    /**
+     * A map of all the messages per channel
+     */
     private Map<Channel, List<ChatMessage>> messages = new HashMap<>();
+
+    /**
+     * The split messages used for rendering the chatbox.
+     */
     private Map<Channel, List<ChatMessage>> msgsplit = new HashMap<>();
 
     private ServerSettings server() {
@@ -116,6 +81,7 @@ public class ChatManager implements Chat {
     }
 
     private ChatManager() {
+        allChannels.put("*", DefaultChannel.INSTANCE);
     }
 
     public static ChatManager instance() {
@@ -161,20 +127,9 @@ public class ChatManager implements Chat {
 
     }
 
-    @Deprecated
-    public void addChannel(AbstractChannel channel) {
-        channels.add(channel);
-    }
-
-    @Deprecated
-    public void removeChannel(AbstractChannel channel) {
-        channels.remove(channel);
-    }
-
     @Override
     public Set<Channel> getChannels() {
-        // TODO only show visible channels.
-        return ImmutableSet.copyOf(channels);
+        return ImmutableSet.copyOf(ChatBox.getInstance().getChannels());
     }
 
     @Override
@@ -222,10 +177,9 @@ public class ChatManager implements Chat {
 
         trimMessages(messages, settings().advanced.historyLen.get());
 
-        save();
-
         MinecraftForge.EVENT_BUS.post(new MessageAddedToChannelEvent.Post(text, id, channel));
 
+        save();
         markDirty(channel);
     }
 
@@ -254,6 +208,13 @@ public class ChatManager implements Chat {
 
     public void clearMessages() {
         this.messages.clear();
+        this.msgsplit.clear();
+
+        this.allChannels.clear();
+        this.allChannels.put("*", DefaultChannel.INSTANCE);
+        this.allPms.clear();
+
+        ChatBox.getInstance().clearMessages();
     }
 
     private static final Object lock = new Object();
@@ -264,42 +225,31 @@ public class ChatManager implements Chat {
         }
     }
 
+    private static Reader newCompressedReader(Path path) throws IOException {
+        return new InputStreamReader(new GzipCompressorInputStream(Files.newInputStream(path)), StandardCharsets.UTF_8);
+    }
+
+    private static Writer newCompressedWriter(Path path) throws IOException {
+        return new OutputStreamWriter(new GzipCompressorOutputStream(Files.newOutputStream(path)), StandardCharsets.UTF_8);
+    }
+
     private synchronized void loadFrom_(Path dir) throws IOException {
         Path file = dir.resolve("data.gz");
         if (Files.notExists(file)) {
             return;
         }
-        try (Reader gzin = new InputStreamReader(new GzipCompressorInputStream(Files.newInputStream(file)), StandardCharsets.UTF_8)) {
-            JsonObject root = gson.fromJson(gzin, JsonObject.class);
 
-            clearMessages();
-            allChannels.clear();
-            allPms.clear();
+        clearMessages();
 
-            Type type = new TypeToken<List<ChatMessage>>() {
-            }.getType();
+        try (Reader gzin = newCompressedReader(file)) {
+            PersistantChat root = gson.fromJson(gzin, PersistantChat.class);
 
-            List<ChatMessage> def = gson.fromJson(root.get("default"), type);
-            getChannelMessages(DEFAULT_CHANNEL).addAll(def);
+            this.messages.putAll(root.getMessages());
+            ChatBox.getInstance().addChannels(root.getActive());
 
-            readChannels(root.get("chans").getAsJsonObject());
-
-            // active channels
-            JsonObject active = root.get("active").getAsJsonObject();
-            JsonArray achans = active.get("chans").getAsJsonArray();
-            for (JsonElement e : achans) {
-                addChannel(gson.fromJson(e, AbstractChannel.class));
-            }
-
-            String time;
-            if (root.has("datetime")) {
-                Instant datetime = Instant.ofEpochSecond(root.get("datetime").getAsLong());
-                time = datetime.toString();
-            } else {
-                time = "UNKNOWN";
-            }
             ITextComponent chat = new TextBuilder()
-                    .text("Chat log from " + time)
+                    // TODO use translation
+                    .text("Chat log from " + root.getTime())
                     .format(TextFormatting.GRAY)
                     .build();
 
@@ -308,25 +258,6 @@ public class ChatManager implements Chat {
                     addMessage(c, chat, -1);
                 }
             }
-        }
-    }
-
-    private void readChannels(JsonObject obj) {
-        for (Entry<String, JsonElement> entry : obj.entrySet()) {
-            Channel chan = getChannel(entry.getKey());
-            List<ChatMessage> list = gson.fromJson(entry.getValue(), new TypeToken<List<ChatMessage>>(){}.getType());
-            getChannelMessages(chan).addAll(list);
-        }
-    }
-
-    private void readUserChannels(JsonObject obj) {
-        for (Entry<String, JsonElement> entry : obj.entrySet()) {
-            // profile is unsafe, but I'm not sent the uuid. Nothing I can do
-            GameProfile profile = new GameProfile(null, entry.getKey());
-            Channel chan = getUserChannel(profile);
-            Type type = TypeUtils.parameterize(List.class, ChatMessage.class);
-            List<ChatMessage> list = gson.fromJson(entry.getValue(), type);
-            getChannelMessages(chan).addAll(list);
         }
     }
 
@@ -341,35 +272,37 @@ public class ChatManager implements Chat {
     }
 
     private synchronized void saveTo(Path dir) throws IOException {
-        JsonObject root = new JsonObject();
-        root.addProperty("datetime", Instant.now().getEpochSecond());
-        root.add("default", gson.toJsonTree(getMessages(DEFAULT_CHANNEL)));
-
-        JsonObject chans = new JsonObject();
-        root.add("chans", chans);
-
-        for (Channel c : messages.keySet()) {
-            chans.add(c.toString(), gson.toJsonTree(getMessages(c)));
-        }
-
-        // active channels
-        JsonObject active = new JsonObject();
-        root.add("active", active);
-
-        JsonArray achans = new JsonArray();
-        active.add("chans", achans);
-
-        for (Channel c : channels) {
-            if (c == DEFAULT_CHANNEL) {
-                continue;
-            }
-            achans.add(gson.toJson(c));
-        }
-
         Path file = dir.resolve("data.gz");
         Files.createDirectories(dir);
-        try (Writer gzout = new OutputStreamWriter(new GzipCompressorOutputStream(Files.newOutputStream(file)), StandardCharsets.UTF_8)) {
-            gson.toJson(root, gzout);
+
+        try (Writer gzout = newCompressedWriter(file)) {
+            gson.toJson(new PersistantChat(messages, ChatBox.getInstance().getChannels()), PersistantChat.class, gzout);
         }
+    }
+
+    private static class PersistantChat {
+
+        private LocalDateTime datetime;
+        private Map<Channel, List<ChatMessage>> messages;
+        private List<AbstractChannel> active;
+
+        PersistantChat(Map<Channel, List<ChatMessage>> messages, Collection<AbstractChannel> active) {
+            this.messages = new HashMap<>(messages);
+            this.active = new ArrayList<>(active);
+            this.datetime = LocalDateTime.now();
+        }
+
+        private String getTime() {
+            return datetime == null ? "UNKNOWN" : datetime.toString();
+        }
+
+        private Map<Channel, List<ChatMessage>> getMessages() {
+            return messages == null ? Collections.emptyMap() : messages;
+        }
+
+        private List<AbstractChannel> getActive() {
+            return active == null ? Collections.emptyList() : active;
+        }
+
     }
 }

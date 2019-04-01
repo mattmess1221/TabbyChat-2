@@ -1,7 +1,9 @@
 package mnm.mods.tabbychat.gui;
 
+import com.google.common.collect.ImmutableSet;
 import mnm.mods.tabbychat.AbstractChannel;
 import mnm.mods.tabbychat.ChatManager;
+import mnm.mods.tabbychat.DefaultChannel;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.TabbyChatClient;
 import mnm.mods.tabbychat.api.Channel;
@@ -16,21 +18,21 @@ import mnm.mods.util.Location;
 import mnm.mods.util.Vec;
 import mnm.mods.util.gui.BorderLayout;
 import mnm.mods.util.gui.GuiPanel;
-import mnm.mods.util.gui.GuiText;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.common.MinecraftForge;
-import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Predicate;
 
 public class ChatBox extends GuiPanel {
 
@@ -47,7 +49,7 @@ public class ChatBox extends GuiPanel {
     private Location tempbox;
 
     private List<AbstractChannel> channels = new ArrayList<>();
-    private AbstractChannel active = ChatManager.DEFAULT_CHANNEL;
+    private AbstractChannel active = DefaultChannel.INSTANCE;
     private Map<Channel, ChannelStatus> channelStatus = new HashMap<>();
 
     public ChatBox(TabbySettings settings) {
@@ -59,10 +61,10 @@ public class ChatBox extends GuiPanel {
         this.addComponent(new Scrollbar(chatArea), BorderLayout.Position.EAST);
         super.setLocation(settings.advanced.getChatboxLocation());
 
-        this.channels.add(ChatManager.DEFAULT_CHANNEL);
-        this.pnlTray.addChannel(ChatManager.DEFAULT_CHANNEL);
+        this.channels.add(DefaultChannel.INSTANCE);
+        this.pnlTray.addChannel(DefaultChannel.INSTANCE);
 
-        this.setStatus(ChatManager.DEFAULT_CHANNEL, ChannelStatus.ACTIVE);
+        this.setStatus(DefaultChannel.INSTANCE, ChannelStatus.ACTIVE);
 
         super.tick();
 
@@ -87,6 +89,14 @@ public class ChatBox extends GuiPanel {
         addChannel((AbstractChannel) event.getChannel());
     }
 
+    public void addChannels(Collection<AbstractChannel> active) {
+        active.forEach(this::addChannel);
+    }
+
+    public Set<AbstractChannel> getChannels() {
+        return ImmutableSet.copyOf(this.channels);
+    }
+
     private void addChannel(AbstractChannel channel) {
         if (!this.channels.contains(channel)) {
             this.channels.add(channel);
@@ -96,12 +106,12 @@ public class ChatBox extends GuiPanel {
     }
 
     public void removeChannel(AbstractChannel channel) {
-        if (channels.contains(channel) && !channel.equals(ChatManager.DEFAULT_CHANNEL)) {
+        if (channels.contains(channel) && channel != DefaultChannel.INSTANCE) {
             channels.remove(channel);
             pnlTray.removeChannel(channel);
         }
         if (getActiveChannel() == channel) {
-            setActiveChannel(ChatManager.DEFAULT_CHANNEL);
+            setActiveChannel(DefaultChannel.INSTANCE);
         }
         ChatManager.instance().save();
     }
@@ -112,25 +122,22 @@ public class ChatBox extends GuiPanel {
     }
 
     public void setStatus(AbstractChannel chan, @Nullable ChannelStatus status) {
-
-        this.channelStatus.put(chan, status);
-
         this.channelStatus.compute(chan, (key, old) -> {
             if (status == null || old == null || status.ordinal() < old.ordinal()) {
                 return status;
             }
-            if (status == ChannelStatus.ACTIVE) {
-                chatArea.setChannel(chan);
-            }
             return old;
         });
+        if (status == ChannelStatus.ACTIVE) {
+            chatArea.setChannel(chan);
+        }
     }
 
     public void clearMessages() {
-        this.channels.clear();
-        this.channels.add(ChatManager.DEFAULT_CHANNEL);
+        this.channels.removeIf(Predicate.isEqual(DefaultChannel.INSTANCE).negate());
 
-        pnlTray.clear();
+        this.pnlTray.clear();
+        setStatus(DefaultChannel.INSTANCE, ChannelStatus.ACTIVE);
     }
 
 
@@ -190,7 +197,7 @@ public class ChatBox extends GuiPanel {
                 return;
             }
             String name = channel.getName();
-            if (channel == ChatManager.DEFAULT_CHANNEL) {
+            if (channel == DefaultChannel.INSTANCE) {
                 name = server().general.defaultChannel.get();
             }
             // insert the channel name
@@ -367,6 +374,5 @@ public class ChatBox extends GuiPanel {
         this.setLocation(getLocation().copy().setYPos(y));
         this.tick();
     }
-
 
 }

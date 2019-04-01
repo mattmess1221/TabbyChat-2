@@ -3,9 +3,9 @@ package mnm.mods.tabbychat.gui.settings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import mnm.mods.tabbychat.ChatManager;
+import mnm.mods.tabbychat.DefaultChannel;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
-import mnm.mods.tabbychat.gui.ChatBox;
 import mnm.mods.util.Color;
 import mnm.mods.util.ILocation;
 import mnm.mods.util.Location;
@@ -45,7 +45,7 @@ public class GuiSettingsScreen extends ComponentScreen {
     private SettingPanel<?> selectedSetting;
 
     public GuiSettingsScreen(@Nullable Channel channel) {
-        if (channel != ChatManager.DEFAULT_CHANNEL) {
+        if (channel != DefaultChannel.INSTANCE) {
             selectedSetting = new GuiSettingsChannel();
         }
 

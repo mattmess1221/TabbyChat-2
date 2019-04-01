@@ -1,13 +1,11 @@
 package mnm.mods.tabbychat;
 
-import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.events.MessageAddedToChannelEvent;
 import mnm.mods.tabbychat.core.GuiNewChatTC;
 import mnm.mods.tabbychat.extra.ChatAddonAntiSpam;
 import mnm.mods.tabbychat.extra.ChatLogging;
 import mnm.mods.tabbychat.extra.filters.FilterAddon;
 import mnm.mods.tabbychat.extra.spell.Spellcheck;
-import mnm.mods.tabbychat.gui.settings.GuiSettingsScreen;
 import mnm.mods.tabbychat.settings.ServerSettings;
 import mnm.mods.tabbychat.settings.TabbySettings;
 import mnm.mods.tabbychat.util.ChannelPatterns;
@@ -113,7 +111,7 @@ public class TabbyChatClient {
     }
 
     private void removeChannelTags(MessageAddedToChannelEvent.Pre event) {
-        if (settings.advanced.hideTag.get() && event.getChannel() != ChatManager.DEFAULT_CHANNEL) {
+        if (settings.advanced.hideTag.get() && event.getChannel() != DefaultChannel.INSTANCE) {
             ChannelPatterns pattern = getServerSettings().general.channelPattern.get();
 
             ITextComponent text = event.getText();
@@ -128,7 +126,7 @@ public class TabbyChatClient {
 
         try {
             serverSettings.load();
-        } catch (IOException e) {
+        } catch (Exception e) {
             TabbyChat.logger.warn("Unable to load or save server config", e);
         }
 

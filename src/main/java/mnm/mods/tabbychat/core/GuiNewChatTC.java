@@ -2,11 +2,10 @@ package mnm.mods.tabbychat.core;
 
 import com.google.common.collect.Sets;
 import mnm.mods.tabbychat.AbstractChannel;
-import mnm.mods.tabbychat.ChatChannel;
 import mnm.mods.tabbychat.ChatManager;
+import mnm.mods.tabbychat.DefaultChannel;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.TabbyChatClient;
-import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.ChannelStatus;
 import mnm.mods.tabbychat.api.events.ChatMessageEvent.ChatReceivedEvent;
 import mnm.mods.tabbychat.gui.ChatBox;
@@ -65,7 +64,6 @@ public class GuiNewChatTC extends GuiNewChat {
     public void clearChatMessages(boolean sent) {
         checkThread(() -> {
             ChatManager.instance().clearMessages();
-            chatbox.clearMessages();
             if (sent) {
                 this.getSentMessages().clear();
             }
@@ -109,7 +107,7 @@ public class GuiNewChatTC extends GuiNewChat {
     public void addMessage(ITextComponent ichat, int id) {
         // chat listeners
         ChatReceivedEvent chatevent = new ChatReceivedEvent(ichat, id);
-        chatevent.channels.add(ChatManager.DEFAULT_CHANNEL);
+        chatevent.channels.add(DefaultChannel.INSTANCE);
         MinecraftForge.EVENT_BUS.post(chatevent);
         // chat filters
         ichat = chatevent.text;
@@ -120,9 +118,9 @@ public class GuiNewChatTC extends GuiNewChat {
                 chatevent.channels.clear();
                 chatevent.channels.add(this.chatbox.getActiveChannel());
             }
-            if (chatevent.channels.contains(ChatManager.DEFAULT_CHANNEL) && chatevent.channels.size() > 1
+            if (chatevent.channels.contains(DefaultChannel.INSTANCE) && chatevent.channels.size() > 1
                     && !tc.getServerSettings().general.useDefaultTab.get()) {
-                chatevent.channels.remove(ChatManager.DEFAULT_CHANNEL);
+                chatevent.channels.remove(DefaultChannel.INSTANCE);
             }
             boolean msg = !chatevent.channels.contains(this.chatbox.getActiveChannel());
             final Set<String> ignored = Sets.newHashSet(this.tc.getServerSettings().general.ignoredChannels.get());

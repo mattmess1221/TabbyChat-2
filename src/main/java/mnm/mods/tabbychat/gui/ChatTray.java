@@ -2,7 +2,7 @@ package mnm.mods.tabbychat.gui;
 
 import com.google.common.collect.Maps;
 import mnm.mods.tabbychat.AbstractChannel;
-import mnm.mods.tabbychat.ChatManager;
+import mnm.mods.tabbychat.DefaultChannel;
 import mnm.mods.tabbychat.TabbyChatClient;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.ChannelStatus;
@@ -77,8 +77,8 @@ public class ChatTray extends GuiPanel {
     public void clear() {
         this.tabList.clearComponents();
 
-        addChannel(ChatManager.DEFAULT_CHANNEL);
-        ChatBox.getInstance().setStatus(ChatManager.DEFAULT_CHANNEL, ChannelStatus.ACTIVE);
+        addChannel(DefaultChannel.INSTANCE);
+        ChatBox.getInstance().setStatus(DefaultChannel.INSTANCE, ChannelStatus.ACTIVE);
     }
 
     @Nonnull
