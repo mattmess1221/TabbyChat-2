@@ -154,6 +154,18 @@ public class TabbyChatClient {
         }
     }
 
+    @Mod.EventBusSubscriber(modid = TabbyChat.MODID)
+    private static class NullScreenListener {
+        // Listens for a null GuiScreen. Null means we're in-game
+        // TODO workaround for lack of client network events. Replace when possible
+        @SubscribeEvent
+        public static void onGuiOpen(GuiOpenEvent event) {
+            if (event.getGui() == null) {
+                instance.getServerSettings();
+            }
+        }
+    }
+
     private static void hookIntoChat(GuiIngame guiIngame, GuiNewChat chat) {
         try {
             ObfuscationReflectionHelper.setPrivateValue(GuiIngame.class, guiIngame, chat, "field_73840_e");
