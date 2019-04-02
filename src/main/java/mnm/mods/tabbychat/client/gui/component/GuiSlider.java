@@ -12,8 +12,7 @@ import net.minecraft.util.ResourceLocation;
  */
 public class GuiSlider extends GuiComponent implements IGuiInput<Double> {
 
-    private static final ResourceLocation TRANSPARENCY = new ResourceLocation("mnmutils",
-            "textures/transparency.png");
+    private static final ResourceLocation TRANSPARENCY = new ResourceLocation("tabbychat", "textures/transparency.png");
 
     private boolean vertical;
     private double value;
