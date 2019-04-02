@@ -9,7 +9,7 @@ public class DirectChannel extends AbstractChannel implements UserChannel {
 
     private GameProfile user;
 
-    public DirectChannel(GameProfile user) {
+    DirectChannel(GameProfile user) {
         super(user.getName());
         this.user = user;
         setPrefix("/msg " + user.getName());
@@ -23,6 +23,11 @@ public class DirectChannel extends AbstractChannel implements UserChannel {
     @Override
     public String getName() {
         return user.getName();
+    }
+
+    @Override
+    public String getDisplayName() {
+        return "@" + getName();
     }
 
     @Override

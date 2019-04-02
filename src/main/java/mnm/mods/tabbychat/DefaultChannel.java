@@ -8,6 +8,11 @@ public final class DefaultChannel extends ChatChannel {
         super("*");
     }
 
+    @Override
+    public String getDisplayName() {
+        return getName();
+    }
+
     // Don't mess with this channel
     @Override
     public void setAlias(String alias) {

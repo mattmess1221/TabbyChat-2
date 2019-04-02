@@ -17,6 +17,11 @@ public class ChatChannel extends AbstractChannel {
     }
 
     @Override
+    public String getDisplayName() {
+        return "#" + getAlias();
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hashCode(name);
     }

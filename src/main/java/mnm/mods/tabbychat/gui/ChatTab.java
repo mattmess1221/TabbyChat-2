@@ -29,7 +29,7 @@ public class ChatTab extends GuiButton {
     private final AbstractChannel channel;
 
     ChatTab(AbstractChannel channel) {
-        super(channel.getAlias());
+        super(channel.getDisplayName());
         this.channel = channel;
     }
 
@@ -85,11 +85,8 @@ public class ChatTab extends GuiButton {
 
     @Override
     public String getText() {
-        String alias = channel.getAlias();
+        String alias = channel.getDisplayName();
 
-        if (channel instanceof UserChannel) {
-            alias = "@" + alias;
-        }
         ChannelStatus status = chat.getStatus(channel);
         if (status != null) {
             switch (status) {
@@ -122,6 +119,7 @@ public class ChatTab extends GuiButton {
     @Nonnull
     @Override
     public Dim getMinimumSize() {
-        return new Dim(mc.fontRenderer.getStringWidth(getText()) + 8, 14);
+        String chan = "<" + channel.getDisplayName() + ">";
+        return new Dim(mc.fontRenderer.getStringWidth(chan) + 8, 14);
     }
 }

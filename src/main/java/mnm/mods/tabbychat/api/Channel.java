@@ -12,4 +12,5 @@ public interface Channel {
      */
     String getName();
 
+    String getDisplayName();
 }
