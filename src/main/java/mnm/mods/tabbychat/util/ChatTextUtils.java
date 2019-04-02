@@ -1,11 +1,11 @@
 package mnm.mods.tabbychat.util;
 
 import com.google.common.collect.Lists;
-import mnm.mods.tabbychat.ChatMessage;
-import mnm.mods.tabbychat.TabbyChatClient;
+import mnm.mods.tabbychat.client.ChatMessage;
+import mnm.mods.tabbychat.client.TabbyChatClient;
 import mnm.mods.tabbychat.api.Message;
-import mnm.mods.tabbychat.settings.GeneralSettings;
-import mnm.mods.util.text.TextBuilder;
+import mnm.mods.tabbychat.client.settings.GeneralSettings;
+import mnm.mods.tabbychat.util.text.TextBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiUtilRenderComponents;

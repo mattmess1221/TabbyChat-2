@@ -1,7 +1,5 @@
 package mnm.mods.tabbychat.util;
 
-import mnm.mods.util.Translatable;
-
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 

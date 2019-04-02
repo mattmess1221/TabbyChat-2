@@ -4,8 +4,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import mnm.mods.util.ILocation;
-import mnm.mods.util.Location;
+import mnm.mods.tabbychat.util.ILocation;
+import mnm.mods.tabbychat.util.Location;
 
 public class LocationTests {
 

@@ -3,7 +3,7 @@ package mnm.mods.tabbychat.util;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import mnm.mods.tabbychat.ChatManager;
+import mnm.mods.tabbychat.client.ChatManager;
 import mnm.mods.tabbychat.api.Channel;
 
 import java.io.IOException;

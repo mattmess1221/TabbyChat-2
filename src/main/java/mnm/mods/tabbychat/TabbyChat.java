@@ -1,5 +1,6 @@
 package mnm.mods.tabbychat;
 
+import mnm.mods.tabbychat.client.TabbyChatClient;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;

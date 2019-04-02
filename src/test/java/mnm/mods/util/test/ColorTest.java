@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import mnm.mods.util.Color;
+import mnm.mods.tabbychat.util.Color;
 
 public class ColorTest {
 
