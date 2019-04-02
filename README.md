@@ -5,8 +5,8 @@ TabbyChat 2 is the successor to [TabbyChat](http://github.com/killjoy1221/tabbyc
 Stable builds are available on the Minecraft Forums topic and CurseForge, linked below.
 
 # Links
-- [Snapshot Builds](https://drone.io/github.com/killjoy1221/TabbyChat-2/files). [![Build Status](https://drone.io/github.com/killjoy1221/TabbyChat-2/status.png)](https://drone.io/github.com/killjoy1221/TabbyChat-2/latest)
-- [Minecraft Forums](http://www.minecraftforum.net/forums/mapping-and-modding/minecraft-mods/2181597-n).
+- [Snapshot Builds ![Build Status](https://img.shields.io/travis/killjoy1221/TabbyChat-2.svg?style=flat-square)](https://travis-ci.org/killjoy1221/TabbyChat-2)
+- [Minecraft Forums](http://www.minecraftforum.net/forums/mapping-and-modding/minecraft-mods/2181597-n)
 - [CurseForge](https://minecraft.curseforge.com/projects/tabbychat-2)
 
 TabbyChat 2 also has an API. Check the `mnm.mods.tabbychat.api` package for the source references.
