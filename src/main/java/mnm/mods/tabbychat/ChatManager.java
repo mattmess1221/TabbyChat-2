@@ -167,7 +167,7 @@ public class ChatManager implements Chat {
         id = event.getId();
 
         if (id != 0) {
-            removeMessages(id);
+            removeMessages(channel, id);
         }
 
         int uc = Minecraft.getInstance().ingameGUI.getTicks();
@@ -194,11 +194,8 @@ public class ChatManager implements Chat {
         }
     }
 
-    public void removeMessages(int id) {
-        for (List<ChatMessage> messages : this.messages.values()) {
-            messages.removeIf(m -> m.getID() == id);
-        }
-        save();
+    public void removeMessages(Channel chan, int id) {
+        getChannelMessages(chan).removeIf(m -> m.getID() == id);
     }
 
     public void removeMessageAt(AbstractChannel channel, int index) {

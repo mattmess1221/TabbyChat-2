@@ -139,11 +139,6 @@ public class GuiNewChatTC extends GuiNewChat {
         }
     }
 
-    @Override
-    public void deleteChatLine(int id) {
-        checkThread(() -> ChatManager.instance().removeMessages(id));
-    }
-
     private void checkThread(Runnable runnable) {
         if (!mc.isCallingFromMinecraftThread()) {
             mc.addScheduledTask(runnable);
