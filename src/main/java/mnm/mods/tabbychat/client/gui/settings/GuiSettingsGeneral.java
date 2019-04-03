@@ -89,8 +89,8 @@ public class GuiSettingsGeneral extends SettingPanel<TabbySettings> {
                 .collect(Collectors.toList());
     }
 
-    private static ITextComponent getColorName(TextFormatting input) {
-        return new TextComponentTranslation("colors." + input.getFriendlyName());
+    private static String getColorName(TextFormatting input) {
+        return "colors." + input.getFriendlyName();
     }
 
     @Override

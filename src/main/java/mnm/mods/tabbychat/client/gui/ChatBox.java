@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableSet;
 import mnm.mods.tabbychat.client.AbstractChannel;
 import mnm.mods.tabbychat.client.ChatManager;
 import mnm.mods.tabbychat.client.DefaultChannel;
-import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.client.TabbyChatClient;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.ChannelStatus;
@@ -25,7 +24,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.common.MinecraftForge;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -233,7 +231,7 @@ public class ChatBox extends GuiPanel {
                         tempbox.getYPos() + (int) my - drag.y,
                         tempbox.getWidth() + (int) mx - drag.x,
                         tempbox.getHeight() - (int) my + drag.y));
-                this.chatArea.markDirty();
+                ChatManager.instance().markDirty(active);
             } else {
                 setLocation(getLocation().copy()
                         .setXPos(tempbox.getXPos() + (int) mx - drag.x)
@@ -334,11 +332,7 @@ public class ChatBox extends GuiPanel {
         sett.advanced.chatY.set(location.getYPos());
         sett.advanced.chatW.set(location.getWidth());
         sett.advanced.chatH.set(location.getHeight());
-        try {
-            sett.save();
-        } catch (IOException e) {
-            TabbyChat.logger.warn("Unable to save settings", e);
-        }
+        sett.save();
     }
 
     @Override

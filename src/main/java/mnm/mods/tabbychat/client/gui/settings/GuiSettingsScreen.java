@@ -2,6 +2,7 @@ package mnm.mods.tabbychat.client.gui.settings;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import mnm.mods.tabbychat.TCMarkers;
 import mnm.mods.tabbychat.client.ChatManager;
 import mnm.mods.tabbychat.client.DefaultChannel;
 import mnm.mods.tabbychat.TabbyChat;
@@ -57,7 +58,7 @@ public class GuiSettingsScreen extends ComponentScreen {
                     panels.add(sett.getValue().get());
                 }
             } catch (Exception e) {
-                TabbyChat.logger.error("Unable to add {} as a setting.", sett.getKey(), e);
+                TabbyChat.logger.error(TCMarkers.CONFIG, "Unable to add {} as a setting.", sett.getKey(), e);
             }
         }
     }
@@ -112,12 +113,7 @@ public class GuiSettingsScreen extends ComponentScreen {
     public void onGuiClosed() {
         super.onGuiClosed();
         for (SettingPanel<?> settingPanel : panels) {
-            SettingsFile config = settingPanel.getSettings();
-            try {
-                config.save();
-            } catch (IOException e) {
-                TabbyChat.logger.warn("Unable to save server config", e);
-            }
+            settingPanel.getSettings().save();
         }
         ChatManager.instance().markDirty(null);
     }

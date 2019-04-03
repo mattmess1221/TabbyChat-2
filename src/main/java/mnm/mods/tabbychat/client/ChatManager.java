@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.authlib.GameProfile;
+import mnm.mods.tabbychat.TCMarkers;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.Chat;
@@ -264,7 +265,7 @@ public class ChatManager implements Chat {
             try {
                 saveTo(server().getPath().getParent());
             } catch (IOException e) {
-                TabbyChat.logger.warn("Error while saving chat data", e);
+                TabbyChat.logger.warn(TCMarkers.CHATBOX, "Error while saving chat data", e);
             }
         }
     }

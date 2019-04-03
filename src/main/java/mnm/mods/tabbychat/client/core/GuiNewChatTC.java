@@ -1,6 +1,7 @@
 package mnm.mods.tabbychat.client.core;
 
 import com.google.common.collect.Sets;
+import mnm.mods.tabbychat.TCMarkers;
 import mnm.mods.tabbychat.client.AbstractChannel;
 import mnm.mods.tabbychat.client.ChatManager;
 import mnm.mods.tabbychat.client.DefaultChannel;
@@ -134,7 +135,7 @@ public class GuiNewChatTC extends GuiNewChat {
                     chatbox.setStatus(channel, ChannelStatus.UNREAD);
                 }
             }
-            TabbyChat.logger.info("[CHAT] " + ichat.getString());
+            TabbyChat.logger.info(TCMarkers.CHATBOX, "[CHAT] " + ichat.getString());
             this.chatbox.tick();
         }
     }
@@ -142,7 +143,7 @@ public class GuiNewChatTC extends GuiNewChat {
     private void checkThread(Runnable runnable) {
         if (!mc.isCallingFromMinecraftThread()) {
             mc.addScheduledTask(runnable);
-            TabbyChat.logger.warn("Tried to modify chat from thread {}. To prevent a crash, it has been scheduled on the main thread.", Thread.currentThread().getName(), new Exception());
+            TabbyChat.logger.warn(TCMarkers.CHATBOX, "Tried to modify chat from thread {}. To prevent a crash, it has been scheduled on the main thread.", Thread.currentThread().getName(), new Exception());
         } else {
             runnable.run();
         }

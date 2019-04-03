@@ -1,6 +1,7 @@
 package mnm.mods.tabbychat.client.extra;
 
 import io.netty.channel.local.LocalAddress;
+import mnm.mods.tabbychat.TCMarkers;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.client.TabbyChatClient;
 import mnm.mods.tabbychat.api.events.ChatMessageEvent.ChatReceivedEvent;
@@ -28,6 +29,7 @@ public class ChatLogging {
 
     private static final SimpleDateFormat LOG_NAME_FORMAT = new SimpleDateFormat("yyyy'-'MM'-'dd");
     private static final SimpleDateFormat LOG_FORMAT = new SimpleDateFormat("'['HH':'mm':'ss'] '");
+
     private final Path directory;
 
     private Calendar date;
@@ -40,7 +42,7 @@ public class ChatLogging {
         try {
             compressLogs();
         } catch (IOException e) {
-            TabbyChat.logger.error("Errored while compressing logs", e);
+            TabbyChat.logger.error(TCMarkers.CHATBOX, "Errored while compressing logs", e);
         }
     }
 
@@ -71,6 +73,9 @@ public class ChatLogging {
                 Path old = logFile;
                 String server = getLogFolder();
                 logFile = findFile(directory.resolve(server));
+
+                TabbyChat.logger.debug(TCMarkers.CHATBOX, "Using log file {}", logFile);
+
                 Files.createDirectories(logFile.getParent());
                 Files.createFile(logFile);
                 IOUtils.closeQuietly(out);
@@ -82,7 +87,7 @@ public class ChatLogging {
                 }
 
             } catch (IOException e) {
-                TabbyChat.logger.warn("Unable to create log file", e);
+                TabbyChat.logger.warn(TCMarkers.CHATBOX, "Unable to create log file", e);
                 this.date = null;
                 this.out = null;
             }
@@ -106,9 +111,10 @@ public class ChatLogging {
 
         Files.find(directory, 1, ChatLogging::isLogFile).forEach(file -> {
             try {
+                TabbyChat.logger.debug(TCMarkers.CHATBOX, "Compressing log file {}", file);
                 gzipFile(file);
             } catch (IOException e) {
-                TabbyChat.logger.warn("Unable to compress log {}.", file.getFileName(), e);
+                TabbyChat.logger.warn(TCMarkers.CHATBOX, "Unable to compress log {}.", file.getFileName(), e);
             }
         });
     }

@@ -1,5 +1,6 @@
 package mnm.mods.tabbychat.client;
 
+import mnm.mods.tabbychat.TCMarkers;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.events.MessageAddedToChannelEvent;
 import mnm.mods.tabbychat.client.core.GuiNewChatTC;
@@ -31,7 +32,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.loading.FMLPaths;
 
-import java.io.IOException;
 import java.net.SocketAddress;
 import java.nio.file.Path;
 import java.util.regex.Matcher;
@@ -86,17 +86,13 @@ public class TabbyChatClient {
     public void init(FMLClientSetupEvent event) {
         // Set global settings
         settings = new TabbySettings(TabbyChat.dataFolder);
-        try {
-            settings.load();
-        } catch (IOException e) {
-            TabbyChat.logger.warn("Failed to load or save config.", e);
-        }
+        settings.load();
     }
 
     @SubscribeEvent
     public void onLoadingFinished(FMLLoadCompleteEvent event) {
 
-        TabbyChat.logger.info("Minecraft load complete!");
+        TabbyChat.logger.info(TCMarkers.STARTUP, "Minecraft load complete!");
 
         Minecraft mc = Minecraft.getInstance();
 
@@ -126,18 +122,14 @@ public class TabbyChatClient {
 
     private void onJoinServer() {
 
-        try {
-            serverSettings.load();
-        } catch (Exception e) {
-            TabbyChat.logger.warn("Unable to load or save server config", e);
-        }
+        serverSettings.load();
 
         // load chat
         try {
             Path conf = getServerSettings().getPath().getParent();
             chatManager.loadFrom(conf);
         } catch (Exception e) {
-            TabbyChat.logger.warn("Unable to load chat data.", e);
+            TabbyChat.logger.warn(TCMarkers.CHATBOX, "Unable to load chat data.", e);
         }
 
     }
@@ -172,9 +164,9 @@ public class TabbyChatClient {
         try {
             ObfuscationReflectionHelper.setPrivateValue(GuiIngame.class, guiIngame, chat, "field_73840_e");
 //            guiIngame.persistantChatGUI = chat;
-            TabbyChat.logger.info("Successfully hooked into chat.");
+            TabbyChat.logger.info(TCMarkers.STARTUP, "Successfully hooked into chat.");
         } catch (Throwable e) {
-            TabbyChat.logger.fatal("Unable to hook into chat. This is bad.", e);
+            TabbyChat.logger.fatal(TCMarkers.STARTUP, "Unable to hook into chat. This is bad.", e);
         }
     }
 }

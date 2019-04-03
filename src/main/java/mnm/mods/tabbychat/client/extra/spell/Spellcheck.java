@@ -6,6 +6,7 @@ import com.swabunga.spell.engine.SpellDictionaryHashMap;
 import com.swabunga.spell.event.SpellCheckEvent;
 import com.swabunga.spell.event.SpellChecker;
 import com.swabunga.spell.event.StringWordTokenizer;
+import mnm.mods.tabbychat.TCMarkers;
 import mnm.mods.tabbychat.TabbyChat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.IResourceManager;
@@ -56,7 +57,7 @@ public class Spellcheck implements ISelectiveResourceReloadListener {
                 // Prevent StackOverflowException
                 throw e;
             }
-            TabbyChat.logger.warn(e + " Falling back to English.");
+            TabbyChat.logger.warn(TCMarkers.SPELLCHECK, "Error loading dictionary. Falling back to en_us.", e);
             return openLangStream(LangDict.ENGLISH);
         }
     }
@@ -112,7 +113,7 @@ public class Spellcheck implements ISelectiveResourceReloadListener {
             loadUserDictionary();
             loadDictionary(LangDict.fromLanguage(lang.getLanguageCode()));
         } catch (IOException e) {
-            TabbyChat.logger.warn("Error while loading dictionary {}.", lang.getLanguageCode(), e);
+            TabbyChat.logger.warn(TCMarkers.SPELLCHECK, "Error while loading dictionary {}.", lang.getLanguageCode(), e);
         }
     }
 
