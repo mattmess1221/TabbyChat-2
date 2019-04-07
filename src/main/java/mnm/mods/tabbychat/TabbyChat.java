@@ -2,14 +2,20 @@ package mnm.mods.tabbychat;
 
 import mnm.mods.tabbychat.client.TabbyChatClient;
 import mnm.mods.tabbychat.net.SSendChannelMessage;
+import mnm.mods.tabbychat.command.TCTellCommand;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 import org.apache.logging.log4j.LogManager;
@@ -37,6 +43,8 @@ public class TabbyChat {
             .simpleChannel();
 
     public TabbyChat() {
+        MinecraftForge.EVENT_BUS.register(this);
+        FMLJavaModLoadingContext.get().getModEventBus().register(this);
         DistExecutor.runWhenOn(Dist.CLIENT, () -> TabbyChat::initClient);
     }
 
@@ -45,8 +53,15 @@ public class TabbyChat {
         initNetwork();
     }
 
+    @SubscribeEvent
+    public void serverStarting(FMLServerStartingEvent event) {
+        TCTellCommand.register(event.getCommandDispatcher());
+    }
+
     private void initNetwork() {
         int id = 0;
+
+        logger.info(TCMarkers.NETWORK, "Initializing network");
 
         channel.messageBuilder(SSendChannelMessage.class, id++)
                 .encoder(SSendChannelMessage::encode)
@@ -57,6 +72,10 @@ public class TabbyChat {
 
     private static void initClient() {
         FMLJavaModLoadingContext.get().getModEventBus().register(TabbyChatClient.getInstance());
+    }
+
+    public static void sendTo(EntityPlayerMP player, String channel, ITextComponent text) {
+        TabbyChat.channel.sendTo(new SSendChannelMessage(channel, text), player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
     }
 
 }

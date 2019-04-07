@@ -15,7 +15,6 @@ import java.util.function.Supplier;
 
 public class SSendChannelMessage {
 
-
     private String channel;
     private ITextComponent message;
 
@@ -25,6 +24,7 @@ public class SSendChannelMessage {
     }
 
     public SSendChannelMessage(String channel, ITextComponent message) {
+        this.channel = channel;
         this.message = message;
     }
 

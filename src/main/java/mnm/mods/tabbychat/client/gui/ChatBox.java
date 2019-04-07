@@ -84,7 +84,9 @@ public class ChatBox extends GuiPanel {
     }
 
     private void addChatMessage(MessageAddedToChannelEvent.Post event) {
-        addChannel((AbstractChannel) event.getChannel());
+        AbstractChannel channel = (AbstractChannel) event.getChannel();
+        addChannel(channel);
+        setStatus(channel, ChannelStatus.UNREAD);
     }
 
     public void addChannels(Collection<AbstractChannel> active) {
@@ -101,6 +103,7 @@ public class ChatBox extends GuiPanel {
             pnlTray.addChannel(channel);
             ChatManager.instance().save();
         }
+
     }
 
     public void removeChannel(AbstractChannel channel) {
