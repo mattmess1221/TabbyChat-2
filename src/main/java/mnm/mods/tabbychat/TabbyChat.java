@@ -1,9 +1,9 @@
 package mnm.mods.tabbychat;
 
 import mnm.mods.tabbychat.client.TabbyChatClient;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
 import org.apache.logging.log4j.LogManager;
@@ -20,12 +20,9 @@ public class TabbyChat {
 
     public static final Path dataFolder = FMLPaths.CONFIGDIR.get().resolve(MODID);
 
-    public TabbyChat() {
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> TabbyChat::initclient);
-    }
-
-    private static void initclient() {
-        FMLJavaModLoadingContext.get().getModEventBus().register(TabbyChatClient.getInstance());
+    @SubscribeEvent
+    public void initClient(FMLClientSetupEvent event) {
+        FMLJavaModLoadingContext.get().getModEventBus().register(new TabbyChatClient(dataFolder));
     }
 
 }
