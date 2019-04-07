@@ -1,5 +1,6 @@
 package mnm.mods.tabbychat.client.gui.component;
 
+import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.util.ILocation;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
@@ -12,7 +13,7 @@ import net.minecraft.util.ResourceLocation;
  */
 public class GuiSlider extends GuiComponent implements IGuiInput<Double> {
 
-    private static final ResourceLocation TRANSPARENCY = new ResourceLocation("tabbychat", "textures/transparency.png");
+    private static final ResourceLocation TRANSPARENCY = new ResourceLocation(TabbyChat.MODID, "textures/transparency.png");
 
     private boolean vertical;
     private double value;

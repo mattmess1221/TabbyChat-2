@@ -1,6 +1,7 @@
 package mnm.mods.tabbychat.client.gui;
 
 import com.google.common.collect.ImmutableSet;
+import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.client.AbstractChannel;
 import mnm.mods.tabbychat.client.ChatManager;
 import mnm.mods.tabbychat.client.DefaultChannel;
@@ -34,7 +35,7 @@ import java.util.function.Predicate;
 
 public class ChatBox extends GuiPanel {
 
-    public static final ResourceLocation GUI_LOCATION = new ResourceLocation("tabbychat", "textures/chatbox.png");
+    public static final ResourceLocation GUI_LOCATION = new ResourceLocation(TabbyChat.MODID, "textures/chatbox.png");
 
     private static ChatBox instance;
 
