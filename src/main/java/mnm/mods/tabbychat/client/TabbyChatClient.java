@@ -28,7 +28,6 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.loading.FMLPaths;
 
@@ -38,7 +37,7 @@ import java.util.regex.Matcher;
 
 public class TabbyChatClient {
 
-    private static final TabbyChatClient instance = new TabbyChatClient();
+    private static TabbyChatClient instance;
     private ChatManager chatManager;
     private Spellcheck spellcheck;
 
@@ -49,7 +48,11 @@ public class TabbyChatClient {
         return instance;
     }
 
-    private TabbyChatClient() {
+    public TabbyChatClient(Path dataFolder) {
+        instance = this;
+        // Set global settings
+        settings = new TabbySettings(dataFolder);
+        settings.load();
     }
 
     public ChatManager getChatManager() {
@@ -80,13 +83,6 @@ public class TabbyChatClient {
             }
         }
         return serverSettings;
-    }
-
-    @SubscribeEvent
-    public void init(FMLClientSetupEvent event) {
-        // Set global settings
-        settings = new TabbySettings(TabbyChat.dataFolder);
-        settings.load();
     }
 
     @SubscribeEvent

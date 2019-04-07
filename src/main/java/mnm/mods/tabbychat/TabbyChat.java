@@ -6,13 +6,12 @@ import mnm.mods.tabbychat.command.TCTellCommand;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.fml.network.NetworkDirection;
@@ -45,12 +44,16 @@ public class TabbyChat {
     public TabbyChat() {
         MinecraftForge.EVENT_BUS.register(this);
         FMLJavaModLoadingContext.get().getModEventBus().register(this);
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> TabbyChat::initClient);
     }
 
     @SubscribeEvent
     public void init(FMLCommonSetupEvent event) {
         initNetwork();
+    }
+
+    @SubscribeEvent
+    public void initClient(FMLClientSetupEvent event) {
+        FMLJavaModLoadingContext.get().getModEventBus().register(new TabbyChatClient(dataFolder));
     }
 
     @SubscribeEvent
@@ -68,10 +71,6 @@ public class TabbyChat {
                 .decoder(SSendChannelMessage::new)
                 .consumer(SSendChannelMessage::handle)
                 .add();
-    }
-
-    private static void initClient() {
-        FMLJavaModLoadingContext.get().getModEventBus().register(TabbyChatClient.getInstance());
     }
 
     public static void sendTo(EntityPlayerMP player, String channel, ITextComponent text) {

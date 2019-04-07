@@ -1,5 +1,6 @@
 package mnm.mods.tabbychat.client.gui.component;
 
+import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.util.ILocation;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
@@ -13,7 +14,7 @@ import net.minecraft.util.ResourceLocation;
  */
 public class GuiRectangle extends GuiComponent {
 
-    private static final ResourceLocation TRANSPARENCY = new ResourceLocation("mnmutils", "textures/transparency.png");
+    private static final ResourceLocation TRANSPARENCY = new ResourceLocation(TabbyChat.MODID, "textures/transparency.png");
 
     @Override
     public void render(int mouseX, int mouseY, float parTicks) {

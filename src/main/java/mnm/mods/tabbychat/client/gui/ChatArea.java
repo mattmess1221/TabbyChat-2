@@ -199,12 +199,11 @@ public class ChatArea extends GuiComponent {
     }
 
     @Nullable
-    public ITextComponent getChatComponent(int clickX, int clickY) {
+    public ITextComponent getTextComponent(int clickX, int clickY) {
         if (mc.ingameGUI.getChatGUI().getChatOpen()) {
             double scale = mc.ingameGUI.getChatGUI().getScale();
             clickX = MathHelper.floor(clickX / scale);
             clickY = MathHelper.floor(clickY / scale);
-            mc.fontRenderer.drawString(String.format("%d, %d", clickX, clickY), clickX, clickY, -1);
 
             ILocation actual = getLocation();
             // check that cursor is in bounds.

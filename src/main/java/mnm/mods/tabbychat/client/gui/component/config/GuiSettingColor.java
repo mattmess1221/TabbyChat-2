@@ -1,5 +1,6 @@
 package mnm.mods.tabbychat.client.gui.component.config;
 
+import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.util.Color;
 import mnm.mods.tabbychat.util.ILocation;
 import mnm.mods.tabbychat.util.config.Value;
@@ -16,8 +17,7 @@ import java.util.function.Consumer;
  */
 public class GuiSettingColor extends GuiSetting<Color> implements Consumer<Color> {
 
-    private static final ResourceLocation TRANSPARENCY = new ResourceLocation("mnmutils",
-            "textures/transparency.png");
+    private static final ResourceLocation TRANSPARENCY = new ResourceLocation(TabbyChat.MODID, "textures/transparency.png");
 
     private Color value;
 
