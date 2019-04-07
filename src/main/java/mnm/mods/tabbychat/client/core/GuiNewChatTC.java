@@ -163,8 +163,8 @@ public class GuiNewChatTC extends GuiNewChat {
 
     @Override
     @Nullable
-    public ITextComponent func_194817_a /*getChatComponent*/ (double clickX, double clickY) {
-        return chatbox.getChatArea().getChatComponent((int) clickX, (int) clickY);
+    public ITextComponent getTextComponent(double clickX, double clickY) {
+        return chatbox.getChatArea().getTextComponent((int) clickX, (int) clickY);
     }
 
     @Override

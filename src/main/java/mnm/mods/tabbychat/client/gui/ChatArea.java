@@ -199,7 +199,7 @@ public class ChatArea extends GuiComponent {
     }
 
     @Nullable
-    public ITextComponent getChatComponent(int clickX, int clickY) {
+    public ITextComponent getTextComponent(int clickX, int clickY) {
         if (mc.ingameGUI.getChatGUI().getChatOpen()) {
             double scale = mc.ingameGUI.getChatGUI().getScale();
             clickX = MathHelper.floor(clickX / scale);
