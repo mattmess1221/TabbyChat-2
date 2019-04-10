@@ -110,11 +110,6 @@ public class GuiWrappedComponent<T extends GuiComponent> extends GuiComponent im
     }
 
     @Override
-    public boolean isHovered() {
-        return wrapper.isHovered();
-    }
-
-    @Override
     public void setCaption(ITextComponent text) {
         wrapper.setCaption(text);
     }

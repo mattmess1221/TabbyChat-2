@@ -70,7 +70,7 @@ public class ChatTab extends GuiButton {
             ILocation loc = getLocation();
             GlStateManager.enableBlend();
             GlStateManager.color4f(1, 1, 1, (float) mc.gameSettings.chatOpacity);
-            drawModalCorners(getStatusModal());
+            drawModalCorners(getStatusModal(loc.contains(mouseX, mouseY)));
 
             int txtX = loc.getXCenter();
             int txtY = loc.getYCenter() - 2;
@@ -97,8 +97,8 @@ public class ChatTab extends GuiButton {
         return alias;
     }
 
-    private TexturedModal getStatusModal() {
-        if (isHovered()) {
+    private TexturedModal getStatusModal(boolean hovered) {
+        if (hovered) {
             return HOVERED;
         }
         ChannelStatus status = chat.getStatus(channel);

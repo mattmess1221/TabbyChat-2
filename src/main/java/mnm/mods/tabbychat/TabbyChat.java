@@ -20,6 +20,10 @@ public class TabbyChat {
 
     public static final Path dataFolder = FMLPaths.CONFIGDIR.get().resolve(MODID);
 
+    public TabbyChat() {
+        FMLJavaModLoadingContext.get().getModEventBus().register(this);
+    }
+
     @SubscribeEvent
     public void initClient(FMLClientSetupEvent event) {
         FMLJavaModLoadingContext.get().getModEventBus().register(new TabbyChatClient(dataFolder));

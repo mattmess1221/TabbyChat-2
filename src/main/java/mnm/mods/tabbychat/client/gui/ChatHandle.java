@@ -17,15 +17,15 @@ public class ChatHandle extends GuiComponent {
     @Override
     public void render(int mouseX, int mouseY, float parTicks) {
         ILocation loc = getLocation();
-        this.drawHorizontalLine(loc.getXPos() + 3, loc.getXWidth() - 4, loc.getYPos() + 4, getPrimaryColorProperty().getHex());
-        this.drawVerticalLine(loc.getXWidth() - 4, loc.getYPos() + 4, loc.getYHeight() - 2, getPrimaryColorProperty().getHex());
+        int color = getColor(loc.contains(mouseX, mouseY)).getHex();
+        this.drawHorizontalLine(loc.getXPos() + 3, loc.getXWidth() - 4, loc.getYPos() + 4, color);
+        this.drawVerticalLine(loc.getXWidth() - 4, loc.getYPos() + 4, loc.getYHeight() - 2, color);
     }
 
     @Nonnull
-    @Override
-    public Color getPrimaryColorProperty() {
-        int opac = (int)(mc.gameSettings.chatOpacity * 255);
-        return isHovered() ? Color.of(255, 255, 160, opac) : Color.of(255, 255, 255, opac);
+    private Color getColor(boolean hovered) {
+        int opac = (int) (mc.gameSettings.chatOpacity * 255);
+        return Color.of(255, 255, hovered ? 160 : 255, opac);
     }
 
     @Nonnull

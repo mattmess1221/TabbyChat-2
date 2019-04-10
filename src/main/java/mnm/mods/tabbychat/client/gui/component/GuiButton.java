@@ -127,7 +127,9 @@ public class GuiButton extends GuiComponent {
         mc.getTextureManager().bindTexture(WIDGETS);
         GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 
-        TexturedModal modal = this.getHoverState(isHovered());
+        boolean hovered = bounds.contains(mouseX, mouseY);
+
+        TexturedModal modal = this.getHoverState(hovered);
         GlStateManager.enableBlend();
         OpenGlHelper.glBlendFuncSeparate(770, 771, 1, 0);
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -138,7 +140,7 @@ public class GuiButton extends GuiComponent {
 
         if (!this.isEnabled()) {
             textColor = 0xA0A0A0;
-        } else if (this.isHovered()) {
+        } else if (hovered) {
             textColor = 0xFFFFA0;
         }
 

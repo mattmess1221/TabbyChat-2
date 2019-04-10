@@ -29,7 +29,6 @@ public abstract class GuiComponent extends Gui implements IGuiEventListener {
 
     private boolean enabled = true;
     private boolean visible = true;
-    private boolean hovered;
 
     protected Minecraft mc = Minecraft.getInstance();
 
@@ -42,8 +41,9 @@ public abstract class GuiComponent extends Gui implements IGuiEventListener {
 
     /**
      * Draws this component on screen.
-     *  @param mouseX The mouse x
-     * @param mouseY The mouse y
+     *
+     * @param mouseX   The mouse x
+     * @param mouseY   The mouse y
      * @param parTicks
      */
     public void render(int mouseX, int mouseY, float parTicks) {
@@ -53,7 +53,7 @@ public abstract class GuiComponent extends Gui implements IGuiEventListener {
         getCaptionText()
                 .map(ITextComponent::getFormattedText)
                 .filter(((Predicate<String>) String::isEmpty).negate())
-                .filter(t -> this.isHovered())
+                .filter(t -> this.getLocation().contains(x, y))
                 .ifPresent(text -> this.drawCaption(text, x, y));
     }
 
@@ -134,7 +134,7 @@ public abstract class GuiComponent extends Gui implements IGuiEventListener {
      * Called when the screen is closed.
      */
     public void onClosed() {
-        this.hovered = false;
+
     }
 
     /**
@@ -276,16 +276,6 @@ public abstract class GuiComponent extends Gui implements IGuiEventListener {
         this.visible = visible;
     }
 
-    /**
-     * Returns if the cursor is hovered over this component.
-     *
-     * @return THe hover state
-     */
-    @Deprecated
-    public boolean isHovered() {
-        return hovered && getParent().map(GuiComponent::isHovered).orElse(true);
-    }
-
     public void setCaption(@Nullable ITextComponent text) {
         this.caption = text;
     }
@@ -333,8 +323,8 @@ public abstract class GuiComponent extends Gui implements IGuiEventListener {
         int y = location.getYPos();
         int u = modal.getXPos();
         int v = modal.getYPos();
-        int w = location.getWidth()+1;
-        int h = location.getHeight()+1;
+        int w = location.getWidth() + 1;
+        int h = location.getHeight() + 1;
         int uw = modal.getWidth();
         int uh = modal.getHeight();
 
