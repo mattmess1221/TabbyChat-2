@@ -12,6 +12,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.fml.client.config.GuiUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import javax.annotation.Nullable;
@@ -326,33 +327,18 @@ public abstract class GuiComponent extends Gui implements IGuiEventListener {
         return new Vec(x, y);
     }
 
-    @Deprecated // use GuiUtils.drawContinuousTexturedModal
     protected void drawModalCorners(TexturedModal modal) {
         ILocation location = getLocation();
         int x = location.getXPos();
         int y = location.getYPos();
+        int u = modal.getXPos();
+        int v = modal.getYPos();
+        int w = location.getWidth()+1;
+        int h = location.getHeight()+1;
+        int uw = modal.getWidth();
+        int uh = modal.getHeight();
 
-        int w = location.getWidth() / 2;
-        int w2 = location.getWidth() - w + 1;
-        int h = location.getHeight() / 2;
-        int h2 = location.getHeight() - h + 1;
-
-        int mx = modal.getXPos();
-        int my = modal.getYPos();
-        int mw = modal.getWidth() - w2;
-        int mh = modal.getHeight() - h2;
-
-        // bind the texture
-        mc.getTextureManager().bindTexture(modal.getResourceLocation());
-
-        // top left
-        drawTexturedModalRect(x, y, mx, my, w, h);
-        // top right
-        drawTexturedModalRect(x + w, y, mx + mw, my, w2, h);
-        // bottom left
-        drawTexturedModalRect(x, y + h, mx, my + mh, w, h2);
-        // bottom right
-        drawTexturedModalRect(x + w, y + h, mx + mw, my + mh, w2, h2);
+        GuiUtils.drawContinuousTexturedBox(modal.getResourceLocation(), x, y, u, v, w, h, uw, uh, 2, zLevel);
 
     }
 }

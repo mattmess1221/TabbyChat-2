@@ -106,9 +106,9 @@ public class ChatTray extends GuiPanel {
             GlStateManager.enableBlend();
             ILocation loc = getLocation();
             int opac = (int) (mc.gameSettings.chatOpacity * 255) << 24;
-            drawBorders(loc.getXPos() + 2, loc.getYPos()+ 2, loc.getXWidth()-2, loc.getYHeight()-2, 0x999999 | opac);
+            drawBorders(loc.getXPos() + 2, loc.getYPos() + 2, loc.getXWidth() - 2, loc.getYHeight() - 2, 0x999999 | opac);
             if (value.get()) {
-                Gui.drawRect(loc.getXPos() + 3, loc.getYPos() + 3,loc.getXWidth() -3, loc.getYHeight() -3, 0xaaaaaa | opac);
+                Gui.drawRect(loc.getXPos() + 3, loc.getYPos() + 3, loc.getXWidth() - 3, loc.getYHeight() - 3, 0xaaaaaa | opac);
             }
         }
 
@@ -119,6 +119,11 @@ public class ChatTray extends GuiPanel {
                 return true;
             }
             return false;
+        }
+
+        @Override
+        public ILocation getLocation() {
+            return super.getLocation().copy().move(0, 2);
         }
 
         @Override
