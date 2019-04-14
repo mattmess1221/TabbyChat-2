@@ -20,11 +20,11 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
 import org.lwjgl.opengl.GL11;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.function.BiFunction;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -39,9 +39,18 @@ public class TextBox extends GuiComponent implements IGuiEventListenerDeferred {
         public void drawTextField(int x, int y, float parTicks) {
             // noop
         }
+
+        @Override
+        public void setSuggestion(@Nullable String p_195612_1_) {
+            suggestion = p_195612_1_;
+            super.setSuggestion(p_195612_1_);
+        }
     });
     private int cursorCounter;
     private Spellcheck spellcheck;
+
+    private BiFunction<String, Integer, String> textFormatter = (text, offset) -> text;
+    private String suggestion;
 
     TextBox() {
         this.spellcheck = TabbyChatClient.getInstance().getSpellcheck();
@@ -176,13 +185,24 @@ public class TextBox extends GuiComponent implements IGuiEventListenerDeferred {
 
     private void drawText() {
         FancyFontRenderer ffr = new FancyFontRenderer(fr);
-        int yPos = 1;
-        List<ITextComponent> lines = getFormattedLines();
         ILocation loc = getLocation();
+        int xPos = loc.getXPos() + 3;
+        int yPos = loc.getYPos() + 1;
+        List<ITextComponent> lines = getFormattedLines();
         for (ITextComponent line : lines) {
             Color color = Color.WHITE;
-            ffr.drawChat(line, loc.getXPos() + 3, loc.getYPos() + yPos, color.getHex(), false);
+            xPos = loc.getXPos() + 3;
+            ffr.drawChat(line, xPos, yPos, color.getHex(), false);
             yPos += fr.FONT_HEIGHT + 2;
+            xPos += fr.getStringWidth(line.getString());
+        }
+        yPos -= fr.FONT_HEIGHT + 2;
+
+        boolean flag2 = textField.getTextField().getCursorPosition() < getText().length() || getText().length() >= textField.getTextField().getMaxStringLength();
+
+        int x = loc.getXPos() + 3;
+        if (!flag2 && suggestion != null) {
+            this.fr.drawStringWithShadow(this.suggestion, xPos, yPos, -8355712);
         }
 
     }
@@ -228,27 +248,29 @@ public class TextBox extends GuiComponent implements IGuiEventListenerDeferred {
         GlStateManager.enableTexture2D();
     }
 
-
     @Override
     public void tick() {
         this.cursorCounter++;
     }
 
-    private List<String> getWrappedLines() {
+    public List<String> getWrappedLines() {
         return fr.listFormattedStringToWidth(textField.getValue(), getLocation().getWidth());
     }
 
     private List<ITextComponent> getFormattedLines() {
-        List<String> lines = getWrappedLines();
-        if (TabbyChatClient.getInstance().getSettings().advanced.spelling.get()) {
-            spellcheck.checkSpelling(textField.getValue());
-            return lines.stream()
-                    .map(new SpellingFormatter(spellcheck))
-                    .collect(Collectors.toList());
+        spellcheck.checkSpelling(getText());
+        BiFunction<String, Integer, ITextComponent> formatter = textFormatter.andThen(new SpellingFormatter(spellcheck));
+        List<ITextComponent> lines = new ArrayList<>();
+        int length = 0;
+        for (String line : getWrappedLines()) {
+            lines.add(formatter.apply(line, length));
+            length += line.length();
         }
-        return lines.stream()
-                .map(TextComponentString::new)
-                .collect(Collectors.toList());
+        return lines;
+    }
+
+    public void setTextFormatter(BiFunction<String, Integer, String> textFormatter) {
+        this.textFormatter = textFormatter;
     }
 
     @Override
@@ -270,6 +292,15 @@ public class TextBox extends GuiComponent implements IGuiEventListenerDeferred {
     }
 
     @Override
+    public boolean charTyped(char key, int mods) {
+        try {
+            return super.charTyped(key, mods);
+        } finally {
+            spellcheck.checkSpelling(getText());
+        }
+    }
+
+    @Override
     public boolean mouseClicked(double x, double y, int mouseButton) {
         if (mouseButton == 0) {
             ILocation bounds = this.getLocation();
@@ -285,7 +316,7 @@ public class TextBox extends GuiComponent implements IGuiEventListenerDeferred {
             for (int i = 0; i < row; i++) {
                 index += lines.get(i).length();
                 // check for spaces because trailing spaces are trimmed
-                if (getText().charAt(index)==' ') {
+                if (getText().charAt(index) == ' ') {
                     index++;
                 }
             }

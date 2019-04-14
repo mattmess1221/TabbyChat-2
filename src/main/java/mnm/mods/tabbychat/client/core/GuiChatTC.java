@@ -38,7 +38,7 @@ public class GuiChatTC {
             guichat.inputField = text.getTextField();
             text.setValue(guichat.defaultInputFieldText);
 
-            text.getTextField().setTextFormatter(guichat::formatMessage);
+            chat.getChatInput().setTextFormatter(guichat::formatMessage);
             text.getTextField().setTextAcceptHandler(guichat::acceptMessage);
 
             List<IGuiEventListener> children = (List<IGuiEventListener>) guichat.getChildren();
@@ -57,6 +57,7 @@ public class GuiChatTC {
     public void onRenderChat(GuiScreenEvent.DrawScreenEvent.Pre event) {
         if (event.getGui() instanceof GuiChat) {
             event.setCanceled(true);
+            this.chat.update((GuiChat) event.getGui());
             this.chat.render(event.getMouseX(), event.getMouseY(), event.getRenderPartialTicks());
         }
     }

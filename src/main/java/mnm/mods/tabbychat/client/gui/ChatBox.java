@@ -19,9 +19,13 @@ import mnm.mods.tabbychat.util.Vec;
 import mnm.mods.tabbychat.client.gui.component.BorderLayout;
 import mnm.mods.tabbychat.client.gui.component.GuiPanel;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.MinecraftForge;
 
 import javax.annotation.Nullable;
@@ -51,6 +55,8 @@ public class ChatBox extends GuiPanel {
     private AbstractChannel active = DefaultChannel.INSTANCE;
     private Map<Channel, ChannelStatus> channelStatus = new HashMap<>();
 
+    private GuiChat chat;
+
     public ChatBox(TabbySettings settings) {
         super(new BorderLayout());
         instance = this;
@@ -73,6 +79,13 @@ public class ChatBox extends GuiPanel {
 
     public static ChatBox getInstance() {
         return instance;
+    }
+
+    public void update(GuiChat chat) {
+        this.chat = chat;
+        if (chat.suggestions != null && !(chat.suggestions.field_198505_b instanceof TCRect)) {
+            chat.suggestions.field_198505_b = new TCRect(chat.suggestions.field_198505_b);
+        }
     }
 
     private void messageScroller(MessageAddedToChannelEvent.Post event) {
@@ -208,6 +221,40 @@ public class ChatBox extends GuiPanel {
                 cmd = cmd.substring(0, ChatManager.MAX_CHAT_LENGTH);
             }
             Minecraft.getInstance().player.sendChatMessage(cmd);
+        }
+    }
+
+    @Override
+    public void render(int mouseX, int mouseY, float parTicks) {
+        super.render(mouseX, mouseY, parTicks);
+        if (mc.ingameGUI.getChatGUI().getChatOpen() && chat != null) {
+            FontRenderer fr = Minecraft.getInstance().fontRenderer;
+            ILocation loc = getLocation();
+            final int height = fr.FONT_HEIGHT + 3;
+            final int xPos = chat.commandUsagePosition + loc.getXPos();
+            int yPos = loc.getYHeight() - chat.commandUsage.size() * height;
+            if (chat.suggestions != null) {
+                chat.suggestions.render(mouseX, mouseY);
+            } else if (xPos + chat.commandUsageWidth > loc.getXWidth()) {
+                int i = 0;
+
+                for(String s : chat.commandUsage) {
+                    drawRect(0, chat.height - 14 - 12 * i, chat.commandUsageWidth + 1, chat.height - 2 - 12 * i, 0xff000000);
+                    fr.drawStringWithShadow(s, 1, chat.height - 14 + 2 - 12 * i, -1);
+                    ++i;
+                }
+            } else {
+                for (String s : chat.commandUsage) {
+                    drawRect(xPos - 1, yPos, xPos + chat.commandUsageWidth + 1, yPos - height, 0xd0000000);
+                    fr.drawStringWithShadow(s, xPos, yPos - height + 2, -1);
+                    yPos += height;
+                }
+            }
+
+            ITextComponent itextcomponent = this.mc.ingameGUI.getChatGUI().getTextComponent((double) mouseX, (double) mouseY);
+            if (itextcomponent != null && itextcomponent.getStyle().getHoverEvent() != null) {
+                chat.handleComponentHover(itextcomponent, mouseX, mouseY);
+            }
         }
     }
 
@@ -368,6 +415,41 @@ public class ChatBox extends GuiPanel {
         int y = newDim.getScaledHeight() - bottom;
         this.setLocation(getLocation().copy().setYPos(y));
         this.tick();
+    }
+
+    private class TCRect extends Rectangle2d {
+
+        private final Rectangle2d parent;
+
+        public TCRect(Rectangle2d parent) {
+            super(0, 0, 0, 0);
+            this.parent = parent;
+        }
+
+        @Override
+        public int getX() {
+            return Math.max(0, Math.min(parent.getX() + getLocation().getXPos(), chat.width - parent.getWidth()));
+        }
+
+        @Override
+        public int getY() {
+            return getLocation().getYHeight() - parent.getHeight() - 14 * getChatInput().getWrappedLines().size();
+        }
+
+        @Override
+        public int getWidth() {
+            return parent.getWidth();
+        }
+
+        @Override
+        public int getHeight() {
+            return parent.getHeight();
+        }
+
+        @Override
+        public boolean contains(int x, int y) {
+            return x >= this.getX() && x <= this.getX() + this.getWidth() && y >= this.getY() && y <= this.getY() + this.getHeight();
+        }
     }
 
 }

@@ -5,10 +5,12 @@ import java.util.function.Function;
 
 import com.swabunga.spell.event.SpellCheckEvent;
 
+import mnm.mods.tabbychat.client.TabbyChatClient;
 import mnm.mods.tabbychat.util.Color;
 import mnm.mods.tabbychat.util.text.ITextBuilder;
 import mnm.mods.tabbychat.util.text.TextBuilder;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 
 public class SpellingFormatter implements Function<String, ITextComponent> {
 
@@ -25,6 +27,10 @@ public class SpellingFormatter implements Function<String, ITextComponent> {
     public ITextComponent apply(String text) {
         if (text == null)
             return null;
+        if (text.contains("\u00a7") || !TabbyChatClient.getInstance().getSettings().advanced.spelling.get()) {
+            return new TextComponentString(text);
+        }
+
         ITextBuilder b = new TextBuilder();
         int prev = 0;
         int length = totalLength;
