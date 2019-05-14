@@ -1,24 +1,23 @@
 package mnm.mods.tabbychat.client;
 
-import java.util.Objects;
+public class UserChannel extends AbstractChannel {
 
-public class ChatChannel extends AbstractChannel {
+    private String name;
 
-    private final String name;
-
-    ChatChannel(String name) {
+    UserChannel(String name) {
         super(name);
         this.name = name;
+        setPrefix("/msg " + name);
     }
 
     @Override
     public String getName() {
-        return this.name;
+        return name;
     }
 
     @Override
     public String getDisplayName() {
-        return "#" + getAlias();
+        return toString();
     }
 
     @Override
@@ -28,7 +27,6 @@ public class ChatChannel extends AbstractChannel {
 
     @Override
     public String toString() {
-        return "#" + name;
+        return "@" + name;
     }
-
 }

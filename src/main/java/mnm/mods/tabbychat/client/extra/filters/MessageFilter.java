@@ -41,7 +41,7 @@ public class MessageFilter implements Filter {
             if (player == null) {
                 player = event.matcher.group(2);
             }
-            Channel dest = chat.getUserChannel(new GameProfile(null, player));
+            Channel dest = chat.getUserChannel(player);
             event.channels.add(dest);
         }
     }

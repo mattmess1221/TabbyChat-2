@@ -3,12 +3,10 @@ package mnm.mods.tabbychat.client;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.mojang.authlib.GameProfile;
 import mnm.mods.tabbychat.TCMarkers;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.Chat;
-import mnm.mods.tabbychat.api.UserChannel;
 import mnm.mods.tabbychat.api.events.MessageAddedToChannelEvent;
 import mnm.mods.tabbychat.client.gui.ChatBox;
 import mnm.mods.tabbychat.client.settings.ServerSettings;
@@ -62,7 +60,7 @@ public class ChatManager implements Chat {
             .create();
 
     private Map<String, Channel> allChannels = new HashMap<>();
-    private Map<GameProfile, UserChannel> allPms = new HashMap<>();
+    private Map<String, Channel> allPms = new HashMap<>();
 
     /**
      * A map of all the messages per channel
@@ -99,8 +97,8 @@ public class ChatManager implements Chat {
     }
 
     @Override
-    public UserChannel getUserChannel(GameProfile gameProfile) {
-        return allPms.computeIfAbsent(gameProfile, this.getChannel(gameProfile.getName(), server().pms, DirectChannel::new));
+    public Channel getUserChannel(String name) {
+        return allPms.computeIfAbsent(name, this.getChannel(name, server().pms, UserChannel::new));
     }
 
     private <T, U> Function<U, T> getChannel(String name, ValueMap<T> config, Function<U, T> absent) {
@@ -120,11 +118,11 @@ public class ChatManager implements Chat {
         String name = format.substring(1);
         switch (format.charAt(0)) {
             case '@':
-                return Optional.of(getUserChannel(new GameProfile(null, name)));
+                return Optional.of(getUserChannel(name));
             case '#':
                 return Optional.of(getChannel(name));
             default:
-                throw new IllegalArgumentException();
+                return Optional.empty();
         }
 
     }

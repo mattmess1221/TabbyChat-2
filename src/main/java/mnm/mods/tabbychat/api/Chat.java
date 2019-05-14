@@ -28,7 +28,7 @@ public interface Chat {
      * @param user The object representing the user
      * @return The channel
      */
-    UserChannel getUserChannel(GameProfile user);
+    Channel getUserChannel(String user);
 
     /**
      * Gets an immutable set of all {@link Channel}s currently displayed.

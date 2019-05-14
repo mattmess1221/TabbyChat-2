@@ -2,7 +2,7 @@ package mnm.mods.tabbychat.client.settings;
 
 import io.netty.channel.local.LocalAddress;
 import mnm.mods.tabbychat.client.ChatChannel;
-import mnm.mods.tabbychat.client.DirectChannel;
+import mnm.mods.tabbychat.client.UserChannel;
 import mnm.mods.tabbychat.client.extra.filters.UserFilter;
 import mnm.mods.tabbychat.util.IPUtils;
 import mnm.mods.tabbychat.util.config.SettingsFile;
@@ -19,7 +19,7 @@ public class ServerSettings extends SettingsFile {
     public GeneralServerSettings general = new GeneralServerSettings();
     public ValueList<UserFilter> filters = list();
     public ValueMap<ChatChannel> channels = map();
-    public ValueMap<DirectChannel> pms = map();
+    public ValueMap<UserChannel> pms = map();
 
     private transient final SocketAddress ip;
 
