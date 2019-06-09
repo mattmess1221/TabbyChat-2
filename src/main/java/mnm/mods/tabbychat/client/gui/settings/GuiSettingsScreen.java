@@ -10,7 +10,6 @@ import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.util.Color;
 import mnm.mods.tabbychat.util.ILocation;
 import mnm.mods.tabbychat.util.Location;
-import mnm.mods.tabbychat.util.config.SettingsFile;
 import mnm.mods.tabbychat.client.gui.component.BorderLayout;
 import mnm.mods.tabbychat.client.gui.component.ComponentScreen;
 import mnm.mods.tabbychat.client.gui.component.GuiButton;
@@ -22,7 +21,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
