@@ -1,6 +1,7 @@
 package mnm.mods.tabbychat.client.gui;
 
 import com.google.common.collect.Maps;
+import com.mojang.blaze3d.platform.GlStateManager;
 import mnm.mods.tabbychat.client.AbstractChannel;
 import mnm.mods.tabbychat.client.DefaultChannel;
 import mnm.mods.tabbychat.client.TabbyChatClient;
@@ -16,8 +17,6 @@ import mnm.mods.tabbychat.client.gui.component.FlowLayout;
 import mnm.mods.tabbychat.client.gui.component.GuiComponent;
 import mnm.mods.tabbychat.client.gui.component.GuiPanel;
 import mnm.mods.tabbychat.client.gui.component.ILayout;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.renderer.GlStateManager;
 
 import java.util.Map;
 import javax.annotation.Nonnull;
@@ -44,7 +43,7 @@ public class ChatTray extends GuiPanel {
 
     @Override
     public void render(int mouseX, int mouseY, float parTicks) {
-        if (mc.ingameGUI.getChatGUI().getChatOpen()) {
+        if (mc.field_71456_v/*ingameGUI*/.getChatGUI().getChatOpen()) {
             GlStateManager.enableBlend();
             GlStateManager.color4f(1, 1, 1, (float) mc.gameSettings.chatOpacity);
             drawModalCorners(MODAL);
@@ -108,7 +107,7 @@ public class ChatTray extends GuiPanel {
             int opac = (int) (mc.gameSettings.chatOpacity * 255) << 24;
             drawBorders(loc.getXPos() + 2, loc.getYPos() + 2, loc.getXWidth() - 2, loc.getYHeight() - 2, 0x999999 | opac);
             if (value.get()) {
-                Gui.drawRect(loc.getXPos() + 3, loc.getYPos() + 3, loc.getXWidth() - 3, loc.getYHeight() - 3, 0xaaaaaa | opac);
+                fill(loc.getXPos() + 3, loc.getYPos() + 3, loc.getXWidth() - 3, loc.getYHeight() - 3, 0xaaaaaa | opac);
             }
         }
 
@@ -132,5 +131,4 @@ public class ChatTray extends GuiPanel {
             return new Dim(8, 8);
         }
     }
-
 }

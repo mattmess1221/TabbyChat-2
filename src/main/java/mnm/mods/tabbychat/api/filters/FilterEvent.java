@@ -12,7 +12,7 @@ public class FilterEvent {
 
     public final Matcher matcher;
     public ITextComponent text;
-    public Set<Channel> channels = Sets.newHashSet();
+    public Set<Channel> channels;
 
     public FilterEvent(Matcher matcher, Set<Channel> channels, ITextComponent text) {
         this.matcher = matcher;

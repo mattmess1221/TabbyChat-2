@@ -47,7 +47,7 @@ public class ChatLogging {
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public void onChatRecieved(ChatReceivedEvent message) {
+    public void onChatReceived(ChatReceivedEvent message) {
         if (TabbyChatClient.getInstance().getSettings().general.logChat.get()) {
 
             checkLog();
@@ -68,7 +68,7 @@ public class ChatLogging {
         if (shouldChangeLogFile()) {
             Calendar prev = date;
             date = cal;
-            server = Minecraft.getInstance().player.connection.getNetworkManager().getRemoteAddress();
+            server = Minecraft.getInstance().player./*connection*/field_71174_a.getNetworkManager().getRemoteAddress();
             try {
                 Path old = logFile;
                 String server = getLogFolder();

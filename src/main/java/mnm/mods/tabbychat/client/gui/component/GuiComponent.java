@@ -1,16 +1,15 @@
 package mnm.mods.tabbychat.client.gui.component;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import mnm.mods.tabbychat.util.Color;
 import mnm.mods.tabbychat.util.Dim;
 import mnm.mods.tabbychat.util.ILocation;
 import mnm.mods.tabbychat.util.Location;
 import mnm.mods.tabbychat.util.TexturedModal;
-import mnm.mods.tabbychat.util.Vec;
+import mnm.mods.tabbychat.util.Vec2i;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.IGuiEventListener;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fml.client.config.GuiUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -25,7 +24,7 @@ import java.util.function.Predicate;
  *
  * @author Matthew
  */
-public abstract class GuiComponent extends Gui implements IGuiEventListener {
+public abstract class GuiComponent extends Widget {
 
     private boolean enabled = true;
     private boolean visible = true;
@@ -38,6 +37,10 @@ public abstract class GuiComponent extends Gui implements IGuiEventListener {
     private ILocation location = new Location();
     private Dim minimumSize = new Dim();
     private ITextComponent caption;
+
+    public GuiComponent() {
+        super(0, 0, "");
+    }
 
     /**
      * Draws this component on screen.
@@ -68,7 +71,7 @@ public abstract class GuiComponent extends Gui implements IGuiEventListener {
         }
         y -= mc.fontRenderer.FONT_HEIGHT * list.length;
 
-        Vec point = getLocation().getPoint();
+        Vec2i point = getLocation().getPoint();
         int sw = mc.mainWindow.getScaledWidth();
         int w2 = w;
         int x2 = x;
@@ -80,8 +83,7 @@ public abstract class GuiComponent extends Gui implements IGuiEventListener {
         y += getLocation().getYPos();
         // put it on top
         GlStateManager.pushMatrix();
-        Gui.drawRect(x - 2, y - 2, x + w + 2, y + mc.fontRenderer.FONT_HEIGHT * list.length + 1,
-                0xcc333333);
+        fill(x - 2, y - 2, x + w + 2, y + mc.fontRenderer.FONT_HEIGHT * list.length + 1, 0xcc333333);
         drawBorders(x - 2, y - 2, x + w + 2, y + mc.fontRenderer.FONT_HEIGHT * list.length + 1,
                 0xccaaaaaa);
         for (String s : list) {
@@ -92,10 +94,10 @@ public abstract class GuiComponent extends Gui implements IGuiEventListener {
     }
 
     protected void drawBorders(int x1, int y1, int x2, int y2, int color) {
-        this.drawVerticalLine(x1 - 1, y1 - 1, y2 + 1, color); // left
-        this.drawHorizontalLine(x1 - 1, x2, y1 - 1, color); // top
-        this.drawVerticalLine(x2, y1 - 1, y2 + 1, color); // right
-        this.drawHorizontalLine(x1, x2 - 1, y2, color); // bottom
+        this.vLine(x1 - 1, y1 - 1, y2 + 1, color); // left
+        this.hLine(x1 - 1, x2, y1 - 1, color); // top
+        this.vLine(x2, y1 - 1, y2 + 1, color); // right
+        this.hLine(x1, x2 - 1, y2, color); // bottom
     }
 
     /**
@@ -125,7 +127,7 @@ public abstract class GuiComponent extends Gui implements IGuiEventListener {
     }
 
     /**
-     * Updates the component. Called when it is called on the {@link GuiScreen}.
+     * Updates the component. Called when it is called on the {@link Screen}.
      */
     public void tick() {
     }
@@ -310,11 +312,11 @@ public abstract class GuiComponent extends Gui implements IGuiEventListener {
         return result;
     }
 
-    protected static Vec scalePoint(Vec point, GuiScreen screen) {
+    protected static Vec2i scalePoint(Vec2i point, Screen screen) {
         Minecraft mc = Minecraft.getInstance();
         int x = point.x * screen.width / mc.mainWindow.getWidth();
         int y = screen.height - point.y * screen.height / mc.mainWindow.getHeight() - 1;
-        return new Vec(x, y);
+        return new Vec2i(x, y);
     }
 
     protected void drawModalCorners(TexturedModal modal) {
@@ -328,7 +330,7 @@ public abstract class GuiComponent extends Gui implements IGuiEventListener {
         int uw = modal.getWidth();
         int uh = modal.getHeight();
 
-        GuiUtils.drawContinuousTexturedBox(modal.getResourceLocation(), x, y, u, v, w, h, uw, uh, 2, zLevel);
+        GuiUtils.drawContinuousTexturedBox(modal.getResourceLocation(), x, y, u, v, w, h, uw, uh, 2, blitOffset);
 
     }
 }

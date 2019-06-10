@@ -1,9 +1,9 @@
 package mnm.mods.tabbychat.client.gui.component;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import mnm.mods.tabbychat.util.ILocation;
 import mnm.mods.tabbychat.util.text.FancyFontRenderer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.text.ITextComponent;
 
 /**

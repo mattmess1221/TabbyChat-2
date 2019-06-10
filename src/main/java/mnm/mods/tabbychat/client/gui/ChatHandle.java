@@ -18,8 +18,8 @@ public class ChatHandle extends GuiComponent {
     public void render(int mouseX, int mouseY, float parTicks) {
         ILocation loc = getLocation();
         int color = getColor(loc.contains(mouseX, mouseY)).getHex();
-        this.drawHorizontalLine(loc.getXPos() + 3, loc.getXWidth() - 4, loc.getYPos() + 4, color);
-        this.drawVerticalLine(loc.getXWidth() - 4, loc.getYPos() + 4, loc.getYHeight() - 2, color);
+        hLine(loc.getXPos() + 3, loc.getXWidth() - 4, loc.getYPos() + 4, color);
+        vLine(loc.getXWidth() - 4, loc.getYPos() + 4, loc.getYHeight() - 2, color);
     }
 
     @Nonnull

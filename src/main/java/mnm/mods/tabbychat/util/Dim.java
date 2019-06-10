@@ -1,5 +1,6 @@
 package mnm.mods.tabbychat.util;
 
+@Deprecated
 public class Dim {
 
     public int width;

@@ -19,8 +19,8 @@ import mnm.mods.tabbychat.client.gui.component.config.GuiSettingString;
 import mnm.mods.tabbychat.client.gui.component.config.GuiSettingStringList;
 import mnm.mods.tabbychat.client.gui.component.config.SettingPanel;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
 public class GuiSettingsServer extends SettingPanel<ServerSettings> {
 
@@ -45,58 +45,58 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> {
         index = getSettings().filters.get().size() - 1;
 
         int pos = 1;
-        this.addComponent(new GuiLabel(new TextComponentTranslation(CHANNELS_ENABLED)), new int[]{2, pos});
+        this.addComponent(new GuiLabel(new TranslationTextComponent(CHANNELS_ENABLED)), new int[]{2, pos});
         GuiSettingBoolean chkChannels = new GuiSettingBoolean(sett.channelsEnabled);
-        chkChannels.setCaption(new TextComponentTranslation(CHANNELS_ENABLED_DESC));
+        chkChannels.setCaption(new TranslationTextComponent(CHANNELS_ENABLED_DESC));
         this.addComponent(chkChannels, new int[]{1, pos});
 
         pos += 1;
-        this.addComponent(new GuiLabel(new TextComponentTranslation(PM_ENABLED)), new int[]{2, pos});
+        this.addComponent(new GuiLabel(new TranslationTextComponent(PM_ENABLED)), new int[]{2, pos});
         GuiSettingBoolean chkPM = new GuiSettingBoolean(sett.pmEnabled);
-        chkPM.setCaption(new TextComponentTranslation(PM_ENABLED_DESC));
+        chkPM.setCaption(new TranslationTextComponent(PM_ENABLED_DESC));
         this.addComponent(chkPM, new int[]{1, pos});
 
         pos += 1;
-        addComponent(new GuiLabel(new TextComponentTranslation(USE_DEFAULT)), new int[]{2, pos});
+        addComponent(new GuiLabel(new TranslationTextComponent(USE_DEFAULT)), new int[]{2, pos});
         addComponent(new GuiSettingBoolean(sett.useDefaultTab), new int[]{1, pos});
 
         pos += 2;
-        this.addComponent(new GuiLabel(new TextComponentTranslation(CHANNEL_PATTERN)), new int[]{1, pos});
+        this.addComponent(new GuiLabel(new TranslationTextComponent(CHANNEL_PATTERN)), new int[]{1, pos});
         GuiSettingEnum<ChannelPatterns> enmChanPat = new GuiSettingEnum<>(sett.channelPattern,
                 ChannelPatterns.values());
-        enmChanPat.setCaption(new TextComponentTranslation(CHANNEL_PATTERN_DESC));
+        enmChanPat.setCaption(new TranslationTextComponent(CHANNEL_PATTERN_DESC));
         this.addComponent(enmChanPat, new int[]{5, pos, 4, 1});
 
         pos += 2;
-        this.addComponent(new GuiLabel(new TextComponentTranslation(MESSAGE_PATTERN)), new int[]{1, pos});
+        this.addComponent(new GuiLabel(new TranslationTextComponent(MESSAGE_PATTERN)), new int[]{1, pos});
         if (sett.messegePattern.get() == null) {
             sett.messegePattern.set(MessagePatterns.WHISPERS);
         }
         GuiSettingEnum<MessagePatterns> enmMsg = new GuiSettingEnum<>(sett.messegePattern, MessagePatterns.values());
-        enmMsg.setCaption(new TextComponentTranslation(MESSAGE_PATTERN_DESC));
+        enmMsg.setCaption(new TranslationTextComponent(MESSAGE_PATTERN_DESC));
         this.addComponent(enmMsg, new int[]{5, pos, 4, 1});
 
         pos += 2;
-        this.addComponent(new GuiLabel(new TextComponentTranslation(IGNORED_CHANNELS)), new int[]{0, pos});
+        this.addComponent(new GuiLabel(new TranslationTextComponent(IGNORED_CHANNELS)), new int[]{0, pos});
         GuiSettingStringList strIgnored = new GuiSettingStringList(sett.ignoredChannels);
-        strIgnored.setCaption(new TextComponentTranslation(IGNORED_CHANNELS_DESC));
+        strIgnored.setCaption(new TranslationTextComponent(IGNORED_CHANNELS_DESC));
         this.addComponent(strIgnored, new int[]{5, pos, 5, 1});
 
         pos += 2;
-        this.addComponent(new GuiLabel(new TextComponentTranslation(DEFAULT_CHANNEL_COMMAND)), new int[]{0, pos});
+        this.addComponent(new GuiLabel(new TranslationTextComponent(DEFAULT_CHANNEL_COMMAND)), new int[]{0, pos});
         GuiSettingString strChannels = new GuiSettingString(sett.channelCommand);
-        strChannels.setCaption(new TextComponentTranslation(DEFAULT_CHANNEL_COMMAND_DESC));
+        strChannels.setCaption(new TranslationTextComponent(DEFAULT_CHANNEL_COMMAND_DESC));
         this.addComponent(strChannels, new int[]{5, pos, 5, 1});
 
         pos += 2;
-        this.addComponent(new GuiLabel(new TextComponentTranslation(DEFAULT_CHANNEL)), new int[]{0, pos});
+        this.addComponent(new GuiLabel(new TranslationTextComponent(DEFAULT_CHANNEL)), new int[]{0, pos});
         GuiSettingString strMessages = new GuiSettingString(sett.defaultChannel);
-        strMessages.setCaption(new TextComponentTranslation(DEFAULT_CHANNEL_DESC));
+        strMessages.setCaption(new TranslationTextComponent(DEFAULT_CHANNEL_DESC));
         this.addComponent(strMessages, new int[]{5, pos, 5, 1});
 
         // Filters
         pos += 2;
-        this.addComponent(new GuiLabel(new TextComponentTranslation(FILTERS)), new int[]{4, pos, 1, 2});
+        this.addComponent(new GuiLabel(new TranslationTextComponent(FILTERS)), new int[]{4, pos, 1, 2});
 
         pos += 2;
         prev = new GuiButton("<") {
@@ -198,16 +198,16 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> {
             this.index = 0;
         } else {
             UserFilter filter = getSettings().filters.get(index);
-            this.lblFilter.setText(new TextComponentString(filter.getName()));
-            this.lblPattern.setText(new TextComponentString(filter.getRawPattern()));
+            this.lblFilter.setText(new StringTextComponent(filter.getName()));
+            this.lblPattern.setText(new StringTextComponent(filter.getRawPattern()));
         }
     }
 
     private void edit(int i) {
         UserFilter filter = getSettings().filters.get(i);
         setOverlay(new GuiFilterEditor(filter, f -> {
-            this.lblFilter.setText(new TextComponentString(f.getName()));
-            this.lblPattern.setText(new TextComponentString(f.getRawPattern()));
+            this.lblFilter.setText(new StringTextComponent(f.getName()));
+            this.lblPattern.setText(new StringTextComponent(f.getRawPattern()));
         }));
 
     }

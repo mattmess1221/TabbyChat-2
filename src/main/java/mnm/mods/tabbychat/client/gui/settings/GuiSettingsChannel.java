@@ -21,7 +21,7 @@ import mnm.mods.tabbychat.client.gui.component.GuiText;
 import mnm.mods.tabbychat.client.gui.component.VerticalLayout;
 import mnm.mods.tabbychat.client.gui.component.config.SettingPanel;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TranslationTextComponent;
 
 public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
 
@@ -65,7 +65,7 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
 
     private void select(AbstractChannel channel) {
 
-        for (GuiComponent comp : channels.getContentPanel().getChildren()) {
+        for (GuiComponent comp : channels.getContentPanel().children()) {
             if (((ChannelButton) comp).channel == channel) {
                 comp.setEnabled(false);
             } else {
@@ -79,35 +79,35 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
         this.panel.clearComponents();
         if (channel == null) {
             if (channels.getContentPanel().getComponentCount() > 0) {
-                this.panel.addComponent(new GuiLabel(new TextComponentTranslation(CHANNEL_SELECT)), new int[] { 1, pos });
+                this.panel.addComponent(new GuiLabel(new TranslationTextComponent(CHANNEL_SELECT)), new int[] { 1, pos });
             } else {
-                this.panel.addComponent(new GuiLabel(new TextComponentTranslation(CHANNEL_NONE)), new int[] { 1, pos });
+                this.panel.addComponent(new GuiLabel(new TranslationTextComponent(CHANNEL_NONE)), new int[] { 1, pos });
             }
             return;
         }
         this.panel.addComponent(
-                new GuiLabel(new TextComponentTranslation(CHANNEL_LABEL, channel.getName())),
+                new GuiLabel(new TranslationTextComponent(CHANNEL_LABEL, channel.getName())),
                 new int[] { 1, pos });
 
         pos += 3;
-        this.panel.addComponent(new GuiLabel(new TextComponentTranslation(CHANNEL_ALIAS)), new int[] { 1, pos });
+        this.panel.addComponent(new GuiLabel(new TranslationTextComponent(CHANNEL_ALIAS)), new int[] { 1, pos });
         this.panel.addComponent(alias = new GuiText(), new int[] { 3, pos, 4, 1 });
         alias.setValue(channel.getAlias());
 
         pos += 2;
-        this.panel.addComponent(new GuiLabel(new TextComponentTranslation(CHANNEL_PREFIX)), new int[] { 1, pos });
+        this.panel.addComponent(new GuiLabel(new TranslationTextComponent(CHANNEL_PREFIX)), new int[] { 1, pos });
         this.panel.addComponent(prefix = new GuiText(), new int[] { 3, pos, 4, 1 });
         prefix.setValue(channel.getPrefix());
 
         pos += 2;
         this.panel.addComponent(hidePrefix = new GuiCheckbox(), new int[] { 1, pos });
         hidePrefix.setValue(channel.isPrefixHidden());
-        this.panel.addComponent(new GuiLabel(new TextComponentTranslation(CHANNEL_HIDE_PREFIX)), new int[] { 2, pos });
+        this.panel.addComponent(new GuiLabel(new TranslationTextComponent(CHANNEL_HIDE_PREFIX)), new int[] { 2, pos });
 
         pos += 2;
         this.panel.addComponent(command = new GuiText(), new int[] { 3, pos, 4, 1 });
         command.setValue(channel.getCommand());
-        this.panel.addComponent(new GuiLabel(new TextComponentTranslation(CHANNEL_COMMAND)), new int[] { 1, pos });
+        this.panel.addComponent(new GuiLabel(new TranslationTextComponent(CHANNEL_COMMAND)), new int[] { 1, pos });
 
         GuiButton accept = new GuiButton(I18n.format("gui.done")){
             @Override
@@ -129,7 +129,7 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
                 // don't add this channel again.
                 getSettings().general.ignoredChannels.add(channel.toString());
                 // remove from settings gui
-                for (GuiComponent comp : channels.getContentPanel().getChildren()) {
+                for (GuiComponent comp : channels.getContentPanel().children()) {
                     if (comp instanceof ChannelButton && ((ChannelButton) comp).channel == channel) {
                         channels.getContentPanel().removeComponent(comp);
                         break;

@@ -18,7 +18,7 @@ import mnm.mods.tabbychat.client.gui.component.GuiPanel;
 import mnm.mods.tabbychat.client.gui.component.VerticalLayout;
 import mnm.mods.tabbychat.client.gui.component.config.SettingPanel;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
+import net.minecraft.util.text.StringTextComponent;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -44,6 +44,7 @@ public class GuiSettingsScreen extends ComponentScreen {
     private SettingPanel<?> selectedSetting;
 
     public GuiSettingsScreen(@Nullable Channel channel) {
+        super(new StringTextComponent("Settings"));
         if (channel != DefaultChannel.INSTANCE) {
             selectedSetting = new GuiSettingsChannel();
         }
@@ -62,7 +63,7 @@ public class GuiSettingsScreen extends ComponentScreen {
     }
 
     @Override
-    public void initGui() {
+    public void init() {
 
 
         getPanel().addComponent(panel = new GuiPanel(new BorderLayout()));
@@ -108,8 +109,8 @@ public class GuiSettingsScreen extends ComponentScreen {
     }
 
     @Override
-    public void onGuiClosed() {
-        super.onGuiClosed();
+    public void onClose() {
+        super.onClose();
         for (SettingPanel<?> settingPanel : panels) {
             settingPanel.getSettings().save();
         }
@@ -117,13 +118,13 @@ public class GuiSettingsScreen extends ComponentScreen {
     }
 
     @Override
-    public void setWorldAndResolution(Minecraft mc, int width, int height) {
+    public void init(Minecraft mc, int width, int height) {
         this.panels.forEach(GuiPanel::clearComponents);
-        super.setWorldAndResolution(mc, width, height);
+        super.init(mc, width, height);
     }
 
     private void deactivateAll() {
-        for (GuiComponent comp : settingsList.getChildren()) {
+        for (GuiComponent comp : settingsList.children()) {
             if (comp instanceof SettingsButton) {
                 ((SettingsButton) comp).setActive(false);
             }
@@ -131,7 +132,7 @@ public class GuiSettingsScreen extends ComponentScreen {
     }
 
     private <T extends SettingPanel<?>> void activate(Class<T> settingClass) {
-        for (GuiComponent comp : settingsList.getChildren()) {
+        for (GuiComponent comp : settingsList.children()) {
             if (comp instanceof SettingsButton
                     && ((SettingsButton) comp).getSettings().getClass().equals(settingClass)) {
                 ((SettingsButton) comp).setActive(true);
@@ -144,7 +145,7 @@ public class GuiSettingsScreen extends ComponentScreen {
     public void render(int mouseX, int mouseY, float tick) {
         // drawDefaultBackground();
         ILocation rect = panel.getLocation();
-        Gui.drawRect(rect.getXPos(), rect.getYPos(), rect.getXWidth(), rect.getYHeight(), Integer.MIN_VALUE);
+        fill(rect.getXPos(), rect.getYPos(), rect.getXWidth(), rect.getYHeight(), Integer.MIN_VALUE);
         super.render(mouseX, mouseY, tick);
     }
 

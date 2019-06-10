@@ -1,6 +1,7 @@
 package mnm.mods.tabbychat.client.core;
 
 import com.google.common.collect.Sets;
+import com.mojang.blaze3d.platform.GlStateManager;
 import mnm.mods.tabbychat.TCMarkers;
 import mnm.mods.tabbychat.client.AbstractChannel;
 import mnm.mods.tabbychat.client.ChatManager;
@@ -11,8 +12,7 @@ import mnm.mods.tabbychat.api.ChannelStatus;
 import mnm.mods.tabbychat.api.events.ChatMessageEvent.ChatReceivedEvent;
 import mnm.mods.tabbychat.client.gui.ChatBox;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiNewChat;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.gui.NewChatGui;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class GuiNewChatTC extends GuiNewChat {
+public class GuiNewChatTC extends NewChatGui {
 
     private final Minecraft mc;
     private final TabbyChatClient tc;
@@ -141,8 +141,8 @@ public class GuiNewChatTC extends GuiNewChat {
     }
 
     private void checkThread(Runnable runnable) {
-        if (!mc.isCallingFromMinecraftThread()) {
-            mc.addScheduledTask(runnable);
+        if (!mc.isOnExecutionThread()) {
+            mc.enqueue(runnable);
             TabbyChat.logger.warn(TCMarkers.CHATBOX, "Tried to modify chat from thread {}. To prevent a crash, it has been scheduled on the main thread.", Thread.currentThread().getName(), new Exception());
         } else {
             runnable.run();

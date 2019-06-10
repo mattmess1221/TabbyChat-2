@@ -1,42 +1,38 @@
 package mnm.mods.tabbychat.client.gui;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import mnm.mods.tabbychat.client.ChatManager;
 import mnm.mods.tabbychat.client.TabbyChatClient;
 import mnm.mods.tabbychat.client.extra.spell.Spellcheck;
 import mnm.mods.tabbychat.client.extra.spell.SpellingFormatter;
+import mnm.mods.tabbychat.client.gui.component.GuiComponent;
+import mnm.mods.tabbychat.client.gui.component.GuiText;
+import mnm.mods.tabbychat.client.gui.component.IDeferredGuiEventListener;
 import mnm.mods.tabbychat.util.Color;
 import mnm.mods.tabbychat.util.Dim;
 import mnm.mods.tabbychat.util.ILocation;
 import mnm.mods.tabbychat.util.TexturedModal;
-import mnm.mods.tabbychat.client.gui.component.GuiComponent;
-import mnm.mods.tabbychat.client.gui.component.GuiText;
 import mnm.mods.tabbychat.util.text.FancyFontRenderer;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.IGuiEventListener;
-import net.minecraft.client.gui.IGuiEventListenerDeferred;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.util.text.ITextComponent;
-import org.lwjgl.opengl.GL11;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
-public class TextBox extends GuiComponent implements IGuiEventListenerDeferred {
+public class TextBox extends GuiComponent implements IDeferredGuiEventListener {
 
     private static final TexturedModal MODAL = new TexturedModal(ChatBox.GUI_LOCATION, 0, 219, 254, 37);
 
     private FontRenderer fr = mc.fontRenderer;
     // Dummy textField
-    private GuiText textField = new GuiText(new GuiTextField(0, fr, 0, 0, 0, 0) {
+    private GuiText textField = new GuiText(new TextFieldWidget(fr, 0, 0, 0, 0, "input") {
         @Override
-        public void drawTextField(int x, int y, float parTicks) {
+        public void render(int x, int y, float parTicks) {
             // noop
         }
 
@@ -58,12 +54,11 @@ public class TextBox extends GuiComponent implements IGuiEventListenerDeferred {
         textField.getTextField().setMaxStringLength(ChatManager.MAX_CHAT_LENGTH);
         textField.getTextField().setCanLoseFocus(false);
         textField.getTextField().setEnableBackgroundDrawing(false);
-        textField.getTextField().setFocused(true);
+        textField.getTextField().setFocused2(true);
     }
 
-    @Nullable
     @Override
-    public IGuiEventListener getFocused() {
+    public IGuiEventListener deferred() {
         return textField;
     }
 
@@ -85,7 +80,7 @@ public class TextBox extends GuiComponent implements IGuiEventListenerDeferred {
     }
 
     private void drawCursor() {
-        GuiTextField textField = this.textField.getTextField();
+        TextFieldWidget textField = this.textField.getTextField();
 
         // keeps track of all the characters. Used to compensate for spaces
         int totalPos = 0;
@@ -96,7 +91,7 @@ public class TextBox extends GuiComponent implements IGuiEventListenerDeferred {
         // The position of the cursor
         int pos = textField.getCursorPosition();
         // the position of the selection
-        int sel = textField.getSelectionEnd();
+        int sel = textField.getSelectedText().length();
 
         // make the position and selection in order
         int start = Math.min(pos, sel);
@@ -113,7 +108,7 @@ public class TextBox extends GuiComponent implements IGuiEventListenerDeferred {
                 boolean cursorBlink = this.cursorCounter / 6 % 3 != 0;
                 if (cursorBlink) {
                     if (textField.getCursorPosition() < this.textField.getValue().length()) {
-                        drawVerticalLine(loc.getXPos() + c + 3,
+                        vLine(loc.getXPos() + c + 3,
                                 loc.getYPos() + line - 2,
                                 loc.getYPos() + line + fr.FONT_HEIGHT + 1, 0xffd0d0d0);
                     } else {
@@ -208,7 +203,7 @@ public class TextBox extends GuiComponent implements IGuiEventListenerDeferred {
     }
 
     /**
-     * Draws the blue selection box. Adapted from {@code GuiTextField#drawSelectionBox(int, int, int, int)}
+     * Draws the blue selection box. Forwards to {@link TextFieldWidget#drawSelectionBox(int, int, int, int)}
      */
     private void drawSelectionBox(int x1, int y1, int x2, int y2) {
         ILocation loc = getLocation();
@@ -217,35 +212,36 @@ public class TextBox extends GuiComponent implements IGuiEventListenerDeferred {
         y1 += loc.getYPos();
         y2 += loc.getYPos();
 
-        if (x1 < x2) {
-            int i = x1;
-            x1 = x2;
-            x2 = i;
-        }
-
-        if (y1 < y2) {
-            int j = y1;
-            y1 = y2;
-            y2 = j;
-        }
-
-        x2 = Math.min(x2, this.getLocation().getXWidth());
-        x1 = Math.min(x1, this.getLocation().getXWidth());
-
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferbuilder = tessellator.getBuffer();
-        GlStateManager.color4f(0.0F, 0.0F, 255.0F, 255.0F);
-        GlStateManager.disableTexture2D();
-        GlStateManager.enableColorLogic();
-        GlStateManager.logicOp(GlStateManager.LogicOp.OR_REVERSE);
-        bufferbuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
-        bufferbuilder.pos(x1, y2, 0.0D).endVertex();
-        bufferbuilder.pos(x2, y2, 0.0D).endVertex();
-        bufferbuilder.pos(x2, y1, 0.0D).endVertex();
-        bufferbuilder.pos(x1, y1, 0.0D).endVertex();
-        tessellator.draw();
-        GlStateManager.disableColorLogic();
-        GlStateManager.enableTexture2D();
+        this.textField.getTextField().drawSelectionBox(x1, y1, x2, y2);
+//        if (x1 < x2) {
+//            int i = x1;
+//            x1 = x2;
+//            x2 = i;
+//        }
+//
+//        if (y1 < y2) {
+//            int j = y1;
+//            y1 = y2;
+//            y2 = j;
+//        }
+//
+//        x2 = Math.min(x2, this.getLocation().getXWidth());
+//        x1 = Math.min(x1, this.getLocation().getXWidth());
+//
+//        Tessellator tessellator = Tessellator.getInstance();
+//        BufferBuilder bufferbuilder = tessellator.getBuffer();
+//        GlStateManager.color4f(0.0F, 0.0F, 255.0F, 255.0F);
+//        GlStateManager.disableTexture();
+//        GlStateManager.enableColorLogicOp();
+//        GlStateManager.logicOp(GlStateManager.LogicOp.OR_REVERSE);
+//        bufferbuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
+//        bufferbuilder.pos(x1, y2, 0.0D).endVertex();
+//        bufferbuilder.pos(x2, y2, 0.0D).endVertex();
+//        bufferbuilder.pos(x2, y1, 0.0D).endVertex();
+//        bufferbuilder.pos(x1, y1, 0.0D).endVertex();
+//        tessellator.draw();
+//        GlStateManager.disableColorLogicOp();
+//        GlStateManager.enableTexture();
     }
 
     @Override
@@ -329,6 +325,6 @@ public class TextBox extends GuiComponent implements IGuiEventListenerDeferred {
 
     @Override
     public boolean isVisible() {
-        return super.isVisible() && mc.ingameGUI.getChatGUI().getChatOpen();
+        return super.isVisible() && mc.field_71456_v/*ingameGUI*/.getChatGUI().getChatOpen();
     }
 }

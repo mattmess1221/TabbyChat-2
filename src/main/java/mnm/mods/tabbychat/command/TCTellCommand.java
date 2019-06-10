@@ -8,7 +8,7 @@ import mnm.mods.tabbychat.TabbyChat;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.arguments.ComponentArgument;
 import net.minecraft.command.arguments.EntityArgument;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.text.ITextComponent;
 
 import java.util.Collection;
@@ -33,11 +33,11 @@ public class TCTellCommand {
 
     private static int execute(CommandContext<CommandSource> context) throws CommandSyntaxException {
 
-        Collection<EntityPlayerMP> players = EntityArgument.getPlayers(context, TARGETS);
+        Collection<ServerPlayerEntity> players = EntityArgument.getPlayers(context, TARGETS);
         String channel = "#" + StringArgumentType.getString(context, CHANNEL);
         ITextComponent message = ComponentArgument.getComponent(context, MESSAGE);
 
-        for (EntityPlayerMP player : players) {
+        for (ServerPlayerEntity player : players) {
             TabbyChat.sendTo(player, channel, message);
         }
 

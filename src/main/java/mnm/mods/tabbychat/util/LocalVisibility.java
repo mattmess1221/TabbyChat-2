@@ -1,6 +1,6 @@
 package mnm.mods.tabbychat.util;
 
-public enum ChatVisibility {
+public enum LocalVisibility {
 
     ALWAYS,
     NORMAL,

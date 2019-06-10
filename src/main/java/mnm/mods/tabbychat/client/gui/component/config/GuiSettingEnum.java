@@ -5,7 +5,6 @@ import com.google.common.collect.ImmutableList;
 import mnm.mods.tabbychat.util.Color;
 import mnm.mods.tabbychat.util.ILocation;
 import mnm.mods.tabbychat.util.config.Value;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.resources.I18n;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -83,7 +82,7 @@ public class GuiSettingEnum<T> extends GuiSetting<T> {
     @Override
     public void render(int mouseX, int mouseY, float parTicks) {
         ILocation loc = this.getLocation();
-        Gui.drawRect(loc.getXPos(), loc.getYPos(), loc.getXWidth(), loc.getYHeight(), 0xff000000);
+        fill(loc.getXPos(), loc.getYPos(), loc.getXWidth(), loc.getYHeight(), 0xff000000);
         String string = mc.fontRenderer.trimStringToWidth(text, loc.getWidth());
         int xPos = loc.getXCenter() - mc.fontRenderer.getStringWidth(string) / 2;
         int yPos = loc.getYCenter() - 4;

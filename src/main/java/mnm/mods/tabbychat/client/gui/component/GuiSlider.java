@@ -1,9 +1,8 @@
 package mnm.mods.tabbychat.client.gui.component;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.util.ILocation;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 
 /**
@@ -27,17 +26,17 @@ public class GuiSlider extends GuiComponent implements IGuiInput<Double> {
     public void render(int mouseX, int mouseY, float parTicks) {
         GlStateManager.enableBlend();
         ILocation loc = getLocation();
-        Gui.drawRect(loc.getXPos(), loc.getYPos(), loc.getXWidth(), loc.getYHeight(), -1);
+        fill(loc.getXPos(), loc.getYPos(), loc.getXWidth(), loc.getYHeight(), -1);
         mc.getTextureManager().bindTexture(TRANSPARENCY);
-        Gui.drawModalRectWithCustomSizedTexture(loc.getXPos() + 1, loc.getYPos() + 1, 0, 0, loc.getWidth() - 2, loc.getHeight() - 2, 6, 6);
+        blit(loc.getXPos() + 1, loc.getYPos() + 1, 0, 0, loc.getWidth() - 2, loc.getHeight() - 2, 6, 6);
         drawMid(loc);
         if (vertical) {
             int nook = loc.getYPos() + Math.abs((int) (loc.getHeight() * getValue()) - loc.getHeight());
-            Gui.drawRect(loc.getXPos() - 1, nook - 1, loc.getWidth() + 1, nook + 2, 0xffffffff);
-            Gui.drawRect(loc.getXPos(), nook, loc.getXWidth(), nook + 1, 0xff000000);
+            fill(loc.getXPos() - 1, nook - 1, loc.getWidth() + 1, nook + 2, 0xffffffff);
+            fill(loc.getXPos(), nook, loc.getXWidth(), nook + 1, 0xff000000);
         } else {
             int nook = loc.getXPos() + (int) (loc.getWidth() * getValue());
-            Gui.drawRect(nook, loc.getYPos(), nook + 1, loc.getYHeight(), 0xff000000);
+            fill(nook, loc.getYPos(), nook + 1, loc.getYHeight(), 0xff000000);
         }
         int midX = loc.getXCenter();
         int midY = loc.getYCenter();
@@ -48,7 +47,7 @@ public class GuiSlider extends GuiComponent implements IGuiInput<Double> {
     }
 
     protected void drawMid(ILocation loc) {
-        Gui.drawRect(loc.getXPos() + 1, loc.getYPos() + 1, loc.getXWidth() - 1, loc.getYHeight() - 1, getPrimaryColorProperty().getHex());
+        fill(loc.getXPos() + 1, loc.getYPos() + 1, loc.getXWidth() - 1, loc.getYHeight() - 1, getPrimaryColorProperty().getHex());
     }
 
     public String getFormattedValue() {
@@ -83,13 +82,11 @@ public class GuiSlider extends GuiComponent implements IGuiInput<Double> {
     }
 
     @Override
-    public boolean mouseScrolled(double p_mouseScrolled_1_) {
-        double x = mc.mouseHelper.getMouseX();
-        double y = mc.mouseHelper.getMouseY();
+    public boolean mouseScrolled(double x, double y, double scroll) {
         if (!getLocation().contains(x, y)) {
             return false;
         }
-        setValue(getValue() + p_mouseScrolled_1_ / 7360D);
+        setValue(getValue() + scroll / 7360D);
         return true;
     }
 

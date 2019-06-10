@@ -1,18 +1,18 @@
 package mnm.mods.tabbychat.client.gui;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import mnm.mods.tabbychat.client.AbstractChannel;
 import mnm.mods.tabbychat.client.TabbyChatClient;
 import mnm.mods.tabbychat.api.ChannelStatus;
 import mnm.mods.tabbychat.client.gui.settings.GuiSettingsScreen;
-import mnm.mods.tabbychat.util.ChatVisibility;
+import mnm.mods.tabbychat.util.LocalVisibility;
 import mnm.mods.tabbychat.util.Color;
 import mnm.mods.tabbychat.util.Dim;
 import mnm.mods.tabbychat.util.ILocation;
 import mnm.mods.tabbychat.util.TexturedModal;
 import mnm.mods.tabbychat.client.gui.component.GuiButton;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.gui.screen.Screen;
 
 import javax.annotation.Nonnull;
 
@@ -36,7 +36,7 @@ public class ChatTab extends GuiButton {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (getLocation().contains(mouseX, mouseY)) {
             if (button == 0) {
-                if (GuiScreen.isShiftKeyDown()) {
+                if (Screen.hasShiftDown()) {
                     // Remove channel
                     chat.removeChannel(this.channel);
                 } else {
@@ -64,9 +64,9 @@ public class ChatTab extends GuiButton {
     @Override
     public void render(int mouseX, int mouseY, float parTicks) {
         ChannelStatus status = chat.getStatus(channel);
-        if (mc.ingameGUI.getChatGUI().getChatOpen()
+        if (mc.field_71456_v/*ingameGUI*/.getChatGUI().getChatOpen()
                 || (status != null && status.compareTo(ChannelStatus.PINGED) > 0)
-                || TabbyChatClient.getInstance().getSettings().advanced.visibility.get() == ChatVisibility.ALWAYS) {
+                || TabbyChatClient.getInstance().getSettings().advanced.visibility.get() == LocalVisibility.ALWAYS) {
             ILocation loc = getLocation();
             GlStateManager.enableBlend();
             GlStateManager.color4f(1, 1, 1, (float) mc.gameSettings.chatOpacity);

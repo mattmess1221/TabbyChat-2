@@ -1,16 +1,16 @@
 package mnm.mods.tabbychat.util;
 
 import com.google.common.collect.Lists;
+import mnm.mods.tabbychat.api.Message;
 import mnm.mods.tabbychat.client.ChatMessage;
 import mnm.mods.tabbychat.client.TabbyChatClient;
-import mnm.mods.tabbychat.api.Message;
 import mnm.mods.tabbychat.client.settings.GeneralSettings;
 import mnm.mods.tabbychat.util.text.TextBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiUtilRenderComponents;
+import net.minecraft.client.gui.RenderComponentsUtil;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 import java.util.Iterator;
@@ -20,7 +20,7 @@ public class ChatTextUtils {
 
     public static List<ITextComponent> split(ITextComponent chat, int width) {
         FontRenderer fr = Minecraft.getInstance().fontRenderer;
-        return GuiUtilRenderComponents.splitText(chat, width, fr, false, false);
+        return RenderComponentsUtil.splitText(chat, width, fr, false, false);
     }
 
     public static List<ChatMessage> split(List<ChatMessage> list, int width) {
@@ -77,7 +77,7 @@ public class ChatTextUtils {
             int len = s.length();
             if (len + pos >= beginIndex) {
                 if (pos < beginIndex) {
-                    ITextComponent schat = new TextComponentString(s.substring(beginIndex - pos));
+                    ITextComponent schat = new StringTextComponent(s.substring(beginIndex - pos));
                     schat.setStyle(part.getStyle().createShallowCopy());
                     part = schat;
                 }

@@ -2,7 +2,7 @@ package mnm.mods.tabbychat.util.text;
 
 import com.google.common.collect.Lists;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.List;
 import javax.annotation.Nullable;
@@ -32,7 +32,7 @@ class TranslationBuilder extends AbstractChatBuilder {
         ITextComponent buffer = append(null).buffer;
         if (buffer != null)
             translationArgs.add(buffer);
-        return parent.append(new TextComponentTranslation(translationKey, translationArgs.toArray()));
+        return parent.append(new TranslationTextComponent(translationKey, translationArgs.toArray()));
     }
 
     @Override

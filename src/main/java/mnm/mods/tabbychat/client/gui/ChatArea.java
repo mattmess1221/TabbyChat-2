@@ -1,23 +1,23 @@
 package mnm.mods.tabbychat.client.gui;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import mnm.mods.tabbychat.client.AbstractChannel;
 import mnm.mods.tabbychat.client.ChatManager;
 import mnm.mods.tabbychat.client.ChatMessage;
 import mnm.mods.tabbychat.client.TabbyChatClient;
+import mnm.mods.tabbychat.client.gui.component.GuiComponent;
 import mnm.mods.tabbychat.util.ChatTextUtils;
-import mnm.mods.tabbychat.util.ChatVisibility;
 import mnm.mods.tabbychat.util.Color;
 import mnm.mods.tabbychat.util.Dim;
 import mnm.mods.tabbychat.util.ILocation;
+import mnm.mods.tabbychat.util.LocalVisibility;
 import mnm.mods.tabbychat.util.TexturedModal;
-import mnm.mods.tabbychat.client.gui.component.GuiComponent;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiUtilRenderComponents;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.client.gui.RenderComponentsUtil;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.entity.player.ChatVisibility;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.StringTextComponent;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ public class ChatArea extends GuiComponent {
     }
 
     @Override
-    public boolean mouseScrolled(double scroll) {
+    public boolean mouseScrolled(double x, double y, double scroll) {
         // One tick = 120
         if (scroll != 0) {
             if (scroll > 1) {
@@ -45,7 +45,7 @@ public class ChatArea extends GuiComponent {
             if (scroll < -1) {
                 scroll = -1;
             }
-            if (GuiScreen.isShiftKeyDown()) {
+            if (Screen.hasShiftDown()) {
                 scroll *= 7;
             }
             scroll((int) scroll);
@@ -64,9 +64,9 @@ public class ChatArea extends GuiComponent {
     public ILocation getLocation() {
         List<ChatMessage> visible = getVisibleChat();
         int height = visible.size() * mc.fontRenderer.FONT_HEIGHT;
-        ChatVisibility vis = TabbyChatClient.getInstance().getSettings().advanced.visibility.get();
+        LocalVisibility vis = TabbyChatClient.getInstance().getSettings().advanced.visibility.get();
 
-        if (mc.ingameGUI.getChatGUI().getChatOpen() || vis == ChatVisibility.ALWAYS) {
+        if (mc.field_71456_v/*ingameGUI*/.getChatGUI().getChatOpen() || vis == LocalVisibility.ALWAYS) {
             return super.getLocation();
         } else if (height != 0) {
             int y = super.getLocation().getHeight() - height;
@@ -80,10 +80,10 @@ public class ChatArea extends GuiComponent {
 
         List<ChatMessage> visible = getVisibleChat();
         int height = visible.size() * mc.fontRenderer.FONT_HEIGHT;
-        ChatVisibility vis = TabbyChatClient.getInstance().getSettings().advanced.visibility.get();
+        LocalVisibility vis = TabbyChatClient.getInstance().getSettings().advanced.visibility.get();
 
-        return mc.gameSettings.chatVisibility != EntityPlayer.EnumChatVisibility.HIDDEN
-                && (mc.ingameGUI.getChatGUI().getChatOpen() || vis == ChatVisibility.ALWAYS || height != 0);
+        return mc.gameSettings.field_74343_n/*chatVisibility*/ != ChatVisibility.HIDDEN
+                && (mc.field_71456_v/*ingameGUI*/.getChatGUI().getChatOpen() || vis == LocalVisibility.ALWAYS || height != 0);
     }
 
     @Override
@@ -96,7 +96,7 @@ public class ChatArea extends GuiComponent {
 
         drawModalCorners(MODAL);
 
-        zLevel = 100;
+        blitOffset = 100;
         // TODO abstracted padding
         int xPos = getLocation().getXPos() + 3;
         int yPos = getLocation().getYHeight();
@@ -104,7 +104,7 @@ public class ChatArea extends GuiComponent {
             yPos -= mc.fontRenderer.FONT_HEIGHT;
             drawChatLine(line, xPos, yPos);
         }
-        zLevel = 0;
+        blitOffset = 0;
         GlStateManager.disableAlphaTest();
         GlStateManager.disableBlend();
     }
@@ -136,11 +136,11 @@ public class ChatArea extends GuiComponent {
 
         int pos = getScrollPos();
         float unfoc = TabbyChatClient.getInstance().getSettings().advanced.unfocHeight.get();
-        float div = mc.ingameGUI.getChatGUI().getChatOpen() ? 1 : unfoc;
+        float div = mc.field_71456_v/*ingameGUI*/.getChatGUI().getChatOpen() ? 1 : unfoc;
         while (pos < lines.size() && length < super.getLocation().getHeight() * div - 10) {
             ChatMessage line = lines.get(pos);
 
-            if (mc.ingameGUI.getChatGUI().getChatOpen()) {
+            if (mc.field_71456_v/*ingameGUI*/.getChatGUI().getChatOpen()) {
                 messages.add(line);
             } else if (getLineOpacity(line) > 3) {
                 messages.add(line);
@@ -156,15 +156,15 @@ public class ChatArea extends GuiComponent {
     }
 
     private int getLineOpacity(ChatMessage line) {
-        ChatVisibility vis = TabbyChatClient.getInstance().getSettings().advanced.visibility.get();
-        if (vis == ChatVisibility.ALWAYS)
+        LocalVisibility vis = TabbyChatClient.getInstance().getSettings().advanced.visibility.get();
+        if (vis == LocalVisibility.ALWAYS)
             return 4;
-        if (vis == ChatVisibility.HIDDEN && !mc.ingameGUI.getChatGUI().getChatOpen())
+        if (vis == LocalVisibility.HIDDEN && !mc.field_71456_v/*ingameGUI*/.getChatGUI().getChatOpen())
             return 0;
         int opacity = (int) (mc.gameSettings.chatOpacity * 255);
 
-        double age = mc.ingameGUI.getTicks() - line.getCounter();
-        if (!mc.ingameGUI.getChatGUI().getChatOpen()) {
+        double age = mc.field_71456_v/*ingameGUI*/.getTicks() - line.getCounter();
+        if (!mc.field_71456_v/*ingameGUI*/.getChatGUI().getChatOpen()) {
             double opacPerc = age / TabbyChatClient.getInstance().getSettings().advanced.fadeTime.get();
             opacPerc = 1.0D - opacPerc;
             opacPerc *= 10.0D;
@@ -184,7 +184,7 @@ public class ChatArea extends GuiComponent {
 
     public void setScrollPos(int scroll) {
         List<ChatMessage> list = getChat();
-        scroll = Math.min(scroll, list.size() - mc.ingameGUI.getChatGUI().getLineCount());
+        scroll = Math.min(scroll, list.size() - mc.field_71456_v/*ingameGUI*/.getChatGUI().getLineCount());
         scroll = Math.max(scroll, 0);
 
         this.scrollPos = scroll;
@@ -200,8 +200,8 @@ public class ChatArea extends GuiComponent {
 
     @Nullable
     public ITextComponent getTextComponent(int clickX, int clickY) {
-        if (mc.ingameGUI.getChatGUI().getChatOpen()) {
-            double scale = mc.ingameGUI.getChatGUI().getScale();
+        if (mc.field_71456_v/*ingameGUI*/.getChatGUI().getChatOpen()) {
+            double scale = mc.field_71456_v/*ingameGUI*/.getChatGUI().getScale();
             clickX = MathHelper.floor(clickX / scale);
             clickY = MathHelper.floor(clickY / scale);
 
@@ -224,12 +224,12 @@ public class ChatArea extends GuiComponent {
                     float x = actual.getXPos() + 3;
 
                     for (ITextComponent ichatcomponent : ChatTextUtils.getMessageWithOptionalTimestamp(chatline)) {
-                        if (ichatcomponent instanceof TextComponentString) {
+                        if (ichatcomponent instanceof StringTextComponent) {
 
                             // get the text of the component, no children.
                             String text = ichatcomponent.getUnformattedComponentText();
                             // clean it up
-                            String clean = GuiUtilRenderComponents.removeTextColorsIfConfigured(text, false);
+                            String clean = RenderComponentsUtil.removeTextColorsIfConfigured(text, false);
                             // get it's width, then scale it.
                             x += this.mc.fontRenderer.getStringWidth(clean) * scale;
 

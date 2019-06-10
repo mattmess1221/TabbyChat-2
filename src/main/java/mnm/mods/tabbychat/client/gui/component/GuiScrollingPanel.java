@@ -6,7 +6,6 @@ import mnm.mods.tabbychat.util.Dim;
 import mnm.mods.tabbychat.util.ILocation;
 import mnm.mods.tabbychat.util.Location;
 import mnm.mods.tabbychat.client.gui.component.BorderLayout.Position;
-import net.minecraft.client.gui.Gui;
 
 import javax.annotation.Nonnull;
 
@@ -42,7 +41,7 @@ public class GuiScrollingPanel extends GuiPanel {
     }
 
     @Override
-    public boolean mouseScrolled(double scroll) {
+    public boolean mouseScrolled(double x, double y, double scroll) {
         Location rect = panel.getLocation().copy();
         int scr = (int) (rect.getYPos() + scroll / 12);
         rect.setYPos(scr);
@@ -86,12 +85,12 @@ public class GuiScrollingPanel extends GuiPanel {
                 return;
             }
             total -= max;
-            Gui.drawRect(0, 20, 10, 10, -1);
+            fill(0, 20, 10, 10, -1);
             int size = Math.max(max / 2, 10);
             float perc = ((float) scroll / (float) total) * ((float) size / (float) max);
             int pos = (int) (-perc * max);
 
-            Gui.drawRect(loc.getXPos()-1, loc.getYPos() + pos, loc.getXPos(), loc.getYPos() + pos + size - 1, -1);
+            fill(loc.getXPos()-1, loc.getYPos() + pos, loc.getXPos(), loc.getYPos() + pos + size - 1, -1);
             super.render(mouseX, mouseY, parTicks);
         }
     }

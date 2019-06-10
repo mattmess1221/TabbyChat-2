@@ -1,12 +1,11 @@
 package mnm.mods.tabbychat.client.gui.settings;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import mnm.mods.tabbychat.util.Dim;
 import mnm.mods.tabbychat.util.ILocation;
 import mnm.mods.tabbychat.util.Location;
 import mnm.mods.tabbychat.client.gui.component.GuiButton;
 import mnm.mods.tabbychat.client.gui.component.config.SettingPanel;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.renderer.GlStateManager;
 
 import javax.annotation.Nonnull;
 
@@ -45,7 +44,7 @@ public class SettingsButton extends GuiButton {
         int y2 = loc.getYHeight() - 1;
 
         GlStateManager.enableAlphaTest();
-        getSecondaryColor().ifPresent(color -> Gui.drawRect(x1, y1, x2, y2, color.getHex()));
+        getSecondaryColor().ifPresent(color -> fill(x1, y1, x2, y2, color.getHex()));
         String string = mc.fontRenderer.trimStringToWidth(getText(), loc.getWidth());
         mc.fontRenderer.drawString(string, x1 + 10, loc.getYCenter() - 4, getPrimaryColorProperty().getHex());
     }

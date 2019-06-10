@@ -93,7 +93,7 @@ public class Location implements ILocation {
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
-        if (obj == null || !(obj instanceof ILocation))
+        if (!(obj instanceof ILocation))
             return false;
         ILocation other = (ILocation) obj;
         return height == other.getHeight()

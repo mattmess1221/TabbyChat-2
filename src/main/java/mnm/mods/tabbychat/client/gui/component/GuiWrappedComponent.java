@@ -4,14 +4,13 @@ import mnm.mods.tabbychat.util.Color;
 import mnm.mods.tabbychat.util.Dim;
 import mnm.mods.tabbychat.util.ILocation;
 import net.minecraft.client.gui.IGuiEventListener;
-import net.minecraft.client.gui.IGuiEventListenerDeferred;
 import net.minecraft.util.text.ITextComponent;
 
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class GuiWrappedComponent<T extends GuiComponent> extends GuiComponent implements IGuiEventListenerDeferred {
+public class GuiWrappedComponent<T extends GuiComponent> extends GuiComponent implements IDeferredGuiEventListener {
 
     private final T wrapper;
 
@@ -25,7 +24,7 @@ public class GuiWrappedComponent<T extends GuiComponent> extends GuiComponent im
 
     @Nullable
     @Override
-    public IGuiEventListener getFocused() {
+    public IGuiEventListener deferred() {
         return wrapper;
     }
 

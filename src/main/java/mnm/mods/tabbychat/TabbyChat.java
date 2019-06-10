@@ -3,7 +3,7 @@ package mnm.mods.tabbychat;
 import mnm.mods.tabbychat.client.TabbyChatClient;
 import mnm.mods.tabbychat.net.SSendChannelMessage;
 import mnm.mods.tabbychat.command.TCTellCommand;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.MinecraftForge;
@@ -73,7 +73,7 @@ public class TabbyChat {
                 .add();
     }
 
-    public static void sendTo(EntityPlayerMP player, String channel, ITextComponent text) {
+    public static void sendTo(ServerPlayerEntity player, String channel, ITextComponent text) {
         TabbyChat.channel.sendTo(new SSendChannelMessage(channel, text), player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
     }
 

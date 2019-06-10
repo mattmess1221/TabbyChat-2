@@ -111,9 +111,9 @@ public class Spellcheck implements ISelectiveResourceReloadListener {
         Language lang = Minecraft.getInstance().getLanguageManager().getCurrentLanguage();
         try {
             loadUserDictionary();
-            loadDictionary(LangDict.fromLanguage(lang.getLanguageCode()));
+            loadDictionary(LangDict.fromLanguage(lang.getCode()));
         } catch (IOException e) {
-            TabbyChat.logger.warn(TCMarkers.SPELLCHECK, "Error while loading dictionary {}.", lang.getLanguageCode(), e);
+            TabbyChat.logger.warn(TCMarkers.SPELLCHECK, "Error while loading dictionary {}.", lang.getCode(), e);
         }
     }
 

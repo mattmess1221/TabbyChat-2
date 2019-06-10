@@ -13,12 +13,12 @@ import mnm.mods.tabbychat.client.settings.TabbySettings;
 import mnm.mods.tabbychat.util.ChannelPatterns;
 import mnm.mods.tabbychat.util.ChatTextUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiConnecting;
-import net.minecraft.client.gui.GuiIngame;
-import net.minecraft.client.gui.GuiMainMenu;
-import net.minecraft.client.gui.GuiNewChat;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.network.NetHandlerPlayClient;
+import net.minecraft.client.gui.IngameGui;
+import net.minecraft.client.gui.NewChatGui;
+import net.minecraft.client.gui.screen.ConnectingScreen;
+import net.minecraft.client.gui.screen.MainMenuScreen;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.network.play.ClientPlayNetHandler;
 import net.minecraft.resources.IReloadableResourceManager;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
@@ -69,7 +69,7 @@ public class TabbyChatClient {
 
     public ServerSettings getServerSettings() {
         Minecraft mc = Minecraft.getInstance();
-        NetHandlerPlayClient connection = mc.getConnection();
+        ClientPlayNetHandler connection = mc.getConnection();
         if (connection == null) {
             serverSettings = null;
         } else {
@@ -94,7 +94,7 @@ public class TabbyChatClient {
 
         spellcheck = new Spellcheck(TabbyChat.dataFolder);        // Keeps the current language updated whenever it is changed.
         IReloadableResourceManager irrm = (IReloadableResourceManager) mc.getResourceManager();
-        irrm.addReloadListener(spellcheck);
+        irrm.func_219534_a/*addReloadListener*/(spellcheck);
 
         chatManager = ChatManager.instance();
 
@@ -134,11 +134,11 @@ public class TabbyChatClient {
     private static class StartListener {
         @SubscribeEvent
         public static void onGuiOpen(GuiOpenEvent event) {
-            GuiScreen gui = event.getGui();
+            Screen gui = event.getGui();
             // check for both main menu and connecting because of launch args
-            if (gui instanceof GuiMainMenu || gui instanceof GuiConnecting) {
+            if (gui instanceof MainMenuScreen || gui instanceof ConnectingScreen) {
                 Minecraft mc = Minecraft.getInstance();
-                hookIntoChat(mc.ingameGUI, new GuiNewChatTC(mc, instance));
+                hookIntoChat(mc.field_71456_v/*ingameGUI*/, new GuiNewChatTC(mc, instance));
                 MinecraftForge.EVENT_BUS.unregister(StartListener.class);
             }
         }
@@ -156,9 +156,9 @@ public class TabbyChatClient {
         }
     }
 
-    private static void hookIntoChat(GuiIngame guiIngame, GuiNewChat chat) {
+    private static void hookIntoChat(IngameGui guiIngame, NewChatGui chat) {
         try {
-            ObfuscationReflectionHelper.setPrivateValue(GuiIngame.class, guiIngame, chat, "field_73840_e");
+            ObfuscationReflectionHelper.setPrivateValue(IngameGui.class, guiIngame, chat, "field_73840_e");
 //            guiIngame.persistantChatGUI = chat;
             TabbyChat.logger.info(TCMarkers.STARTUP, "Successfully hooked into chat.");
         } catch (Throwable e) {

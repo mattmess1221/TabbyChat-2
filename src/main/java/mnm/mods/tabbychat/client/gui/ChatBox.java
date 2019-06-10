@@ -15,13 +15,13 @@ import mnm.mods.tabbychat.client.settings.TabbySettings;
 import mnm.mods.tabbychat.client.util.ScaledDimension;
 import mnm.mods.tabbychat.util.ILocation;
 import mnm.mods.tabbychat.util.Location;
-import mnm.mods.tabbychat.util.Vec;
+import mnm.mods.tabbychat.util.Vec2i;
 import mnm.mods.tabbychat.client.gui.component.BorderLayout;
 import mnm.mods.tabbychat.client.gui.component.GuiPanel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiChat;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
@@ -48,14 +48,14 @@ public class ChatBox extends GuiPanel {
     private TextBox txtChatInput;
 
     private boolean dragMode;
-    private Vec drag;
+    private Vec2i drag;
     private Location tempbox;
 
     private List<AbstractChannel> channels = new ArrayList<>();
     private AbstractChannel active = DefaultChannel.INSTANCE;
     private Map<Channel, ChannelStatus> channelStatus = new HashMap<>();
 
-    private GuiChat chat;
+    private ChatScreen chat;
 
     public ChatBox(TabbySettings settings) {
         super(new BorderLayout());
@@ -81,10 +81,10 @@ public class ChatBox extends GuiPanel {
         return instance;
     }
 
-    public void update(GuiChat chat) {
+    public void update(ChatScreen chat) {
         this.chat = chat;
-        if (chat.suggestions != null && !(chat.suggestions.field_198505_b instanceof TCRect)) {
-            chat.suggestions.field_198505_b = new TCRect(chat.suggestions.field_198505_b);
+        if (chat.field_195139_w/*suggestions*/ != null && !(chat.field_195139_w/*suggestions*/.field_198505_b instanceof TCRect)) {
+            chat.field_195139_w/*suggestions*/.field_198505_b = new TCRect(chat.field_195139_w/*suggestions*/.field_198505_b);
         }
     }
 
@@ -230,33 +230,33 @@ public class ChatBox extends GuiPanel {
     @Override
     public void render(int mouseX, int mouseY, float parTicks) {
         super.render(mouseX, mouseY, parTicks);
-        if (mc.ingameGUI.getChatGUI().getChatOpen() && chat != null) {
+        if (mc.field_71456_v/*ingameGUI*/.getChatGUI().getChatOpen() && chat != null) {
             FontRenderer fr = Minecraft.getInstance().fontRenderer;
             ILocation loc = getLocation();
             final int height = fr.FONT_HEIGHT + 3;
             final int xPos = chat.commandUsagePosition + loc.getXPos();
             int yPos = loc.getYHeight() - chat.commandUsage.size() * height;
-            if (chat.suggestions != null) {
-                chat.suggestions.render(mouseX, mouseY);
+            if (chat.field_195139_w/*suggestions*/ != null) {
+                chat.field_195139_w/*suggestions*/.render(mouseX, mouseY);
             } else if (xPos + chat.commandUsageWidth > loc.getXWidth()) {
                 int i = 0;
 
                 for(String s : chat.commandUsage) {
-                    drawRect(0, chat.height - 14 - 12 * i, chat.commandUsageWidth + 1, chat.height - 2 - 12 * i, 0xff000000);
+                    fill(0, chat.height - 14 - 12 * i, chat.commandUsageWidth + 1, chat.height - 2 - 12 * i, 0xff000000);
                     fr.drawStringWithShadow(s, 1, chat.height - 14 + 2 - 12 * i, -1);
                     ++i;
                 }
             } else {
                 for (String s : chat.commandUsage) {
-                    drawRect(xPos - 1, yPos, xPos + chat.commandUsageWidth + 1, yPos - height, 0xd0000000);
+                    fill(xPos - 1, yPos, xPos + chat.commandUsageWidth + 1, yPos - height, 0xd0000000);
                     fr.drawStringWithShadow(s, xPos, yPos - height + 2, -1);
                     yPos += height;
                 }
             }
 
-            ITextComponent itextcomponent = this.mc.ingameGUI.getChatGUI().getTextComponent((double) mouseX, (double) mouseY);
+            ITextComponent itextcomponent = this.mc.field_71456_v/*ingameGUI*/.getChatGUI().getTextComponent((double) mouseX, (double) mouseY);
             if (itextcomponent != null && itextcomponent.getStyle().getHoverEvent() != null) {
-                chat.handleComponentHover(itextcomponent, mouseX, mouseY);
+                chat.renderComponentHoverEffect(itextcomponent, mouseX, mouseY);
             }
         }
     }
@@ -264,9 +264,9 @@ public class ChatBox extends GuiPanel {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0 && (pnlTray.getLocation().contains(mouseX, mouseY)
-                || GuiScreen.isAltKeyDown() && getLocation().contains(mouseX, mouseY))) {
+                || Screen.hasAltDown() && getLocation().contains(mouseX, mouseY))) {
             dragMode = !pnlTray.isHandleHovered(mouseX, mouseY);
-            drag = new Vec((int) mouseX, (int) mouseY);
+            drag = new Vec2i((int) mouseX, (int) mouseY);
             tempbox = getLocation().copy();
         }
         return super.mouseClicked(mouseX, mouseY, button);
@@ -302,8 +302,8 @@ public class ChatBox extends GuiPanel {
     }
 
     @Override
-    public boolean mouseScrolled(double p_mouseScrolled_1_) {
-        return this.chatArea.mouseScrolled(p_mouseScrolled_1_);
+    public boolean mouseScrolled(double p_mouseScrolled_1_, double p_mouseScrolled_3_, double p_mouseScrolled_5_) {
+        return this.chatArea.mouseScrolled(p_mouseScrolled_1_, p_mouseScrolled_3_, p_mouseScrolled_5_);
     }
 
     @Override

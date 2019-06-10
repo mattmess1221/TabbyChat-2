@@ -10,7 +10,7 @@ import mnm.mods.tabbychat.util.Color;
 import mnm.mods.tabbychat.util.text.ITextBuilder;
 import mnm.mods.tabbychat.util.text.TextBuilder;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.StringTextComponent;
 
 public class SpellingFormatter implements Function<String, ITextComponent> {
 
@@ -28,7 +28,7 @@ public class SpellingFormatter implements Function<String, ITextComponent> {
         if (text == null)
             return null;
         if (text.contains("\u00a7") || !TabbyChatClient.getInstance().getSettings().advanced.spelling.get()) {
-            return new TextComponentString(text);
+            return new StringTextComponent(text);
         }
 
         ITextBuilder b = new TextBuilder();

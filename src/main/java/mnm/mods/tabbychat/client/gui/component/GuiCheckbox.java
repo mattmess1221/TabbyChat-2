@@ -26,7 +26,7 @@ public class GuiCheckbox extends GuiButton implements IGuiInput<Boolean> {
         Minecraft mc = Minecraft.getInstance();
 
         ILocation loc = getLocation();
-        GuiUtils.drawContinuousTexturedBox(WIDGETS, loc.getXPos(), loc.getYPos(), 0, 46, loc.getWidth(), loc.getHeight(), 200, 20, 2, 3, 2, 2, this.zLevel);
+        GuiUtils.drawContinuousTexturedBox(WIDGETS, loc.getXPos(), loc.getYPos(), 0, 46, loc.getWidth(), loc.getHeight(), 200, 20, 2, 3, 2, 2, this.blitOffset);
 
         if (this.getValue()) {
             this.drawCenteredString(mc.fontRenderer, "x", loc.getXCenter() + 1, loc.getYPos() + 1, getSecondaryColorProperty().getHex());

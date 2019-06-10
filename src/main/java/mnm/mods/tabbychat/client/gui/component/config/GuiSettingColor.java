@@ -5,7 +5,6 @@ import mnm.mods.tabbychat.util.Color;
 import mnm.mods.tabbychat.util.ILocation;
 import mnm.mods.tabbychat.util.config.Value;
 import mnm.mods.tabbychat.client.gui.component.GuiSelectColor;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.function.Consumer;
@@ -38,12 +37,12 @@ public class GuiSettingColor extends GuiSetting<Color> implements Consumer<Color
     public void render(int mouseX, int mouseY, float parTicks) {
         ILocation loc = getLocation();
         mc.getTextureManager().bindTexture(TRANSPARENCY);
-        Gui.drawModalRectWithCustomSizedTexture(0, 0, 0, 0, loc.getWidth(), loc.getHeight(), 6, 6);
-        Gui.drawRect(0, 0, loc.getWidth(), loc.getHeight(), getValue().getHex());
-        Gui.drawRect(0, 0, loc.getWidth(), 1, 0xffaabbcc);
-        Gui.drawRect(1, 0, 0, loc.getHeight(), 0xffaabbcc);
-        Gui.drawRect(loc.getWidth() - 1, 0, loc.getWidth(), loc.getHeight(), 0xffaabbcc);
-        Gui.drawRect(0, loc.getHeight(), loc.getWidth(), loc.getHeight() - 1, 0xffaabbcc);
+        blit(0, 0, 0, 0, loc.getWidth(), loc.getHeight(), 6, 6);
+        fill(0, 0, loc.getWidth(), loc.getHeight(), getValue().getHex());
+        fill(0, 0, loc.getWidth(), 1, 0xffaabbcc);
+        fill(1, 0, 0, loc.getHeight(), 0xffaabbcc);
+        fill(loc.getWidth() - 1, 0, loc.getWidth(), loc.getHeight(), 0xffaabbcc);
+        fill(0, loc.getHeight(), loc.getWidth(), loc.getHeight() - 1, 0xffaabbcc);
     }
 
     @Override

@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import mnm.mods.tabbychat.util.Dim;
 import net.minecraft.client.gui.IGuiEventListener;
-import net.minecraft.client.gui.IGuiEventListenerDeferred;
+import net.minecraft.client.gui.INestedGuiEventHandler;
 
 import java.util.Arrays;
 import java.util.List;
@@ -17,12 +17,13 @@ import javax.annotation.Nullable;
  *
  * @author Matthew
  */
-public class GuiPanel extends GuiComponent implements IGuiEventListenerDeferred {
+public class GuiPanel extends GuiComponent implements INestedGuiEventHandler {
 
     private List<GuiComponent> components = Lists.newArrayList();
+    @Deprecated
     private GuiComponent overlay;
     private ILayout layout;
-    private GuiComponent focused;
+    private IGuiEventListener focused;
 
     private boolean dragging;
 
@@ -35,10 +36,6 @@ public class GuiPanel extends GuiComponent implements IGuiEventListenerDeferred 
 
     @Override
     public void render(int mouseX, int mouseY, float parTicks) {
-        if (this.getOverlay().isPresent()) {
-            getOverlay().get().render(mouseX, mouseY, parTicks);
-            return;
-        }
         getLayout().ifPresent(layout -> layout.layoutComponents(this));
         this.components.stream()
                 .filter(GuiComponent::isVisible)
@@ -50,18 +47,14 @@ public class GuiPanel extends GuiComponent implements IGuiEventListenerDeferred 
     @Override
     public void drawCaption(int mouseX, int mouseY) {
         super.drawCaption(mouseX, mouseY);
-        if (this.getOverlay().isPresent()) {
-            getOverlay().get().drawCaption(mouseX, mouseY);
-            return;
-        }
-        this.components.stream()
+        this.children().stream()
                 .filter(GuiComponent::isVisible)
                 .forEach(gc -> gc.drawCaption(mouseX, mouseY));
     }
 
     @Override
     public void tick() {
-        getOverlayOrChildren().forEach(GuiComponent::tick);
+        children().forEach(GuiComponent::tick);
     }
 
     /**
@@ -105,7 +98,6 @@ public class GuiPanel extends GuiComponent implements IGuiEventListenerDeferred 
             getLayout().ifPresent(layout -> layout.removeComponent(comp));
         });
         components.clear();
-        setOverlay((GuiComponent) null);
     }
 
     /**
@@ -119,17 +111,18 @@ public class GuiPanel extends GuiComponent implements IGuiEventListenerDeferred 
     }
 
     @Nonnull
-    public List<GuiComponent> getChildren() {
+    public List<GuiComponent> children() {
         return components;
     }
 
     @Nullable
     @Override
-    public GuiComponent getFocused() {
-        return getOverlay().orElse(focused);
+    public IGuiEventListener getFocused() {
+        return focused;
     }
 
-    public void setFocused(GuiComponent focused) {
+
+    public void setFocused(IGuiEventListener focused) {
         this.focused = focused;
     }
 
@@ -158,6 +151,7 @@ public class GuiPanel extends GuiComponent implements IGuiEventListenerDeferred 
      *
      * @param gui The component to overlay
      */
+    @Deprecated
     public void setOverlay(@Nullable GuiComponent gui) {
         if (gui != null) {
             gui.setParent(this);
@@ -168,73 +162,75 @@ public class GuiPanel extends GuiComponent implements IGuiEventListenerDeferred 
         this.overlay = gui;
     }
 
-    public Optional<GuiComponent> getOverlay() {
+    @Deprecated
+    public Optional<IGuiEventListener> getOverlay() {
         return Optional.ofNullable(overlay);
     }
 
-    private List<GuiComponent> getOverlayOrChildren() {
+    @Deprecated
+    private List<IGuiEventListener> getOverlayOrChildren() {
         return getOverlay().map(Arrays::asList).orElse(ImmutableList.copyOf(this.components));
     }
 
-    private final boolean isDragging() {
+    @Override
+    public boolean isDragging() {
         return this.dragging;
     }
 
-    protected final void setDragging(boolean p_195072_1_) {
+    @Override
+    public final void setDragging(boolean p_195072_1_) {
         this.dragging = p_195072_1_;
     }
-    @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        for(GuiComponent comp : this.getChildren()) {
-            boolean flag = comp.mouseClicked(mouseX, mouseY, button);
-            if (flag) {
-                this.focusOn(comp);
-                if (button == 0) {
-                    this.setDragging(true);
-                }
-
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    @Override
-    public boolean mouseDragged(double mx, double my, int mb, double mxd, double myd) {
-        return this.getFocused() != null && this.isDragging() && mb == 0 && this.getFocused().mouseDragged(mx, my, mb, mxd, myd);
-    }
-
-    @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        this.setDragging(false);
-        return IGuiEventListenerDeferred.super.mouseReleased(mouseX, mouseY, button);
-    }
-
-
-    public void focusOn(@Nullable GuiComponent comp) {
-        this.switchFocus(comp, this.getChildren().indexOf(this.getFocused()));
-    }
-
-    private void switchFocus(@Nullable GuiComponent comp, int indx) {
-        IGuiEventListener iguieventlistener = indx == -1 ? null : this.getChildren().get(indx);
-        if (iguieventlistener != comp) {
-            if (iguieventlistener != null) {
-                iguieventlistener.focusChanged(false);
-            }
-
-            if (comp != null) {
-                comp.focusChanged(true);
-            }
-
-            this.setFocused(comp);
-        }
-    }
+//
+//    @Override
+//    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+//        for(GuiComponent comp : this.children()) {
+//            boolean flag = comp.mouseClicked(mouseX, mouseY, button);
+//            if (flag) {
+//                this.focusOn(comp);
+//                if (button == 0) {
+//                    this.setDragging(true);
+//                }
+//
+//                return true;
+//            }
+//        }
+//
+//        return false;
+//    }
+//
+//    @Override
+//    public boolean mouseDragged(double mx, double my, int mb, double mxd, double myd) {
+//        return this.getFocused() != null && this.isDragging() && mb == 0 && this.getFocused().mouseDragged(mx, my, mb, mxd, myd);
+//    }
+//
+//    @Override
+//    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+//        return INestedGuiEventHandler.super.mouseReleased(mouseX, mouseY, button);
+//    }
+//
+//    public void focusOn(@Nullable GuiComponent comp) {
+//        this.switchFocus(comp, this.children().indexOf(this.getFocused()));
+//    }
+//
+//    private void switchFocus(@Nullable GuiComponent comp, int indx) {
+//        IGuiEventListener iguieventlistener = indx == -1 ? null : this.children().get(indx);
+//        if (iguieventlistener != comp) {
+//            if (iguieventlistener != null) {
+//                iguieventlistener.changeFocus(false);
+//            }
+//
+//            if (comp != null) {
+//                comp.changeFocus(true);
+//            }
+//
+//            this.setFocused(comp);
+//        }
+//    }
 
     @Override
     public void onClosed() {
-        this.components.forEach(GuiComponent::onClosed);
-        this.getOverlay().ifPresent(GuiComponent::onClosed);
+        this.children().forEach(GuiComponent::onClosed);
     }
 
     @Nonnull

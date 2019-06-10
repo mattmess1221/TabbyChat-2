@@ -15,6 +15,6 @@ public class ChatPanel extends GuiPanel {
 
     @Override
     public boolean isVisible() {
-        return super.isVisible() && mc.ingameGUI.getChatGUI().getChatOpen();
+        return super.isVisible() && mc.field_71456_v/*ingameGUI*/.getChatGUI().getChatOpen();
     }
 }

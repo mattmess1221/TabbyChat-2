@@ -35,8 +35,8 @@ public class FilterAddon {
         Minecraft mc = Minecraft.getInstance();
         setVariable("player", () -> Pattern.quote(mc.getSession().getUsername()));
         setVariable("onlineplayer", () -> Joiner.on('|')
-                .appendTo(new StringBuilder("(?:"), mc.world.playerEntities.stream()
-                        .map(player -> Pattern.quote(player.getName().getString()))
+                .appendTo(new StringBuilder("(?:"), mc.getConnection().getPlayerInfoMap().stream()
+                        .map(player -> Pattern.quote(player.getGameProfile().getName()))
                         .iterator())
                 .append(')').toString()
         );

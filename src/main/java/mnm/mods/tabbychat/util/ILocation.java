@@ -32,8 +32,8 @@ public interface ILocation {
         return Location.copyOf(this);
     }
 
-    default Vec getPoint() {
-        return new Vec(getXPos(), getYPos());
+    default Vec2i getPoint() {
+        return new Vec2i(getXPos(), getYPos());
     }
 
     default Dim getSize() {

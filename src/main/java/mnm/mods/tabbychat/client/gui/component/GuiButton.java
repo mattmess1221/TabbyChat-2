@@ -1,23 +1,23 @@
 package mnm.mods.tabbychat.client.gui.component;
 
+import com.mojang.blaze3d.platform.GLX;
+import com.mojang.blaze3d.platform.GlStateManager;
 import mnm.mods.tabbychat.util.Dim;
 import mnm.mods.tabbychat.util.ILocation;
 import mnm.mods.tabbychat.util.TexturedModal;
 import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.SoundEvents;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * A {@link net.minecraft.client.gui.GuiButton} for the GuiComponent system.
+ * A {@link net.minecraft.client.gui.widget.button.Button} for the GuiComponent system.
  */
 public class GuiButton extends GuiComponent {
 
@@ -37,15 +37,6 @@ public class GuiButton extends GuiComponent {
     public GuiButton(String text) {
         this.setText(text);
         setSound(SoundEvents.UI_BUTTON_CLICK);
-    }
-
-    protected void onClick(double mouseX, double mouseY) {
-    }
-
-    protected void onRelease(double mouseX, double mouseY) {
-    }
-
-    protected void onDrag(double mouseX, double mouseY, double mouseDX, double mouseDY) {
     }
 
     @Override
@@ -131,7 +122,7 @@ public class GuiButton extends GuiComponent {
 
         TexturedModal modal = this.getHoverState(hovered);
         GlStateManager.enableBlend();
-        OpenGlHelper.glBlendFuncSeparate(770, 771, 1, 0);
+        GLX.glBlendFuncSeparate(770, 771, 1, 0);
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
         this.drawModalCorners(modal);

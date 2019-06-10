@@ -2,10 +2,10 @@ package mnm.mods.tabbychat.util.text;
 
 import mnm.mods.tabbychat.util.Color;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.ScoreTextComponent;
+import net.minecraft.util.text.SelectorTextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextComponentScore;
-import net.minecraft.util.text.TextComponentSelector;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.event.ClickEvent;
 import net.minecraft.util.text.event.HoverEvent;
@@ -91,17 +91,17 @@ public abstract class AbstractChatBuilder implements ITextBuilder {
 
     @Override
     public ITextBuilder score(String player, String objective) {
-        return append(new TextComponentScore(player, objective));
+        return append(new ScoreTextComponent(player, objective));
     }
 
     @Override
     public ITextBuilder text(String text) {
-        return append(new TextComponentString(text));
+        return append(new StringTextComponent(text));
     }
 
     @Override
     public ITextBuilder selector(Selector selector) {
-        return append(new TextComponentSelector(selector.toString()));
+        return append(new SelectorTextComponent(selector.toString()));
     }
 
     @Override

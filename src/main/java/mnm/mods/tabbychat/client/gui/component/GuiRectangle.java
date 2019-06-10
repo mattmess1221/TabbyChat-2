@@ -1,9 +1,8 @@
 package mnm.mods.tabbychat.client.gui.component;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.util.ILocation;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 
 /**
@@ -21,8 +20,8 @@ public class GuiRectangle extends GuiComponent {
         GlStateManager.enableBlend();
         mc.getTextureManager().bindTexture(TRANSPARENCY);
         ILocation loc = getLocation();
-        Gui.drawModalRectWithCustomSizedTexture(loc.getXPos(), loc.getYPos(), 0, 0, loc.getWidth(), loc.getHeight(), 5, 5);
-        Gui.drawRect(loc.getXPos(), loc.getYPos(), loc.getXWidth(), loc.getYHeight(), getPrimaryColorProperty().getHex());
+        blit(loc.getXPos(), loc.getYPos(), 0, 0, loc.getWidth(), loc.getHeight(), 5, 5);
+        fill(loc.getXPos(), loc.getYPos(), loc.getXWidth(), loc.getYHeight(), getPrimaryColorProperty().getHex());
         GlStateManager.disableBlend();
     }
 }

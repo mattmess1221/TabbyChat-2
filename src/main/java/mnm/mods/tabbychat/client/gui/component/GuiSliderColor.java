@@ -2,7 +2,6 @@ package mnm.mods.tabbychat.client.gui.component;
 
 import mnm.mods.tabbychat.util.Color;
 import mnm.mods.tabbychat.util.ILocation;
-import net.minecraft.client.gui.Gui;
 
 /**
  * The color variant of {@link GuiSlider}.
@@ -27,14 +26,14 @@ public class GuiSliderColor extends GuiSlider {
                 int color = (int) ((double) i / (double) loc.getHeight() * 255D);
                 color = Math.abs(color - 256);
                 color = getColor(color);
-                Gui.drawRect(loc.getXPos(), loc.getYPos() + i, loc.getXWidth(), loc.getYPos() + i + 1, color);
+                fill(loc.getXPos(), loc.getYPos() + i, loc.getXWidth(), loc.getYPos() + i + 1, color);
             }
         } else {
             for (int i = 0; i < loc.getWidth(); i++) {
                 int color = (int) ((double) i / (double) loc.getWidth() * 255D);
                 // color = Math.abs(color - 256);
                 color = getColor(color);
-                Gui.drawRect(loc.getXPos() + i, loc.getYPos(), loc.getXPos() + i + 1, loc.getYHeight(), color);
+                fill(loc.getXPos() + i, loc.getYPos(), loc.getXPos() + i + 1, loc.getYHeight(), color);
             }
         }
     }

@@ -1,6 +1,5 @@
 package mnm.mods.tabbychat.client.extra.filters;
 
-import com.mojang.authlib.GameProfile;
 import mnm.mods.tabbychat.client.ChatManager;
 import mnm.mods.tabbychat.client.TabbyChatClient;
 import mnm.mods.tabbychat.api.Channel;

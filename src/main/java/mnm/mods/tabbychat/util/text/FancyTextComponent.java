@@ -2,12 +2,12 @@ package mnm.mods.tabbychat.util.text;
 
 import com.google.common.collect.Streams;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentBase;
+import net.minecraft.util.text.TextComponent;
 
 import java.util.Iterator;
 import java.util.stream.Stream;
 
-public class FancyTextComponent extends TextComponentBase {
+public class FancyTextComponent extends TextComponent {
 
     private final ITextComponent text;
     private FancyTextStyle style;
