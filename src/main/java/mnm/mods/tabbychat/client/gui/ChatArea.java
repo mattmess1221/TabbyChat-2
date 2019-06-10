@@ -38,7 +38,7 @@ public class ChatArea extends GuiComponent {
     @Override
     public boolean mouseScrolled(double x, double y, double scroll) {
         // One tick = 120
-        if (scroll != 0) {
+        if (getLocation().contains(x, y) && scroll != 0) {
             if (scroll > 1) {
                 scroll = 1;
             }
