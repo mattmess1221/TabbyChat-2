@@ -20,6 +20,7 @@ import mnm.mods.tabbychat.client.gui.component.BorderLayout;
 import mnm.mods.tabbychat.client.gui.component.GuiPanel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.Rectangle2d;
@@ -64,8 +65,6 @@ public class ChatBox extends GuiPanel {
         this.addComponent(chatArea = new ChatArea(), BorderLayout.Position.CENTER);
         this.addComponent(txtChatInput = new TextBox(), BorderLayout.Position.SOUTH);
         this.addComponent(new Scrollbar(chatArea), BorderLayout.Position.EAST);
-
-        setFocused(txtChatInput);
 
         super.setLocation(settings.advanced.getChatboxLocation());
 
@@ -393,6 +392,12 @@ public class ChatBox extends GuiPanel {
     public void onClosed() {
         super.onClosed();
         tick();
+    }
+
+    @Nullable
+    @Override
+    public IGuiEventListener getFocused() {
+        return txtChatInput;
     }
 
     public ChatArea getChatArea() {
