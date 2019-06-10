@@ -42,6 +42,7 @@ minecraft {
                     source sourceSets.main
                 }
             }
+            ideaModule = 'TabbyChat-2.main'
         }
     }
 }

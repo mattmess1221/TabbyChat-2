@@ -91,7 +91,7 @@ public class TextBox extends GuiComponent implements IDeferredGuiEventListener {
         // The position of the cursor
         int pos = textField.getCursorPosition();
         // the position of the selection
-        int sel = textField.getSelectedText().length();
+        int sel = pos + textField.getSelectedText().length();
 
         // make the position and selection in order
         int start = Math.min(pos, sel);
@@ -290,7 +290,7 @@ public class TextBox extends GuiComponent implements IDeferredGuiEventListener {
     @Override
     public boolean charTyped(char key, int mods) {
         try {
-            return super.charTyped(key, mods);
+            return IDeferredGuiEventListener.super.charTyped(key, mods);
         } finally {
             spellcheck.checkSpelling(getText());
         }
