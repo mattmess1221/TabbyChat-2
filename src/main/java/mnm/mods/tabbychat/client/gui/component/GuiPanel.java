@@ -181,52 +181,21 @@ public class GuiPanel extends GuiComponent implements INestedGuiEventHandler {
     public final void setDragging(boolean p_195072_1_) {
         this.dragging = p_195072_1_;
     }
-//
-//    @Override
-//    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-//        for(GuiComponent comp : this.children()) {
-//            boolean flag = comp.mouseClicked(mouseX, mouseY, button);
-//            if (flag) {
-//                this.focusOn(comp);
-//                if (button == 0) {
-//                    this.setDragging(true);
-//                }
-//
-//                return true;
-//            }
-//        }
-//
-//        return false;
-//    }
-//
-//    @Override
-//    public boolean mouseDragged(double mx, double my, int mb, double mxd, double myd) {
-//        return this.getFocused() != null && this.isDragging() && mb == 0 && this.getFocused().mouseDragged(mx, my, mb, mxd, myd);
-//    }
-//
-//    @Override
-//    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-//        return INestedGuiEventHandler.super.mouseReleased(mouseX, mouseY, button);
-//    }
-//
-//    public void focusOn(@Nullable GuiComponent comp) {
-//        this.switchFocus(comp, this.children().indexOf(this.getFocused()));
-//    }
-//
-//    private void switchFocus(@Nullable GuiComponent comp, int indx) {
-//        IGuiEventListener iguieventlistener = indx == -1 ? null : this.children().get(indx);
-//        if (iguieventlistener != comp) {
-//            if (iguieventlistener != null) {
-//                iguieventlistener.changeFocus(false);
-//            }
-//
-//            if (comp != null) {
-//                comp.changeFocus(true);
-//            }
-//
-//            this.setFocused(comp);
-//        }
-//    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        return INestedGuiEventHandler.super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean mouseReleased(double x, double y, int b) {
+        return INestedGuiEventHandler.super.mouseReleased(x, y, b);
+    }
+
+    @Override
+    public boolean mouseDragged(double x, double y, int b, double dx, double dy) {
+        return INestedGuiEventHandler.super.mouseDragged(x, y, b, dx, dy);
+    }
 
     @Override
     public void onClosed() {
