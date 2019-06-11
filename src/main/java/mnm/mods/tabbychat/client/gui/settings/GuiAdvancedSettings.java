@@ -6,7 +6,7 @@ import mnm.mods.tabbychat.client.TabbyChatClient;
 import mnm.mods.tabbychat.client.settings.TabbySettings;
 import mnm.mods.tabbychat.util.LocalVisibility;
 import mnm.mods.tabbychat.util.Color;
-import mnm.mods.tabbychat.client.gui.component.GuiGridLayout;
+import mnm.mods.tabbychat.client.gui.component.layout.GuiGridLayout;
 import mnm.mods.tabbychat.client.gui.component.GuiLabel;
 import mnm.mods.tabbychat.client.gui.component.config.GuiSettingBoolean;
 import mnm.mods.tabbychat.client.gui.component.config.GuiSettingEnum;

@@ -35,7 +35,7 @@ public abstract class GuiComponent extends Widget {
     private Color primaryColor;
     private GuiPanel parent;
     private ILocation location = new Location();
-    private Dim minimumSize = new Dim();
+    private Dim minimumSize = new Dim(0, 0);
     private ITextComponent caption;
 
     public GuiComponent() {

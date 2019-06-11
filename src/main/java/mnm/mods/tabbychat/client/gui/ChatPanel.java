@@ -1,7 +1,7 @@
 package mnm.mods.tabbychat.client.gui;
 
 import mnm.mods.tabbychat.client.gui.component.GuiPanel;
-import mnm.mods.tabbychat.client.gui.component.ILayout;
+import mnm.mods.tabbychat.client.gui.component.layout.ILayout;
 
 public class ChatPanel extends GuiPanel {
 

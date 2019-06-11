@@ -1,5 +1,6 @@
 package mnm.mods.tabbychat.client.gui.component;
 
+import mnm.mods.tabbychat.client.gui.component.layout.GuiGridLayout;
 import mnm.mods.tabbychat.util.Color;
 import mnm.mods.tabbychat.util.config.Value;
 import mnm.mods.tabbychat.client.gui.component.config.GuiSettingString;

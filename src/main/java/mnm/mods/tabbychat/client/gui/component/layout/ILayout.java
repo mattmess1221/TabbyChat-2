@@ -1,5 +1,7 @@
-package mnm.mods.tabbychat.client.gui.component;
+package mnm.mods.tabbychat.client.gui.component.layout;
 
+import mnm.mods.tabbychat.client.gui.component.GuiComponent;
+import mnm.mods.tabbychat.client.gui.component.GuiPanel;
 import mnm.mods.tabbychat.util.Dim;
 
 /**

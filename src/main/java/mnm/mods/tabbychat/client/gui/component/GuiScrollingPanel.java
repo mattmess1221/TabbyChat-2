@@ -2,10 +2,11 @@ package mnm.mods.tabbychat.client.gui.component;
 
 import static org.lwjgl.opengl.GL11.*;
 
+import mnm.mods.tabbychat.client.gui.component.layout.BorderLayout;
 import mnm.mods.tabbychat.util.Dim;
 import mnm.mods.tabbychat.util.ILocation;
 import mnm.mods.tabbychat.util.Location;
-import mnm.mods.tabbychat.client.gui.component.BorderLayout.Position;
+import mnm.mods.tabbychat.client.gui.component.layout.BorderLayout.Position;
 
 import javax.annotation.Nonnull;
 

@@ -16,7 +16,7 @@ import mnm.mods.tabbychat.client.util.ScaledDimension;
 import mnm.mods.tabbychat.util.ILocation;
 import mnm.mods.tabbychat.util.Location;
 import mnm.mods.tabbychat.util.Vec2i;
-import mnm.mods.tabbychat.client.gui.component.BorderLayout;
+import mnm.mods.tabbychat.client.gui.component.layout.BorderLayout;
 import mnm.mods.tabbychat.client.gui.component.GuiPanel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;

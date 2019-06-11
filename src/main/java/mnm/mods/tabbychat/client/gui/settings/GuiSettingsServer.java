@@ -11,7 +11,7 @@ import mnm.mods.tabbychat.util.ChannelPatterns;
 import mnm.mods.tabbychat.util.MessagePatterns;
 import mnm.mods.tabbychat.util.Color;
 import mnm.mods.tabbychat.client.gui.component.GuiButton;
-import mnm.mods.tabbychat.client.gui.component.GuiGridLayout;
+import mnm.mods.tabbychat.client.gui.component.layout.GuiGridLayout;
 import mnm.mods.tabbychat.client.gui.component.GuiLabel;
 import mnm.mods.tabbychat.client.gui.component.config.GuiSettingBoolean;
 import mnm.mods.tabbychat.client.gui.component.config.GuiSettingEnum;

@@ -9,7 +9,7 @@ import mnm.mods.tabbychat.util.Color;
 import mnm.mods.tabbychat.client.gui.component.GuiButton;
 import mnm.mods.tabbychat.client.gui.component.GuiCheckbox;
 import mnm.mods.tabbychat.client.gui.component.GuiComponent;
-import mnm.mods.tabbychat.client.gui.component.GuiGridLayout;
+import mnm.mods.tabbychat.client.gui.component.layout.GuiGridLayout;
 import mnm.mods.tabbychat.client.gui.component.GuiLabel;
 import mnm.mods.tabbychat.client.gui.component.GuiPanel;
 import mnm.mods.tabbychat.client.gui.component.GuiText;

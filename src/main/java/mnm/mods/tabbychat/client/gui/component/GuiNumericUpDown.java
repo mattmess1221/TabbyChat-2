@@ -1,5 +1,7 @@
 package mnm.mods.tabbychat.client.gui.component;
 
+import mnm.mods.tabbychat.client.gui.component.layout.AbsoluteLayout;
+import mnm.mods.tabbychat.client.gui.component.layout.BorderLayout;
 import mnm.mods.tabbychat.util.Color;
 import mnm.mods.tabbychat.util.ILocation;
 import mnm.mods.tabbychat.util.Location;

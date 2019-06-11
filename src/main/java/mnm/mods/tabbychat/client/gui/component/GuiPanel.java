@@ -2,6 +2,7 @@ package mnm.mods.tabbychat.client.gui.component;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import mnm.mods.tabbychat.client.gui.component.layout.ILayout;
 import mnm.mods.tabbychat.util.Dim;
 import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.INestedGuiEventHandler;

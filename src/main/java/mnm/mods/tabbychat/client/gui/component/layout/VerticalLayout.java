@@ -1,9 +1,11 @@
-package mnm.mods.tabbychat.client.gui.component;
+package mnm.mods.tabbychat.client.gui.component.layout;
 
 import java.util.List;
 
 import com.google.common.collect.Lists;
 
+import mnm.mods.tabbychat.client.gui.component.GuiComponent;
+import mnm.mods.tabbychat.client.gui.component.GuiPanel;
 import mnm.mods.tabbychat.util.Dim;
 import mnm.mods.tabbychat.util.ILocation;
 import mnm.mods.tabbychat.util.Location;

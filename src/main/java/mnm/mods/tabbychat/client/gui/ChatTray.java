@@ -12,11 +12,11 @@ import mnm.mods.tabbychat.util.Dim;
 import mnm.mods.tabbychat.util.ILocation;
 import mnm.mods.tabbychat.util.TexturedModal;
 import mnm.mods.tabbychat.util.config.Value;
-import mnm.mods.tabbychat.client.gui.component.BorderLayout;
-import mnm.mods.tabbychat.client.gui.component.FlowLayout;
+import mnm.mods.tabbychat.client.gui.component.layout.BorderLayout;
+import mnm.mods.tabbychat.client.gui.component.layout.FlowLayout;
 import mnm.mods.tabbychat.client.gui.component.GuiComponent;
 import mnm.mods.tabbychat.client.gui.component.GuiPanel;
-import mnm.mods.tabbychat.client.gui.component.ILayout;
+import mnm.mods.tabbychat.client.gui.component.layout.ILayout;
 
 import java.util.Map;
 import javax.annotation.Nonnull;
