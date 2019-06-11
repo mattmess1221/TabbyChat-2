@@ -66,15 +66,15 @@ public class GuiSettingsScreen extends ComponentScreen {
     public void init() {
 
 
-        getPanel().addComponent(panel = new GuiPanel(new BorderLayout()));
+        getPanel().add(panel = new GuiPanel(new BorderLayout()));
 
         int x = this.width / 2 - 300 / 2;
         int y = this.height / 2 - 200 / 2;
         panel.setLocation(new Location(x, y, 300, 200));
 
         GuiPanel panel = new GuiPanel(new BorderLayout());
-        this.panel.addComponent(panel, BorderLayout.Position.WEST);
-        panel.addComponent(settingsList = new GuiPanel(new VerticalLayout()), BorderLayout.Position.WEST);
+        this.panel.add(panel, BorderLayout.Position.WEST);
+        panel.add(settingsList = new GuiPanel(new VerticalLayout()), BorderLayout.Position.WEST);
 
         GuiButton close = new GuiButton("Close") {
             @Override
@@ -84,7 +84,7 @@ public class GuiSettingsScreen extends ComponentScreen {
         };
         close.setLocation(new Location(0, 0, 40, 10));
         close.setSecondaryColor(Color.of(0, 255, 0, 127));
-        panel.addComponent(close, BorderLayout.Position.SOUTH);
+        panel.add(close, BorderLayout.Position.SOUTH);
 
         {
             // Populate the settings
@@ -95,7 +95,7 @@ public class GuiSettingsScreen extends ComponentScreen {
                         selectSetting(getSettings());
                     }
                 };
-                settingsList.addComponent(button);
+                settingsList.add(button);
                 sett.initGUI();
             }
         }
@@ -119,7 +119,7 @@ public class GuiSettingsScreen extends ComponentScreen {
 
     @Override
     public void init(Minecraft mc, int width, int height) {
-        this.panels.forEach(GuiPanel::clearComponents);
+        this.panels.forEach(GuiPanel::clear);
         super.init(mc, width, height);
     }
 
@@ -152,10 +152,10 @@ public class GuiSettingsScreen extends ComponentScreen {
     private void selectSetting(SettingPanel<?> setting) {
 //        setting.clearComponents();
         deactivateAll();
-        panel.removeComponent(selectedSetting);
+        panel.remove(selectedSetting);
         selectedSetting = setting;
         activate(setting.getClass());
-        this.panel.addComponent(this.selectedSetting, BorderLayout.Position.CENTER);
+        this.panel.add(this.selectedSetting, BorderLayout.Position.CENTER);
     }
 
     private static <T extends SettingPanel<?>> void registerSetting(Class<T> settings, Supplier<T> constructor) {

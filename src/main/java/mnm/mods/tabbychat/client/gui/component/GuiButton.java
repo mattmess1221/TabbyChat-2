@@ -15,6 +15,7 @@ import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Optional;
 
 /**
  * A {@link net.minecraft.client.gui.widget.button.Button} for the GuiComponent system.
@@ -40,38 +41,7 @@ public class GuiButton extends GuiComponent {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == 0 && this.isPressable(mouseX, mouseY)) {
-            this.playPressSound(mc.getSoundHandler());
-            this.onClick(mouseX, mouseY);
-            return true;
-        }
-        return false;
-    }
-
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (button == 0) {
-            this.onRelease(mouseX, mouseY);
-            return true;
-        }
-        return false;
-
-    }
-
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double mouseXDelta, double mouseYDelta) {
-        if (button == 0) {
-            this.onDrag(mouseX, mouseY, mouseXDelta, mouseYDelta);
-            return true;
-        }
-        return false;
-
-    }
-
-    protected boolean isPressable(double mouseX, double mouseY) {
-        return this.isEnabled() && this.isVisible() && this.getLocation().contains(mouseX, mouseY);
-    }
-
-    public void playPressSound(SoundHandler soundHandlerIn) {
+    public void playDownSound(SoundHandler soundHandlerIn) {
         SoundEvent sound = getSound();
         if (sound != null) {
             soundHandlerIn.play(SimpleSound.master(sound, 1.0F));

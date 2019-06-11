@@ -33,11 +33,11 @@ public class ChatTray extends GuiPanel {
 
     ChatTray() {
         super(new BorderLayout());
-        this.addComponent(tabList, BorderLayout.Position.CENTER);
+        this.add(tabList, BorderLayout.Position.CENTER);
         ChatPanel controls = new ChatPanel(new FlowLayout());
-        controls.addComponent(new ToggleButton());
-        controls.addComponent(handle);
-        this.addComponent(controls, BorderLayout.Position.EAST);
+        controls.add(new ToggleButton());
+        controls.add(handle);
+        this.add(controls, BorderLayout.Position.EAST);
 
     }
 
@@ -64,17 +64,17 @@ public class ChatTray extends GuiPanel {
     public void addChannel(AbstractChannel channel) {
         GuiComponent gc = new ChatTab(channel);
         map.put(channel, gc);
-        tabList.addComponent(gc);
+        tabList.add(gc);
     }
 
     public void removeChannel(final Channel channel) {
         GuiComponent gc = map.get(channel);
-        this.tabList.removeComponent(gc);
+        this.tabList.remove(gc);
         map.remove(channel);
     }
 
-    public void clear() {
-        this.tabList.clearComponents();
+    public void clearMessages() {
+        this.tabList.clear();
 
         addChannel(DefaultChannel.INSTANCE);
         ChatBox.getInstance().setStatus(DefaultChannel.INSTANCE, ChannelStatus.ACTIVE);
@@ -105,7 +105,7 @@ public class ChatTray extends GuiPanel {
             GlStateManager.enableBlend();
             ILocation loc = getLocation();
             int opac = (int) (mc.gameSettings.chatOpacity * 255) << 24;
-            drawBorders(loc.getXPos() + 2, loc.getYPos() + 2, loc.getXWidth() - 2, loc.getYHeight() - 2, 0x999999 | opac);
+            renderBorders(loc.getXPos() + 2, loc.getYPos() + 2, loc.getXWidth() - 2, loc.getYHeight() - 2, 0x999999 | opac);
             if (value.get()) {
                 fill(loc.getXPos() + 3, loc.getYPos() + 3, loc.getXWidth() - 3, loc.getYHeight() - 3, 0xaaaaaa | opac);
             }

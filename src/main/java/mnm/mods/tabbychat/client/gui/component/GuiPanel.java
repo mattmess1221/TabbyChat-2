@@ -1,13 +1,11 @@
 package mnm.mods.tabbychat.client.gui.component;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import mnm.mods.tabbychat.client.gui.component.layout.ILayout;
 import mnm.mods.tabbychat.util.Dim;
 import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.INestedGuiEventHandler;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
@@ -46,11 +44,11 @@ public class GuiPanel extends GuiComponent implements INestedGuiEventHandler {
     }
 
     @Override
-    public void drawCaption(int mouseX, int mouseY) {
-        super.drawCaption(mouseX, mouseY);
+    public void renderCaption(int mouseX, int mouseY) {
+        super.renderCaption(mouseX, mouseY);
         this.children().stream()
                 .filter(GuiComponent::isVisible)
-                .forEach(gc -> gc.drawCaption(mouseX, mouseY));
+                .forEach(gc -> gc.renderCaption(mouseX, mouseY));
     }
 
     @Override
@@ -59,21 +57,12 @@ public class GuiPanel extends GuiComponent implements INestedGuiEventHandler {
     }
 
     /**
-     * Gets the number of components in this panel.
-     *
-     * @return The count
-     */
-    public int getComponentCount() {
-        return this.components.size();
-    }
-
-    /**
      * Adds a component to this panel.
      *
      * @param guiComponent The component
      */
-    public void addComponent(GuiComponent guiComponent) {
-        addComponent(guiComponent, (Object) null);
+    public void add(GuiComponent guiComponent) {
+        add(guiComponent, (Object) null);
     }
 
     /**
@@ -82,7 +71,7 @@ public class GuiPanel extends GuiComponent implements INestedGuiEventHandler {
      * @param guiComponent The component
      * @param constraints  The constraints
      */
-    public void addComponent(GuiComponent guiComponent, Object constraints) {
+    public void add(GuiComponent guiComponent, Object constraints) {
         if (guiComponent != null) {
             guiComponent.setParent(this);
             components.add(guiComponent);
@@ -93,7 +82,7 @@ public class GuiPanel extends GuiComponent implements INestedGuiEventHandler {
     /**
      * Removes all components from this panel.
      */
-    public void clearComponents() {
+    public void clear() {
         components.forEach(comp -> {
             comp.setParent(null);
             getLayout().ifPresent(layout -> layout.removeComponent(comp));
@@ -106,7 +95,7 @@ public class GuiPanel extends GuiComponent implements INestedGuiEventHandler {
      *
      * @param guiComp The component to remove
      */
-    public void removeComponent(GuiComponent guiComp) {
+    public void remove(GuiComponent guiComp) {
         components.remove(guiComp);
         getLayout().ifPresent(layout -> layout.removeComponent(guiComp));
     }
@@ -161,16 +150,6 @@ public class GuiPanel extends GuiComponent implements INestedGuiEventHandler {
                     .setHeight(getLocation().getHeight()));
         }
         this.overlay = gui;
-    }
-
-    @Deprecated
-    public Optional<IGuiEventListener> getOverlay() {
-        return Optional.ofNullable(overlay);
-    }
-
-    @Deprecated
-    private List<IGuiEventListener> getOverlayOrChildren() {
-        return getOverlay().map(Arrays::asList).orElse(ImmutableList.copyOf(this.components));
     }
 
     @Override

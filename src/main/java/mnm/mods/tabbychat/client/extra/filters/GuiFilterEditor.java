@@ -16,13 +16,18 @@ import mnm.mods.tabbychat.client.gui.component.GuiText;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.SoundEvents;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.GameData;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -73,42 +78,42 @@ public class GuiFilterEditor extends GuiPanel {
 
         int pos = 0;
 
-        this.addComponent(new GuiLabel(new TranslationTextComponent(FILTER_TITLE)), new int[]{8, pos, 1, 2});
+        this.add(new GuiLabel(new TranslationTextComponent(FILTER_TITLE)), new int[]{8, pos, 1, 2});
 
         pos += 2;
-        this.addComponent(new GuiLabel(new TranslationTextComponent(FILTER_NAME)), new int[]{1, pos});
-        this.addComponent(txtName = new GuiText(), new int[]{5, pos, 10, 1});
+        this.add(new GuiLabel(new TranslationTextComponent(FILTER_NAME)), new int[]{1, pos});
+        this.add(txtName = new GuiText(), new int[]{5, pos, 10, 1});
         txtName.setValue(filter.getName());
 
         pos += 2;
-        this.addComponent(new GuiLabel(new TranslationTextComponent(FILTER_DESTINATIONS)), new int[]{1, pos});
-        this.addComponent(txtDestinations = new GuiText(), new int[]{8, pos, 10, 1});
+        this.add(new GuiLabel(new TranslationTextComponent(FILTER_DESTINATIONS)), new int[]{1, pos});
+        this.add(txtDestinations = new GuiText(), new int[]{8, pos, 10, 1});
         txtDestinations.setValue(Joiner.on(", ").join(settings.getChannels()));
         txtDestinations.setCaption(new TranslationTextComponent(FILTER_DESTIONATIONS_DESC));
 
         pos += 1;
-        this.addComponent(btnRegexp = new ToggleButton(".*"), new int[]{1, pos, 2, 1});
+        this.add(btnRegexp = new ToggleButton(".*"), new int[]{1, pos, 2, 1});
         btnRegexp.active = filter.getSettings().isRegex();
         btnRegexp.setCaption(new TranslationTextComponent(FILTER_REGEX));
-        this.addComponent(btnIgnoreCase = new ToggleButton("Aa"), new int[]{3, pos, 2, 1});
+        this.add(btnIgnoreCase = new ToggleButton("Aa"), new int[]{3, pos, 2, 1});
         btnIgnoreCase.active = settings.isCaseInsensitive();
         btnIgnoreCase.setCaption(new TranslationTextComponent(FILTER_IGNORE_CASE));
-        this.addComponent(btnRaw = new ToggleButton("&0"), new int[]{5, pos, 2, 1});
+        this.add(btnRaw = new ToggleButton("&0"), new int[]{5, pos, 2, 1});
         btnRaw.active = settings.isRaw();
         btnRaw.setCaption(new TranslationTextComponent(FILTER_RAW_INPUT));
 
         pos += 2;
-        this.addComponent(new GuiLabel(new TranslationTextComponent(FILTER_HIDE)), new int[]{2, pos});
-        this.addComponent(chkRemove = new GuiCheckbox(), new int[]{1, pos});
+        this.add(new GuiLabel(new TranslationTextComponent(FILTER_HIDE)), new int[]{2, pos});
+        this.add(chkRemove = new GuiCheckbox(), new int[]{1, pos});
         chkRemove.setValue(settings.isRemove());
 
         pos += 1;
-        this.addComponent(new GuiLabel(new TranslationTextComponent(FILTER_AUDIO_NOTIFY)), new int[]{2, pos});
-        this.addComponent(chkSound = new GuiCheckbox(), new int[]{1, pos});
+        this.add(new GuiLabel(new TranslationTextComponent(FILTER_AUDIO_NOTIFY)), new int[]{2, pos});
+        this.add(chkSound = new GuiCheckbox(), new int[]{1, pos});
         chkSound.setValue(settings.isSoundNotification());
 
         pos += 1;
-        this.addComponent(txtSound = new GuiText() {
+        this.add(txtSound = new GuiText() {
             private int pos;
 
             @Override
@@ -142,17 +147,16 @@ public class GuiFilterEditor extends GuiPanel {
         }, new int[]{3, pos, 14, 1});
         txtSound.setValue(settings.getSoundName().orElse(""));
 
-        GuiButton play = new GuiButton("\u25b6") {
-            @Override
-            public SoundEvent getSound() {
-                return GameRegistry.findRegistry(SoundEvent.class).getValue(new ResourceLocation(txtSound.getValue()));
-            }
-        };
-        this.addComponent(play, new int[]{18, pos, 2, 1});
+        final GuiButton play = new GuiButton("\u25b6");
+        txtSound.getTextField().func_212954_a(s -> {
+            ResourceLocation res = new ResourceLocation(s);
+            play.setSound(ForgeRegistries.SOUND_EVENTS.getValue(res));
+        });
+        this.add(play, new int[]{18, pos, 2, 1});
 
         pos += 2;
-        this.addComponent(new GuiLabel(new TranslationTextComponent(FILTER_EXPRESSION)), new int[]{1, pos});
-        this.addComponent(txtPattern = new GuiText() {
+        this.add(new GuiLabel(new TranslationTextComponent(FILTER_EXPRESSION)), new int[]{1, pos});
+        this.add(txtPattern = new GuiText() {
             @Override
             public boolean charTyped(char c, int key) {
                 boolean r = super.charTyped(c, key);
@@ -175,7 +179,7 @@ public class GuiFilterEditor extends GuiPanel {
         txtPattern.setValue(pattern == null ? "" : pattern);
 
         pos++;
-        this.addComponent(lblError = new GuiLabel(), new int[]{4, pos});
+        this.add(lblError = new GuiLabel(), new int[]{4, pos});
 
         GuiButton accept = new GuiButton(I18n.format("gui.done")) {
             @Override
@@ -183,7 +187,7 @@ public class GuiFilterEditor extends GuiPanel {
                 accept();
             }
         };
-        this.addComponent(accept, new int[]{5, 14, 4, 1});
+        this.add(accept, new int[]{5, 14, 4, 1});
 
         GuiButton cancel = new GuiButton(I18n.format("gui.cancel")) {
             @Override
@@ -191,7 +195,7 @@ public class GuiFilterEditor extends GuiPanel {
                 cancel();
             }
         };
-        this.addComponent(cancel, new int[]{1, 14, 4, 1});
+        this.add(cancel, new int[]{1, 14, 4, 1});
     }
 
     private void accept() {

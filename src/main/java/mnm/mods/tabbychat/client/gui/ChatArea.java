@@ -27,7 +27,6 @@ public class ChatArea extends GuiComponent {
 
     private static final TexturedModal MODAL = new TexturedModal(ChatBox.GUI_LOCATION, 0, 14, 254, 205);
 
-
     private AbstractChannel channel;
     private int scrollPos = 0;
 

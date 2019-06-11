@@ -24,9 +24,9 @@ public class GuiScrollingPanel extends GuiPanel {
         this.panel = new GuiPanel();
         this.panel.setLocation(new Location(0, 0, 100000, 100000));
         GuiPanel panel = new GuiPanel();
-        panel.addComponent(this.panel);
-        this.addComponent(panel, Position.CENTER);
-        this.addComponent(new Scrollbar(), Position.EAST);
+        panel.add(this.panel);
+        this.add(panel, Position.CENTER);
+        this.add(new Scrollbar(), Position.EAST);
     }
 
     @Override

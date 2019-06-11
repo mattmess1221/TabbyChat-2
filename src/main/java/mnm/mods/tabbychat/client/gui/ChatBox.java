@@ -61,10 +61,10 @@ public class ChatBox extends GuiPanel {
     public ChatBox(TabbySettings settings) {
         super(new BorderLayout());
         instance = this;
-        this.addComponent(pnlTray = new ChatTray(), BorderLayout.Position.NORTH);
-        this.addComponent(chatArea = new ChatArea(), BorderLayout.Position.CENTER);
-        this.addComponent(txtChatInput = new TextBox(), BorderLayout.Position.SOUTH);
-        this.addComponent(new Scrollbar(chatArea), BorderLayout.Position.EAST);
+        this.add(pnlTray = new ChatTray(), BorderLayout.Position.NORTH);
+        this.add(chatArea = new ChatArea(), BorderLayout.Position.CENTER);
+        this.add(txtChatInput = new TextBox(), BorderLayout.Position.SOUTH);
+        this.add(new Scrollbar(chatArea), BorderLayout.Position.EAST);
 
         super.setLocation(settings.advanced.getChatboxLocation());
 
@@ -153,7 +153,7 @@ public class ChatBox extends GuiPanel {
     public void clearMessages() {
         this.channels.removeIf(Predicate.isEqual(DefaultChannel.INSTANCE).negate());
 
-        this.pnlTray.clear();
+        this.pnlTray.clearMessages();
         setStatus(DefaultChannel.INSTANCE, ChannelStatus.ACTIVE);
     }
 

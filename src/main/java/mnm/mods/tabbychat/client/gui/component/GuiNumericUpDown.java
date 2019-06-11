@@ -41,25 +41,25 @@ public abstract class GuiNumericUpDown<T extends Number> extends GuiPanel implem
                 }
             };
             rect.setPrimaryColor(Color.BLACK);
-            text.addComponent(rect);
+            text.add(rect);
             GuiLabel label = new GuiLabel() {
                 @Override
                 public ITextComponent getText() {
                     return new StringTextComponent(format.format(getValue()));
                 }
             };
-            text.addComponent(label, new Location(5, 1, 0, 0));
+            text.add(label, new Location(5, 1, 0, 0));
 
-            addComponent(text, BorderLayout.Position.CENTER);
+            add(text, BorderLayout.Position.CENTER);
         }
         {
             GuiPanel pnlButtons = new GuiPanel(new AbsoluteLayout());
             GuiButton up = new UpDown("\u2191", 1); // up arrow
             GuiButton down = new UpDown("\u2193", -1); // down arrow
-            pnlButtons.addComponent(up, new Location(0, 0, 5, 5));
-            pnlButtons.addComponent(down, new Location(0, 5, 5, 5));
+            pnlButtons.add(up, new Location(0, 0, 5, 5));
+            pnlButtons.add(down, new Location(0, 5, 5, 5));
 
-            addComponent(pnlButtons, BorderLayout.Position.EAST);
+            add(pnlButtons, BorderLayout.Position.EAST);
         }
     }
 

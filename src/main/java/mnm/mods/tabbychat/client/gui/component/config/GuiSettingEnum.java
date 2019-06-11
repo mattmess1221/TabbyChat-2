@@ -87,7 +87,7 @@ public class GuiSettingEnum<T> extends GuiSetting<T> {
         int xPos = loc.getXCenter() - mc.fontRenderer.getStringWidth(string) / 2;
         int yPos = loc.getYCenter() - 4;
         mc.fontRenderer.drawString(string, xPos, yPos, getPrimaryColorProperty().getHex());
-        drawBorders(loc.getXPos(), loc.getYPos(), loc.getXWidth(), loc.getYHeight());
+        renderBorders(loc.getXPos(), loc.getYPos(), loc.getXWidth(), loc.getYHeight());
     }
 
     @Override

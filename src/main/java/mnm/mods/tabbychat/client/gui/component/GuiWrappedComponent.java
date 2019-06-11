@@ -10,7 +10,7 @@ import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class GuiWrappedComponent<T extends GuiComponent> extends GuiComponent implements IDeferredGuiEventListener {
+public class GuiWrappedComponent<T extends GuiComponent> extends GuiComponent implements IGuiEventListenerDelegate {
 
     private final T wrapper;
 
@@ -24,7 +24,7 @@ public class GuiWrappedComponent<T extends GuiComponent> extends GuiComponent im
 
     @Nullable
     @Override
-    public IGuiEventListener deferred() {
+    public IGuiEventListener delegate() {
         return wrapper;
     }
 

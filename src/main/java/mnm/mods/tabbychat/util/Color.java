@@ -67,7 +67,7 @@ public class Color {
 
     /**
      * Gets the html hex color code of this color usable by Minecraft's
-     * {@link net.minecraft.client.gui.Gui}.
+     * {@link net.minecraft.client.gui.AbstractGui}.
      *
      * @return The html hex code.
      */

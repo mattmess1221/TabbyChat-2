@@ -23,7 +23,7 @@ public class ComponentScreen extends Screen {
     @Override
     public void render(int mouseX, int mouseY, float tick) {
         PANEL.render(mouseX, mouseY, tick);
-        PANEL.drawCaption(mouseX, mouseY);
+        PANEL.renderCaption(mouseX, mouseY);
     }
 
     @Override
@@ -40,7 +40,7 @@ public class ComponentScreen extends Screen {
     @Override
     public void init(Minecraft mc, int width, int height) {
         PANEL.setLocation(new Location(0, 0, width, height));
-        PANEL.clearComponents();
+        PANEL.clear();
         super.init(mc, width, height);
     }
 

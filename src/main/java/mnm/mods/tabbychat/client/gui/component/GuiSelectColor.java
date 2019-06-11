@@ -29,9 +29,8 @@ public class GuiSelectColor extends GuiPanel {
 
     private GuiRectangle current = new GuiRectangle() {
         @Override
-        public boolean mouseClicked(double p_mouseClicked_1_, double p_mouseClicked_3_, int p_mouseClicked_5_) {
+        public void onClick(double p_onClick_1_, double p_onClick_3_) {
             setColor(getPrimaryColorProperty());
-            return true;
         }
     };
     private GuiRectangle selected = new GuiRectangle();
@@ -47,35 +46,35 @@ public class GuiSelectColor extends GuiPanel {
         this.selected.setPrimaryColor(color);
         this.setLayout(new GuiGridLayout(20, 20));
 
-        this.addComponent(sliderRed = new GuiSliderColor(color.getRed() / 255D, true, GuiSliderColor.Model.RED, color), new int[] { 1, 1, 2, 10 });
-        this.addComponent(sliderGreen = new GuiSliderColor(color.getGreen() / 255D, true, GuiSliderColor.Model.GREEN, color), new int[] { 4, 1, 2, 10 });
-        this.addComponent(sliderBlue = new GuiSliderColor(color.getBlue() / 255D, true, GuiSliderColor.Model.BLUE, color), new int[] { 7, 1, 2, 10 });
-        this.addComponent(sliderAlpha = new GuiSliderColor(color.getAlpha() / 255D, true, GuiSliderColor.Model.ALPHA, color), new int[] { 10, 1, 2, 10 });
+        this.add(sliderRed = new GuiSliderColor(color.getRed() / 255D, true, GuiSliderColor.Model.RED, color), new int[] { 1, 1, 2, 10 });
+        this.add(sliderGreen = new GuiSliderColor(color.getGreen() / 255D, true, GuiSliderColor.Model.GREEN, color), new int[] { 4, 1, 2, 10 });
+        this.add(sliderBlue = new GuiSliderColor(color.getBlue() / 255D, true, GuiSliderColor.Model.BLUE, color), new int[] { 7, 1, 2, 10 });
+        this.add(sliderAlpha = new GuiSliderColor(color.getAlpha() / 255D, true, GuiSliderColor.Model.ALPHA, color), new int[] { 10, 1, 2, 10 });
 
         GuiLabel label;
 
         label = new GuiLabel();
         label.setText(new TextBuilder().quickTranslate("colors.red").format(TextFormatting.RED).build());
         label.setAngle(300);
-        this.addComponent(label, new int[] { 1, 12 });
+        this.add(label, new int[] { 1, 12 });
 
         label = new GuiLabel();
         label.setText(new TextBuilder().quickTranslate("colors.green").format(TextFormatting.GREEN).build());
         label.setAngle(300);
-        this.addComponent(label, new int[] { 4, 12 });
+        this.add(label, new int[] { 4, 12 });
 
         label = new GuiLabel();
         label.setText(new TextBuilder().quickTranslate("colors.blue").format(TextFormatting.BLUE).build());
         label.setAngle(300);
-        this.addComponent(label, new int[] { 7, 12 });
+        this.add(label, new int[] { 7, 12 });
 
         label = new GuiLabel();
         label.setText(new TextBuilder().quickTranslate("colors.alpha").format(TextFormatting.WHITE).build());
         label.setAngle(300);
-        this.addComponent(label, new int[] { 10, 12 });
+        this.add(label, new int[] { 10, 12 });
 
-        this.addComponent(current, new int[] { 14, 1, 6, 3 });
-        this.addComponent(selected, new int[] { 14, 4, 6, 3 });
+        this.add(current, new int[] { 14, 1, 6, 3 });
+        this.add(selected, new int[] { 14, 4, 6, 3 });
 
         string = new GuiSettingString(new Value<>("")){
             @Override
@@ -92,7 +91,7 @@ public class GuiSelectColor extends GuiPanel {
             }
         };
         string.getComponent().getTextField().setMaxStringLength(8);
-        this.addComponent(string, new int[] { 14, 8, 6, 2 });
+        this.add(string, new int[] { 14, 8, 6, 2 });
 
         GuiButton random = new GuiButton(I18n.format("createWorld.customize.custom.randomize")){
             @Override
@@ -100,7 +99,7 @@ public class GuiSelectColor extends GuiPanel {
                 setColor(Color.random());
             }
         };
-        this.addComponent(random, new int[] { 13, 11, 8, 2 });
+        this.add(random, new int[] { 13, 11, 8, 2 });
 
         GuiButton cancel = new GuiButton(I18n.format("gui.cancel")){
             @Override
@@ -108,14 +107,14 @@ public class GuiSelectColor extends GuiPanel {
                 getParent().ifPresent(parent -> parent.setOverlay(null));
             }
         };
-        this.addComponent(cancel, new int[] { 13, 13, 4, 2 });
+        this.add(cancel, new int[] { 13, 13, 4, 2 });
         GuiButton apply = new GuiButton(I18n.format("gui.done")){
             @Override
             public void onClick(double mouseX, double mouseY) {
                 callback_.accept(GuiSelectColor.this.color);
             }
         };
-        this.addComponent(apply, new int[] { 17, 13, 4, 2 });
+        this.add(apply, new int[] { 17, 13, 4, 2 });
 
         setColor(color);
     }

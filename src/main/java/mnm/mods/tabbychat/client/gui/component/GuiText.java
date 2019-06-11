@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
  *
  * @author Matthew
  */
-public class GuiText extends GuiComponent implements IGuiInput<String>, IDeferredGuiEventListener{
+public class GuiText extends GuiComponent implements IGuiInput<String>, IGuiEventListenerDelegate {
 
     private final TextFieldWidget textField;
     private String hint;
@@ -37,7 +37,7 @@ public class GuiText extends GuiComponent implements IGuiInput<String>, IDeferre
 
     @Nullable
     @Override
-    public IGuiEventListener deferred() {
+    public IGuiEventListener delegate() {
         return this.textField;
     }
 
@@ -66,7 +66,7 @@ public class GuiText extends GuiComponent implements IGuiInput<String>, IDeferre
         super.render(mouseX, mouseY, parTicks);
         if (textField.isFocused() && !StringUtils.isEmpty(getHint())) {
             // draw the hint above.
-            drawCaption(getHint(), 1, -5);
+            renderCaption(getHint(), 1, -5);
         }
     }
 

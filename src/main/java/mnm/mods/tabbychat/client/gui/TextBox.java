@@ -7,7 +7,7 @@ import mnm.mods.tabbychat.client.extra.spell.Spellcheck;
 import mnm.mods.tabbychat.client.extra.spell.SpellingFormatter;
 import mnm.mods.tabbychat.client.gui.component.GuiComponent;
 import mnm.mods.tabbychat.client.gui.component.GuiText;
-import mnm.mods.tabbychat.client.gui.component.IDeferredGuiEventListener;
+import mnm.mods.tabbychat.client.gui.component.IGuiEventListenerDelegate;
 import mnm.mods.tabbychat.util.Color;
 import mnm.mods.tabbychat.util.Dim;
 import mnm.mods.tabbychat.util.ILocation;
@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
 
-public class TextBox extends GuiComponent implements IDeferredGuiEventListener {
+public class TextBox extends GuiComponent implements IGuiEventListenerDelegate {
 
     private static final TexturedModal MODAL = new TexturedModal(ChatBox.GUI_LOCATION, 0, 219, 254, 37);
 
@@ -58,7 +58,7 @@ public class TextBox extends GuiComponent implements IDeferredGuiEventListener {
     }
 
     @Override
-    public IGuiEventListener deferred() {
+    public IGuiEventListener delegate() {
         return textField;
     }
 
@@ -290,7 +290,7 @@ public class TextBox extends GuiComponent implements IDeferredGuiEventListener {
     @Override
     public boolean charTyped(char key, int mods) {
         try {
-            return IDeferredGuiEventListener.super.charTyped(key, mods);
+            return IGuiEventListenerDelegate.super.charTyped(key, mods);
         } finally {
             spellcheck.checkSpelling(getText());
         }

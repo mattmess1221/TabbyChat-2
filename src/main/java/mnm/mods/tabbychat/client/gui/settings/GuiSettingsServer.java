@@ -45,58 +45,58 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> {
         index = getSettings().filters.get().size() - 1;
 
         int pos = 1;
-        this.addComponent(new GuiLabel(new TranslationTextComponent(CHANNELS_ENABLED)), new int[]{2, pos});
+        this.add(new GuiLabel(new TranslationTextComponent(CHANNELS_ENABLED)), new int[]{2, pos});
         GuiSettingBoolean chkChannels = new GuiSettingBoolean(sett.channelsEnabled);
         chkChannels.setCaption(new TranslationTextComponent(CHANNELS_ENABLED_DESC));
-        this.addComponent(chkChannels, new int[]{1, pos});
+        this.add(chkChannels, new int[]{1, pos});
 
         pos += 1;
-        this.addComponent(new GuiLabel(new TranslationTextComponent(PM_ENABLED)), new int[]{2, pos});
+        this.add(new GuiLabel(new TranslationTextComponent(PM_ENABLED)), new int[]{2, pos});
         GuiSettingBoolean chkPM = new GuiSettingBoolean(sett.pmEnabled);
         chkPM.setCaption(new TranslationTextComponent(PM_ENABLED_DESC));
-        this.addComponent(chkPM, new int[]{1, pos});
+        this.add(chkPM, new int[]{1, pos});
 
         pos += 1;
-        addComponent(new GuiLabel(new TranslationTextComponent(USE_DEFAULT)), new int[]{2, pos});
-        addComponent(new GuiSettingBoolean(sett.useDefaultTab), new int[]{1, pos});
+        add(new GuiLabel(new TranslationTextComponent(USE_DEFAULT)), new int[]{2, pos});
+        add(new GuiSettingBoolean(sett.useDefaultTab), new int[]{1, pos});
 
         pos += 2;
-        this.addComponent(new GuiLabel(new TranslationTextComponent(CHANNEL_PATTERN)), new int[]{1, pos});
+        this.add(new GuiLabel(new TranslationTextComponent(CHANNEL_PATTERN)), new int[]{1, pos});
         GuiSettingEnum<ChannelPatterns> enmChanPat = new GuiSettingEnum<>(sett.channelPattern,
                 ChannelPatterns.values());
         enmChanPat.setCaption(new TranslationTextComponent(CHANNEL_PATTERN_DESC));
-        this.addComponent(enmChanPat, new int[]{5, pos, 4, 1});
+        this.add(enmChanPat, new int[]{5, pos, 4, 1});
 
         pos += 2;
-        this.addComponent(new GuiLabel(new TranslationTextComponent(MESSAGE_PATTERN)), new int[]{1, pos});
+        this.add(new GuiLabel(new TranslationTextComponent(MESSAGE_PATTERN)), new int[]{1, pos});
         if (sett.messegePattern.get() == null) {
             sett.messegePattern.set(MessagePatterns.WHISPERS);
         }
         GuiSettingEnum<MessagePatterns> enmMsg = new GuiSettingEnum<>(sett.messegePattern, MessagePatterns.values());
         enmMsg.setCaption(new TranslationTextComponent(MESSAGE_PATTERN_DESC));
-        this.addComponent(enmMsg, new int[]{5, pos, 4, 1});
+        this.add(enmMsg, new int[]{5, pos, 4, 1});
 
         pos += 2;
-        this.addComponent(new GuiLabel(new TranslationTextComponent(IGNORED_CHANNELS)), new int[]{0, pos});
+        this.add(new GuiLabel(new TranslationTextComponent(IGNORED_CHANNELS)), new int[]{0, pos});
         GuiSettingStringList strIgnored = new GuiSettingStringList(sett.ignoredChannels);
         strIgnored.setCaption(new TranslationTextComponent(IGNORED_CHANNELS_DESC));
-        this.addComponent(strIgnored, new int[]{5, pos, 5, 1});
+        this.add(strIgnored, new int[]{5, pos, 5, 1});
 
         pos += 2;
-        this.addComponent(new GuiLabel(new TranslationTextComponent(DEFAULT_CHANNEL_COMMAND)), new int[]{0, pos});
+        this.add(new GuiLabel(new TranslationTextComponent(DEFAULT_CHANNEL_COMMAND)), new int[]{0, pos});
         GuiSettingString strChannels = new GuiSettingString(sett.channelCommand);
         strChannels.setCaption(new TranslationTextComponent(DEFAULT_CHANNEL_COMMAND_DESC));
-        this.addComponent(strChannels, new int[]{5, pos, 5, 1});
+        this.add(strChannels, new int[]{5, pos, 5, 1});
 
         pos += 2;
-        this.addComponent(new GuiLabel(new TranslationTextComponent(DEFAULT_CHANNEL)), new int[]{0, pos});
+        this.add(new GuiLabel(new TranslationTextComponent(DEFAULT_CHANNEL)), new int[]{0, pos});
         GuiSettingString strMessages = new GuiSettingString(sett.defaultChannel);
         strMessages.setCaption(new TranslationTextComponent(DEFAULT_CHANNEL_DESC));
-        this.addComponent(strMessages, new int[]{5, pos, 5, 1});
+        this.add(strMessages, new int[]{5, pos, 5, 1});
 
         // Filters
         pos += 2;
-        this.addComponent(new GuiLabel(new TranslationTextComponent(FILTERS)), new int[]{4, pos, 1, 2});
+        this.add(new GuiLabel(new TranslationTextComponent(FILTERS)), new int[]{4, pos, 1, 2});
 
         pos += 2;
         prev = new GuiButton("<") {
@@ -105,7 +105,7 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> {
                 select(index - 1);
             }
         };
-        this.addComponent(prev, new int[]{0, pos, 1, 2});
+        this.add(prev, new int[]{0, pos, 1, 2});
 
         edit = new GuiButton(I18n.format("selectServer.edit")){
             @Override
@@ -113,7 +113,7 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> {
                 edit(index);
             }
         };
-        this.addComponent(edit, new int[]{1, pos, 2, 2});
+        this.add(edit, new int[]{1, pos, 2, 2});
 
         next = new GuiButton(">") {
             @Override
@@ -121,10 +121,10 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> {
                 select(index + 1);
             }
         };
-        this.addComponent(next, new int[]{3, pos, 1, 2});
+        this.add(next, new int[]{3, pos, 1, 2});
 
-        this.addComponent(lblFilter = new GuiLabel(), new int[]{5, pos + 1});
-        this.addComponent(lblPattern = new GuiLabel(), new int[]{5, pos + 2});
+        this.add(lblFilter = new GuiLabel(), new int[]{5, pos + 1});
+        this.add(lblPattern = new GuiLabel(), new int[]{5, pos + 2});
         GuiButton _new = new GuiButton(I18n.format(FILTERS_NEW)) {
             @Override
             public void onClick(double mouseX, double mouseY) {
@@ -133,14 +133,14 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> {
         };
 
         pos += 2;
-        this.addComponent(_new, new int[]{0, pos, 2, 2});
+        this.add(_new, new int[]{0, pos, 2, 2});
         delete = new GuiButton(I18n.format("selectServer.delete")){
             @Override
             public void onClick(double mouseX, double mouseY) {
                 delete(index);
             }
         };
-        this.addComponent(delete, new int[]{2, pos, 2, 2});
+        this.add(delete, new int[]{2, pos, 2, 2});
         prev.setEnabled(false);
         if (index == -1) {
             delete.setEnabled(false);

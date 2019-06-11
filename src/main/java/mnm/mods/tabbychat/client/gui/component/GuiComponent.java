@@ -52,15 +52,15 @@ public abstract class GuiComponent extends Widget {
     public void render(int mouseX, int mouseY, float parTicks) {
     }
 
-    public void drawCaption(int x, int y) {
+    public void renderCaption(int x, int y) {
         getCaptionText()
                 .map(ITextComponent::getFormattedText)
                 .filter(((Predicate<String>) String::isEmpty).negate())
                 .filter(t -> this.getLocation().contains(x, y))
-                .ifPresent(text -> this.drawCaption(text, x, y));
+                .ifPresent(text -> this.renderCaption(text, x, y));
     }
 
-    protected void drawCaption(String caption, int x, int y) {
+    protected void renderCaption(String caption, int x, int y) {
         caption = StringEscapeUtils.unescapeJava(caption);
         String[] list = caption.split("\n\r?");
 
@@ -84,7 +84,7 @@ public abstract class GuiComponent extends Widget {
         // put it on top
         GlStateManager.pushMatrix();
         fill(x - 2, y - 2, x + w + 2, y + mc.fontRenderer.FONT_HEIGHT * list.length + 1, 0xcc333333);
-        drawBorders(x - 2, y - 2, x + w + 2, y + mc.fontRenderer.FONT_HEIGHT * list.length + 1,
+        renderBorders(x - 2, y - 2, x + w + 2, y + mc.fontRenderer.FONT_HEIGHT * list.length + 1,
                 0xccaaaaaa);
         for (String s : list) {
             mc.fontRenderer.drawStringWithShadow(s, x, y, this.getPrimaryColorProperty().getHex());
@@ -93,7 +93,7 @@ public abstract class GuiComponent extends Widget {
         GlStateManager.popMatrix();
     }
 
-    protected void drawBorders(int x1, int y1, int x2, int y2, int color) {
+    protected void renderBorders(int x1, int y1, int x2, int y2, int color) {
         this.vLine(x1 - 1, y1 - 1, y2 + 1, color); // left
         this.hLine(x1 - 1, x2, y1 - 1, color); // top
         this.vLine(x2, y1 - 1, y2 + 1, color); // right
@@ -109,20 +109,20 @@ public abstract class GuiComponent extends Widget {
      * @param x2 right point
      * @param y2 lower point
      */
-    protected void drawBorders(int x1, int y1, int x2, int y2) {
+    protected void renderBorders(int x1, int y1, int x2, int y2) {
         Color color = getSecondaryColorProperty();
         int r = color.getRed();
         int g = color.getGreen();
         int b = color.getBlue();
         double amt = .75;
-        r += luminance(r, amt);
-        g += luminance(g, amt);
-        b += luminance(b, amt);
+        r += lum(r, amt);
+        g += lum(g, amt);
+        b += lum(b, amt);
         color = Color.of(r, g, b, 0xaa);
-        drawBorders(x1, y1, x2, y2, color.getHex());
+        renderBorders(x1, y1, x2, y2, color.getHex());
     }
 
-    private static int luminance(int o, double amt) {
+    private static int lum(int o, double amt) {
         return (int) ((255 - o) * amt);
     }
 
@@ -161,8 +161,8 @@ public abstract class GuiComponent extends Widget {
     /**
      * Gets the parent of this component. Will return {@code null} until it is
      * added to a panel by being used as the parameter to
-     * {@link GuiPanel#addComponent(GuiComponent)} or
-     * {@link GuiPanel#addComponent(GuiComponent, Object)}.
+     * {@link GuiPanel#add(GuiComponent)} or
+     * {@link GuiPanel#add(GuiComponent, Object)}.
      *
      * @return The parent or null if there is none
      */
@@ -179,28 +179,6 @@ public abstract class GuiComponent extends Widget {
      */
     void setParent(@Nullable GuiPanel guiPanel) {
         this.parent = guiPanel;
-    }
-
-    /**
-     * Gets the top-most parent of this component. May return null if this
-     * component has no parent and is not a {@link GuiPanel}.
-     *
-     * @return The root panel or {@code null}.
-     */
-    private Optional<GuiPanel> getRootPanel() {
-        Optional<GuiPanel> panel = getParent();
-        while (true) {
-            Optional<GuiPanel> parent = panel.flatMap(GuiComponent::getParent);
-            if (!parent.isPresent())
-                break;
-            panel = parent;
-        }
-        if (panel.isPresent())
-            return panel;
-        else if (this instanceof GuiPanel)
-            return Optional.of((GuiPanel) this);
-        else
-            return Optional.empty();
     }
 
     public void setMinimumSize(Dim size) {
@@ -310,13 +288,6 @@ public abstract class GuiComponent extends Widget {
             result = parent.flatMap((GuiComponent p) -> p.getProperty(prop));
         }
         return result;
-    }
-
-    protected static Vec2i scalePoint(Vec2i point, Screen screen) {
-        Minecraft mc = Minecraft.getInstance();
-        int x = point.x * screen.width / mc.mainWindow.getWidth();
-        int y = screen.height - point.y * screen.height / mc.mainWindow.getHeight() - 1;
-        return new Vec2i(x, y);
     }
 
     protected void drawModalCorners(TexturedModal modal) {
