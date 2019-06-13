@@ -58,7 +58,7 @@ public class ChatTab extends GuiButton {
     public void drawComponent(int mouseX, int mouseY) {
         ChannelStatus status = channel.getStatus();
         if (GuiNewChatTC.getInstance().getChatOpen()
-                || (status != null && status.compareTo(ChannelStatus.PINGED) > 0)
+                || (status != null && (status.compareTo(ChannelStatus.PINGED) > 0) && (TabbyChat.getInstance().settings.general.unreadFlashing.get() == true))
                 || TabbyChat.getInstance().settings.advanced.visibility.get() == ChatVisibility.ALWAYS) {
             ILocation loc = getLocation();
             GlStateManager.enableBlend();
