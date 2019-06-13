@@ -1,17 +1,19 @@
 package mnm.mods.tabbychat;
 
 import mnm.mods.tabbychat.client.TabbyChatClient;
-import mnm.mods.tabbychat.net.SSendChannelMessage;
 import mnm.mods.tabbychat.command.TCTellCommand;
+import mnm.mods.tabbychat.net.SNetworkVersion;
+import mnm.mods.tabbychat.net.SSendChannelMessage;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.fml.network.NetworkDirection;
@@ -31,15 +33,10 @@ public class TabbyChat {
 
     public static final Path dataFolder = FMLPaths.CONFIGDIR.get().resolve(MODID);
 
-    private static final String PROTOCL_VERSION = "1.0";
+    public static final String PROTOCOL_VERSION = "1";
 
-    public static final SimpleChannel channel = NetworkRegistry.ChannelBuilder
-            .named(new ResourceLocation(TabbyChat.MODID, "channel"))
-            .networkProtocolVersion(() -> PROTOCL_VERSION)
-            // TODO not required on either side
-            .clientAcceptedVersions(PROTOCL_VERSION::equals)
-            .serverAcceptedVersions(PROTOCL_VERSION::equals)
-            .simpleChannel();
+    private static SimpleChannel channel = initNetwork();
+    private static SimpleChannel versionChannel = initVersionNetwork();
 
     public TabbyChat() {
         MinecraftForge.EVENT_BUS.register(this);
@@ -48,7 +45,6 @@ public class TabbyChat {
 
     @SubscribeEvent
     public void init(FMLCommonSetupEvent event) {
-        initNetwork();
     }
 
     @SubscribeEvent
@@ -61,16 +57,49 @@ public class TabbyChat {
         TCTellCommand.register(event.getCommandDispatcher());
     }
 
-    private void initNetwork() {
-        int id = 0;
+    @SubscribeEvent
+    public void playerJoin(PlayerEvent.PlayerLoggedInEvent event) {
+        ServerPlayerEntity player = (ServerPlayerEntity) event.getPlayer();
+        versionChannel.sendTo(new SNetworkVersion(PROTOCOL_VERSION), player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
+    }
 
+    private static SimpleChannel initNetwork() {
         logger.info(TCMarkers.NETWORK, "Initializing network");
 
-        channel.messageBuilder(SSendChannelMessage.class, id++)
+        // put the version in the name so clients without that version will ignore any packets
+        ResourceLocation id = new ResourceLocation(MODID, "channel-v" + PROTOCOL_VERSION);
+        SimpleChannel channel = newChannel(id, PROTOCOL_VERSION);
+
+        channel.messageBuilder(SSendChannelMessage.class, 0)
                 .encoder(SSendChannelMessage::encode)
                 .decoder(SSendChannelMessage::new)
                 .consumer(SSendChannelMessage::handle)
                 .add();
+
+        return channel;
+    }
+
+    private static SimpleChannel initVersionNetwork() {
+        ResourceLocation id = new ResourceLocation(MODID, "version");
+        SimpleChannel channel = newChannel(id, "1");
+
+        channel.messageBuilder(SNetworkVersion.class, 0)
+                .encoder(SNetworkVersion::encode)
+                .decoder(SNetworkVersion::new)
+                .consumer(SNetworkVersion::handle)
+                .add();
+
+        return channel;
+    }
+
+    private static SimpleChannel newChannel(ResourceLocation key, String version) {
+        return NetworkRegistry.ChannelBuilder
+                .named(key)
+                .networkProtocolVersion(() -> version)
+                // The network is optional, allow everyone
+                .clientAcceptedVersions(s -> true)
+                .serverAcceptedVersions(s -> true)
+                .simpleChannel();
     }
 
     public static void sendTo(ServerPlayerEntity player, String channel, ITextComponent text) {
