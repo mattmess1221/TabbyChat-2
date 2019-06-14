@@ -157,14 +157,12 @@ public class ChatBox extends GuiPanel {
         setStatus(DefaultChannel.INSTANCE, ChannelStatus.ACTIVE);
     }
 
-
     public AbstractChannel getActiveChannel() {
         return active;
     }
 
     public void setActiveChannel(AbstractChannel channel) {
         TextBox text = this.txtChatInput;
-
 
         if (active.isPrefixHidden()
                 ? text.getText().trim().isEmpty()
@@ -231,6 +229,8 @@ public class ChatBox extends GuiPanel {
 
     @Override
     public void render(int mouseX, int mouseY, float parTicks) {
+        handleDragging(mouseX, mouseY);
+
         super.render(mouseX, mouseY, parTicks);
         if (mc.field_71456_v/*ingameGUI*/.getChatGUI().getChatOpen() && chat != null) {
             FontRenderer fr = Minecraft.getInstance().fontRenderer;
@@ -274,8 +274,7 @@ public class ChatBox extends GuiPanel {
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
-    @Override
-    public boolean mouseDragged(double mx, double my, int mb, double mxd, double myd) {
+    private void handleDragging(double mx, double my) {
         if (drag != null) {
 
             if (!dragMode) {
@@ -291,7 +290,6 @@ public class ChatBox extends GuiPanel {
                         .setYPos(tempbox.getYPos() + (int) my - drag.y));
             }
         }
-        return super.mouseDragged(mx, my, mb, mxd, myd);
     }
 
     @Override
@@ -435,7 +433,7 @@ public class ChatBox extends GuiPanel {
 
         private final Rectangle2d parent;
 
-        public TCRect(Rectangle2d parent) {
+        private TCRect(Rectangle2d parent) {
             super(0, 0, 0, 0);
             this.parent = parent;
         }
