@@ -45,12 +45,15 @@ public class NotificationToast implements IToast {
         toastGui.getMinecraft().fontRenderer.drawString(TextFormatting.UNDERLINE + this.owner, 8.0F, 6.0F, -256);
 
         MainWindow window = toastGui.getMinecraft().mainWindow;
-        int w = window.getWidth();
-        int h = window.getHeight();
-        double s = window.getGuiScaleFactor();
+        double height = window.getScaledHeight();
+        double scale = window.getGuiScaleFactor();
+
+        float[] trans = new float[16];
+        GL11.glGetFloatv(GL11.GL_MODELVIEW_MATRIX, trans);
+        float xpos = trans[12];
 
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
-        GL11.glScissor((int) (w - 160 * s) + 10, (int) (h - 32 * s), (int) (160 * s) - 20, (int) (32 * s));
+        GL11.glScissor((int) ((xpos + 10) * scale), (int) ((height - 32) * scale), (int) (140 * scale), (int) (32 * scale));
 
         toastGui.getMinecraft().fontRenderer.drawString(this.title, x, 16.0F, -1);
 
