@@ -243,7 +243,7 @@ public class ChatBox extends GuiPanel {
             } else if (xPos + chat.commandUsageWidth > loc.getXWidth()) {
                 int i = 0;
 
-                for(String s : chat.commandUsage) {
+                for (String s : chat.commandUsage) {
                     fill(0, chat.height - 14 - 12 * i, chat.commandUsageWidth + 1, chat.height - 2 - 12 * i, 0xff000000);
                     fr.drawStringWithShadow(s, 1, chat.height - 14 + 2 - 12 * i, -1);
                     ++i;
@@ -308,10 +308,7 @@ public class ChatBox extends GuiPanel {
         return this.chatArea.mouseScrolled(p_mouseScrolled_1_, p_mouseScrolled_3_, p_mouseScrolled_5_);
     }
 
-    @Override
-    public void tick() {
-        ILocation bounds = getLocation();
-
+    private ILocation normalizeLocation(ILocation bounds) {
         double scale = mc.gameSettings.chatScale;
 
         // original dims
@@ -329,14 +326,14 @@ public class ChatBox extends GuiPanel {
         final int SCREEN_W = mc.mainWindow.getScaledWidth();
         final int SCREEN_H = mc.mainWindow.getScaledHeight();
 
+        final int HOTBAR = 25;
+
         // limits for sizes
-        // FIXME 500 and 400 max is because of texture limit
         final int MIN_W = 50;
         final int MIN_H = 50;
-        final int MAX_W = Math.min(500, SCREEN_W);
-        final int MAX_H = Math.min(400, SCREEN_H);
+        final int MAX_W = SCREEN_W;
+        final int MAX_H = SCREEN_H - HOTBAR;
 
-        final int HOTBAR = 25;
 
         // calculate width and height first
         // used to calculate max x and y
@@ -367,25 +364,31 @@ public class ChatBox extends GuiPanel {
 
         // reset the location if it changed.
         if (x1 != x || y1 != y || w1 != w || h1 != h) {
-            setLocation(new Location(
+            bounds = new Location(
                     MathHelper.ceil(x1 / scale),
                     MathHelper.ceil(y1 / scale),
                     MathHelper.ceil(w1 / scale),
-                    MathHelper.ceil(h1 / scale)));
+                    MathHelper.ceil(h1 / scale));
         }
-        super.tick();
+
+        return bounds;
     }
 
     @Override
     public void setLocation(ILocation location) {
-        super.setLocation(location);
-        // save bounds
-        TabbySettings sett = TabbyChatClient.getInstance().getSettings();
-        sett.advanced.chatX.set(location.getXPos());
-        sett.advanced.chatY.set(location.getYPos());
-        sett.advanced.chatW.set(location.getWidth());
-        sett.advanced.chatH.set(location.getHeight());
-        sett.save();
+
+        location = normalizeLocation(location);
+
+        if (!getLocation().equals(location)) {
+            super.setLocation(location);
+            // save bounds
+            TabbySettings sett = TabbyChatClient.getInstance().getSettings();
+            sett.advanced.chatX.set(location.getXPos());
+            sett.advanced.chatY.set(location.getYPos());
+            sett.advanced.chatW.set(location.getWidth());
+            sett.advanced.chatH.set(location.getHeight());
+            sett.save();
+        }
     }
 
     @Override
