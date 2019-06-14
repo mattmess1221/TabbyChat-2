@@ -76,7 +76,7 @@
   "tabbychat.settings.advanced.spellcheck": "Enable spellcheck",
   "tabbychat.settings.experimental": "* Experimental and may not work right.",
   "tabbychat.warn.completions": "There are %s completions. Press tab again to display them anyway.",
-  "tabbychat.network.mismatch": "Client protocol (%s) mismatches server (%s). Server events will not be processed.",
+  "tabbychat.network.mismatch": "Network protocol mismatch! Server events will be disabled.",
   "colors.black": "Black",
   "colors.dark_blue": "Dark Blue",
   "colors.dark_green": "Dark Green",

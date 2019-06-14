@@ -1,9 +1,10 @@
 package mnm.mods.tabbychat.net;
 
 import mnm.mods.tabbychat.TabbyChat;
-import mnm.mods.tabbychat.api.Channel;
-import mnm.mods.tabbychat.client.ChatManager;
+import mnm.mods.tabbychat.client.gui.NotificationToast;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -27,11 +28,10 @@ public class SNetworkVersion {
 
     public void handle(Supplier<NetworkEvent.Context> context) {
         context.get().enqueueWork(() -> {
-            ChatManager chat = ChatManager.instance();
-            Channel chan = chat.getChannel("TabbyChat");
 
             if (!version.equals(TabbyChat.PROTOCOL_VERSION)) {
-                chat.addMessage(chan, new TranslationTextComponent("tabbychat.network.mismatch", TabbyChat.PROTOCOL_VERSION, version));
+                ITextComponent title = new TranslationTextComponent("tabbychat.network.mismatch");
+                Minecraft.getInstance().getToastGui().add(new NotificationToast("TabbyChat", title));
             }
         });
         context.get().setPacketHandled(true);
