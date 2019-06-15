@@ -65,7 +65,7 @@ public class ChatTab extends GuiButton {
     public void render(int mouseX, int mouseY, float parTicks) {
         ChannelStatus status = chat.getStatus(channel);
         if (mc.ingameGUI.getChatGUI().getChatOpen()
-                || (status != null && status.compareTo(ChannelStatus.PINGED) > 0)
+                || (status != null && status.compareTo(ChannelStatus.PINGED) > 0 && TabbyChatClient.getInstance().getSettings().general.unreadFlashing.get())
                 || TabbyChatClient.getInstance().getSettings().advanced.visibility.get() == LocalVisibility.ALWAYS) {
             ILocation loc = getLocation();
             GlStateManager.enableBlend();
