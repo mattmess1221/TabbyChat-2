@@ -170,7 +170,7 @@ public class ChatManager implements Chat {
             removeMessages(channel, id);
         }
 
-        int uc = Minecraft.getInstance().field_71456_v/*ingameGUI*/.getTicks();
+        int uc = Minecraft.getInstance().ingameGUI.getTicks();
         ChatMessage msg = new ChatMessage(uc, text, id, true);
         List<ChatMessage> messages = getChannelMessages(channel);
         messages.add(0, msg);

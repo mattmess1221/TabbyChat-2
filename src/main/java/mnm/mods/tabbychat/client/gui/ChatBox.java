@@ -85,8 +85,8 @@ public class ChatBox extends GuiPanel {
 
     public void update(ChatScreen chat) {
         this.chat = chat;
-        if (chat.field_195139_w/*suggestions*/ != null && !(chat.field_195139_w/*suggestions*/.field_198505_b instanceof TCRect)) {
-            chat.field_195139_w/*suggestions*/.field_198505_b = new TCRect(chat.field_195139_w/*suggestions*/.field_198505_b);
+        if (chat.suggestions != null && !(chat.suggestions.field_198505_b instanceof TCRect)) {
+            chat.suggestions.field_198505_b = new TCRect(chat.suggestions.field_198505_b);
         }
     }
 
@@ -232,14 +232,14 @@ public class ChatBox extends GuiPanel {
         handleDragging(mouseX, mouseY);
 
         super.render(mouseX, mouseY, parTicks);
-        if (mc.field_71456_v/*ingameGUI*/.getChatGUI().getChatOpen() && chat != null) {
+        if (mc.ingameGUI.getChatGUI().getChatOpen() && chat != null) {
             FontRenderer fr = Minecraft.getInstance().fontRenderer;
             ILocation loc = getLocation();
             final int height = fr.FONT_HEIGHT + 3;
             final int xPos = chat.commandUsagePosition + loc.getXPos();
             int yPos = loc.getYHeight() - chat.commandUsage.size() * height;
-            if (chat.field_195139_w/*suggestions*/ != null) {
-                chat.field_195139_w/*suggestions*/.render(mouseX, mouseY);
+            if (chat.suggestions != null) {
+                chat.suggestions.render(mouseX, mouseY);
             } else if (xPos + chat.commandUsageWidth > loc.getXWidth()) {
                 int i = 0;
 
@@ -256,7 +256,7 @@ public class ChatBox extends GuiPanel {
                 }
             }
 
-            ITextComponent itextcomponent = this.mc.field_71456_v/*ingameGUI*/.getChatGUI().getTextComponent((double) mouseX, (double) mouseY);
+            ITextComponent itextcomponent = this.mc.ingameGUI.getChatGUI().getTextComponent((double) mouseX, (double) mouseY);
             if (itextcomponent != null && itextcomponent.getStyle().getHoverEvent() != null) {
                 chat.renderComponentHoverEffect(itextcomponent, mouseX, mouseY);
             }

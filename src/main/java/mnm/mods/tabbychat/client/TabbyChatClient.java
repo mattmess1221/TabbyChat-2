@@ -94,7 +94,7 @@ public class TabbyChatClient {
 
         spellcheck = new Spellcheck(TabbyChat.dataFolder);        // Keeps the current language updated whenever it is changed.
         IReloadableResourceManager irrm = (IReloadableResourceManager) mc.getResourceManager();
-        irrm.func_219534_a/*addReloadListener*/(spellcheck);
+        irrm.addReloadListener(spellcheck);
 
         chatManager = ChatManager.instance();
 
@@ -138,7 +138,7 @@ public class TabbyChatClient {
             // check for both main menu and connecting because of launch args
             if (gui instanceof MainMenuScreen || gui instanceof ConnectingScreen) {
                 Minecraft mc = Minecraft.getInstance();
-                hookIntoChat(mc.field_71456_v/*ingameGUI*/, new GuiNewChatTC(mc, instance));
+                hookIntoChat(mc.ingameGUI, new GuiNewChatTC(mc, instance));
                 MinecraftForge.EVENT_BUS.unregister(StartListener.class);
             }
         }

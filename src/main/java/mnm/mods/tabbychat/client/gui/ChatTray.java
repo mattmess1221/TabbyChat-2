@@ -43,7 +43,7 @@ public class ChatTray extends GuiPanel {
 
     @Override
     public void render(int mouseX, int mouseY, float parTicks) {
-        if (mc.field_71456_v/*ingameGUI*/.getChatGUI().getChatOpen()) {
+        if (mc.ingameGUI.getChatGUI().getChatOpen()) {
             GlStateManager.enableBlend();
             GlStateManager.color4f(1, 1, 1, (float) mc.gameSettings.chatOpacity);
             drawModalCorners(MODAL);

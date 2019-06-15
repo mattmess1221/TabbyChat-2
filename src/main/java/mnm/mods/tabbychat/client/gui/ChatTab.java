@@ -64,7 +64,7 @@ public class ChatTab extends GuiButton {
     @Override
     public void render(int mouseX, int mouseY, float parTicks) {
         ChannelStatus status = chat.getStatus(channel);
-        if (mc.field_71456_v/*ingameGUI*/.getChatGUI().getChatOpen()
+        if (mc.ingameGUI.getChatGUI().getChatOpen()
                 || (status != null && status.compareTo(ChannelStatus.PINGED) > 0)
                 || TabbyChatClient.getInstance().getSettings().advanced.visibility.get() == LocalVisibility.ALWAYS) {
             ILocation loc = getLocation();

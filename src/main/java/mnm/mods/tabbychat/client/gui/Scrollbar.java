@@ -13,7 +13,7 @@ public class Scrollbar extends GuiComponent {
 
     @Override
     public void render(int mouseX, int mouseY, float parTicks) {
-        if (mc.field_71456_v/*ingameGUI*/.getChatGUI().getChatOpen()) {
+        if (mc.ingameGUI.getChatGUI().getChatOpen()) {
             int scroll = chat.getScrollPos();
             int max = chat.getLocation().getHeight();
             int lines = max / mc.fontRenderer.FONT_HEIGHT;

@@ -35,7 +35,7 @@ public class GuiChatTC {
                 guichat.defaultInputFieldText = chan.getPrefix() + " ";
             }
             GuiText text = chat.getChatInput().getTextField();
-            guichat.field_146415_a = text.getTextField();
+            guichat.inputField = text.getTextField();
             text.setValue(guichat.defaultInputFieldText);
 
             chat.getChatInput().setTextFormatter(guichat::formatMessage);
@@ -48,7 +48,7 @@ public class GuiChatTC {
 
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
-        if (Minecraft.getInstance().field_71462_r/*currentScreen*/ instanceof ChatScreen && event.phase == TickEvent.Phase.END) {
+        if (Minecraft.getInstance().currentScreen instanceof ChatScreen && event.phase == TickEvent.Phase.END) {
             chat.tick();
         }
     }
@@ -128,7 +128,7 @@ public class GuiChatTC {
 
     private boolean keyPressed(ChatScreen guichat, int key) {
         if (key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER) {
-            Minecraft.getInstance().field_71456_v/*ingameGUI*/.getChatGUI().resetScroll();
+            Minecraft.getInstance().ingameGUI.getChatGUI().resetScroll();
             GuiText text = this.chat.getChatInput().getTextField();
             guichat.sendMessage(text.getValue());
             text.setValue(guichat.defaultInputFieldText);

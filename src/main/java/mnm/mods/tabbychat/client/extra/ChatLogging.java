@@ -68,7 +68,7 @@ public class ChatLogging {
         if (shouldChangeLogFile()) {
             Calendar prev = date;
             date = cal;
-            server = Minecraft.getInstance().player./*connection*/field_71174_a.getNetworkManager().getRemoteAddress();
+            server = Minecraft.getInstance().player.connection.getNetworkManager().getRemoteAddress();
             try {
                 Path old = logFile;
                 String server = getLogFolder();

@@ -7,8 +7,8 @@ public interface IGuiEventListenerDelegate extends IGuiEventListener {
     IGuiEventListener delegate();
 
     @Override
-    default void func_212927_b(double p_212927_1_, double p_212927_3_) {
-        delegate().func_212927_b(p_212927_1_, p_212927_3_);
+    default void mouseMoved(double p_212927_1_, double p_212927_3_) {
+        delegate().mouseMoved(p_212927_1_, p_212927_3_);
     }
 
     @Override

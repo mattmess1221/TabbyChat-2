@@ -325,6 +325,6 @@ public class TextBox extends GuiComponent implements IGuiEventListenerDelegate {
 
     @Override
     public boolean isVisible() {
-        return super.isVisible() && mc.field_71456_v/*ingameGUI*/.getChatGUI().getChatOpen();
+        return super.isVisible() && mc.ingameGUI.getChatGUI().getChatOpen();
     }
 }

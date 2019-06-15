@@ -65,7 +65,7 @@ public class ChatArea extends GuiComponent {
         int height = visible.size() * mc.fontRenderer.FONT_HEIGHT;
         LocalVisibility vis = TabbyChatClient.getInstance().getSettings().advanced.visibility.get();
 
-        if (mc.field_71456_v/*ingameGUI*/.getChatGUI().getChatOpen() || vis == LocalVisibility.ALWAYS) {
+        if (mc.ingameGUI.getChatGUI().getChatOpen() || vis == LocalVisibility.ALWAYS) {
             return super.getLocation();
         } else if (height != 0) {
             int y = super.getLocation().getHeight() - height;
@@ -81,8 +81,8 @@ public class ChatArea extends GuiComponent {
         int height = visible.size() * mc.fontRenderer.FONT_HEIGHT;
         LocalVisibility vis = TabbyChatClient.getInstance().getSettings().advanced.visibility.get();
 
-        return mc.gameSettings.field_74343_n/*chatVisibility*/ != ChatVisibility.HIDDEN
-                && (mc.field_71456_v/*ingameGUI*/.getChatGUI().getChatOpen() || vis == LocalVisibility.ALWAYS || height != 0);
+        return mc.gameSettings.chatVisibility != ChatVisibility.HIDDEN
+                && (mc.ingameGUI.getChatGUI().getChatOpen() || vis == LocalVisibility.ALWAYS || height != 0);
     }
 
     @Override
@@ -135,11 +135,11 @@ public class ChatArea extends GuiComponent {
 
         int pos = getScrollPos();
         float unfoc = TabbyChatClient.getInstance().getSettings().advanced.unfocHeight.get();
-        float div = mc.field_71456_v/*ingameGUI*/.getChatGUI().getChatOpen() ? 1 : unfoc;
+        float div = mc.ingameGUI.getChatGUI().getChatOpen() ? 1 : unfoc;
         while (pos < lines.size() && length < super.getLocation().getHeight() * div - 10) {
             ChatMessage line = lines.get(pos);
 
-            if (mc.field_71456_v/*ingameGUI*/.getChatGUI().getChatOpen()) {
+            if (mc.ingameGUI.getChatGUI().getChatOpen()) {
                 messages.add(line);
             } else if (getLineOpacity(line) > 3) {
                 messages.add(line);
@@ -158,12 +158,12 @@ public class ChatArea extends GuiComponent {
         LocalVisibility vis = TabbyChatClient.getInstance().getSettings().advanced.visibility.get();
         if (vis == LocalVisibility.ALWAYS)
             return 4;
-        if (vis == LocalVisibility.HIDDEN && !mc.field_71456_v/*ingameGUI*/.getChatGUI().getChatOpen())
+        if (vis == LocalVisibility.HIDDEN && !mc.ingameGUI.getChatGUI().getChatOpen())
             return 0;
         int opacity = (int) (mc.gameSettings.chatOpacity * 255);
 
-        double age = mc.field_71456_v/*ingameGUI*/.getTicks() - line.getCounter();
-        if (!mc.field_71456_v/*ingameGUI*/.getChatGUI().getChatOpen()) {
+        double age = mc.ingameGUI.getTicks() - line.getCounter();
+        if (!mc.ingameGUI.getChatGUI().getChatOpen()) {
             double opacPerc = age / TabbyChatClient.getInstance().getSettings().advanced.fadeTime.get();
             opacPerc = 1.0D - opacPerc;
             opacPerc *= 10.0D;
@@ -183,7 +183,7 @@ public class ChatArea extends GuiComponent {
 
     public void setScrollPos(int scroll) {
         List<ChatMessage> list = getChat();
-        scroll = Math.min(scroll, list.size() - mc.field_71456_v/*ingameGUI*/.getChatGUI().getLineCount());
+        scroll = Math.min(scroll, list.size() - mc.ingameGUI.getChatGUI().getLineCount());
         scroll = Math.max(scroll, 0);
 
         this.scrollPos = scroll;
@@ -199,8 +199,8 @@ public class ChatArea extends GuiComponent {
 
     @Nullable
     public ITextComponent getTextComponent(int clickX, int clickY) {
-        if (mc.field_71456_v/*ingameGUI*/.getChatGUI().getChatOpen()) {
-            double scale = mc.field_71456_v/*ingameGUI*/.getChatGUI().getScale();
+        if (mc.ingameGUI.getChatGUI().getChatOpen()) {
+            double scale = mc.ingameGUI.getChatGUI().getScale();
             clickX = MathHelper.floor(clickX / scale);
             clickY = MathHelper.floor(clickY / scale);
 
