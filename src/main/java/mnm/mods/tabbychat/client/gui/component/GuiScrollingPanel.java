@@ -1,12 +1,11 @@
 package mnm.mods.tabbychat.client.gui.component;
 
-import static org.lwjgl.opengl.GL11.*;
-
 import mnm.mods.tabbychat.client.gui.component.layout.BorderLayout;
 import mnm.mods.tabbychat.util.Dim;
 import mnm.mods.tabbychat.util.ILocation;
 import mnm.mods.tabbychat.util.Location;
 import mnm.mods.tabbychat.client.gui.component.layout.BorderLayout.Position;
+import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
 
@@ -31,20 +30,26 @@ public class GuiScrollingPanel extends GuiPanel {
 
     @Override
     public void render(int mouseX, int mouseY, float parTicks) {
-        ILocation rect = getLocation();
 
-        glEnable(GL_SCISSOR_TEST);
-        glScissor(rect.getXPos(), mc.mainWindow.getHeight() - rect.getYPos(), rect.getWidth(), rect.getHeight());
+        ILocation rect = getLocation();
+        this.panel.setLocation(this.panel.getLocation().copy().setXPos(rect.getXPos()));
+
+        double height = mc.mainWindow.getHeight();
+        double scale = mc.mainWindow.getGuiScaleFactor();
+
+        GL11.glEnable(GL11.GL_SCISSOR_TEST);
+        GL11.glScissor((int) ((rect.getXPos()) * scale), (int) (height - rect.getYHeight() * scale),
+                (int) (rect.getWidth() * scale + 1), (int) (rect.getHeight() * scale + 1));
 
         super.render(mouseX, mouseY, parTicks);
 
-        glDisable(GL_SCISSOR_TEST);
+        GL11.glDisable(GL11.GL_SCISSOR_TEST);
     }
 
     @Override
     public boolean mouseScrolled(double x, double y, double scroll) {
         Location rect = panel.getLocation().copy();
-        int scr = (int) (rect.getYPos() + scroll / 12);
+        int scr = (int) (rect.getYPos() + scroll * 8);
         rect.setYPos(scr);
 
         panel.getParent().map(GuiComponent::getLocation).ifPresent(prect -> {
@@ -91,7 +96,7 @@ public class GuiScrollingPanel extends GuiPanel {
             float perc = ((float) scroll / (float) total) * ((float) size / (float) max);
             int pos = (int) (-perc * max);
 
-            fill(loc.getXPos()-1, loc.getYPos() + pos, loc.getXPos(), loc.getYPos() + pos + size - 1, -1);
+            fill(loc.getXPos() - 1, loc.getYPos() + pos, loc.getXPos(), loc.getYPos() + pos + size - 1, -1);
             super.render(mouseX, mouseY, parTicks);
         }
     }

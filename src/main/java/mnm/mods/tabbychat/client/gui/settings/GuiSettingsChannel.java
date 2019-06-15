@@ -44,7 +44,6 @@ public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
         this.setLayout(new BorderLayout());
         this.setDisplayString(I18n.format(CHANNEL_TITLE));
         this.setSecondaryColor(Color.of(0, 15, 100, 65));
-
     }
 
     @Override

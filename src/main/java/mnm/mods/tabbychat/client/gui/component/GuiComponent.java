@@ -49,7 +49,8 @@ public abstract class GuiComponent extends Widget {
      * @param mouseY   The mouse y
      * @param parTicks
      */
-    public void render(int mouseX, int mouseY, float parTicks) {
+    @Override
+    public void renderButton(int mouseX, int mouseY, float parTicks) {
     }
 
     public void renderCaption(int x, int y) {
@@ -137,6 +138,16 @@ public abstract class GuiComponent extends Widget {
      */
     public void onClosed() {
 
+    }
+
+    @Override
+    protected boolean clicked(double x, double y) {
+        return isMouseOver(x, y);
+    }
+
+    @Override
+    public boolean isMouseOver(double x, double y) {
+        return this.isEnabled() && this.isVisible() && getLocation().contains(x, y);
     }
 
     /**

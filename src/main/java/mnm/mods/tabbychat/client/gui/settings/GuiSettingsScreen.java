@@ -3,6 +3,7 @@ package mnm.mods.tabbychat.client.gui.settings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import mnm.mods.tabbychat.TCMarkers;
+import mnm.mods.tabbychat.client.AbstractChannel;
 import mnm.mods.tabbychat.client.ChatManager;
 import mnm.mods.tabbychat.client.DefaultChannel;
 import mnm.mods.tabbychat.TabbyChat;
@@ -46,7 +47,7 @@ public class GuiSettingsScreen extends ComponentScreen {
     public GuiSettingsScreen(@Nullable Channel channel) {
         super(new StringTextComponent("Settings"));
         if (channel != DefaultChannel.INSTANCE) {
-            selectedSetting = new GuiSettingsChannel();
+            selectedSetting = new GuiSettingsChannel((AbstractChannel) channel);
         }
 
         for (Map.Entry<Class<? extends SettingPanel<?>>, Supplier<? extends SettingPanel<?>>> sett : settings.entrySet()) {
@@ -64,7 +65,6 @@ public class GuiSettingsScreen extends ComponentScreen {
 
     @Override
     public void init() {
-
 
         getPanel().add(panel = new GuiPanel(new BorderLayout()));
 
