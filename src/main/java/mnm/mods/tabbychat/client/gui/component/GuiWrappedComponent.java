@@ -114,8 +114,8 @@ public class GuiWrappedComponent<T extends GuiComponent> extends GuiComponent im
     }
 
     @Override
-    public Optional<ITextComponent> getCaptionText() {
-        return wrapper.getCaptionText();
+    public Optional<ITextComponent> getCaption() {
+        return wrapper.getCaption();
     }
 
 }

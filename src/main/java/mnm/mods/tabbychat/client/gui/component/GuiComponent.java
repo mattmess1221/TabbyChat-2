@@ -26,9 +26,6 @@ import java.util.function.Predicate;
  */
 public abstract class GuiComponent extends Widget {
 
-    private boolean enabled = true;
-    private boolean visible = true;
-
     protected Minecraft mc = Minecraft.getInstance();
 
     private Color secondaryColor;
@@ -54,7 +51,7 @@ public abstract class GuiComponent extends Widget {
     }
 
     public void renderCaption(int x, int y) {
-        getCaptionText()
+        getCaption()
                 .map(ITextComponent::getFormattedText)
                 .filter(((Predicate<String>) String::isEmpty).negate())
                 .filter(t -> this.getLocation().contains(x, y))
@@ -231,7 +228,7 @@ public abstract class GuiComponent extends Widget {
      * @return True if enabled, false if disabled.
      */
     public boolean isEnabled() {
-        return enabled;
+        return active;
     }
 
     /**
@@ -241,7 +238,7 @@ public abstract class GuiComponent extends Widget {
      * @param enabled True for enabled, false for disabled
      */
     public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+        this.active = enabled;
     }
 
     /**
@@ -276,15 +273,8 @@ public abstract class GuiComponent extends Widget {
      * component.
      *
      * @return The caption
-     * @deprecated Use {@link #getCaptionText()} instead.
      */
-    @Nullable
-    @Deprecated
-    public String getCaption() {
-        return getCaptionText().map(ITextComponent::getFormattedText).orElse(null);
-    }
-
-    public Optional<ITextComponent> getCaptionText() {
+    public Optional<ITextComponent> getCaption() {
         return Optional.ofNullable(caption);
     }
 
