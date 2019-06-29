@@ -15,9 +15,6 @@ import mnm.mods.tabbychat.util.ChatTextUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.IngameGui;
 import net.minecraft.client.gui.NewChatGui;
-import net.minecraft.client.gui.screen.ConnectingScreen;
-import net.minecraft.client.gui.screen.MainMenuScreen;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.play.ClientPlayNetHandler;
 import net.minecraft.resources.IReloadableResourceManager;
 import net.minecraft.util.text.ITextComponent;
@@ -28,6 +25,7 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.loading.FMLPaths;
 
@@ -133,14 +131,12 @@ public class TabbyChatClient {
     @Mod.EventBusSubscriber(modid = TabbyChat.MODID, value = Dist.CLIENT)
     private static class StartListener {
         @SubscribeEvent
-        public static void onGuiOpen(GuiOpenEvent event) {
-            Screen gui = event.getGui();
-            // check for both main menu and connecting because of launch args
-            if (gui instanceof MainMenuScreen || gui instanceof ConnectingScreen) {
-                Minecraft mc = Minecraft.getInstance();
-                hookIntoChat(mc.ingameGUI, new GuiNewChatTC(mc, instance));
-                MinecraftForge.EVENT_BUS.unregister(StartListener.class);
-            }
+        public static void onGuiOpen(TickEvent.ClientTickEvent event) {
+            // Do the first tick, then unregister self.
+            // essentially an on-thread startup complete listener
+            Minecraft mc = Minecraft.getInstance();
+            hookIntoChat(mc.ingameGUI, new GuiNewChatTC(mc, instance));
+            MinecraftForge.EVENT_BUS.unregister(StartListener.class);
         }
     }
 
