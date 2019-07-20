@@ -3,7 +3,7 @@ import java.util.Date
 
 plugins {
     `java-library`
-    id("net.minecraftforge.gradle") version "3.0.128"
+    id("net.minecraftforge.gradle") version "3.0.130"
     id("com.github.johnrengelman.shadow") version "4.0.4"
 }
 
