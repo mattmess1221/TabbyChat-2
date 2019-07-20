@@ -35,6 +35,11 @@ public class GuiText extends GuiComponent implements IGuiInput<String>, IGuiEven
 
     }
 
+    @Override
+    public boolean mouseClicked(double p_mouseClicked_1_, double p_mouseClicked_3_, int p_mouseClicked_5_) {
+        return IGuiEventListenerDelegate.super.mouseClicked(p_mouseClicked_1_, p_mouseClicked_3_, p_mouseClicked_5_);
+    }
+
     @Nullable
     @Override
     public IGuiEventListener delegate() {

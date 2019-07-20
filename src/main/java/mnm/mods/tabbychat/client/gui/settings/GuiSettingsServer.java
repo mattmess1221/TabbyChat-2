@@ -1,37 +1,24 @@
 package mnm.mods.tabbychat.client.gui.settings;
 
-import static mnm.mods.tabbychat.util.Translation.*;
-
 import mnm.mods.tabbychat.client.TabbyChatClient;
-import mnm.mods.tabbychat.client.extra.filters.GuiFilterEditor;
-import mnm.mods.tabbychat.client.extra.filters.UserFilter;
-import mnm.mods.tabbychat.client.settings.GeneralServerSettings;
-import mnm.mods.tabbychat.client.settings.ServerSettings;
-import mnm.mods.tabbychat.util.ChannelPatterns;
-import mnm.mods.tabbychat.util.MessagePatterns;
-import mnm.mods.tabbychat.util.Color;
-import mnm.mods.tabbychat.client.gui.component.GuiButton;
-import mnm.mods.tabbychat.client.gui.component.layout.GuiGridLayout;
 import mnm.mods.tabbychat.client.gui.component.GuiLabel;
 import mnm.mods.tabbychat.client.gui.component.config.GuiSettingBoolean;
 import mnm.mods.tabbychat.client.gui.component.config.GuiSettingEnum;
 import mnm.mods.tabbychat.client.gui.component.config.GuiSettingString;
 import mnm.mods.tabbychat.client.gui.component.config.GuiSettingStringList;
 import mnm.mods.tabbychat.client.gui.component.config.SettingPanel;
+import mnm.mods.tabbychat.client.gui.component.layout.GuiGridLayout;
+import mnm.mods.tabbychat.client.settings.GeneralServerSettings;
+import mnm.mods.tabbychat.client.settings.ServerSettings;
+import mnm.mods.tabbychat.util.ChannelPatterns;
+import mnm.mods.tabbychat.util.Color;
+import mnm.mods.tabbychat.util.MessagePatterns;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
+import static mnm.mods.tabbychat.util.Translation.*;
+
 public class GuiSettingsServer extends SettingPanel<ServerSettings> {
-
-    private int index = 0;
-
-    private GuiButton prev;
-    private GuiButton edit;
-    private GuiButton next;
-    private GuiButton delete;
-    private GuiLabel lblFilter;
-    private GuiLabel lblPattern;
 
     GuiSettingsServer() {
         this.setLayout(new GuiGridLayout(10, 20));
@@ -42,7 +29,6 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> {
     @Override
     public void initGUI() {
         GeneralServerSettings sett = getSettings().general;
-        index = getSettings().filters.get().size() - 1;
 
         int pos = 1;
         this.add(new GuiLabel(new TranslationTextComponent(CHANNELS_ENABLED)), new int[]{2, pos});
@@ -93,62 +79,6 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> {
         GuiSettingString strMessages = new GuiSettingString(sett.defaultChannel);
         strMessages.setCaption(new TranslationTextComponent(DEFAULT_CHANNEL_DESC));
         this.add(strMessages, new int[]{5, pos, 5, 1});
-
-        // Filters
-        pos += 2;
-        this.add(new GuiLabel(new TranslationTextComponent(FILTERS)), new int[]{4, pos, 1, 2});
-
-        pos += 2;
-        prev = new GuiButton("<") {
-            @Override
-            public void onClick(double mouseX, double mouseY) {
-                select(index - 1);
-            }
-        };
-        this.add(prev, new int[]{0, pos, 1, 2});
-
-        edit = new GuiButton(I18n.format("selectServer.edit")){
-            @Override
-            public void onClick(double mouseX, double mouseY) {
-                edit(index);
-            }
-        };
-        this.add(edit, new int[]{1, pos, 2, 2});
-
-        next = new GuiButton(">") {
-            @Override
-            public void onClick(double mouseX, double mouseY) {
-                select(index + 1);
-            }
-        };
-        this.add(next, new int[]{3, pos, 1, 2});
-
-        this.add(lblFilter = new GuiLabel(), new int[]{5, pos + 1});
-        this.add(lblPattern = new GuiLabel(), new int[]{5, pos + 2});
-        GuiButton _new = new GuiButton(I18n.format(FILTERS_NEW)) {
-            @Override
-            public void onClick(double mouseX, double mouseY) {
-                add();
-            }
-        };
-
-        pos += 2;
-        this.add(_new, new int[]{0, pos, 2, 2});
-        delete = new GuiButton(I18n.format("selectServer.delete")){
-            @Override
-            public void onClick(double mouseX, double mouseY) {
-                delete(index);
-            }
-        };
-        this.add(delete, new int[]{2, pos, 2, 2});
-        prev.setEnabled(false);
-        if (index == -1) {
-            delete.setEnabled(false);
-            edit.setEnabled(false);
-            next.setEnabled(false);
-        }
-
-        update();
     }
 
     @Override
@@ -156,59 +86,4 @@ public class GuiSettingsServer extends SettingPanel<ServerSettings> {
         return TabbyChatClient.getInstance().getServerSettings();
     }
 
-    // Filters
-
-    private void select(int i) {
-        this.index = i;
-        update();
-    }
-
-    private void delete(int i) {
-        // deletes a filter
-        getSettings().filters.remove(i);
-        update();
-    }
-
-    private void add() {
-        // creates a new filter, adds it to the list, and selects it.
-        getSettings().filters.add(new UserFilter());
-        select(getSettings().filters.get().size() - 1);
-        update();
-    }
-
-    private void update() {
-        this.next.setEnabled(true);
-        this.prev.setEnabled(true);
-        this.edit.setEnabled(true);
-        this.delete.setEnabled(true);
-
-        int size = getSettings().filters.get().size();
-
-        if (index >= size - 1) {
-            this.next.setEnabled(false);
-            index = size - 1;
-        }
-        if (index < 1) {
-            this.prev.setEnabled(false);
-            index = 0;
-        }
-        if (size < 1) {
-            this.edit.setEnabled(false);
-            this.delete.setEnabled(false);
-            this.index = 0;
-        } else {
-            UserFilter filter = getSettings().filters.get(index);
-            this.lblFilter.setText(new StringTextComponent(filter.getName()));
-            this.lblPattern.setText(new StringTextComponent(filter.getRawPattern()));
-        }
-    }
-
-    private void edit(int i) {
-        UserFilter filter = getSettings().filters.get(i);
-        setOverlay(new GuiFilterEditor(filter, f -> {
-            this.lblFilter.setText(new StringTextComponent(f.getName()));
-            this.lblPattern.setText(new StringTextComponent(f.getRawPattern()));
-        }));
-
-    }
 }

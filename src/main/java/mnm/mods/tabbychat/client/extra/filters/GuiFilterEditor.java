@@ -1,35 +1,28 @@
 package mnm.mods.tabbychat.client.extra.filters;
 
-import static mnm.mods.tabbychat.util.Translation.*;
-
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import mnm.mods.tabbychat.api.filters.FilterSettings;
-import mnm.mods.tabbychat.util.Color;
 import mnm.mods.tabbychat.client.gui.component.GuiButton;
 import mnm.mods.tabbychat.client.gui.component.GuiCheckbox;
-import mnm.mods.tabbychat.client.gui.component.GuiComponent;
-import mnm.mods.tabbychat.client.gui.component.layout.GuiGridLayout;
 import mnm.mods.tabbychat.client.gui.component.GuiLabel;
 import mnm.mods.tabbychat.client.gui.component.GuiPanel;
 import mnm.mods.tabbychat.client.gui.component.GuiText;
+import mnm.mods.tabbychat.client.gui.component.layout.GuiGridLayout;
+import mnm.mods.tabbychat.util.Color;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.GameData;
 import org.lwjgl.glfw.GLFW;
 
-import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import static mnm.mods.tabbychat.util.Translation.*;
 
 public class GuiFilterEditor extends GuiPanel {
 
@@ -54,7 +47,6 @@ public class GuiFilterEditor extends GuiPanel {
     }
 
     private UserFilter filter;
-    private Consumer<UserFilter> consumer;
 
     private GuiText txtName;
     private GuiCheckbox chkRemove;
@@ -68,19 +60,15 @@ public class GuiFilterEditor extends GuiPanel {
     private ToggleButton btnIgnoreCase;
     private ToggleButton btnRaw;
 
-    public GuiFilterEditor(UserFilter filter, Consumer<UserFilter> consumer) {
+    public GuiFilterEditor(UserFilter filter) {
         this.setLayout(new GuiGridLayout(20, 15));
         this.filter = filter;
-        this.consumer = consumer;
 
         String pattern = filter.getRawPattern();
         FilterSettings settings = filter.getSettings();
 
         int pos = 0;
 
-        this.add(new GuiLabel(new TranslationTextComponent(FILTER_TITLE)), new int[]{8, pos, 1, 2});
-
-        pos += 2;
         this.add(new GuiLabel(new TranslationTextComponent(FILTER_NAME)), new int[]{1, pos});
         this.add(txtName = new GuiText(), new int[]{5, pos, 10, 1});
         txtName.setValue(filter.getName());
@@ -146,10 +134,11 @@ public class GuiFilterEditor extends GuiPanel {
             }
         }, new int[]{3, pos, 14, 1});
         txtSound.setValue(settings.getSoundName().orElse(""));
+        txtSound.getTextField().setValidator(txt -> ResourceLocation.tryCreate(txt) != null);
 
         final GuiButton play = new GuiButton("\u25b6");
         txtSound.getTextField().func_212954_a(s -> {
-            ResourceLocation res = new ResourceLocation(s);
+            ResourceLocation res = ResourceLocation.tryCreate(s);
             play.setSound(ForgeRegistries.SOUND_EVENTS.getValue(res));
         });
         this.add(play, new int[]{18, pos, 2, 1});
@@ -188,14 +177,6 @@ public class GuiFilterEditor extends GuiPanel {
             }
         };
         this.add(accept, new int[]{5, 14, 4, 1});
-
-        GuiButton cancel = new GuiButton(I18n.format("gui.cancel")) {
-            @Override
-            public void onClick(double mouseX, double mouseY) {
-                cancel();
-            }
-        };
-        this.add(cancel, new int[]{1, 14, 4, 1});
     }
 
     private void accept() {
@@ -214,19 +195,6 @@ public class GuiFilterEditor extends GuiPanel {
 
         sett.setSoundNotification(chkSound.getValue());
         sett.setSoundName(txtSound.getValue());
-
-        consumer.accept(filter);
-        cancel();
-    }
-
-    private void cancel() {
-        getParent().ifPresent(p -> p.setOverlay(null));
-    }
-
-    @Nullable
-    @Override
-    public GuiComponent getFocused() {
-        return txtPattern;
     }
 
 }

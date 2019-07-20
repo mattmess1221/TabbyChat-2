@@ -34,6 +34,7 @@ public class GuiSettingsScreen extends ComponentScreen {
         registerSetting(GuiSettingsGeneral.class, GuiSettingsGeneral::new);
         registerSetting(GuiSettingsServer.class, GuiSettingsServer::new);
         registerSetting(GuiSettingsChannel.class, GuiSettingsChannel::new);
+        registerSetting(GuiSettingsFilters.class, GuiSettingsFilters::new);
         registerSetting(GuiAdvancedSettings.class, GuiAdvancedSettings::new);
     }
 
@@ -163,5 +164,4 @@ public class GuiSettingsScreen extends ComponentScreen {
             GuiSettingsScreen.settings.put(settings, constructor);
         }
     }
-
 }

@@ -19,8 +19,6 @@ import javax.annotation.Nullable;
 public class GuiPanel extends GuiComponent implements INestedGuiEventHandler {
 
     private List<GuiComponent> components = Lists.newArrayList();
-    @Deprecated
-    private GuiComponent overlay;
     private ILayout layout;
     private IGuiEventListener focused;
 
@@ -132,24 +130,6 @@ public class GuiPanel extends GuiComponent implements INestedGuiEventHandler {
      */
     public Optional<ILayout> getLayout() {
         return Optional.ofNullable(layout);
-    }
-
-    /**
-     * Sets the overlay for this component. An overlay temporarily replaces the
-     * contents of the panel with itself. The contents are placed back when the
-     * overlay is set to null.
-     *
-     * @param gui The component to overlay
-     */
-    @Deprecated
-    public void setOverlay(@Nullable GuiComponent gui) {
-        if (gui != null) {
-            gui.setParent(this);
-            gui.setLocation(gui.getLocation().copy()
-                    .setWidth(getLocation().getWidth())
-                    .setHeight(getLocation().getHeight()));
-        }
-        this.overlay = gui;
     }
 
     @Override
