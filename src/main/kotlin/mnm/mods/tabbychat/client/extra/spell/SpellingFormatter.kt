@@ -1,69 +1,63 @@
-package mnm.mods.tabbychat.client.extra.spell;
+package mnm.mods.tabbychat.client.extra.spell
 
-import java.util.Iterator;
-import java.util.function.Function;
+import com.swabunga.spell.event.SpellCheckEvent
+import mnm.mods.tabbychat.client.TabbyChatClient
+import mnm.mods.tabbychat.util.Color
+import mnm.mods.tabbychat.util.text.FancyText
+import mnm.mods.tabbychat.util.toComponent
+import net.minecraft.util.text.ITextComponent
+import net.minecraft.util.text.StringTextComponent
 
-import com.swabunga.spell.event.SpellCheckEvent;
+class SpellingFormatter(sp: Spellcheck) {
 
-import mnm.mods.tabbychat.client.TabbyChatClient;
-import mnm.mods.tabbychat.util.Color;
-import mnm.mods.tabbychat.util.text.ITextBuilder;
-import mnm.mods.tabbychat.util.text.TextBuilder;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+    private val spelling: Iterator<SpellCheckEvent> = sp.getErrors().iterator()
 
-public class SpellingFormatter implements Function<String, ITextComponent> {
+    private var event: SpellCheckEvent? = null
+    private var totalLength: Int = 0
 
-    private final Iterator<SpellCheckEvent> spelling;
-
-    private SpellCheckEvent event;
-    private int totalLength;
-
-    public SpellingFormatter(Spellcheck sp) {
-        spelling = sp.getErrors().iterator();
-    }
-
-    @Override
-    public ITextComponent apply(String text) {
+    fun apply(text: String?): ITextComponent? {
         if (text == null)
-            return null;
-        if (text.contains("\u00a7") || !TabbyChatClient.getInstance().getSettings().advanced.spelling.get()) {
-            return new StringTextComponent(text);
+            return null
+        if (text.contains("\u00a7") || !TabbyChatClient.settings.advanced.spelling.value) {
+            return StringTextComponent(text)
         }
 
-        ITextBuilder b = new TextBuilder();
-        int prev = 0;
-        int length = totalLength;
+        val b = StringTextComponent("")
+        var prev = 0
+        val length = totalLength
         // save where we are at.
-        totalLength += text.length();
+        totalLength += text.length
         while (spelling.hasNext() || event != null) {
             if (event == null)
-                event = spelling.next();
-            int start = event.getWordContextPosition() - length;
-            int end = start + event.getInvalidWord().length();
+                event = spelling.next()
+            var start = event!!.wordContextPosition - length
+            val end = start + event!!.invalidWord.length
 
             if (start < 0) {
                 // error started on previous line
-                start = prev;
+                start = prev
             }
-            if (start > text.length()) {
+            if (start > text.length) {
                 // no more errors on this line
-                break;
+                break
             }
-            b.text(text.substring(prev, start));
+            b.appendText(text.substring(prev, start))
 
-            if (end > text.length()) {
+            if (end > text.length) {
                 // error goes to next line
-                return b.text(text.substring(start)).underline(Color.RED).build();
+                return b.appendSibling(FancyText(text.substring(start).toComponent()).fancyStyle {
+                    underline = Color.RED
+                })
             }
-            b.text(text.substring(start, end)).underline(Color.RED);
+            b.appendSibling(FancyText(text.substring(start, end).toComponent()).fancyStyle {
+                underline = Color.RED
 
-            prev = end;
-            event = null;
+                prev = end
+                event = null
+            })
         }
         // no more errors.
-        totalLength++;
-        return b.text(text.substring(prev)).build();
+        totalLength++
+        return b.appendText(text.substring(prev))
     }
-
 }

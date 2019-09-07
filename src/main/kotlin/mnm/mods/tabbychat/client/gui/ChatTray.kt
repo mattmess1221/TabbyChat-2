@@ -1,134 +1,119 @@
-package mnm.mods.tabbychat.client.gui;
+package mnm.mods.tabbychat.client.gui
 
-import com.google.common.collect.Maps;
-import com.mojang.blaze3d.platform.GlStateManager;
-import mnm.mods.tabbychat.client.AbstractChannel;
-import mnm.mods.tabbychat.client.DefaultChannel;
-import mnm.mods.tabbychat.client.TabbyChatClient;
-import mnm.mods.tabbychat.api.Channel;
-import mnm.mods.tabbychat.api.ChannelStatus;
-import mnm.mods.tabbychat.util.Color;
-import mnm.mods.tabbychat.util.Dim;
-import mnm.mods.tabbychat.util.ILocation;
-import mnm.mods.tabbychat.util.TexturedModal;
-import mnm.mods.tabbychat.util.config.Value;
-import mnm.mods.tabbychat.client.gui.component.layout.BorderLayout;
-import mnm.mods.tabbychat.client.gui.component.layout.FlowLayout;
-import mnm.mods.tabbychat.client.gui.component.GuiComponent;
-import mnm.mods.tabbychat.client.gui.component.GuiPanel;
-import mnm.mods.tabbychat.client.gui.component.layout.ILayout;
+import com.mojang.blaze3d.platform.GlStateManager
+import mnm.mods.tabbychat.api.Channel
+import mnm.mods.tabbychat.api.ChannelStatus
+import mnm.mods.tabbychat.client.AbstractChannel
+import mnm.mods.tabbychat.client.DefaultChannel
+import mnm.mods.tabbychat.client.TabbyChatClient
+import mnm.mods.tabbychat.client.gui.component.GuiComponent
+import mnm.mods.tabbychat.client.gui.component.GuiPanel
+import mnm.mods.tabbychat.client.gui.component.layout.BorderLayout
+import mnm.mods.tabbychat.client.gui.component.layout.FlowLayout
+import mnm.mods.tabbychat.util.*
+import mnm.mods.tabbychat.util.config.Value
 
-import java.util.Map;
-import javax.annotation.Nonnull;
+class ChatTray internal constructor() : GuiPanel(BorderLayout()) {
 
-public class ChatTray extends GuiPanel {
+    private val tabList = GuiPanel(FlowLayout())
+    private val handle = ChatHandle()
 
-    private final static TexturedModal MODAL = new TexturedModal(ChatBox.GUI_LOCATION, 0, 14, 254, 202);
+    private val map = HashMap<Channel, GuiComponent>()
 
-    private GuiPanel tabList = new GuiPanel(new FlowLayout());
-    private GuiComponent handle = new ChatHandle();
-
-    private Map<Channel, GuiComponent> map = Maps.newHashMap();
-
-
-    ChatTray() {
-        super(new BorderLayout());
-        this.add(tabList, BorderLayout.Position.CENTER);
-        ChatPanel controls = new ChatPanel(new FlowLayout());
-        controls.add(new ToggleButton());
-        controls.add(handle);
-        this.add(controls, BorderLayout.Position.EAST);
-
-    }
-
-    @Override
-    public void render(int mouseX, int mouseY, float parTicks) {
-        if (mc.ingameGUI.getChatGUI().getChatOpen()) {
-            GlStateManager.enableBlend();
-            GlStateManager.color4f(1, 1, 1, (float) mc.gameSettings.chatOpacity);
-            drawModalCorners(MODAL);
-            GlStateManager.disableBlend();
-        }
-        super.render(mouseX, mouseY, parTicks);
-    }
-
-    @Override
-    public void tick() {
-        super.tick();
-        getParent()
-                .map(GuiComponent::getSecondaryColorProperty)
-                .map(color -> Color.of(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() / 4 * 3))
-                .ifPresent(this::setSecondaryColor);
-    }
-
-    public void addChannel(AbstractChannel channel) {
-        GuiComponent gc = new ChatTab(channel);
-        map.put(channel, gc);
-        tabList.add(gc);
-    }
-
-    public void removeChannel(final Channel channel) {
-        GuiComponent gc = map.get(channel);
-        this.tabList.remove(gc);
-        map.remove(channel);
-    }
-
-    public void clearMessages() {
-        this.tabList.clear();
-
-        addChannel(DefaultChannel.INSTANCE);
-        ChatBox.getInstance().setStatus(DefaultChannel.INSTANCE, ChannelStatus.ACTIVE);
-    }
-
-    @Nonnull
-    @Override
-    public Dim getMinimumSize() {
-        return tabList.getLayout()
-                .map(ILayout::getLayoutSize)
-                .orElseGet(super::getMinimumSize);
-    }
-
-    boolean isHandleHovered(double x, double y) {
-        return handle.getLocation().contains(x, y);
-    }
-
-    private class ToggleButton extends GuiComponent {
-
-        private Value<Boolean> value;
-
-        ToggleButton() {
-            this.value = TabbyChatClient.getInstance().getSettings().advanced.keepChatOpen;
+    override var minimumSize: Dim
+        get() = tabList.layout?.layoutSize ?: super.minimumSize
+        set(value) {
+            super.minimumSize = value
         }
 
-        @Override
-        public void render(int mouseX, int mouseY, float parTicks) {
-            GlStateManager.enableBlend();
-            ILocation loc = getLocation();
-            int opac = (int) (mc.gameSettings.chatOpacity * 255) << 24;
-            renderBorders(loc.getXPos() + 2, loc.getYPos() + 2, loc.getXWidth() - 2, loc.getYHeight() - 2, 0x999999 | opac);
-            if (value.get()) {
-                fill(loc.getXPos() + 3, loc.getYPos() + 3, loc.getXWidth() - 3, loc.getYHeight() - 3, 0xaaaaaa | opac);
+    init {
+        this.add(tabList, BorderLayout.Position.CENTER)
+        val controls = ChatPanel(FlowLayout())
+        controls.add(ToggleButton(), null)
+        controls.add<GuiComponent>(handle, null)
+        this.add(controls, BorderLayout.Position.EAST)
+
+    }
+
+    override fun render(mouseX: Int, mouseY: Int, parTicks: Float) {
+        if (mc.ingameGUI.chatGUI.chatOpen) {
+            GlStateManager.enableBlend()
+            GlStateManager.color4f(1f, 1f, 1f, mc.gameSettings.chatOpacity.toFloat())
+            drawModalCorners(MODAL)
+            GlStateManager.disableBlend()
+        }
+        super.render(mouseX, mouseY, parTicks)
+    }
+
+    override fun tick() {
+        super.tick()
+        val panel = parent
+        if (panel != null) {
+            val (red, green, blue, alpha) = panel.secondaryColorProperty
+            secondaryColor = Color(red, green, blue, alpha / 4 * 3)
+        }
+    }
+
+    fun addChannel(channel: AbstractChannel) {
+        val gc = ChatTab(channel)
+        map[channel] = gc
+        tabList.add<GuiComponent>(gc, null)
+    }
+
+    fun removeChannel(channel: Channel) {
+        if (channel in map) {
+            val gc = map.remove(channel)!!
+            this.tabList.remove(gc)
+        }
+    }
+
+    fun clearMessages() {
+        this.tabList.clear()
+
+        addChannel(DefaultChannel)
+        ChatBox.status[DefaultChannel] = ChannelStatus.ACTIVE
+    }
+
+    internal fun isHandleHovered(x: Double, y: Double): Boolean {
+        return handle.location.contains(x, y)
+    }
+
+    private class ToggleButton internal constructor() : GuiComponent() {
+
+        private val value: Value<Boolean> = TabbyChatClient.settings.advanced.keepChatOpen
+
+        override var location: ILocation
+            get() = super.location.copy().move(0, 2)
+            set(value) {
+                super.location = value
+            }
+
+        override var minimumSize: Dim
+            get() = Dim(8, 8)
+            set(value) {
+                super.minimumSize = value
+            }
+
+        override fun render(mouseX: Int, mouseY: Int, parTicks: Float) {
+            GlStateManager.enableBlend()
+            val loc = location
+            val opac = (mc.gameSettings.chatOpacity * 255).toInt() shl 24
+            renderBorders(loc.xPos + 2, loc.yPos + 2, loc.xWidth - 2, loc.yHeight - 2, 0x999999 or opac)
+            if (value.value) {
+                fill(loc.xPos + 3, loc.yPos + 3, loc.xWidth - 3, loc.yHeight - 3, 0xaaaaaa or opac)
             }
         }
 
-        @Override
-        public boolean mouseClicked(double x, double y, int button) {
-            if (getLocation().contains(x, y) && button == 0) {
-                value.set(!value.get());
-                return true;
+        override fun mouseClicked(x: Double, y: Double, button: Int): Boolean {
+            if (location.contains(x, y) && button == 0) {
+                value.value = !value.value
+                return true
             }
-            return false;
+            return false
         }
+    }
 
-        @Override
-        public ILocation getLocation() {
-            return super.getLocation().copy().move(0, 2);
-        }
-
-        @Override
-        @Nonnull
-        public Dim getMinimumSize() {
-            return new Dim(8, 8);
-        }
+    companion object {
+        private val MODAL = TexturedModal(ChatBox.GUI_LOCATION, 0, 14, 254, 202)
     }
 }

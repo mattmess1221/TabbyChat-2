@@ -1,143 +1,122 @@
-package mnm.mods.tabbychat.client.extra.filters;
+package mnm.mods.tabbychat.client.extra.filters
 
-import mnm.mods.tabbychat.client.TabbyChatClient;
-import mnm.mods.tabbychat.api.filters.Filter;
-import mnm.mods.tabbychat.api.filters.FilterEvent;
-import mnm.mods.tabbychat.api.filters.FilterSettings;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.SimpleSound;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.registries.ForgeRegistries;
+import mnm.mods.tabbychat.api.filters.Filter
+import mnm.mods.tabbychat.api.filters.FilterEvent
+import mnm.mods.tabbychat.api.filters.FilterSettings
+import mnm.mods.tabbychat.client.ChatManager
+import mnm.mods.tabbychat.util.mc
+import net.minecraft.client.audio.SimpleSound
+import net.minecraft.util.ResourceLocation
+import net.minecraft.util.text.ITextComponent
+import net.minecraftforge.registries.ForgeRegistries
+import java.util.regex.Pattern
+import java.util.regex.PatternSyntaxException
+import javax.annotation.RegEx
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
-import javax.annotation.RegEx;
+class UserFilter : Filter {
 
-public class UserFilter implements Filter {
+    var name = "New Filter"
+    val settings = FilterSettings()
+    var rawPattern = ".*"
+        private set
 
-    private String name = "New Filter";
-    private FilterSettings settings = new FilterSettings();
-    private String pattern = ".*";
+    @Transient
+    private var expression: Pattern? = null
 
-    private transient Pattern expression;
+    override val pattern: Pattern
+        get() {
+            if (expression == null) {
+                this.expression = Pattern.compile(resolvePattern(rawPattern), settings.flags)
+            }
+            return expression!!
+        }
 
-    public void setPattern(@RegEx String pattern) throws PatternSyntaxException {
-        testPatternUnsafe(pattern);
-        this.pattern = pattern;
-        this.expression = null;
+    @Throws(PatternSyntaxException::class)
+    fun setPattern(@RegEx pattern: String) {
+        testPatternUnsafe(pattern)
+        this.rawPattern = pattern
+        this.expression = null
     }
 
-    void testPattern(String pattern) throws UserPatternException {
+    @Throws(UserPatternException::class)
+    internal fun testPattern(pattern: String) {
         try {
-            testPatternUnsafe(pattern);
-        } catch (PatternSyntaxException e) {
-            throw new UserPatternException(e);
+            testPatternUnsafe(pattern)
+        } catch (e: PatternSyntaxException) {
+            throw UserPatternException(e)
         }
+
     }
 
-    private void testPatternUnsafe(String pattern) throws PatternSyntaxException {
-        Pattern.compile(resolvePattern(pattern));
+    @Throws(PatternSyntaxException::class)
+    private fun testPatternUnsafe(pattern: String) {
+        Pattern.compile(resolvePattern(pattern))
     }
 
-    @SuppressWarnings("MagicConstant")
-    @Override
-    public Pattern getPattern() {
-        if (expression == null) {
-            this.expression = Pattern.compile(resolvePattern(pattern), settings.getFlags());
+    private fun resolvePattern(pattern: String): String {
+        var resolved = resolveVariables(pattern)
+        if (!settings.isRegex) {
+            resolved = Pattern.quote(resolved)
         }
-        return expression;
-    }
-
-    private String resolvePattern(String pattern) {
-        String resolved = resolveVariables(pattern);
-        if (!settings.isRegex()) {
-            resolved = Pattern.quote(resolved);
-        }
-        return resolved;
-    }
-
-    public String getRawPattern() {
-        return this.pattern;
+        return resolved
     }
 
     @RegEx
-    private static String resolveVariables(String pattern) {
-        Matcher matcher = Pattern.compile("\\$\\{([\\w\\d]+)}").matcher(pattern);
-        StringBuffer buffer = new StringBuffer();
+    private fun resolveVariables(pattern: String): String {
+        val matcher = Pattern.compile("\\$\\{([\\w\\d]+)}").matcher(pattern)
+        val buffer = StringBuffer()
         while (matcher.find()) {
-            String key = matcher.group(1);
-            String var = FilterAddon.getVariable(key);
-            matcher.appendReplacement(buffer, var);
+            val key = matcher.group(1)
+            val `var` = FilterAddon.variables.getOrDefault(key) { "" }()
+            matcher.appendReplacement(buffer, `var`)
         }
-        matcher.appendTail(buffer);
+        matcher.appendTail(buffer)
 
-        return pattern;
+        return pattern
     }
 
-    @Override
-    public void action(FilterEvent event) {
+    override fun action(event: FilterEvent) {
 
-        if (settings.isRemove()) {
+        if (settings.isRemove) {
             // remove
-            event.channels.clear();
+            event.channels.clear()
         }
         // add channels
-        for (String name : settings.getChannels()) {
+        for (name in settings.channels) {
             // replace group tokens in channel name
-            Matcher matcher = Pattern.compile("\\$(\\d+)").matcher(name);
+            val matcher = Pattern.compile("\\$(\\d+)").matcher(name)
+            var name: String? = name
             while (matcher.find()) {
                 // find groups
-                int group = Integer.parseInt(matcher.group(1));
+                val group = Integer.parseInt(matcher.group(1))
                 if (group > 0 && event.matcher.groupCount() >= group) {
-                    String groupText = event.matcher.group(group);
+                    val groupText = event.matcher.group(group)
                     if (groupText != null) {
-                        name = name.replace(matcher.group(), groupText);
-                        continue;
+                        name = name?.replace(matcher.group(), groupText)
+                        continue
                     }
                 }
-                name = null;
-                break;
+                name = null
+                break
             }
             // skip this because there were missing or out of bounds groups.
             if (name == null)
-                continue;
+                continue
 
-            TabbyChatClient.getInstance().getChatManager().parseChannel(name).ifPresent(event.channels::add);
+            ChatManager.parseChannel(name)?.also { event.channels.add(it) }
 
         }
         // play sound
-        if (settings.isSoundNotification()) {
-            settings.getSoundName()
-                    .map(ResourceLocation::new)
-                    .map(ForgeRegistries.SOUND_EVENTS::getValue)
-                    .map(sndEvent -> SimpleSound.master(sndEvent, 1.0F))
-                    .ifPresent(Minecraft.getInstance().getSoundHandler()::play);
-
+        if (settings.isSoundNotification) {
+            settings.soundName?.let { ResourceLocation.tryCreate(it) }
+                    ?.let { ForgeRegistries.SOUND_EVENTS.getValue(it) }
+                    ?.let { mc.soundHandler.play(SimpleSound.master(it, 1.0f)) }
         }
     }
 
-    @Override
-    public String prepareText(ITextComponent string) {
-        return settings.isRaw() ? string.getFormattedText() : Filter.super.prepareText(string);
+    override fun prepareText(string: ITextComponent): String {
+        return if (settings.isRaw) string.formattedText else super.prepareText(string)
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public FilterSettings getSettings() {
-        return settings;
-    }
-
-    class UserPatternException extends Exception {
-        private UserPatternException(PatternSyntaxException e) {
-            super(e);
-        }
-    }
+    internal inner class UserPatternException(e: PatternSyntaxException) : Exception(e)
 }

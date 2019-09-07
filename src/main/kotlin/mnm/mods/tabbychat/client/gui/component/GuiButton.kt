@@ -1,134 +1,91 @@
-package mnm.mods.tabbychat.client.gui.component;
+package mnm.mods.tabbychat.client.gui.component
 
-import com.mojang.blaze3d.platform.GLX;
-import com.mojang.blaze3d.platform.GlStateManager;
-import mnm.mods.tabbychat.util.Dim;
-import mnm.mods.tabbychat.util.ILocation;
-import mnm.mods.tabbychat.util.TexturedModal;
-import net.minecraft.client.audio.SimpleSound;
-import net.minecraft.client.audio.SoundHandler;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.SoundEvents;
-import org.lwjgl.opengl.GL11;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Optional;
+import com.mojang.blaze3d.platform.GLX
+import com.mojang.blaze3d.platform.GlStateManager
+import mnm.mods.tabbychat.util.Dim
+import mnm.mods.tabbychat.util.ILocation
+import mnm.mods.tabbychat.util.TexturedModal
+import mnm.mods.tabbychat.util.mc
+import net.minecraft.client.audio.SimpleSound
+import net.minecraft.client.audio.SoundHandler
+import net.minecraft.client.gui.FontRenderer
+import net.minecraft.util.ResourceLocation
+import net.minecraft.util.SoundEvent
+import net.minecraft.util.SoundEvents
+import org.lwjgl.opengl.GL11
+import java.util.Optional
 
 /**
- * A {@link net.minecraft.client.gui.widget.button.Button} for the GuiComponent system.
+ * A [net.minecraft.client.gui.widget.button.Button] for the GuiComponent system.
  */
-public class GuiButton extends GuiComponent {
+open class GuiButton(open var text: String = "") : GuiComponent() {
 
-    protected static final ResourceLocation WIDGETS = new ResourceLocation("textures/gui/widgets.png");
-    private static final TexturedModal MODAL_NORMAL = new TexturedModal(WIDGETS, 0, 66, 200, 20);
-    private static final TexturedModal MODAL_HOVER = new TexturedModal(WIDGETS, 0, 86, 200, 20);
-    private static final TexturedModal MODAL_DISABLE = new TexturedModal(WIDGETS, 0, 46, 200, 20);
+    var sound: SoundEvent? = SoundEvents.UI_BUTTON_CLICK
 
-    private String text = "";
-    private SoundEvent sound;
+    override var minimumSize: Dim
+        get() = Dim(mc.fontRenderer.getStringWidth(this.text) + 8, 20)
+        set(value) {
+            super.minimumSize = value
+        }
 
-    /**
-     * Instantiates a new button with {@code text} as the display string.
-     *
-     * @param text The display string
-     */
-    public GuiButton(String text) {
-        this.setText(text);
-        setSound(SoundEvents.UI_BUTTON_CLICK);
-    }
-
-    @Override
-    public void playDownSound(SoundHandler soundHandlerIn) {
-        SoundEvent sound = getSound();
+    override fun playDownSound(soundHandlerIn: SoundHandler) {
+        val sound = sound
         if (sound != null) {
-            soundHandlerIn.play(SimpleSound.master(sound, 1.0F));
+            soundHandlerIn.play(SimpleSound.master(sound, 1.0f))
         }
     }
 
-    /**
-     * Sets the display text for this button.
-     *
-     * @param text The new text
-     */
-    public void setText(@Nullable String text) {
-        if (text == null) {
-            text = "";
-        }
-        this.text = text;
-    }
+    override fun render(mouseX: Int, mouseY: Int, parTicks: Float) {
+        val fontrenderer = mc.fontRenderer
+        val bounds = location
 
-    /**
-     * Gets the display text for this button.
-     *
-     * @return The text
-     */
-    public String getText() {
-        return this.text;
-    }
+        GlStateManager.pushMatrix()
 
-    public void setSound(@Nullable SoundEvent sound) {
-        this.sound = sound;
-    }
+        mc.getTextureManager().bindTexture(WIDGETS)
+        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f)
 
-    @Nullable
-    public SoundEvent getSound() {
-        return sound;
-    }
+        val hovered = bounds.contains(mouseX, mouseY)
 
-    @Override
-    public void render(int mouseX, int mouseY, float parTicks) {
-        FontRenderer fontrenderer = mc.fontRenderer;
-        ILocation bounds = getLocation();
+        val modal = this.getHoverState(hovered)
+        GlStateManager.enableBlend()
+        GLX.glBlendFuncSeparate(770, 771, 1, 0)
+        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
 
-        GlStateManager.pushMatrix();
+        this.drawModalCorners(modal)
 
-        mc.getTextureManager().bindTexture(WIDGETS);
-        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        var textColor = 0xE0E0E0
 
-        boolean hovered = bounds.contains(mouseX, mouseY);
-
-        TexturedModal modal = this.getHoverState(hovered);
-        GlStateManager.enableBlend();
-        GLX.glBlendFuncSeparate(770, 771, 1, 0);
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-
-        this.drawModalCorners(modal);
-
-        int textColor = 0xE0E0E0;
-
-        if (!this.isEnabled()) {
-            textColor = 0xA0A0A0;
+        if (!this.isEnabled) {
+            textColor = 0xA0A0A0
         } else if (hovered) {
-            textColor = 0xFFFFA0;
+            textColor = 0xFFFFA0
         }
 
-        int x = bounds.getXCenter();
-        int y = bounds.getYCenter() - fontrenderer.FONT_HEIGHT / 2;
+        val x = bounds.xCenter
+        val y = bounds.yCenter - fontrenderer.FONT_HEIGHT / 2
 
-        this.drawCenteredString(fontrenderer, getText(), x, y, textColor);
+        this.drawCenteredString(fontrenderer, text, x, y, textColor)
 
-        GlStateManager.popMatrix();
+        GlStateManager.popMatrix()
     }
 
-    private TexturedModal getHoverState(boolean hovered) {
-        TexturedModal modal = GuiButton.MODAL_NORMAL;
-
-        if (!this.isEnabled()) {
-            modal = GuiButton.MODAL_DISABLE;
-        } else if (hovered) {
-            modal = GuiButton.MODAL_HOVER;
+    private fun getHoverState(hovered: Boolean): TexturedModal {
+        if (!this.isEnabled) {
+            return MODAL_DISABLE
+        }
+        if (hovered) {
+            return MODAL_HOVER
         }
 
-        return modal;
+        return MODAL_NORMAL
     }
 
-    @Nonnull
-    @Override
-    public Dim getMinimumSize() {
-        return new Dim(mc.fontRenderer.getStringWidth(this.getText()) + 8, 20);
+    companion object {
+
+        internal val WIDGETS = ResourceLocation("textures/gui/widgets.png")
+        private val MODAL_NORMAL = TexturedModal(WIDGETS, 0, 66, 200, 20)
+        private val MODAL_HOVER = TexturedModal(WIDGETS, 0, 86, 200, 20)
+        private val MODAL_DISABLE = TexturedModal(WIDGETS, 0, 46, 200, 20)
     }
 
 }

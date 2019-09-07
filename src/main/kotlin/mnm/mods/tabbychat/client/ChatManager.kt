@@ -1,108 +1,89 @@
-package mnm.mods.tabbychat.client;
+package mnm.mods.tabbychat.client
 
-import com.google.common.collect.ImmutableSet;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import mnm.mods.tabbychat.TCMarkers;
-import mnm.mods.tabbychat.TabbyChat;
-import mnm.mods.tabbychat.api.Channel;
-import mnm.mods.tabbychat.api.Chat;
-import mnm.mods.tabbychat.api.events.MessageAddedToChannelEvent;
-import mnm.mods.tabbychat.client.gui.ChatBox;
-import mnm.mods.tabbychat.client.settings.ServerSettings;
-import mnm.mods.tabbychat.client.settings.TabbySettings;
-import mnm.mods.tabbychat.util.ChannelTypeAdapter;
-import mnm.mods.tabbychat.util.ChatTextUtils;
-import mnm.mods.tabbychat.util.DateTimeTypeAdapter;
-import mnm.mods.tabbychat.util.config.ValueMap;
-import mnm.mods.tabbychat.util.text.TextBuilder;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.EnumTypeAdapterFactory;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.common.MinecraftForge;
-import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
-import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
+import com.google.common.collect.ImmutableSet
+import com.google.gson.GsonBuilder
+import mnm.mods.tabbychat.CHATBOX
+import mnm.mods.tabbychat.TabbyChat
+import mnm.mods.tabbychat.api.Channel
+import mnm.mods.tabbychat.api.Chat
+import mnm.mods.tabbychat.api.events.MessageAddedToChannelEvent
+import mnm.mods.tabbychat.client.gui.ChatBox
+import mnm.mods.tabbychat.client.settings.ServerSettings
+import mnm.mods.tabbychat.client.settings.TabbySettings
+import mnm.mods.tabbychat.util.ChannelTypeAdapter
+import mnm.mods.tabbychat.util.ChatTextUtils
+import mnm.mods.tabbychat.util.DateTimeTypeAdapter
+import mnm.mods.tabbychat.util.config.ValueMap
+import mnm.mods.tabbychat.util.style
+import net.minecraft.client.Minecraft
+import net.minecraft.util.EnumTypeAdapterFactory
+import net.minecraft.util.text.ITextComponent
+import net.minecraft.util.text.StringTextComponent
+import net.minecraft.util.text.Style
+import net.minecraft.util.text.TextFormatting
+import net.minecraftforge.common.MinecraftForge
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream
+import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream
+import java.io.*
+import java.nio.charset.StandardCharsets
+import java.nio.file.Files
+import java.nio.file.Path
+import java.time.LocalDateTime
+import java.util.*
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.Writer;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Function;
+object ChatManager : Chat {
 
-public class ChatManager implements Chat {
+    private val gson = GsonBuilder()
+            .registerTypeHierarchyAdapter(ITextComponent::class.java, ITextComponent.Serializer())
+            .registerTypeAdapter(Style::class.java, Style.Serializer())
+            .registerTypeAdapterFactory(EnumTypeAdapterFactory())
+            .registerTypeHierarchyAdapter(Channel::class.java, ChannelTypeAdapter(this))
+            .registerTypeAdapter(LocalDateTime::class.java, DateTimeTypeAdapter())
+            .create()
 
-    public static final int MAX_CHAT_LENGTH = 256;
+    val MAX_CHAT_LENGTH = 256
 
-    private static ChatManager instance;
+    private val lock = Any()
 
-    private Gson gson = new GsonBuilder()
-            .registerTypeHierarchyAdapter(ITextComponent.class, new ITextComponent.Serializer())
-            .registerTypeAdapter(Style.class, new Style.Serializer())
-            .registerTypeAdapterFactory(new EnumTypeAdapterFactory())
-            .registerTypeHierarchyAdapter(Channel.class, new ChannelTypeAdapter(this))
-            .registerTypeAdapter(LocalDateTime.class, new DateTimeTypeAdapter())
-            .create();
 
-    private Map<String, Channel> allChannels = new HashMap<>();
-    private Map<String, Channel> allPms = new HashMap<>();
+    private val allChannels: MutableMap<String, Channel> = hashMapOf()
+    private val allPms: MutableMap<String, Channel> = hashMapOf()
 
     /**
      * A map of all the messages per channel
      */
-    private Map<Channel, List<ChatMessage>> messages = new HashMap<>();
+    private val messages = HashMap<Channel, MutableList<ChatMessage>>()
 
     /**
      * The split messages used for rendering the chatbox.
      */
-    private Map<Channel, List<ChatMessage>> msgsplit = new HashMap<>();
+    private val msgsplit = HashMap<Channel, List<ChatMessage>>()
 
-    private ServerSettings server() {
-        return TabbyChatClient.getInstance().getServerSettings();
+    override val channels: Set<Channel>
+        get() = ImmutableSet.copyOf<Channel>(ChatBox.getChannels())
+
+    private fun server(): ServerSettings? {
+        return TabbyChatClient.serverSettings
     }
 
-    private TabbySettings settings() {
-        return TabbyChatClient.getInstance().getSettings();
+    private fun settings(): TabbySettings {
+        return TabbyChatClient.settings
     }
 
-    private ChatManager() {
-        allChannels.put("*", DefaultChannel.INSTANCE);
+    init {
+        allChannels["*"] = DefaultChannel
     }
 
-    public static ChatManager instance() {
-        if (instance == null) {
-            instance = new ChatManager();
-        }
-        return instance;
+    override fun getChannel(name: String): Channel {
+        return allChannels.getOrPut(name, getChannel(name, server()!!.channels) { ChatChannel(name) })
     }
 
-    @Override
-    public Channel getChannel(String name) {
-        return allChannels.computeIfAbsent(name, this.getChannel(name, server().channels, ChatChannel::new));
+    override fun getUserChannel(user: String): Channel {
+        return allPms.getOrPut(user, getChannel(user, server()!!.pms) { UserChannel(user) })
     }
 
-    @Override
-    public Channel getUserChannel(String name) {
-        return allPms.computeIfAbsent(name, this.getChannel(name, server().pms, UserChannel::new));
-    }
-
-    private <T, U> Function<U, T> getChannel(String name, ValueMap<T> config, Function<U, T> absent) {
-        return profile -> config.get().computeIfAbsent(name, k -> absent.apply(profile));
+    private fun <T> getChannel(name: String, config: ValueMap<T>, absent: () -> T): () -> T {
+        return { config.getOrPut(name, absent) }
     }
 
     /**
@@ -111,195 +92,178 @@ public class ChatManager implements Chat {
      * @param format The representation of the channel as a string
      * @return The channel
      */
-    public Optional<Channel> parseChannel(String format) {
-        if (format.length() <= 1) {
-            return Optional.empty();
+    fun parseChannel(format: String): Channel? {
+        if (format.length <= 1) {
+            return null
         }
-        String name = format.substring(1);
-        switch (format.charAt(0)) {
-            case '@':
-                return Optional.of(getUserChannel(name));
-            case '#':
-                return Optional.of(getChannel(name));
-            default:
-                return Optional.empty();
+        val name = format.substring(1)
+        return when (format[0]) {
+            '@' -> getUserChannel(name)
+            '#' -> getChannel(name)
+            else -> null
         }
 
     }
 
-    @Override
-    public Set<Channel> getChannels() {
-        return ImmutableSet.copyOf(ChatBox.getInstance().getChannels());
+    override fun getMessages(channel: Channel): List<ChatMessage> {
+        return Collections.unmodifiableList(getChannelMessages(channel))
     }
 
-    @Override
-    public List<ChatMessage> getMessages(Channel channel) {
-        return Collections.unmodifiableList(getChannelMessages(channel));
+    private fun getChannelMessages(channel: Channel): MutableList<ChatMessage> {
+        return messages.getOrPut(channel) { ArrayList() }
     }
 
-    private List<ChatMessage> getChannelMessages(Channel channel) {
-        return this.messages.computeIfAbsent(channel, k -> new ArrayList<>());
+    fun getVisible(channel: Channel, width: Int): List<ChatMessage> {
+        return msgsplit.getOrPut(channel) { ChatTextUtils.split(getMessages(channel), width) }
     }
 
-    public List<ChatMessage> getVisible(Channel channel, int width) {
-        return this.msgsplit.computeIfAbsent(channel, a -> ChatTextUtils.split(getMessages(a), width));
-    }
-
-    public void markDirty(Channel channel) {
+    fun markDirty(channel: Channel?) {
         if (channel == null) {
-            this.msgsplit.clear();
+            this.msgsplit.clear()
         } else {
-            this.msgsplit.remove(channel);
+            this.msgsplit.remove(channel)
         }
     }
 
-    @Override
-    public void addMessage(Channel channel, ITextComponent message) {
-        addMessage(channel, message, 0);
+    override fun addMessage(channel: Channel, message: ITextComponent) {
+        addMessage(channel, message, 0)
     }
 
-    public void addMessage(Channel channel, ITextComponent text, int id) {
-        MessageAddedToChannelEvent event = new MessageAddedToChannelEvent.Pre(text.deepCopy(), id, channel);
-        if (MinecraftForge.EVENT_BUS.post(event) || event.getText() == null) {
-            return;
+    fun addMessage(channel: Channel, text: ITextComponent, id: Int) {
+        val event = MessageAddedToChannelEvent.Pre(text.deepCopy(), id, channel)
+        if (MinecraftForge.EVENT_BUS.post(event) || event.text == null) {
+            return
         }
-        text = event.getText();
-        id = event.getId();
+        val text = event.text!!
+        val id = event.id
 
         if (id != 0) {
-            removeMessages(channel, id);
+            removeMessages(channel, id)
         }
 
-        int uc = Minecraft.getInstance().ingameGUI.getTicks();
-        ChatMessage msg = new ChatMessage(uc, text, id, true);
-        List<ChatMessage> messages = getChannelMessages(channel);
-        messages.add(0, msg);
+        val uc = Minecraft.getInstance().ingameGUI.ticks
+        val msg = ChatMessage(uc, text, id)
+        val messages = getChannelMessages(channel)
+        messages.add(0, msg)
 
-        trimMessages(messages, settings().advanced.historyLen.get());
+        trimMessages(messages, settings().advanced.historyLen.value)
 
-        MinecraftForge.EVENT_BUS.post(new MessageAddedToChannelEvent.Post(text, id, channel));
+        MinecraftForge.EVENT_BUS.post(MessageAddedToChannelEvent.Post(text, id, channel))
 
-        save();
-        markDirty(channel);
+        save()
+        markDirty(channel)
     }
 
-    private void trimMessages(List<?> list, int size) {
-        Iterator<?> iter = list.iterator();
+    private fun trimMessages(list: MutableList<*>, size: Int) {
+        val iter = list.iterator()
 
-        for (int i = 0; iter.hasNext(); i++) {
-            iter.next();
+        var i = 0
+        while (iter.hasNext()) {
+            iter.next()
             if (i > size) {
-                iter.remove();
+                iter.remove()
             }
+            i++
         }
     }
 
-    public void removeMessages(Channel chan, int id) {
-        getChannelMessages(chan).removeIf(m -> m.getID() == id);
+    fun removeMessages(chan: Channel, id: Int) {
+        getChannelMessages(chan).removeIf { m -> m.id == id }
     }
 
-    public void removeMessageAt(AbstractChannel channel, int index) {
-        getChannelMessages(channel).remove(index);
-        save();
+    fun removeMessageAt(channel: AbstractChannel, index: Int) {
+        getChannelMessages(channel).removeAt(index)
+        save()
     }
 
-    public void clearMessages() {
-        this.messages.clear();
-        this.msgsplit.clear();
+    fun clearMessages() {
+        this.messages.clear()
+        this.msgsplit.clear()
 
-        this.allChannels.clear();
-        this.allChannels.put("*", DefaultChannel.INSTANCE);
-        this.allPms.clear();
+        this.allChannels.clear()
+        this.allChannels["*"] = DefaultChannel
+        this.allPms.clear()
 
-        ChatBox.getInstance().clearMessages();
+        ChatBox.clearMessages()
     }
 
-    private static final Object lock = new Object();
-
-    public void loadFrom(Path dir) throws IOException {
-        synchronized (lock) {
-            loadFrom_(dir);
+    @Throws(IOException::class)
+    fun loadFrom(dir: Path) {
+        synchronized(lock) {
+            loadFrom_(dir)
         }
     }
 
-    private static Reader newCompressedReader(Path path) throws IOException {
-        return new InputStreamReader(new GzipCompressorInputStream(Files.newInputStream(path)), StandardCharsets.UTF_8);
-    }
-
-    private static Writer newCompressedWriter(Path path) throws IOException {
-        return new OutputStreamWriter(new GzipCompressorOutputStream(Files.newOutputStream(path)), StandardCharsets.UTF_8);
-    }
-
-    private synchronized void loadFrom_(Path dir) throws IOException {
-        Path file = dir.resolve("data.gz");
+    @Synchronized
+    @Throws(IOException::class)
+    private fun loadFrom_(dir: Path) {
+        val file = dir.resolve("data.gz")
         if (Files.notExists(file)) {
-            return;
+            return
         }
 
-        clearMessages();
+        clearMessages()
 
-        try (Reader gzin = newCompressedReader(file)) {
-            PersistantChat root = gson.fromJson(gzin, PersistantChat.class);
+        newCompressedReader(file).use { gzin ->
+            val root = gson.fromJson(gzin, PersistantChat::class.java)
 
-            this.messages.putAll(root.getMessages());
-            ChatBox.getInstance().addChannels(root.getActive());
+            for ((k, v) in root.messages) {
+                this.messages[k] = v.toMutableList()
+            }
+            ChatBox.addChannels(root.active)
 
-            ITextComponent chat = new TextBuilder()
-                    // TODO use translation
-                    .text("Chat log from " + root.getTime())
-                    .format(TextFormatting.GRAY)
-                    .build();
+            val chat: ITextComponent = StringTextComponent("Chat log from ${root.time}").style {
+                color = TextFormatting.GRAY
+            }
 
-            for (Channel c : getChannels()) {
-                if (!getMessages(c).isEmpty()) {
-                    addMessage(c, chat, -1);
+            for (c in channels) {
+                if (getMessages(c).isNotEmpty()) {
+                    addMessage(c, chat, -1)
                 }
             }
         }
     }
 
-    public void save() {
-        synchronized (lock) {
+    fun save() {
+        synchronized(lock) {
             try {
-                saveTo(server().getPath().getParent());
-            } catch (IOException e) {
-                TabbyChat.logger.warn(TCMarkers.CHATBOX, "Error while saving chat data", e);
+                saveTo(server()!!.path.parent)
+            } catch (e: IOException) {
+                TabbyChat.logger.warn(CHATBOX, "Error while saving chat data", e)
             }
+
         }
     }
 
-    private synchronized void saveTo(Path dir) throws IOException {
-        Path file = dir.resolve("data.gz");
-        Files.createDirectories(dir);
+    @Synchronized
+    @Throws(IOException::class)
+    private fun saveTo(dir: Path) {
+        val file = dir.resolve("data.gz")
+        Files.createDirectories(dir)
 
-        try (Writer gzout = newCompressedWriter(file)) {
-            gson.toJson(new PersistantChat(messages, ChatBox.getInstance().getChannels()), PersistantChat.class, gzout);
+        newCompressedWriter(file).use {
+            gson.toJson(PersistantChat(messages, ChatBox.getChannels()), PersistantChat::class.java, it)
         }
     }
 
-    private static class PersistantChat {
-
-        private LocalDateTime datetime;
-        private Map<Channel, List<ChatMessage>> messages;
-        private List<AbstractChannel> active;
-
-        PersistantChat(Map<Channel, List<ChatMessage>> messages, Collection<AbstractChannel> active) {
-            this.messages = new HashMap<>(messages);
-            this.active = new ArrayList<>(active);
-            this.datetime = LocalDateTime.now();
-        }
-
-        private String getTime() {
-            return datetime == null ? "UNKNOWN" : datetime.toString();
-        }
-
-        private Map<Channel, List<ChatMessage>> getMessages() {
-            return messages == null ? Collections.emptyMap() : messages;
-        }
-
-        private List<AbstractChannel> getActive() {
-            return active == null ? Collections.emptyList() : active;
-        }
-
+    private class PersistantChat internal constructor(
+            messages: Map<Channel, List<ChatMessage>>?,
+            active: Collection<AbstractChannel>?,
+            datetime: LocalDateTime? = LocalDateTime.now()
+    ) {
+        val messages = messages ?: emptyMap()
+        val active = active ?: emptyList()
+        val time = datetime?.toString() ?: "UNKNOWN"
     }
+
+    @Throws(IOException::class)
+    private fun newCompressedReader(path: Path): Reader {
+        return InputStreamReader(GzipCompressorInputStream(Files.newInputStream(path)), StandardCharsets.UTF_8)
+    }
+
+    @Throws(IOException::class)
+    private fun newCompressedWriter(path: Path): Writer {
+        return OutputStreamWriter(GzipCompressorOutputStream(Files.newOutputStream(path)), StandardCharsets.UTF_8)
+    }
+
 }

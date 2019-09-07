@@ -1,28 +1,31 @@
-package mnm.mods.tabbychat.client.extra.spell;
+package mnm.mods.tabbychat.client.extra.spell
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
+import mnm.mods.tabbychat.MODID
+import mnm.mods.tabbychat.TabbyChat
+import net.minecraft.client.Minecraft
+import net.minecraft.util.ResourceLocation
+import java.io.IOException
+import java.io.InputStream
+import java.nio.file.Files
 
-import mnm.mods.tabbychat.TabbyChat;
-import net.minecraft.client.Minecraft;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.util.ResourceLocation;
+interface LangDict {
 
-public interface LangDict {
+    @Throws(IOException::class)
+    fun openStream(): InputStream
 
-    LangDict ENGLISH = fromLanguage("en_us");
+    companion object {
 
-    InputStream openStream() throws IOException;
+        val ENGLISH = fromLanguage("en_us")
 
-    static LangDict fromLanguage(String lang) {
-        String path = String.format("dicts/%s.dic", lang);
-        if (Files.isRegularFile(TabbyChat.dataFolder.resolve(path))) {
-            return () -> Files.newInputStream(TabbyChat.dataFolder.resolve(path));
-        } else {
-            ResourceLocation res = new ResourceLocation(TabbyChat.MODID, path);
-            IResourceManager resmgr = Minecraft.getInstance().getResourceManager();
-            return () -> resmgr.getResource(res).getInputStream();
+        fun fromLanguage(lang: String): LangDict {
+            val path = String.format("dicts/%s.dic", lang)
+            return if (Files.isRegularFile(TabbyChat.dataFolder.resolve(path))) {
+                { Files.newInputStream(TabbyChat.dataFolder.resolve(path)) } as LangDict
+            } else {
+                val res = ResourceLocation(MODID, path)
+                val resmgr = Minecraft.getInstance().resourceManager
+                { resmgr.getResource(res).inputStream } as LangDict
+            }
         }
     }
 }

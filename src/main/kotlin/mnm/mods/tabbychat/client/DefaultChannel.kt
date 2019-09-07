@@ -1,32 +1,25 @@
-package mnm.mods.tabbychat.client;
+package mnm.mods.tabbychat.client
 
-public final class DefaultChannel extends ChatChannel {
+object DefaultChannel : ChatChannel("*") {
 
-    public static final AbstractChannel INSTANCE = new DefaultChannel();
-
-    private DefaultChannel() {
-        super("*");
-    }
-
-    @Override
-    public String getDisplayName() {
-        return getName();
-    }
+    override val displayName: String
+        get() = name
 
     // Don't mess with this channel
-    @Override
-    public void setAlias(String alias) {
-    }
+    override var prefix: String
+        get() = super.prefix
+        set(_) {}
 
-    @Override
-    public void setPrefix(String prefix) {
-    }
+    override var alias: String
+        get() = super.alias
+        set(_) {}
 
-    @Override
-    public void setPrefixHidden(boolean hidden) {
-    }
+    override var isPrefixHidden: Boolean
+        get() = super.isPrefixHidden
+        set(_) {}
 
-    @Override
-    public void setCommand(String command) {
-    }
+    override var command: String
+        get() = super.command
+        set(_) {}
+
 }

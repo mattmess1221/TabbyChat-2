@@ -1,180 +1,133 @@
-package mnm.mods.tabbychat.client.core;
+package mnm.mods.tabbychat.client.core
 
-import com.google.common.collect.Sets;
-import com.mojang.blaze3d.platform.GlStateManager;
-import mnm.mods.tabbychat.TCMarkers;
-import mnm.mods.tabbychat.client.AbstractChannel;
-import mnm.mods.tabbychat.client.ChatManager;
-import mnm.mods.tabbychat.client.DefaultChannel;
-import mnm.mods.tabbychat.TabbyChat;
-import mnm.mods.tabbychat.client.TabbyChatClient;
-import mnm.mods.tabbychat.api.ChannelStatus;
-import mnm.mods.tabbychat.api.events.ChatMessageEvent.ChatReceivedEvent;
-import mnm.mods.tabbychat.client.gui.ChatBox;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.NewChatGui;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.common.MinecraftForge;
+import com.mojang.blaze3d.platform.GlStateManager
+import mnm.mods.tabbychat.CHATBOX
+import mnm.mods.tabbychat.TabbyChat
+import mnm.mods.tabbychat.api.ChannelStatus
+import mnm.mods.tabbychat.api.events.ChatMessageEvent.ChatReceivedEvent
+import mnm.mods.tabbychat.client.ChatManager
+import mnm.mods.tabbychat.client.DefaultChannel
+import mnm.mods.tabbychat.client.TabbyChatClient
+import mnm.mods.tabbychat.client.gui.ChatBox
+import mnm.mods.tabbychat.util.mc
+import net.minecraft.client.gui.NewChatGui
+import net.minecraft.util.text.ITextComponent
+import net.minecraftforge.common.MinecraftForge
 
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+object GuiNewChatTC : NewChatGui(mc) {
 
-public class GuiNewChatTC extends NewChatGui {
+    private var prevScreenWidth: Int = 0
+    private var prevScreenHeight: Int = 0
 
-    private final Minecraft mc;
-    private final TabbyChatClient tc;
-    private final ChatBox chatbox;
+    init {
+        this.prevScreenHeight = mc.mainWindow.height
 
-    private int prevScreenWidth;
-    private int prevScreenHeight;
-
-    private static GuiNewChatTC instance;
-
-    public GuiNewChatTC(Minecraft minecraft, TabbyChatClient tc) {
-        super(minecraft);
-
-        instance = this;
-
-        this.mc = minecraft;
-        this.tc = tc;
-
-        this.chatbox = new ChatBox(tc.getSettings());
-        this.prevScreenHeight = mc.mainWindow.getHeight();
-
-        MinecraftForge.EVENT_BUS.register(new GuiChatTC(chatbox));
+        MinecraftForge.EVENT_BUS.register(GuiChatTC(ChatBox))
     }
 
-    public static GuiNewChatTC getInstance() {
-        return instance;
+    override fun refreshChat() {
+        ChatBox.tick()
     }
 
-    @Deprecated
-    public ChatBox getChatBox() {
-        return chatbox;
-    }
-
-    @Override
-    public void refreshChat() {
-        chatbox.tick();
-    }
-
-    @Override
-    public void clearChatMessages(boolean sent) {
-        checkThread(() -> {
-            ChatManager.instance().clearMessages();
+    override fun clearChatMessages(sent: Boolean) {
+        checkThread {
+            ChatManager.clearMessages()
             if (sent) {
-                this.getSentMessages().clear();
+                this.sentMessages.clear()
             }
-        });
+        }
     }
 
-    @Override
-    public void render(int i) {
-        if (prevScreenHeight != mc.mainWindow.getHeight() || prevScreenWidth != mc.mainWindow.getWidth()) {
+    override fun render(i: Int) {
+        if (prevScreenHeight != mc.mainWindow.height || prevScreenWidth != mc.mainWindow.width) {
 
-            chatbox.onScreenHeightResize(prevScreenWidth, prevScreenHeight, mc.mainWindow.getWidth(), mc.mainWindow.getHeight());
+            ChatBox.onScreenHeightResize(prevScreenWidth, prevScreenHeight, mc.mainWindow.width, mc.mainWindow.height)
 
-            prevScreenWidth = mc.mainWindow.getWidth();
-            prevScreenHeight = mc.mainWindow.getHeight();
+            prevScreenWidth = mc.mainWindow.width
+            prevScreenHeight = mc.mainWindow.height
         }
 
-        if (getChatOpen())
-            return;
+        if (chatOpen)
+            return
 
-        double scale = mc.gameSettings.chatScale;
+        val scale = mc.gameSettings.chatScale
 
-        GlStateManager.popMatrix(); // ignore what GuiIngame did.
-        GlStateManager.pushMatrix();
+        GlStateManager.popMatrix() // ignore what GuiIngame did.
+        GlStateManager.pushMatrix()
 
         // Scale it accordingly
-        GlStateManager.scaled(scale, scale, 1.0D);
+        GlStateManager.scaled(scale, scale, 1.0)
 
-        int mouseX = (int) mc.mouseHelper.getMouseX();
-        int mouseY = (int) (-mc.mouseHelper.getMouseY() - 1);
-        chatbox.render(mouseX, mouseY, 0);
+        val mouseX = mc.mouseHelper.mouseX.toInt()
+        val mouseY = (-mc.mouseHelper.mouseY - 1).toInt()
+        ChatBox.render(mouseX, mouseY, 0f)
 
-        GlStateManager.popMatrix();
-        GlStateManager.pushMatrix(); // push to avoid gl errors
+        GlStateManager.popMatrix()
+        GlStateManager.pushMatrix() // push to avoid gl errors
     }
 
-    @Override
-    public void printChatMessageWithOptionalDeletion(ITextComponent ichat, int id) {
-        checkThread(() -> this.addMessage(ichat, id));
+    override fun printChatMessageWithOptionalDeletion(ichat: ITextComponent, id: Int) {
+        checkThread { this.addMessage(ichat, id) }
     }
 
-    public void addMessage(ITextComponent ichat, int id) {
+    fun addMessage(ichat: ITextComponent, id: Int) {
         // chat listeners
-        ChatReceivedEvent chatevent = new ChatReceivedEvent(ichat, id);
-        chatevent.channels.add(DefaultChannel.INSTANCE);
-        MinecraftForge.EVENT_BUS.post(chatevent);
+        val chatevent = ChatReceivedEvent(ichat, id)
+        chatevent.channels.add(DefaultChannel)
+        MinecraftForge.EVENT_BUS.post(chatevent)
         // chat filters
-        ichat = chatevent.text;
-        id = chatevent.id;
-        if (ichat != null && !ichat.getString().isEmpty()) {
+        val ichat = chatevent.text
+        val id = chatevent.id
+        if (ichat != null && ichat.string.isNotEmpty()) {
             if (id != 0) {
                 // send removable msg to current channel
-                chatevent.channels.clear();
-                chatevent.channels.add(this.chatbox.getActiveChannel());
+                chatevent.channels.clear()
+                chatevent.channels.add(ChatBox.activeChannel)
             }
-            if (chatevent.channels.contains(DefaultChannel.INSTANCE) && chatevent.channels.size() > 1
-                    && !tc.getServerSettings().general.useDefaultTab.get()) {
-                chatevent.channels.remove(DefaultChannel.INSTANCE);
+            if (chatevent.channels.contains(DefaultChannel) && chatevent.channels.size > 1
+                    && !TabbyChatClient.serverSettings!!.general.useDefaultTab.value) {
+                chatevent.channels.remove(DefaultChannel)
             }
-            boolean msg = !chatevent.channels.contains(this.chatbox.getActiveChannel());
-            final Set<String> ignored = Sets.newHashSet(this.tc.getServerSettings().general.ignoredChannels.get());
-            Set<AbstractChannel> channels = chatevent.channels.stream()
-                    .filter(it -> !ignored.contains(it.getName()))
-                    .map(AbstractChannel.class::cast) // FIXME cast shouldn't be needed. Remove ASAP
-                    .collect(Collectors.toSet());
-            for (AbstractChannel channel : channels) {
-                ChatManager.instance().addMessage(channel, ichat, id);
+            val msg = !chatevent.channels.contains(ChatBox.activeChannel)
+            val ignored = TabbyChatClient.serverSettings!!.general.ignoredChannels.toSet()
+            val channels = chatevent.channels.asSequence()
+                    .filter { it.name !in ignored }
+                    // FIXME cast shouldn't be needed. Remove ASAP
+                    .toSet()
+            for (channel in channels) {
+                ChatManager.addMessage(channel, ichat, id)
                 if (msg) {
-                    chatbox.setStatus(channel, ChannelStatus.UNREAD);
+                    ChatBox.status[channel] = ChannelStatus.UNREAD
                 }
             }
-            TabbyChat.logger.info(TCMarkers.CHATBOX, "[CHAT] " + ichat.getString());
-            this.chatbox.tick();
+            TabbyChat.logger.info(CHATBOX, "[CHAT] " + ichat.string)
+            ChatBox.tick()
         }
     }
 
-    private void checkThread(Runnable runnable) {
-        if (!mc.isOnExecutionThread()) {
-            mc.enqueue(runnable);
-            TabbyChat.logger.warn(TCMarkers.CHATBOX, "Tried to modify chat from thread {}. To prevent a crash, it has been scheduled on the main thread.", Thread.currentThread().getName(), new Exception());
+    private fun checkThread(runnable: () -> Unit) {
+        if (!mc.isOnExecutionThread) {
+            mc.enqueue(runnable)
+            TabbyChat.logger.warn(CHATBOX, "Tried to modify chat from thread {}. To prevent a crash, it has been scheduled on the main thread.", Thread.currentThread().name, Exception())
         } else {
-            runnable.run();
+            runnable()
         }
     }
 
-    @Override
-    public void resetScroll() {
-        chatbox.getChatArea().resetScroll();
-        super.resetScroll();
+    override fun resetScroll() {
+        ChatBox.chatArea.resetScroll()
+        super.resetScroll()
     }
 
-    @Nonnull
-    @Override
-    public List<String> getSentMessages() {
-        return super.getSentMessages();
+    override fun getTextComponent(clickX: Double, clickY: Double): ITextComponent? {
+        return ChatBox.chatArea.getTextComponent(clickX.toInt(), clickY.toInt())
     }
 
-    @Override
-    @Nullable
-    public ITextComponent getTextComponent(double clickX, double clickY) {
-        return chatbox.getChatArea().getTextComponent((int) clickX, (int) clickY);
+    override fun getChatHeight(): Int {
+        return ChatBox.chatArea.location.height
     }
 
-    @Override
-    public int getChatHeight() {
-        return chatbox.getChatArea().getLocation().getHeight();
+    override fun getChatWidth(): Int {
+        return ChatBox.chatArea.location.width
     }
-
-    @Override
-    public int getChatWidth() {
-        return chatbox.getChatArea().getLocation().getWidth();
-    }
-
 }

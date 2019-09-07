@@ -1,58 +1,60 @@
-package mnm.mods.tabbychat.util.config;
+package mnm.mods.tabbychat.util.config
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
-import org.apache.commons.lang3.reflect.TypeUtils;
+import com.google.common.reflect.TypeParameter
+import com.google.common.reflect.TypeToken
+import com.google.gson.JsonDeserializationContext
+import com.google.gson.JsonDeserializer
+import com.google.gson.JsonElement
+import com.google.gson.JsonParseException
+import com.google.gson.JsonSerializationContext
+import com.google.gson.JsonSerializer
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.ParameterizedType
+import java.lang.reflect.Type
 
-class ValueSerializer implements JsonSerializer<Value<?>>, JsonDeserializer<Value<?>> {
+internal class ValueSerializer : JsonSerializer<AbstractValue<*>>, JsonDeserializer<AbstractValue<*>> {
 
-    @Override
-    public Value<?> deserialize(JsonElement json, Type type, JsonDeserializationContext context) throws JsonParseException {
-        Type arg = ((ParameterizedType) type).getActualTypeArguments()[0];
-        type = ((ParameterizedType) type).getRawType();
-        if (Value.class.equals(type)) {
-            return value(json, arg, context);
+    @Throws(JsonParseException::class)
+    override fun deserialize(json: JsonElement, type: Type, context: JsonDeserializationContext): AbstractValue<*>? {
+        val arg = (type as ParameterizedType).actualTypeArguments[0]
+        val rawType = type.rawType
+        if (AbstractValue::class.java == rawType) {
+            return value<Any>(json, arg, context)
         }
-        if (ValueList.class.equals(type)) {
-            return list(json, arg, context);
+        if (ValueList::class.java == rawType) {
+            return list<Any>(json, arg, context)
         }
-        if (ValueMap.class.equals(type)) {
-            return map(json, arg, context);
-        }
-        return null;
+        return if (ValueMap::class.java == rawType) {
+            map<Any>(json, arg, context)
+        } else null
     }
 
-    private <T> Value<T> value(JsonElement json, Type type, JsonDeserializationContext context) {
-        Value<T> s = new Value<>();
-        s.set(context.deserialize(json, type));
-        return s;
+    private fun <T> value(json: JsonElement, type: Type, context: JsonDeserializationContext): AbstractValue<T> {
+
+        return Value(context.deserialize(json, type))
     }
 
-    private <T> ValueList<T> list(JsonElement json, Type type, JsonDeserializationContext context) {
-        ValueList<T> l = new ValueList<>();
-        List<T> list = context.deserialize(json, TypeUtils.parameterize(List.class, type));
-        l.set(list);
-        return l;
+    private fun <T> list(json: JsonElement, type: Type, context: JsonDeserializationContext): ValueList<T> {
+        return ValueList(context.deserialize(json, listType<T>(type).type))
     }
 
-    private <T> ValueMap<T> map(JsonElement json, Type type, JsonDeserializationContext context) {
-        ValueMap<T> m = new ValueMap<>();
-        Map<String, T> map = context.deserialize(json, TypeUtils.parameterize(Map.class, String.class, type));
-        m.set(map);
-        return m;
+    private fun <T> map(json: JsonElement, type: Type, context: JsonDeserializationContext): ValueMap<T> {
+        return ValueMap(context.deserialize(json, mapType<T>(type).type))
     }
 
-    @Override
-    public JsonElement serialize(Value<?> src, Type typeOfSrc, JsonSerializationContext context) {
-        return context.serialize(src.get());
+    override fun serialize(src: AbstractValue<*>, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
+        return context.serialize(src.value)
+    }
+
+    private fun <T> listType(type: Type): TypeToken<List<T>> {
+        return object : TypeToken<List<T>>() {}
+                .where(object : TypeParameter<T>() {}, type.token())
+    }
+
+    private fun <T> mapType(type: Type): TypeToken<Map<String, T>> {
+        return object : TypeToken<Map<String, T>>() {}
+                .where(object : TypeParameter<T>() {}, type.token())
     }
 }
+
+fun <T> Type.token() = TypeToken.of(this) as TypeToken<T>

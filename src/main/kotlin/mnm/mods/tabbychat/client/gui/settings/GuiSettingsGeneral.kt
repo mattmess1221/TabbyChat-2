@@ -1,100 +1,84 @@
-package mnm.mods.tabbychat.client.gui.settings;
+package mnm.mods.tabbychat.client.gui.settings
 
-import static mnm.mods.tabbychat.util.Translation.*;
+import mnm.mods.tabbychat.client.TabbyChatClient
+import mnm.mods.tabbychat.client.gui.component.GuiLabel
+import mnm.mods.tabbychat.client.gui.component.config.GuiSettingBoolean
+import mnm.mods.tabbychat.client.gui.component.config.GuiSettingEnum
+import mnm.mods.tabbychat.client.gui.component.config.GuiSettingNumber.GuiSettingDouble
+import mnm.mods.tabbychat.client.gui.component.config.SettingPanel
+import mnm.mods.tabbychat.client.gui.component.layout.GuiGridLayout
+import mnm.mods.tabbychat.client.settings.TabbySettings
+import mnm.mods.tabbychat.util.Color
+import mnm.mods.tabbychat.util.TimeStamps
+import mnm.mods.tabbychat.util.Translatable
+import mnm.mods.tabbychat.util.Translation
+import net.minecraft.util.text.TextFormatting
+import java.text.NumberFormat
 
-import mnm.mods.tabbychat.client.TabbyChatClient;
-import mnm.mods.tabbychat.client.settings.GeneralSettings;
-import mnm.mods.tabbychat.client.settings.TabbySettings;
-import mnm.mods.tabbychat.util.TimeStamps;
-import mnm.mods.tabbychat.util.Color;
-import mnm.mods.tabbychat.client.gui.component.layout.GuiGridLayout;
-import mnm.mods.tabbychat.client.gui.component.GuiLabel;
-import mnm.mods.tabbychat.client.gui.component.config.GuiSettingBoolean;
-import mnm.mods.tabbychat.client.gui.component.config.GuiSettingEnum;
-import mnm.mods.tabbychat.client.gui.component.config.GuiSettingNumber.GuiSettingDouble;
-import mnm.mods.tabbychat.client.gui.component.config.SettingPanel;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+internal class GuiSettingsGeneral : SettingPanel<TabbySettings>() {
 
-import java.text.NumberFormat;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+    private val colors: Array<TextFormatting> = TextFormatting.values().filter { it.isColor }.toTypedArray()
 
-public class GuiSettingsGeneral extends SettingPanel<TabbySettings> {
+    override val settings: TabbySettings = TabbyChatClient.settings
 
-    GuiSettingsGeneral() {
-        setLayout(new GuiGridLayout(10, 20));
-        setDisplayString(I18n.format(SETTINGS_GENERAL));
-        setSecondaryColor(Color.of(255, 0, 255, 64));
+    override val displayString: String by Translation.SETTINGS_GENERAL
+
+    init {
+        layout = GuiGridLayout(10, 20)
+        secondaryColor = Color(255, 0, 255, 64)
     }
 
-    @Override
-    public void initGUI() {
-        GeneralSettings sett = getSettings().general;
+    override fun initGUI() {
+        val sett = settings.general
 
-        int pos = 1;
-        add(new GuiLabel(new TranslationTextComponent(LOG_CHAT)), new int[] { 2, pos });
-        GuiSettingBoolean chkLogChat = new GuiSettingBoolean(sett.logChat);
-        chkLogChat.setCaption(new TranslationTextComponent(LOG_CHAT_DESC));
-        add(chkLogChat, new int[] { 1, pos });
+        var pos = 1
+        add(GuiLabel(Translation.LOG_CHAT.toComponent()), intArrayOf(2, pos))
+        add(GuiSettingBoolean(sett.logChat), intArrayOf(1, pos)).apply {
+            caption = Translation.LOG_CHAT_DESC.toComponent()
+        }
 
-        add(new GuiLabel(new TranslationTextComponent(SPLIT_LOG)), new int[] { 7, pos });
-        GuiSettingBoolean chkSplitLog = new GuiSettingBoolean(sett.splitLog);
-        chkSplitLog.setCaption(new TranslationTextComponent(SPLIT_LOG_DESC));
-        add(chkSplitLog, new int[] { 6, pos });
+        add(GuiLabel(Translation.SPLIT_LOG.toComponent()), intArrayOf(7, pos))
+        add(GuiSettingBoolean(sett.splitLog), intArrayOf(6, pos)).apply {
+            caption = Translation.SPLIT_LOG_DESC.toComponent()
+        }
 
-        pos += 2;
-        add(new GuiLabel(new TranslationTextComponent(TIMESTAMP)), new int[] { 2, pos });
-        add(new GuiSettingBoolean(sett.timestampChat), new int[] { 1, pos });
+        pos += 2
+        add(GuiLabel(Translation.TIMESTAMP.toComponent()), intArrayOf(2, pos))
+        add(GuiSettingBoolean(sett.timestampChat), intArrayOf(1, pos))
 
-        pos += 2;
-        add(new GuiLabel(new TranslationTextComponent(TIMESTAMP_STYLE)), new int[] { 3, pos });
-        add(new GuiSettingEnum<>(sett.timestampStyle, TimeStamps.values()), new int[] { 5, pos, 4, 1 });
+        pos += 2
+        add(GuiLabel(Translation.TIMESTAMP_STYLE.toComponent()), intArrayOf(3, pos))
+        add(GuiSettingEnum.of(sett.timestampStyle, TimeStamps.values()), intArrayOf(5, pos, 4, 1))
 
-        pos += 2;
-        add(new GuiLabel(new TranslationTextComponent(TIMESTAMP_COLOR)), new int[] { 3, pos });
-        add(new GuiSettingEnum<>(sett.timestampColor, getColors(), GuiSettingsGeneral::getColorName), new int[] { 5, pos, 4, 1 });
+        pos += 2
+        add(GuiLabel(Translation.TIMESTAMP_COLOR.toComponent()), intArrayOf(3, pos))
+        add(GuiSettingEnum(sett.timestampColor, colors) { { "colors.$friendlyName" } as Translatable }, intArrayOf(5, pos, 4, 1))
 
-        pos += 2;
-        add(new GuiLabel(new TranslationTextComponent(ANTI_SPAM)), new int[] { 2, pos });
-        GuiSettingBoolean chkSpam = new GuiSettingBoolean(sett.antiSpam);
-        chkSpam.setCaption(new TranslationTextComponent(ANTI_SPAM_DESC));
-        add(chkSpam, new int[] { 1, pos });
+        pos += 2
+        add(GuiLabel(Translation.ANTI_SPAM.toComponent()), intArrayOf(2, pos))
+        add(GuiSettingBoolean(sett.antiSpam), intArrayOf(1, pos)).apply {
+            caption = Translation.ANTI_SPAM_DESC.toComponent()
+        }
 
-        pos += 2;
-        add(new GuiLabel(new TranslationTextComponent(SPAM_PREJUDICE)), new int[] { 3, pos });
-        GuiSettingDouble nud = new GuiSettingDouble(sett.antiSpamPrejudice);
-        nud.getComponent().setMin(0);
-        nud.getComponent().setMax(1);
-        nud.getComponent().setInterval(0.05);
-        nud.getComponent().setFormat(NumberFormat.getPercentInstance());
-        nud.setCaption(new TranslationTextComponent(SPAM_PREJUDICE_DESC));
-        add(nud, new int[] { 6, pos, 2, 1 });
+        pos += 2
+        add(GuiLabel(Translation.SPAM_PREJUDICE.toComponent()), intArrayOf(3, pos))
+        add(GuiSettingDouble(sett.antiSpamPrejudice), intArrayOf(6, pos, 2, 1)).apply {
+            delegate.apply {
+                min = 0.0
+                max = 1.0
+                interval = 0.05
+                format = NumberFormat.getPercentInstance()
+            }
+            caption = Translation.SPAM_PREJUDICE_DESC.toComponent()
+        }
 
-        pos += 2;
-        add(new GuiLabel(new TranslationTextComponent(UNREAD_FLASHING)), new int[] { 2, pos });
-        add(new GuiSettingBoolean(sett.unreadFlashing), new int[] { 1, pos });
+        pos += 2
+        add(GuiLabel(Translation.UNREAD_FLASHING.toComponent()), intArrayOf(2, pos))
+        add(GuiSettingBoolean(sett.unreadFlashing), intArrayOf(1, pos))
 
-        pos += 2;
-        add(new GuiLabel(new TranslationTextComponent(CHECK_UPDATES)), new int[] { 2, pos });
-        add(new GuiSettingBoolean(sett.checkUpdates), new int[] { 1, pos });
-    }
-
-    private static List<TextFormatting> getColors() {
-        return Stream.of(TextFormatting.values())
-                .filter(TextFormatting::isColor)
-                .collect(Collectors.toList());
-    }
-
-    private static String getColorName(TextFormatting input) {
-        return "colors." + input.getFriendlyName();
-    }
-
-    @Override
-    public TabbySettings getSettings() {
-        return TabbyChatClient.getInstance().getSettings();
+        pos += 2
+        add(GuiLabel(Translation.CHECK_UPDATES.toComponent()), intArrayOf(2, pos))
+        add(GuiSettingBoolean(sett.checkUpdates), intArrayOf(1, pos))
     }
 
 }

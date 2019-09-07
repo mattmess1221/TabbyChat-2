@@ -1,64 +1,55 @@
-package mnm.mods.tabbychat.client.gui.component.layout;
+package mnm.mods.tabbychat.client.gui.component.layout
 
-import java.util.List;
-
-import com.google.common.collect.Lists;
-
-import mnm.mods.tabbychat.client.gui.component.GuiComponent;
-import mnm.mods.tabbychat.client.gui.component.GuiPanel;
-import mnm.mods.tabbychat.util.Dim;
-import mnm.mods.tabbychat.util.ILocation;
-import mnm.mods.tabbychat.util.Location;
+import mnm.mods.tabbychat.client.gui.component.GuiComponent
+import mnm.mods.tabbychat.client.gui.component.GuiPanel
+import mnm.mods.tabbychat.util.Dim
+import kotlin.math.max
 
 /**
- * Displays components top to bottom. Like {@link FlowLayout}, but vertical.
- * 
+ * Displays components top to bottom. Like [FlowLayout], but vertical.
+ *
  * @author Matthew
  */
-public class VerticalLayout implements ILayout {
+class VerticalLayout : ILayout {
 
-    private List<GuiComponent> list = Lists.newArrayList();
+    private val list = ArrayList<GuiComponent>()
 
-    @Override
-    public void addComponent(GuiComponent comp, Object constraints) {
+    override val layoutSize: Dim
+        get() {
+            var width = 0
+            var height = 0
+            for (comp in list) {
+                width = max(width, comp.location.width)
+                height += comp.minimumSize.height
+            }
+            return Dim(width, height)
+        }
+
+    override fun addComponent(comp: GuiComponent, constraints: Any?) {
         if (constraints != null) {
-            if (constraints instanceof Integer) {
-                list.add((Integer) constraints, comp);
+            if (constraints is Int) {
+                list.add((constraints as Int?)!!, comp)
             } else {
-                throw new IllegalArgumentException("Illegal constraint of type: "
-                        + constraints.getClass().getName() + ". Only int accepted.");
+                throw IllegalArgumentException("Illegal constraint of type: ${constraints.javaClass.name}. Only int accepted.")
             }
         } else {
-            list.add(comp);
+            list.add(comp)
         }
     }
 
-    @Override
-    public void removeComponent(GuiComponent comp) {
-        list.remove(comp);
+    override fun removeComponent(comp: GuiComponent) {
+        list.remove(comp)
     }
 
-    @Override
-    public void layoutComponents(GuiPanel parent) {
-        ILocation par = parent.getLocation();
-        int y = par.getYPos();
-        for (GuiComponent comp : list) {
-            Location loc = comp.getLocation().copy();
-            loc.setXPos(par.getXPos());
-            loc.setYPos(y);
-            comp.setLocation(loc);
-            y += comp.getMinimumSize().height;
+    override fun layoutComponents(parent: GuiPanel) {
+        val par = parent.location
+        var y = par.yPos
+        for (comp in list) {
+            val loc = comp.location.copy()
+            loc.xPos = par.xPos
+            loc.yPos = y
+            comp.location = loc
+            y += comp.minimumSize.height
         }
-    }
-
-    @Override
-    public Dim getLayoutSize() {
-        int width = 0;
-        int height = 0;
-        for (GuiComponent comp : list) {
-            width = Math.max(width, comp.getLocation().getWidth());
-            height += comp.getMinimumSize().height;
-        }
-        return new Dim(width, height);
     }
 }

@@ -1,42 +1,27 @@
-package mnm.mods.tabbychat.util.config;
-
-import java.util.Objects;
+package mnm.mods.tabbychat.util.config
 
 /**
  * A wrapper that saves a default value.
  *
  * @param <T> The type to wrap
  */
-public class Value<T> {
+abstract class AbstractValue<T> {
 
-    protected T value;
+    abstract val value: T
 
-    public Value() {}
-
-    public Value(T val) {
-        set(val);
-    }
-
-    /**
-     * Sets the value.
-     *
-     * @param val The new value
-     */
-    public void set(T val) {
-        this.value = val;
-    }
-
-    /**
-     * Gets the value.
-     *
-     * @return The value
-     */
-    public T get() {
-        return this.value;
-    }
-
-    @Override
-    public String toString() {
-        return Objects.toString(this.value);
+    override fun toString(): String {
+        return value.toString()
     }
 }
+
+class Value<T>(override var value: T) : AbstractValue<T>()
+
+class ValueList<T> internal constructor(
+        override val value: MutableList<T> = mutableListOf()
+) : AbstractValue<MutableList<T>>(), MutableList<T> by value
+
+class ValueMap<T> internal constructor(
+        override val value: MutableMap<String, T> = mutableMapOf()
+) : AbstractValue<Map<String, T>>(), MutableMap<String, T> by value
+
+abstract class ValueObject

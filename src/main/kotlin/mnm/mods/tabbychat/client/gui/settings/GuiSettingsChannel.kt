@@ -1,170 +1,151 @@
-package mnm.mods.tabbychat.client.gui.settings;
+package mnm.mods.tabbychat.client.gui.settings
 
-import static mnm.mods.tabbychat.util.Translation.*;
+import mnm.mods.tabbychat.client.AbstractChannel
+import mnm.mods.tabbychat.client.ChatChannel
+import mnm.mods.tabbychat.client.TabbyChatClient
+import mnm.mods.tabbychat.client.gui.ChatBox
+import mnm.mods.tabbychat.client.settings.ServerSettings
+import mnm.mods.tabbychat.util.Color
+import mnm.mods.tabbychat.util.Location
+import mnm.mods.tabbychat.client.gui.component.layout.BorderLayout
+import mnm.mods.tabbychat.client.gui.component.GuiButton
+import mnm.mods.tabbychat.client.gui.component.GuiCheckbox
+import mnm.mods.tabbychat.client.gui.component.layout.GuiGridLayout
+import mnm.mods.tabbychat.client.gui.component.GuiLabel
+import mnm.mods.tabbychat.client.gui.component.GuiPanel
+import mnm.mods.tabbychat.client.gui.component.GuiScrollingPanel
+import mnm.mods.tabbychat.client.gui.component.GuiText
+import mnm.mods.tabbychat.client.gui.component.layout.VerticalLayout
+import mnm.mods.tabbychat.client.gui.component.config.SettingPanel
+import mnm.mods.tabbychat.util.Translation
+import net.minecraft.client.resources.I18n
 
-import mnm.mods.tabbychat.client.AbstractChannel;
-import mnm.mods.tabbychat.client.ChatChannel;
-import mnm.mods.tabbychat.client.TabbyChatClient;
-import mnm.mods.tabbychat.client.core.GuiNewChatTC;
-import mnm.mods.tabbychat.client.settings.ServerSettings;
-import mnm.mods.tabbychat.util.Color;
-import mnm.mods.tabbychat.util.Location;
-import mnm.mods.tabbychat.client.gui.component.layout.BorderLayout;
-import mnm.mods.tabbychat.client.gui.component.GuiButton;
-import mnm.mods.tabbychat.client.gui.component.GuiCheckbox;
-import mnm.mods.tabbychat.client.gui.component.GuiComponent;
-import mnm.mods.tabbychat.client.gui.component.layout.GuiGridLayout;
-import mnm.mods.tabbychat.client.gui.component.GuiLabel;
-import mnm.mods.tabbychat.client.gui.component.GuiPanel;
-import mnm.mods.tabbychat.client.gui.component.GuiScrollingPanel;
-import mnm.mods.tabbychat.client.gui.component.GuiText;
-import mnm.mods.tabbychat.client.gui.component.layout.VerticalLayout;
-import mnm.mods.tabbychat.client.gui.component.config.SettingPanel;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.util.text.TranslationTextComponent;
+internal class GuiSettingsChannel(private var channel: AbstractChannel? = null) : SettingPanel<ServerSettings>() {
 
-public class GuiSettingsChannel extends SettingPanel<ServerSettings> {
+    private lateinit var channels: GuiScrollingPanel
+    private lateinit var panel: GuiPanel
 
-    private AbstractChannel channel;
+    private lateinit var optAlias: GuiText
+    private lateinit var optPrefix: GuiText
+    private lateinit var optHidePrefix: GuiCheckbox
+    private lateinit var optCommand: GuiText
 
-    private GuiScrollingPanel channels;
-    private GuiPanel panel;
+    override val displayString by Translation.CHANNEL_TITLE
 
-    private GuiText alias;
-    private GuiText prefix;
-    private GuiCheckbox hidePrefix;
-    private GuiText command;
+    override val settings: ServerSettings = TabbyChatClient.serverSettings!!
 
-    GuiSettingsChannel() {
-        this(null);
+    init {
+        this.layout = BorderLayout()
+        this.secondaryColor = Color(0, 15, 100, 65)
     }
 
-    public GuiSettingsChannel(AbstractChannel channel) {
-        this.channel = channel;
-        this.setLayout(new BorderLayout());
-        this.setDisplayString(I18n.format(CHANNEL_TITLE));
-        this.setSecondaryColor(Color.of(0, 15, 100, 65));
-    }
-
-    @Override
-    public void initGUI() {
-        channels = new GuiScrollingPanel();
-        channels.setLocation(new Location(0, 0, 60, 200));
-        channels.getContentPanel().setLayout(new VerticalLayout());
-        for (ChatChannel channel : getSettings().channels.get().values()) {
-            channels.getContentPanel().add(new ChannelButton(channel));
-        }
-        this.add(channels, BorderLayout.Position.WEST);
-        panel = new GuiPanel();
-        panel.setLayout(new GuiGridLayout(8, 20));
-        this.add(panel, BorderLayout.Position.CENTER);
-
-        this.select(channel);
-    }
-
-    private void select(AbstractChannel channel) {
-
-        for (GuiComponent comp : channels.getContentPanel().children()) {
-            if (((ChannelButton) comp).channel == channel) {
-                comp.setEnabled(false);
-            } else {
-                comp.setEnabled(true);
+    override fun initGUI() {
+        channels = add(GuiScrollingPanel(), BorderLayout.Position.WEST).apply {
+            location = Location(0, 0, 60, 200)
+            contentPanel.apply {
+                layout = VerticalLayout()
+                for (channel in settings.channels.values) {
+                    add(ChannelButton(channel), null)
+                }
             }
         }
 
-        int pos = 1;
+        this.add(GuiPanel(), BorderLayout.Position.CENTER).apply {
+            layout = GuiGridLayout(8, 20)
+        }
 
-        this.channel = channel;
-        this.panel.clear();
+        this.select(channel)
+    }
+
+    private fun select(channel: AbstractChannel?) {
+
+        for (comp in channels.contentPanel.children()) {
+            comp.isEnabled = (comp as ChannelButton).channel !== channel
+        }
+
+        var pos = 1
+
+        this.channel = channel
+        this.panel.clear()
         if (channel == null) {
-            if (channels.getContentPanel().children().size() > 0) {
-                this.panel.add(new GuiLabel(new TranslationTextComponent(CHANNEL_SELECT)), new int[] { 1, pos });
+            if (channels.contentPanel.children().isNotEmpty()) {
+                this.panel.add(GuiLabel(Translation.CHANNEL_SELECT.toComponent()), intArrayOf(1, pos))
             } else {
-                this.panel.add(new GuiLabel(new TranslationTextComponent(CHANNEL_NONE)), new int[] { 1, pos });
+                this.panel.add(GuiLabel(Translation.CHANNEL_NONE.toComponent()), intArrayOf(1, pos))
             }
-            return;
+            return
         }
-        this.panel.add(
-                new GuiLabel(new TranslationTextComponent(CHANNEL_LABEL, channel.getName())),
-                new int[] { 1, pos });
+        this.panel.add(GuiLabel(Translation.CHANNEL_LABEL.toComponent(channel.name)), intArrayOf(1, pos))
 
-        pos += 3;
-        this.panel.add(new GuiLabel(new TranslationTextComponent(CHANNEL_ALIAS)), new int[] { 1, pos });
-        this.panel.add(alias = new GuiText(), new int[] { 3, pos, 4, 1 });
-        alias.setValue(channel.getAlias());
+        pos += 3
+        this.panel.add(GuiLabel(Translation.CHANNEL_ALIAS.toComponent()), intArrayOf(1, pos))
+        optAlias = this.panel.add(GuiText(), intArrayOf(3, pos, 4, 1)).apply {
+            value = channel.alias
+        }
 
-        pos += 2;
-        this.panel.add(new GuiLabel(new TranslationTextComponent(CHANNEL_PREFIX)), new int[] { 1, pos });
-        this.panel.add(prefix = new GuiText(), new int[] { 3, pos, 4, 1 });
-        prefix.setValue(channel.getPrefix());
+        pos += 2
+        this.panel.add(GuiLabel(Translation.CHANNEL_PREFIX.toComponent()), intArrayOf(1, pos))
+        optPrefix = this.panel.add(GuiText(), intArrayOf(3, pos, 4, 1)).apply {
+            value = channel.prefix
+        }
 
-        pos += 2;
-        this.panel.add(hidePrefix = new GuiCheckbox(), new int[] { 1, pos });
-        hidePrefix.setValue(channel.isPrefixHidden());
-        this.panel.add(new GuiLabel(new TranslationTextComponent(CHANNEL_HIDE_PREFIX)), new int[] { 2, pos });
+        pos += 2
+        optHidePrefix = this.panel.add(GuiCheckbox(), intArrayOf(1, pos)).apply {
+            value = channel.isPrefixHidden
+        }
+        this.panel.add(GuiLabel(Translation.CHANNEL_HIDE_PREFIX.toComponent()), intArrayOf(2, pos))
 
-        pos += 2;
-        this.panel.add(command = new GuiText(), new int[] { 3, pos, 4, 1 });
-        command.setValue(channel.getCommand());
-        this.panel.add(new GuiLabel(new TranslationTextComponent(CHANNEL_COMMAND)), new int[] { 1, pos });
+        pos += 2
+        this.panel.add(GuiLabel(Translation.CHANNEL_COMMAND.toComponent()), intArrayOf(1, pos))
+        optCommand = this.panel.add(GuiText(), intArrayOf(3, pos, 4, 1)).apply {
+            value = channel.command
+        }
 
-        GuiButton accept = new GuiButton(I18n.format("gui.done")){
-            @Override
-            public void onClick(double mouseX, double mouseY) {
-                save();
+        this.panel.add<GuiButton>(object : GuiButton(I18n.format("gui.done")) {
+            override fun onClick(mouseX: Double, mouseY: Double) {
+                save()
             }
-        };
-        this.panel.add(accept, new int[] { 2, 15, 4, 2 });
+        }, intArrayOf(2, 15, 4, 2))
 
-        GuiButton forget = new GuiButton(I18n.format(CHANNEL_FORGET)){
-            @Override
-            public void onClick(double mouseX, double mouseY) {
+        this.panel.add<GuiButton>(object : GuiButton(Translation.CHANNEL_FORGET.translate()) {
+            override fun onClick(mouseX: Double, mouseY: Double) {
 
-                AbstractChannel channel = GuiSettingsChannel.this.channel;
+//                val channel = this@GuiSettingsChannel.channel
                 // remove from chat
-                GuiNewChatTC.getInstance().getChatBox().removeChannel(channel);
+                ChatBox.removeChannel(channel)
                 // remove from settings file
-                getSettings().channels.get().remove(channel.getName());
+                settings.channels.remove(channel.name)
                 // don't add this channel again.
-                getSettings().general.ignoredChannels.add(channel.toString());
+                settings.general.ignoredChannels.add(channel.toString())
                 // remove from settings gui
-                for (GuiComponent comp : channels.getContentPanel().children()) {
-                    if (comp instanceof ChannelButton && ((ChannelButton) comp).channel == channel) {
-                        channels.getContentPanel().remove(comp);
-                        break;
+                for (comp in channels.contentPanel.children()) {
+                    if (comp is ChannelButton && comp.channel === channel) {
+                        channels.contentPanel.remove(comp)
+                        break
                     }
                 }
-                select(null);
+                select(null)
             }
-        };
-        this.panel.add(forget, new int[] { 2, 17, 4, 2 });
+        }, intArrayOf(2, 17, 4, 2))
     }
 
-    private void save() {
-        channel.setAlias(alias.getValue());
-        channel.setPrefix(prefix.getValue());
-        channel.setPrefixHidden(hidePrefix.getValue());
-        channel.setCommand(command.getValue());
+    private fun save() {
+        channel?.apply {
+            alias = optAlias.value
+            prefix = optPrefix.value
+            isPrefixHidden = optHidePrefix.value
+            command = optCommand.value
+        }
     }
 
-    @Override
-    public ServerSettings getSettings() {
-        return TabbyChatClient.getInstance().getServerSettings();
-    }
+    inner class ChannelButton internal constructor(internal val channel: ChatChannel) : GuiButton(channel.name) {
 
-    public class ChannelButton extends GuiButton {
-
-        private ChatChannel channel;
-
-        ChannelButton(ChatChannel channel) {
-            super(channel.getName());
-            this.channel = channel;
-            setLocation(new Location(0, 0, 60, 15));
+        init {
+            location = Location(0, 0, 60, 15)
         }
 
-        @Override
-        public void onClick(double mouseX, double mouseY) {
-            select(channel);
+        override fun onClick(mouseX: Double, mouseY: Double) {
+            select(channel)
         }
     }
 }

@@ -1,18 +1,20 @@
-package mnm.mods.tabbychat.api;
+package mnm.mods.tabbychat.api
 
 /**
  * An enum for chanel statuses. A null value means the channel is currently
  * inactive. Only one status can be in effect at a time.
- * <p>
+ *
+ *
  * Setting a status with a lower priority than the current one will not take
  * effect. Priority is determined by the ordinal; a lower ordinal has a higher
- * priority. e.g. {@link #ACTIVE} has the highest priority while {@link #JOINED}
+ * priority. e.g. [.ACTIVE] has the highest priority while [.JOINED]
  * has the lowest.
- * <p>
- * {@code null} is special and has both highest and lowest priorities. The
+ *
+ *
+ * `null` is special and has both highest and lowest priorities. The
  * status will always be set when the old value or new value is null.
  */
-public enum ChannelStatus {
+enum class ChannelStatus {
 
     /**
      * For the active channel.

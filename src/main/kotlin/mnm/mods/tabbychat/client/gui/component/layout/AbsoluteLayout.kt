@@ -1,55 +1,46 @@
-package mnm.mods.tabbychat.client.gui.component.layout;
+package mnm.mods.tabbychat.client.gui.component.layout
 
-import mnm.mods.tabbychat.client.gui.component.GuiComponent;
-import mnm.mods.tabbychat.client.gui.component.GuiPanel;
-import mnm.mods.tabbychat.util.Dim;
-import mnm.mods.tabbychat.util.ILocation;
-import mnm.mods.tabbychat.util.Location;
+import mnm.mods.tabbychat.client.gui.component.GuiComponent
+import mnm.mods.tabbychat.client.gui.component.GuiPanel
+import mnm.mods.tabbychat.util.Dim
+import mnm.mods.tabbychat.util.ILocation
+import mnm.mods.tabbychat.util.Location
+import java.lang.Math.max
 
-import java.util.IdentityHashMap;
-import java.util.Map;
+import java.util.IdentityHashMap
 
-public class AbsoluteLayout implements ILayout {
+class AbsoluteLayout : ILayout {
 
-    private Map<GuiComponent, ILocation> components = new IdentityHashMap<>();
+    private val components = IdentityHashMap<GuiComponent, ILocation>()
 
-    @Override
-    public void addComponent(GuiComponent comp, Object constraints) {
-        if (constraints != null && !(constraints instanceof ILocation)) {
-            throw new IllegalArgumentException("Nonnull constraint must be ILocation");
+    override val layoutSize: Dim
+        get() {
+            var width = 0
+            var height = 0
+            for (comp in components.keys) {
+                width = max(width, comp.location.width)
+                height = max(height, comp.location.height)
+            }
+            return Dim(width, height)
         }
-        ILocation loc = (ILocation) constraints;
-        if (loc == null) {
-            loc = new Location();
+
+    override fun addComponent(comp: GuiComponent, constraints: Any?) {
+        if (constraints != null && constraints !is ILocation) {
+            throw IllegalArgumentException("Nonnull constraint must be ILocation")
         }
-        components.put(comp, loc.asImmutable());
+        val loc: ILocation = constraints as? ILocation ?: Location()
+        components[comp] = loc.asImmutable()
     }
 
-    @Override
-    public void removeComponent(GuiComponent comp) {
-        components.remove(comp);
+    override fun removeComponent(comp: GuiComponent) {
+        components.remove(comp)
     }
 
-    @Override
-    public void layoutComponents(GuiPanel parent) {
-        ILocation ploc = parent.getLocation();
-        for (Map.Entry<GuiComponent, ILocation> e : components.entrySet()) {
-            GuiComponent comp = e.getKey();
-            Location loc = e.getValue().copy();
-            comp.setLocation(loc.move(ploc.getXPos(), ploc.getYPos()));
+    override fun layoutComponents(parent: GuiPanel) {
+        val ploc = parent.location
+        for ((comp, value) in components) {
+            val loc = value.copy()
+            comp.location = loc.move(ploc.xPos, ploc.yPos)
         }
-    }
-
-    @Override
-    public Dim getLayoutSize() {
-        int width = 0;
-        int height = 0;
-        for (Map.Entry<GuiComponent, ILocation> e : components.entrySet()) {
-            GuiComponent comp = e.getKey();
-            ILocation loc = e.getValue();
-            width = Math.max(width, comp.getLocation().getWidth());
-            height = Math.max(height, comp.getLocation().getHeight());
-        }
-        return new Dim(width, height);
     }
 }

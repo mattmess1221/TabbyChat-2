@@ -1,34 +1,29 @@
-package mnm.mods.tabbychat.client.gui;
+package mnm.mods.tabbychat.client.gui
 
-import mnm.mods.tabbychat.util.ILocation;
-import mnm.mods.tabbychat.client.gui.component.GuiComponent;
+import mnm.mods.tabbychat.client.gui.component.GuiComponent
+import mnm.mods.tabbychat.util.mc
+import kotlin.math.absoluteValue
+import kotlin.math.max
 
-public class Scrollbar extends GuiComponent {
+class Scrollbar(private val chat: ChatArea) : GuiComponent() {
 
-    private ChatArea chat;
-
-    public Scrollbar(ChatArea chat) {
-        this.chat = chat;
-    }
-
-    @Override
-    public void render(int mouseX, int mouseY, float parTicks) {
-        if (mc.ingameGUI.getChatGUI().getChatOpen()) {
-            int scroll = chat.getScrollPos();
-            int max = chat.getLocation().getHeight();
-            int lines = max / mc.fontRenderer.FONT_HEIGHT;
-            int total = chat.getChat().size();
+    override fun render(mouseX: Int, mouseY: Int, parTicks: Float) {
+        if (mc.ingameGUI.chatGUI.chatOpen) {
+            val scroll = chat.scrollPos.toFloat()
+            val max = chat.location.height.toFloat()
+            val lines = max / mc.fontRenderer.FONT_HEIGHT
+            var total = chat.chat.size.toFloat()
             if (total <= lines) {
-                return;
+                return
             }
-            total -= lines;
-            int size = Math.max(max / 2 - total, 10);
-            float perc = Math.abs((float) scroll / (float) total - 1) * Math.abs((float) size / (float) max - 1);
-            int pos = (int) (perc * max);
+            total -= lines
+            val size = max(max / 2 - total, 10.toFloat())
+            val perc = ((scroll / total - 1) * (size / max - 1)).absoluteValue
+            val pos = (perc * max).toInt()
 
-            ILocation loc = getLocation();
-            fill(loc.getXPos(), loc.getYPos() + pos, loc.getXPos() + 1, loc.getYPos() + pos + size, -1);
-            super.render(mouseX, mouseY, parTicks);
+            val loc = location
+            fill(loc.xPos, loc.yPos + pos, loc.xPos + 1, loc.yPos + pos + size.toInt(), -1)
+            super.render(mouseX, mouseY, parTicks)
         }
     }
 

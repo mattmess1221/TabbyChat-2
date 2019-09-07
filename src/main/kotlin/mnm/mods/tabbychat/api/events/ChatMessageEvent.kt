@@ -1,29 +1,18 @@
-package mnm.mods.tabbychat.api.events;
+package mnm.mods.tabbychat.api.events
 
-import com.google.common.collect.Sets;
-import mnm.mods.tabbychat.api.Channel;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
+import mnm.mods.tabbychat.api.Channel
+import net.minecraft.util.text.ITextComponent
+import net.minecraftforge.eventbus.api.Cancelable
+import net.minecraftforge.eventbus.api.Event
 
-import java.util.Set;
-
-public abstract class ChatMessageEvent extends Event {
+abstract class ChatMessageEvent : Event() {
 
     /**
      * Used to listen to chat and modify it. Can also select which channels it
      * goes to.
      */
     @Cancelable
-    public static class ChatReceivedEvent extends ChatMessageEvent {
-
-        public ITextComponent text;
-        public int id;
-        public Set<Channel> channels = Sets.newHashSet();
-
-        public ChatReceivedEvent(ITextComponent text, int id) {
-            this.text = text;
-            this.id = id;
-        }
+    class ChatReceivedEvent(var text: ITextComponent?, var id: Int) : ChatMessageEvent() {
+        var channels: MutableSet<Channel> = mutableSetOf()
     }
 }

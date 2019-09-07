@@ -1,200 +1,183 @@
-package mnm.mods.tabbychat.client.extra.filters;
+package mnm.mods.tabbychat.client.extra.filters
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import mnm.mods.tabbychat.api.filters.FilterSettings;
-import mnm.mods.tabbychat.client.gui.component.GuiButton;
-import mnm.mods.tabbychat.client.gui.component.GuiCheckbox;
-import mnm.mods.tabbychat.client.gui.component.GuiLabel;
-import mnm.mods.tabbychat.client.gui.component.GuiPanel;
-import mnm.mods.tabbychat.client.gui.component.GuiText;
-import mnm.mods.tabbychat.client.gui.component.layout.GuiGridLayout;
-import mnm.mods.tabbychat.util.Color;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.registries.ForgeRegistries;
-import org.lwjgl.glfw.GLFW;
+import com.google.common.base.Joiner
+import mnm.mods.tabbychat.client.gui.component.*
+import mnm.mods.tabbychat.client.gui.component.layout.GuiGridLayout
+import mnm.mods.tabbychat.util.Color
+import mnm.mods.tabbychat.util.Translation
+import mnm.mods.tabbychat.util.toComponent
+import net.minecraft.client.resources.I18n
+import net.minecraft.util.ResourceLocation
+import net.minecraft.util.SoundEvent
+import net.minecraft.util.text.TextFormatting
+import net.minecraftforge.fml.common.registry.GameRegistry
+import net.minecraftforge.registries.ForgeRegistries
+import org.lwjgl.glfw.GLFW
 
-import java.util.List;
-import java.util.stream.Collectors;
+class GuiFilterEditor(private val filter: UserFilter) : GuiPanel() {
 
-import static mnm.mods.tabbychat.util.Translation.*;
+    private val txtName: GuiText
+    private val chkRemove: GuiCheckbox
+    private val txtDestinations: GuiText
+    private val chkSound: GuiCheckbox
+    private val txtSound: GuiText
+    private val txtPattern: GuiText
+    private val lblError: GuiLabel
 
-public class GuiFilterEditor extends GuiPanel {
+    private val btnRegexp: ToggleButton
+    private val btnIgnoreCase: ToggleButton
+    private val btnRaw: ToggleButton
 
-    private class ToggleButton extends GuiButton {
-        private boolean active;
+    internal inner class ToggleButton constructor(text: String) : GuiButton(text) {
 
-        private ToggleButton(String text) {
-            super(text);
-        }
+        override var text: String
+            get() {
+                val text = super.text
+                val color = if (active) TextFormatting.GREEN else TextFormatting.RED
+                return color.toString() + text
+            }
+            set(value) {
+                super.text = value
+            }
 
-        @Override
-        public String getText() {
-            String text = super.getText();
-            TextFormatting color = active ? TextFormatting.GREEN : TextFormatting.RED;
-            return color + text;
-        }
-
-        @Override
-        public void onClick(double mouseX, double mouseY) {
-            active ^= true;
+        override fun onClick(mouseX: Double, mouseY: Double) {
+            active = !active
         }
     }
 
-    private UserFilter filter;
+    init {
+        this.layout = GuiGridLayout(20, 15)
 
-    private GuiText txtName;
-    private GuiCheckbox chkRemove;
-    private GuiText txtDestinations;
-    private GuiCheckbox chkSound;
-    private GuiText txtSound;
-    private GuiText txtPattern;
-    private GuiLabel lblError;
+        val pattern = filter.rawPattern
+        val settings = filter.settings
 
-    private ToggleButton btnRegexp;
-    private ToggleButton btnIgnoreCase;
-    private ToggleButton btnRaw;
+        var pos = 0
 
-    public GuiFilterEditor(UserFilter filter) {
-        this.setLayout(new GuiGridLayout(20, 15));
-        this.filter = filter;
+        this.add(GuiLabel(Translation.FILTER_NAME.toComponent()), intArrayOf(1, pos))
+        txtName = this.add(GuiText(), intArrayOf(5, pos, 10, 1))
+        txtName.value = filter.name
 
-        String pattern = filter.getRawPattern();
-        FilterSettings settings = filter.getSettings();
+        pos += 2
+        this.add(GuiLabel(Translation.FILTER_DESTINATIONS.toComponent()), intArrayOf(1, pos))
+        txtDestinations = this.add(GuiText(), intArrayOf(8, pos, 10, 1)).apply {
+            value = settings.channels.joinToString(", ")
+            caption = Translation.FILTER_DESTIONATIONS_DESC.toComponent()
+        }
 
-        int pos = 0;
+        pos += 1
+        btnRegexp = this.add(ToggleButton(".*"), intArrayOf(1, pos, 2, 1)).apply {
+            active = filter.settings.isRegex
+            caption = Translation.FILTER_REGEX.toComponent()
+        }
+        btnIgnoreCase = this.add(ToggleButton("Aa"), intArrayOf(3, pos, 2, 1)).apply {
+            active = settings.isCaseInsensitive
+            caption = Translation.FILTER_IGNORE_CASE.toComponent()
+        }
+        btnRaw = this.add(ToggleButton("&0"), intArrayOf(5, pos, 2, 1)).apply {
+            active = settings.isRaw
+            caption = Translation.FILTER_RAW_INPUT.toComponent()
+        }
 
-        this.add(new GuiLabel(new TranslationTextComponent(FILTER_NAME)), new int[]{1, pos});
-        this.add(txtName = new GuiText(), new int[]{5, pos, 10, 1});
-        txtName.setValue(filter.getName());
+        pos += 2
+        this.add(GuiLabel(Translation.FILTER_HIDE.toComponent()), intArrayOf(2, pos))
+        chkRemove = this.add(GuiCheckbox(), intArrayOf(1, pos)).apply {
+            value = settings.isRemove
+        }
 
-        pos += 2;
-        this.add(new GuiLabel(new TranslationTextComponent(FILTER_DESTINATIONS)), new int[]{1, pos});
-        this.add(txtDestinations = new GuiText(), new int[]{8, pos, 10, 1});
-        txtDestinations.setValue(Joiner.on(", ").join(settings.getChannels()));
-        txtDestinations.setCaption(new TranslationTextComponent(FILTER_DESTIONATIONS_DESC));
+        pos += 1
+        this.add(GuiLabel(Translation.FILTER_AUDIO_NOTIFY.toComponent()), intArrayOf(2, pos))
+        chkSound = this.add(GuiCheckbox(), intArrayOf(1, pos)).apply {
+            value = settings.isSoundNotification
+        }
 
-        pos += 1;
-        this.add(btnRegexp = new ToggleButton(".*"), new int[]{1, pos, 2, 1});
-        btnRegexp.active = filter.getSettings().isRegex();
-        btnRegexp.setCaption(new TranslationTextComponent(FILTER_REGEX));
-        this.add(btnIgnoreCase = new ToggleButton("Aa"), new int[]{3, pos, 2, 1});
-        btnIgnoreCase.active = settings.isCaseInsensitive();
-        btnIgnoreCase.setCaption(new TranslationTextComponent(FILTER_IGNORE_CASE));
-        this.add(btnRaw = new ToggleButton("&0"), new int[]{5, pos, 2, 1});
-        btnRaw.active = settings.isRaw();
-        btnRaw.setCaption(new TranslationTextComponent(FILTER_RAW_INPUT));
+        pos += 1
+        val play = this.add(GuiButton("\u25b6"), intArrayOf(18, pos, 2, 1))
+        txtSound = this.add<GuiText>(object : GuiText() {
+            private var index: Int = 0
 
-        pos += 2;
-        this.add(new GuiLabel(new TranslationTextComponent(FILTER_HIDE)), new int[]{2, pos});
-        this.add(chkRemove = new GuiCheckbox(), new int[]{1, pos});
-        chkRemove.setValue(settings.isRemove());
-
-        pos += 1;
-        this.add(new GuiLabel(new TranslationTextComponent(FILTER_AUDIO_NOTIFY)), new int[]{2, pos});
-        this.add(chkSound = new GuiCheckbox(), new int[]{1, pos});
-        chkSound.setValue(settings.isSoundNotification());
-
-        pos += 1;
-        this.add(txtSound = new GuiText() {
-            private int pos;
-
-            @Override
-            public boolean charTyped(char c, int key) {
-                final int max = 10;
+            override fun charTyped(c: Char, key: Int): Boolean {
+                val max = 10
                 if (key == GLFW.GLFW_KEY_DOWN) {
-                    pos++;
+                    index++
                 } else if (key == GLFW.GLFW_KEY_UP) {
-                    pos--;
+                    index--
                 }
                 // suggest sounds
-                final String val = getValue().toLowerCase()
-                        .substring(0, getTextField().getCursorPosition());
-                List<String> list = GameRegistry.findRegistry(SoundEvent.class).getKeys().stream()
-                        .map(Object::toString)
-                        .filter(s -> s.contains(val))
-                        .collect(Collectors.toList());
+                val value = value.toLowerCase().substring(0, textField.cursorPosition)
+                var list = GameRegistry.findRegistry(SoundEvent::class.java).keys.asSequence()
+                        .map { it.toString() }
+                        .filter { s -> s.contains(value) }
+                        .toList()
 
-                pos = Math.min(pos, list.size() - max);
-                pos = Math.max(pos, 0);
-                if (list.size() > max) {
-                    list = list.subList(pos, pos + max);
+                index = index.coerceIn(0, list.size - max)
+                if (list.size > max) {
+                    list = list.subList(index, index + max)
                 }
-                setHint(Joiner.on('\n').join(list));
-                if ((key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER) && !list.isEmpty()) {
-                    setValue(list.get(0));
-                    GuiFilterEditor.this.setFocused(null);
+                hint = Joiner.on('\n').join(list)
+                if ((key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER) && list.isNotEmpty()) {
+                    this.value = list[0]
+                    this@GuiFilterEditor.focused = null
                 }
-                return super.charTyped(c, key);
+                return super.charTyped(c, key)
             }
-        }, new int[]{3, pos, 14, 1});
-        txtSound.setValue(settings.getSoundName().orElse(""));
-        txtSound.getTextField().setValidator(txt -> ResourceLocation.tryCreate(txt) != null);
+        }, intArrayOf(3, pos, 14, 1)).apply {
+            value = settings.soundName ?: ""
+            textField.setValidator { txt -> ResourceLocation.tryCreate(txt) != null }
+            textField.func_212954_a { s ->
+                val res = ResourceLocation.tryCreate(s)
+                play.sound = ForgeRegistries.SOUND_EVENTS.getValue(res)
+            }
+        }
+        lblError = GuiLabel()
 
-        final GuiButton play = new GuiButton("\u25b6");
-        txtSound.getTextField().func_212954_a(s -> {
-            ResourceLocation res = ResourceLocation.tryCreate(s);
-            play.setSound(ForgeRegistries.SOUND_EVENTS.getValue(res));
-        });
-        this.add(play, new int[]{18, pos, 2, 1});
-
-        pos += 2;
-        this.add(new GuiLabel(new TranslationTextComponent(FILTER_EXPRESSION)), new int[]{1, pos});
-        this.add(txtPattern = new GuiText() {
-            @Override
-            public boolean charTyped(char c, int key) {
-                boolean r = super.charTyped(c, key);
-                setPrimaryColor(Color.WHITE);
-                lblError.setText(null);
+        pos += 2
+        this.add(GuiLabel(Translation.FILTER_EXPRESSION.toComponent()), intArrayOf(1, pos))
+        txtPattern = this.add<GuiText>(object : GuiText() {
+            override fun charTyped(c: Char, key: Int): Boolean {
+                val r = super.charTyped(c, key)
+                primaryColor = Color.WHITE
+                lblError.text = null
                 if (btnRegexp.active) {
                     // check valid regex
                     try {
-                        filter.testPattern(getValue());
-                    } catch (UserFilter.UserPatternException e) {
-                        setPrimaryColor(Color.RED);
-                        String string = e.getCause().getLocalizedMessage();
-                        lblError.setText(new TranslationTextComponent(string));
+                        filter.testPattern(value)
+                    } catch (e: UserFilter.UserPatternException) {
+                        primaryColor = Color.RED
+                        lblError.text = e.cause?.localizedMessage?.toComponent()
                     }
+
                 }
-                return r;
+                return r
             }
-        }, new int[]{8, pos, 12, 1});
+        }, intArrayOf(8, pos, 12, 1)).apply {
+            value = pattern
+        }
 
-        txtPattern.setValue(pattern == null ? "" : pattern);
+        pos++
+        this.add(lblError, intArrayOf(4, pos))
 
-        pos++;
-        this.add(lblError = new GuiLabel(), new int[]{4, pos});
-
-        GuiButton accept = new GuiButton(I18n.format("gui.done")) {
-            @Override
-            public void onClick(double mouseX, double mouseY) {
-                accept();
+        this.add<GuiButton>(object : GuiButton(I18n.format("gui.done")) {
+            override fun onClick(mouseX: Double, mouseY: Double) {
+                accept()
             }
-        };
-        this.add(accept, new int[]{5, 14, 4, 1});
+        }, intArrayOf(5, 14, 4, 1))
     }
 
-    private void accept() {
-        filter.setName(txtName.getValue());
-        filter.setPattern(txtPattern.getValue());
-        FilterSettings sett = filter.getSettings();
-        sett.getChannels().clear();
-        sett.getChannels().addAll(Splitter.on(",")
-                .omitEmptyStrings()
-                .trimResults()
-                .splitToList(txtDestinations.getValue()));
-        sett.setRemove(chkRemove.getValue());
-        sett.setCaseInsensitive(btnIgnoreCase.active);
-        sett.setRegex(btnRegexp.active);
-        sett.setRaw(btnRaw.active);
+    private fun accept() {
+        filter.apply {
+            name = txtName.value
+            setPattern(txtPattern.value)
+            settings.apply {
+                channels.clear()
+                channels.addAll(txtDestinations.value.split(",").filter { it.isNotBlank() })
+                isRemove = chkRemove.value
+                isCaseInsensitive = btnIgnoreCase.active
+                isRegex = btnRegexp.active
+                isRaw = btnRaw.active
 
-        sett.setSoundNotification(chkSound.getValue());
-        sett.setSoundName(txtSound.getValue());
+                isSoundNotification = chkSound.value
+                soundName = txtSound.value
+            }
+        }
     }
-
 }

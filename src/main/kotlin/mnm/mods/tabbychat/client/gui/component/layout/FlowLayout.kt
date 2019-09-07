@@ -1,67 +1,61 @@
-package mnm.mods.tabbychat.client.gui.component.layout;
+package mnm.mods.tabbychat.client.gui.component.layout
 
-import com.google.common.collect.Lists;
-import mnm.mods.tabbychat.client.gui.component.GuiComponent;
-import mnm.mods.tabbychat.client.gui.component.GuiPanel;
-import mnm.mods.tabbychat.util.Dim;
-import mnm.mods.tabbychat.util.ILocation;
-import mnm.mods.tabbychat.util.Location;
-
-import java.util.List;
+import mnm.mods.tabbychat.client.gui.component.GuiComponent
+import mnm.mods.tabbychat.client.gui.component.GuiPanel
+import mnm.mods.tabbychat.util.Dim
+import mnm.mods.tabbychat.util.Location
+import kotlin.math.max
 
 /**
  * A layout that puts items side-by-side and left-to-right.
  *
  * @author Matthew
  */
-public class FlowLayout implements ILayout {
+class FlowLayout : ILayout {
 
-    private List<GuiComponent> components = Lists.newArrayList();
+    private val components = ArrayList<GuiComponent>()
 
-    @Override
-    public void addComponent(GuiComponent comp, Object constraints) {
-        components.add(comp);
-    }
+    override val layoutSize: Dim
+        get() {
+            var width = 0
+            var height = 0
 
-    @Override
-    public void removeComponent(GuiComponent comp) {
-        components.remove(comp);
-    }
-
-    @Override
-    public void layoutComponents(GuiPanel parent) {
-
-        ILocation loc = parent.getLocation();
-        int xPos = loc.getXPos();
-        int yPos = loc.getYPos();
-        int maxH = 0;
-        for (GuiComponent comp : components) {
-            Dim size = comp.getMinimumSize();
-            if (xPos + size.width > loc.getXWidth()) {
-                // wrapping
-                xPos = loc.getXPos();
-                yPos += maxH;
-                maxH = 0;
+            for (comp in components) {
+                val loc = comp.location
+                width += loc.width
+                height = max(height, loc.height)
             }
-            comp.setLocation(new Location(xPos, yPos, size.width, size.height));
-
-            maxH = Math.max(maxH, size.height);
-            xPos += size.width;
+            return Dim(width, height)
         }
 
+    override fun addComponent(comp: GuiComponent, constraints: Any?) {
+        components.add(comp)
     }
 
-    @Override
-    public Dim getLayoutSize() {
-        int width = 0;
-        int height = 0;
+    override fun removeComponent(comp: GuiComponent) {
+        components.remove(comp)
+    }
 
-        for (GuiComponent comp : components) {
-            ILocation loc = comp.getLocation();
-            width += loc.getWidth();
-            height = Math.max(height, loc.getHeight());
+    override fun layoutComponents(parent: GuiPanel) {
+
+        val loc = parent.location
+        var xPos = loc.xPos
+        var yPos = loc.yPos
+        var maxH = 0
+        for (comp in components) {
+            val (width, height) = comp.minimumSize
+            if (xPos + width > loc.xWidth) {
+                // wrapping
+                xPos = loc.xPos
+                yPos += maxH
+                maxH = 0
+            }
+            comp.location = Location(xPos, yPos, width, height)
+
+            maxH = max(maxH, height)
+            xPos += width
         }
-        return new Dim(width, height);
+
     }
 
 }

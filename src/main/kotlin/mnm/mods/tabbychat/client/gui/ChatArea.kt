@@ -1,245 +1,233 @@
-package mnm.mods.tabbychat.client.gui;
+package mnm.mods.tabbychat.client.gui
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import mnm.mods.tabbychat.client.AbstractChannel;
-import mnm.mods.tabbychat.client.ChatManager;
-import mnm.mods.tabbychat.client.ChatMessage;
-import mnm.mods.tabbychat.client.TabbyChatClient;
-import mnm.mods.tabbychat.client.gui.component.GuiComponent;
-import mnm.mods.tabbychat.util.ChatTextUtils;
-import mnm.mods.tabbychat.util.Color;
-import mnm.mods.tabbychat.util.Dim;
-import mnm.mods.tabbychat.util.ILocation;
-import mnm.mods.tabbychat.util.LocalVisibility;
-import mnm.mods.tabbychat.util.TexturedModal;
-import net.minecraft.client.gui.RenderComponentsUtil;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.entity.player.ChatVisibility;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import com.mojang.blaze3d.platform.GlStateManager
+import mnm.mods.tabbychat.client.AbstractChannel
+import mnm.mods.tabbychat.client.ChatManager
+import mnm.mods.tabbychat.client.ChatMessage
+import mnm.mods.tabbychat.client.TabbyChatClient
+import mnm.mods.tabbychat.client.gui.component.GuiComponent
+import mnm.mods.tabbychat.util.*
+import net.minecraft.client.gui.RenderComponentsUtil
+import net.minecraft.client.gui.screen.Screen
+import net.minecraft.entity.player.ChatVisibility
+import net.minecraft.util.math.MathHelper
+import net.minecraft.util.text.ITextComponent
+import net.minecraft.util.text.StringTextComponent
+import java.util.ArrayList
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
+class ChatArea : GuiComponent() {
 
-public class ChatArea extends GuiComponent {
+    internal var channel: AbstractChannel? = null
 
-    private static final TexturedModal MODAL = new TexturedModal(ChatBox.GUI_LOCATION, 0, 14, 254, 205);
+    var scrollPos = 0
+        set(scroll) {
+            field = scroll.coerceIn(0, chat.size - mc.ingameGUI.chatGUI.lineCount)
+        }
 
-    private AbstractChannel channel;
-    private int scrollPos = 0;
+    override var location: ILocation
+        get() {
+            val height = visibleChat.size * mc.fontRenderer.FONT_HEIGHT
+            val vis = TabbyChatClient.settings.advanced.visibility.value
 
-    public ChatArea() {
-        this.setMinimumSize(new Dim(300, 160));
+            if (mc.ingameGUI.chatGUI.chatOpen || vis === LocalVisibility.ALWAYS) {
+                return super.location
+            }
+            if (height != 0) {
+                return super.location.copy().apply {
+                    move(0, super.location.height - height - 2)
+                    this.height = height + 2
+                }.asImmutable()
+            }
+            return super.location
+        }
+        set(value) {
+            super.location = value
+        }
+
+    override var isVisible: Boolean
+        get() {
+
+            val visible = visibleChat
+            val height = visible.size * mc.fontRenderer.FONT_HEIGHT
+            val vis = TabbyChatClient.settings.advanced.visibility.value
+
+            return mc.gameSettings.chatVisibility != ChatVisibility.HIDDEN && (mc.ingameGUI.chatGUI.chatOpen || vis === LocalVisibility.ALWAYS || height != 0)
+        }
+        set(value) {
+            super.isVisible = value
+        }
+
+    internal val chat: List<ChatMessage>
+        get() = ChatManager.getVisible(channel!!, super.location.width - 6)
+
+    private val visibleChat: List<ChatMessage>
+        get() {
+            val lines = chat
+
+            val messages = ArrayList<ChatMessage>()
+            var length = 0
+
+            var pos = scrollPos
+            val unfoc = TabbyChatClient.settings.advanced.unfocHeight.value
+            val div = if (mc.ingameGUI.chatGUI.chatOpen) 1.toFloat() else unfoc
+            while (pos < lines.size && length < super.location.height * div - 10) {
+                val line = lines[pos]
+
+                if (mc.ingameGUI.chatGUI.chatOpen) {
+                    messages.add(line)
+                } else if (getLineOpacity(line) > 3) {
+                    messages.add(line)
+                } else {
+                    break
+                }
+
+                pos++
+                length += mc.fontRenderer.FONT_HEIGHT
+            }
+
+            return messages
+        }
+
+    init {
+        this.minimumSize = Dim(300, 160)
     }
 
-    @Override
-    public boolean mouseScrolled(double x, double y, double scroll) {
+    override fun mouseScrolled(x: Double, y: Double, scroll: Double): Boolean {
+        var scroll = scroll
         // One tick = 120
-        if (getLocation().contains(x, y) && scroll != 0) {
+        if (location.contains(x, y) && scroll != 0.0) {
             if (scroll > 1) {
-                scroll = 1;
+                scroll = 1.0
             }
             if (scroll < -1) {
-                scroll = -1;
+                scroll = -1.0
             }
             if (Screen.hasShiftDown()) {
-                scroll *= 7;
+                scroll *= 7.0
             }
-            scroll((int) scroll);
-            return true;
+            scroll(scroll.toInt())
+            return true
         }
-        return false;
+        return false
     }
 
-    @Override
-    public void onClosed() {
-        resetScroll();
-        super.onClosed();
+    override fun onClosed() {
+        resetScroll()
+        super.onClosed()
     }
 
-    @Override
-    public ILocation getLocation() {
-        List<ChatMessage> visible = getVisibleChat();
-        int height = visible.size() * mc.fontRenderer.FONT_HEIGHT;
-        LocalVisibility vis = TabbyChatClient.getInstance().getSettings().advanced.visibility.get();
+    override fun render(mouseX: Int, mouseY: Int, parTicks: Float) {
 
-        if (mc.ingameGUI.getChatGUI().getChatOpen() || vis == LocalVisibility.ALWAYS) {
-            return super.getLocation();
-        } else if (height != 0) {
-            int y = super.getLocation().getHeight() - height;
-            return super.getLocation().copy().move(0, y - 2).setHeight(height + 2);
-        }
-        return super.getLocation();
-    }
+        val visible = visibleChat
+        GlStateManager.enableBlend()
+        val opac = mc.gameSettings.chatOpacity.toFloat()
+        GlStateManager.color4f(1f, 1f, 1f, opac)
 
-    @Override
-    public boolean isVisible() {
+        drawModalCorners(MODAL)
 
-        List<ChatMessage> visible = getVisibleChat();
-        int height = visible.size() * mc.fontRenderer.FONT_HEIGHT;
-        LocalVisibility vis = TabbyChatClient.getInstance().getSettings().advanced.visibility.get();
-
-        return mc.gameSettings.chatVisibility != ChatVisibility.HIDDEN
-                && (mc.ingameGUI.getChatGUI().getChatOpen() || vis == LocalVisibility.ALWAYS || height != 0);
-    }
-
-    @Override
-    public void render(int mouseX, int mouseY, float parTicks) {
-
-        List<ChatMessage> visible = getVisibleChat();
-        GlStateManager.enableBlend();
-        float opac = (float) mc.gameSettings.chatOpacity;
-        GlStateManager.color4f(1, 1, 1, opac);
-
-        drawModalCorners(MODAL);
-
-        blitOffset = 100;
+        blitOffset = 100
         // TODO abstracted padding
-        int xPos = getLocation().getXPos() + 3;
-        int yPos = getLocation().getYHeight();
-        for (ChatMessage line : visible) {
-            yPos -= mc.fontRenderer.FONT_HEIGHT;
-            drawChatLine(line, xPos, yPos);
+        val xPos = location.xPos + 3
+        var yPos = location.yHeight
+        for (line in visible) {
+            yPos -= mc.fontRenderer.FONT_HEIGHT
+            drawChatLine(line, xPos, yPos)
         }
-        blitOffset = 0;
-        GlStateManager.disableAlphaTest();
-        GlStateManager.disableBlend();
+        blitOffset = 0
+        GlStateManager.disableAlphaTest()
+        GlStateManager.disableBlend()
     }
 
-    private void drawChatLine(ChatMessage line, int xPos, int yPos) {
-        String text = ChatTextUtils.getMessageWithOptionalTimestamp(line).getFormattedText();
-        mc.fontRenderer.drawStringWithShadow(text, xPos, yPos, Color.WHITE.getHex() + (getLineOpacity(line) << 24));
+    private fun drawChatLine(line: ChatMessage, xPos: Int, yPos: Int) {
+        val text = ChatTextUtils.getMessageWithOptionalTimestamp(line).formattedText
+        mc.fontRenderer.drawStringWithShadow(text, xPos.toFloat(), yPos.toFloat(), Color.WHITE.hex + (getLineOpacity(line) shl 24))
     }
 
-    public void setChannel(AbstractChannel channel) {
-        this.channel = channel;
-//        this.markDirty();
+    @Deprecated("")
+    fun markDirty() {
+        ChatManager.markDirty(channel)
     }
 
-    @Deprecated
-    public void markDirty() {
-        ChatManager.instance().markDirty(channel);
-    }
+    private fun getLineOpacity(line: ChatMessage): Int {
+        val vis = TabbyChatClient.settings.advanced.visibility.value
+        when {
+            vis === LocalVisibility.ALWAYS -> return 4
+            vis === LocalVisibility.HIDDEN && !mc.ingameGUI.chatGUI.chatOpen -> return 0
+            else -> {
+                var opacity = (mc.gameSettings.chatOpacity * 255).toInt()
 
-    List<ChatMessage> getChat() {
-        return ChatManager.instance().getVisible(channel, super.getLocation().getWidth() - 6);
-    }
+                val age = (mc.ingameGUI.ticks - line.counter).toDouble()
+                if (!mc.ingameGUI.chatGUI.chatOpen) {
+                    var opacPerc = age / TabbyChatClient.settings.advanced.fadeTime.value
+                    opacPerc = 1.0 - opacPerc
+                    opacPerc *= 10.0
 
-    private List<ChatMessage> getVisibleChat() {
-        List<ChatMessage> lines = getChat();
+                    opacPerc = opacPerc.coerceIn(0.0..1.0)
 
-        List<ChatMessage> messages = new ArrayList<>();
-        int length = 0;
-
-        int pos = getScrollPos();
-        float unfoc = TabbyChatClient.getInstance().getSettings().advanced.unfocHeight.get();
-        float div = mc.ingameGUI.getChatGUI().getChatOpen() ? 1 : unfoc;
-        while (pos < lines.size() && length < super.getLocation().getHeight() * div - 10) {
-            ChatMessage line = lines.get(pos);
-
-            if (mc.ingameGUI.getChatGUI().getChatOpen()) {
-                messages.add(line);
-            } else if (getLineOpacity(line) > 3) {
-                messages.add(line);
-            } else {
-                break;
+                    opacPerc *= opacPerc
+                    opacity = (opacity * opacPerc).toInt()
+                }
+                return opacity
             }
-
-            pos++;
-            length += mc.fontRenderer.FONT_HEIGHT;
         }
-
-        return messages;
     }
 
-    private int getLineOpacity(ChatMessage line) {
-        LocalVisibility vis = TabbyChatClient.getInstance().getSettings().advanced.visibility.get();
-        if (vis == LocalVisibility.ALWAYS)
-            return 4;
-        if (vis == LocalVisibility.HIDDEN && !mc.ingameGUI.getChatGUI().getChatOpen())
-            return 0;
-        int opacity = (int) (mc.gameSettings.chatOpacity * 255);
-
-        double age = mc.ingameGUI.getTicks() - line.getCounter();
-        if (!mc.ingameGUI.getChatGUI().getChatOpen()) {
-            double opacPerc = age / TabbyChatClient.getInstance().getSettings().advanced.fadeTime.get();
-            opacPerc = 1.0D - opacPerc;
-            opacPerc *= 10.0D;
-
-            opacPerc = Math.max(0, opacPerc);
-            opacPerc = Math.min(1, opacPerc);
-
-            opacPerc *= opacPerc;
-            opacity = (int) (opacity * opacPerc);
-        }
-        return opacity;
+    fun scroll(scr: Int) {
+        scrollPos += scr
     }
 
-    public void scroll(int scr) {
-        setScrollPos(getScrollPos() + scr);
+    fun resetScroll() {
+        scrollPos = 0
     }
 
-    public void setScrollPos(int scroll) {
-        List<ChatMessage> list = getChat();
-        scroll = Math.min(scroll, list.size() - mc.ingameGUI.getChatGUI().getLineCount());
-        scroll = Math.max(scroll, 0);
+    fun getTextComponent(clickX: Int, clickY: Int): ITextComponent? {
+        var clickX = clickX
+        var clickY = clickY
+        if (mc.ingameGUI.chatGUI.chatOpen) {
+            val scale = mc.ingameGUI.chatGUI.scale
+            clickX = MathHelper.floor(clickX / scale)
+            clickY = MathHelper.floor(clickY / scale)
 
-        this.scrollPos = scroll;
-    }
-
-    public int getScrollPos() {
-        return scrollPos;
-    }
-
-    public void resetScroll() {
-        setScrollPos(0);
-    }
-
-    @Nullable
-    public ITextComponent getTextComponent(int clickX, int clickY) {
-        if (mc.ingameGUI.getChatGUI().getChatOpen()) {
-            double scale = mc.ingameGUI.getChatGUI().getScale();
-            clickX = MathHelper.floor(clickX / scale);
-            clickY = MathHelper.floor(clickY / scale);
-
-            ILocation actual = getLocation();
+            val actual = location
             // check that cursor is in bounds.
             if (actual.contains(clickX, clickY)) {
 
 
-                double size = mc.fontRenderer.FONT_HEIGHT * scale;
-                double bottom = (actual.getYPos() + actual.getHeight());
+                val size = mc.fontRenderer.FONT_HEIGHT * scale
+                val bottom = (actual.yPos + actual.height).toDouble()
 
                 // The line to get
-                int linePos = MathHelper.floor((clickY - bottom) / -size) + scrollPos;
+                val linePos = MathHelper.floor((clickY - bottom) / -size) + this.scrollPos
 
                 // Iterate through the chat component, stopping when the desired
                 // x is reached.
-                List<ChatMessage> list = this.getChat();
-                if (linePos >= 0 && linePos < list.size()) {
-                    ChatMessage chatline = list.get(linePos);
-                    float x = actual.getXPos() + 3;
+                val list = this.chat
+                if (linePos >= 0 && linePos < list.size) {
+                    val chatline = list[linePos]
+                    var x = (actual.xPos + 3).toFloat()
 
-                    for (ITextComponent ichatcomponent : ChatTextUtils.getMessageWithOptionalTimestamp(chatline)) {
-                        if (ichatcomponent instanceof StringTextComponent) {
+                    for (ichatcomponent in ChatTextUtils.getMessageWithOptionalTimestamp(chatline)) {
+                        if (ichatcomponent is StringTextComponent) {
 
                             // get the text of the component, no children.
-                            String text = ichatcomponent.getUnformattedComponentText();
+                            val text = ichatcomponent.unformattedComponentText
                             // clean it up
-                            String clean = RenderComponentsUtil.removeTextColorsIfConfigured(text, false);
+                            val clean = RenderComponentsUtil.removeTextColorsIfConfigured(text, false)
                             // get it's width, then scale it.
-                            x += this.mc.fontRenderer.getStringWidth(clean) * scale;
+                            x += (mc.fontRenderer.getStringWidth(clean) * scale).toFloat()
 
                             if (x > clickX) {
-                                return ichatcomponent;
+                                return ichatcomponent
                             }
                         }
                     }
                 }
             }
         }
-        return null;
+        return null
+    }
+
+    companion object {
+        private val MODAL = TexturedModal(ChatBox.GUI_LOCATION, 0, 14, 254, 205)
     }
 }

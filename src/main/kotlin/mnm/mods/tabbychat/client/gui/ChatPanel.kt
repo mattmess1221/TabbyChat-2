@@ -1,20 +1,18 @@
-package mnm.mods.tabbychat.client.gui;
+package mnm.mods.tabbychat.client.gui
 
-import mnm.mods.tabbychat.client.gui.component.GuiPanel;
-import mnm.mods.tabbychat.client.gui.component.layout.ILayout;
+import mnm.mods.tabbychat.client.gui.component.GuiPanel
+import mnm.mods.tabbychat.client.gui.component.layout.ILayout
+import mnm.mods.tabbychat.util.mc
 
-public class ChatPanel extends GuiPanel {
+class ChatPanel : GuiPanel {
 
-    public ChatPanel() {
-        super();
-    }
+    override var isVisible: Boolean
+        get() = super.isVisible && mc.ingameGUI.chatGUI.chatOpen
+        set(value: Boolean) {
+            super.isVisible = value
+        }
 
-    public ChatPanel(ILayout layout) {
-        super(layout);
-    }
+    constructor() : super()
 
-    @Override
-    public boolean isVisible() {
-        return super.isVisible() && mc.ingameGUI.getChatGUI().getChatOpen();
-    }
+    constructor(layout: ILayout) : super(layout)
 }

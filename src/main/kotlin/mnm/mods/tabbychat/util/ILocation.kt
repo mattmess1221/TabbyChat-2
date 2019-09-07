@@ -1,56 +1,30 @@
-package mnm.mods.tabbychat.util;
+package mnm.mods.tabbychat.util
 
-public interface ILocation {
+interface ILocation {
 
-    int getXPos();
+    val xPos: Int
+    val yPos: Int
+    val width: Int
+    val height: Int
 
-    int getYPos();
+    val xWidth: Int get() = xPos + width
+    val yHeight: Int get() = yPos + height
+    val xCenter: Int get() = xPos + width / 2
+    val yCenter: Int get() = yPos + height / 2
 
-    int getWidth();
+    val point: Vec2i get() = Vec2i(xPos, yPos)
+    val size: Dim get() = Dim(this.width, this.height)
 
-    int getHeight();
+    fun asImmutable(): ILocation
 
-    ILocation asImmutable();
+    fun copy(): Location = Location(this)
 
-    default int getXWidth() {
-        return getXPos() + getWidth();
+    operator fun contains(r: ILocation): Boolean {
+        return (this.xPos < r.xWidth
+                && this.xWidth > r.xPos
+                && this.yPos < r.yHeight
+                && this.yHeight > r.yPos)
     }
 
-    default int getYHeight() {
-        return getYPos() + getHeight();
-    }
-
-    default int getXCenter() {
-        return getXPos() + getWidth() / 2;
-    }
-
-    default int getYCenter() {
-        return getYPos() + getHeight() / 2;
-    }
-
-    default Location copy() {
-        return Location.copyOf(this);
-    }
-
-    default Vec2i getPoint() {
-        return new Vec2i(getXPos(), getYPos());
-    }
-
-    default Dim getSize() {
-        return new Dim(this.getWidth(), this.getHeight());
-    }
-
-    default boolean contains(ILocation r) {
-        return this.getXPos() < r.getXWidth()
-                && this.getXWidth() > r.getXPos()
-                && this.getYPos() < r.getYHeight()
-                && this.getYHeight() > r.getYPos();
-    }
-
-    default boolean contains(double x, double y) {
-        return this.getXPos() < x
-                && this.getYPos() < y
-                && this.getXWidth() > x
-                && this.getYHeight() > y;
-    }
+    fun contains(x: Number, y: Number) = x.toInt() in xPos..xWidth && y.toInt() in yPos..yHeight
 }

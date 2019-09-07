@@ -1,52 +1,38 @@
-package mnm.mods.tabbychat.client.gui.component;
+package mnm.mods.tabbychat.client.gui.component
 
-import mnm.mods.tabbychat.util.Color;
-import mnm.mods.tabbychat.util.ILocation;
-import mnm.mods.tabbychat.util.Location;
-import net.minecraft.client.Minecraft;
-import net.minecraftforge.fml.client.config.GuiUtils;
+import mnm.mods.tabbychat.util.Color
+import mnm.mods.tabbychat.util.ILocation
+import mnm.mods.tabbychat.util.Location
+import net.minecraft.client.Minecraft
+import net.minecraftforge.fml.client.config.GuiUtils
 
 /**
  * A checkbox, representing a boolean input.
  *
  * @author Matthew
  */
-public class GuiCheckbox extends GuiButton implements IGuiInput<Boolean> {
+class GuiCheckbox : GuiButton(""), IGuiInput<Boolean> {
 
-    private boolean value;
+    override var value: Boolean = false
 
-    public GuiCheckbox() {
-        super("");
-        this.setLocation(new Location(0, 0, 9, 9));
-        setSecondaryColor(Color.of(0x99ffffa0));
+    init {
+        location = Location(0, 0, 9, 9)
+        secondaryColor = Color(-0x66000060)
     }
 
-    @Override
-    public void render(int mouseX, int mouseY, float parTicks) {
-        Minecraft mc = Minecraft.getInstance();
+    override fun render(mouseX: Int, mouseY: Int, parTicks: Float) {
+        val mc = Minecraft.getInstance()
 
-        ILocation loc = getLocation();
-        GuiUtils.drawContinuousTexturedBox(WIDGETS, loc.getXPos(), loc.getYPos(), 0, 46, loc.getWidth(), loc.getHeight(), 200, 20, 2, 3, 2, 2, this.blitOffset);
+        val loc = location
+        GuiUtils.drawContinuousTexturedBox(WIDGETS, loc.xPos, loc.yPos, 0, 46, loc.width, loc.height, 200, 20, 2, 3, 2, 2, this.blitOffset.toFloat())
 
-        if (this.getValue()) {
-            this.drawCenteredString(mc.fontRenderer, "x", loc.getXCenter() + 1, loc.getYPos() + 1, getSecondaryColorProperty().getHex());
+        if (value) {
+            this.drawCenteredString(mc.fontRenderer, "x", loc.xCenter + 1, loc.yPos + 1, secondaryColorProperty.hex)
         }
-        this.drawString(mc.fontRenderer, getText(), loc.getXWidth() + 2, loc.getYPos() + 2, getPrimaryColorProperty().getHex());
+        this.drawString(mc.fontRenderer, text, loc.xWidth + 2, loc.yPos + 2, primaryColorProperty.hex)
     }
 
-    @Override
-    public Boolean getValue() {
-        return value;
+    override fun onClick(mouseX: Double, mouseY: Double) {
+        value = !value
     }
-
-    @Override
-    public void setValue(Boolean value) {
-        this.value = value;
-    }
-
-    @Override
-    public void onClick(double mouseX, double mouseY) {
-        setValue(!getValue());
-    }
-
 }

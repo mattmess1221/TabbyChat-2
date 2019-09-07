@@ -1,44 +1,32 @@
-package mnm.mods.tabbychat.client.gui.component.config;
+package mnm.mods.tabbychat.client.gui.component.config
 
-import mnm.mods.tabbychat.util.config.Value;
-import mnm.mods.tabbychat.client.gui.component.GuiNumericUpDown;
-import mnm.mods.tabbychat.client.gui.component.config.GuiSetting.GuiSettingWrapped;
+import mnm.mods.tabbychat.client.gui.component.GuiNumericUpDown
+import mnm.mods.tabbychat.client.gui.component.config.GuiSetting.GuiSettingWrapped
+import mnm.mods.tabbychat.client.gui.component.config.GuiSettingNumber.GuiSettingDouble
+import mnm.mods.tabbychat.client.gui.component.config.GuiSettingNumber.GuiSettingInt
+import mnm.mods.tabbychat.util.config.Value
 
 /**
- * A base gui setting for numbers. It wraps a {@link GuiNumericUpDown}
+ * A base gui setting for numbers. It wraps a [GuiNumericUpDown]
  *
  * @author Matthew
  * @param <T>
  * @see GuiSettingDouble
  * @see GuiSettingInt
  */
-public abstract class GuiSettingNumber<T extends Number> extends GuiSettingWrapped<T, GuiNumericUpDown<T>> {
-
-    private GuiSettingNumber(Value<T> setting, GuiNumericUpDown<T> input) {
-        super(setting, input);
-    }
+abstract class GuiSettingNumber<T : Number> private constructor(setting: Value<T>, input: GuiNumericUpDown<T>) : GuiSettingWrapped<T, GuiNumericUpDown<T>>(setting, input) {
 
     /**
      * Gui setting for integers
      *
      * @author Matthew
      */
-    public static class GuiSettingInt extends GuiSettingNumber<Integer> {
-
-        public GuiSettingInt(Value<Integer> setting) {
-            super(setting, new GuiNumericUpDown.IntUpDown());
-        }
-    }
+    class GuiSettingInt(setting: Value<Int>) : GuiSettingNumber<Int>(setting, GuiNumericUpDown.IntUpDown())
 
     /**
      * Gui setting for doubles
      *
      * @author Matthew
      */
-    public static class GuiSettingDouble extends GuiSettingNumber<Double> {
-
-        public GuiSettingDouble(Value<Double> setting) {
-            super(setting, new GuiNumericUpDown.DoubleUpDown());
-        }
-    }
+    class GuiSettingDouble(setting: Value<Double>) : GuiSettingNumber<Double>(setting, GuiNumericUpDown.DoubleUpDown())
 }

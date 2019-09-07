@@ -1,31 +1,39 @@
-package mnm.mods.tabbychat.util;
+package mnm.mods.tabbychat.util
 
-import net.minecraft.client.resources.I18n;
+import net.minecraft.client.resources.I18n
+import net.minecraft.util.text.ITextComponent
+import net.minecraft.util.text.TranslationTextComponent
+import kotlin.reflect.KProperty
 
 /**
  * Translatable strings. Translations are done via
- * {@link I18n#format(String, Object...)}.
+ * [I18n.format].
  *
  * @author Matthew
  */
-public interface Translatable {
+@FunctionalInterface
+interface Translatable {
 
     /**
      * Gets the unlocalized string for this translation
      *
      * @return The untranslated string
      */
-    String getUnlocalized();
+    val unlocalized: String
 
     /**
      * Translates this string.
      *
-     * </pre>
+     *
      *
      * @param params Translation parameters
      * @return The translated string
      */
-    default String translate(Object... params) {
-        return I18n.format(getUnlocalized(), params);
+    fun translate(vararg params: Any): String {
+        return I18n.format(unlocalized, *params)
     }
+
+    fun toComponent(vararg args: Any) = TranslationTextComponent(unlocalized, *args)
+
+    operator fun getValue(thisRef: Any, property: KProperty<*>) = translate()
 }

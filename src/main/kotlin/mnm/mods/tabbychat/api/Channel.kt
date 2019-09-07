@@ -1,16 +1,16 @@
-package mnm.mods.tabbychat.api;
+package mnm.mods.tabbychat.api
 
 /**
  * Represents a channel.
  */
-public interface Channel {
+interface Channel {
 
     /**
      * Gets the name of this channel.
      *
      * @return The name
      */
-    String getName();
+    val name: String
 
-    String getDisplayName();
+    val displayName: String
 }

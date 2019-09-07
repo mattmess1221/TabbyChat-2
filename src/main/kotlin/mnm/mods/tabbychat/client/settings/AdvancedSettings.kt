@@ -1,29 +1,35 @@
-package mnm.mods.tabbychat.client.settings;
+package mnm.mods.tabbychat.client.settings
 
-import mnm.mods.tabbychat.util.LocalVisibility;
-import mnm.mods.tabbychat.util.ILocation;
-import mnm.mods.tabbychat.util.Location;
-import mnm.mods.tabbychat.util.config.Value;
-import mnm.mods.tabbychat.util.config.ValueObject;
+import mnm.mods.tabbychat.util.LocalVisibility
+import mnm.mods.tabbychat.util.ILocation
+import mnm.mods.tabbychat.util.Location
+import mnm.mods.tabbychat.util.config.AbstractValue
+import mnm.mods.tabbychat.util.config.Value
+import mnm.mods.tabbychat.util.config.ValueObject
 
-public class AdvancedSettings extends ValueObject {
+class AdvancedSettings : ValueObject() {
 
-    public Value<Integer> chatX = value(5);
-    public Value<Integer> chatY = value(17);
-    public Value<Integer> chatW = value(300);
-    public Value<Integer> chatH = value(160);
-    public Value<Float> unfocHeight = value(0.5F);
-    public Value<Integer> fadeTime = value(200);
-    public Value<Integer> historyLen = value(100);
-    public Value<Boolean> hideTag = value(false);
-    public Value<Boolean> keepChatOpen = value(false);
-    public Value<Boolean> spelling = value(true);
-    public Value<LocalVisibility> visibility = value(LocalVisibility.NORMAL);
+    private val chatX = Value(5)
+    private val chatY = Value(17)
+    private val chatW = Value(300)
+    private val chatH = Value(160)
+    val unfocHeight = Value(0.5f)
+    val fadeTime = Value(200)
+    val historyLen = Value(100)
+    val hideTag = Value(false)
+    val keepChatOpen = Value(false)
+    val spelling = Value(true)
+    val visibility = Value(LocalVisibility.NORMAL)
 
-    public ILocation getChatboxLocation() {
-        return new Location(
-                chatX.get(), chatY.get(),
-                chatW.get(), chatH.get()
-        );
-    }
+    var chatboxLocation: ILocation
+        get() = Location(
+                chatX.value, chatY.value,
+                chatW.value, chatH.value
+        )
+        set(value) {
+            chatX.value = value.xPos
+            chatY.value = value.yPos
+            chatW.value = value.width
+            chatH.value = value.height
+        }
 }

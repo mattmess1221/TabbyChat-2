@@ -1,25 +1,23 @@
-package mnm.mods.tabbychat.client.gui.component.layout;
+package mnm.mods.tabbychat.client.gui.component.layout
 
-import com.google.common.collect.Maps;
-import mnm.mods.tabbychat.client.gui.component.GuiComponent;
-import mnm.mods.tabbychat.client.gui.component.GuiPanel;
-import mnm.mods.tabbychat.util.Dim;
-import mnm.mods.tabbychat.util.ILocation;
-import mnm.mods.tabbychat.util.Location;
-import org.apache.logging.log4j.LogManager;
-
-import java.util.Map;
-import java.util.Map.Entry;
+import mnm.mods.tabbychat.client.gui.component.GuiComponent
+import mnm.mods.tabbychat.client.gui.component.GuiPanel
+import mnm.mods.tabbychat.util.Dim
+import mnm.mods.tabbychat.util.ILocation
+import mnm.mods.tabbychat.util.Location
+import org.apache.logging.log4j.LogManager
 
 /**
  * A layout which places components along a grid. Add components with an int[]
  * array to define bounds. Array can be of length 2 or 4, the last 2 being
  * optional. If they are not included, they default to 1.
- * <p>
- * The format of the array is <code>{ xPos, yPos, width*, height* }</code>. <br>
+ *
+ *
+ * The format of the array is `{ xPos, yPos, width*, height* }`. <br></br>
  * * indicates optional
- * <p>
- * <b>Example Usage:</b>
+ *
+ *
+ * **Example Usage:**
  *
  * <pre>
  * GuiPanel panel = new GuiPanel(new GuiGridLayout(10, 10));
@@ -35,96 +33,81 @@ import java.util.Map.Entry;
  *
  * @author Matthew
  */
-public class GuiGridLayout implements ILayout {
+class GuiGridLayout(private val cols: Int, private val rows: Int) : ILayout {
 
-    private int cols;
-    private int rows;
+    private val grid = HashMap<ILocation, GuiComponent>()
 
-    private Map<ILocation, GuiComponent> grid = Maps.newHashMap();
+    override val layoutSize: Dim
+        get() = Dim(cols, rows)
 
-    public GuiGridLayout(int columns, int rows) {
-        this.cols = columns;
-        this.rows = rows;
-    }
-
-    @Override
-    public void addComponent(GuiComponent comp, Object constraints) {
+    override fun addComponent(comp: GuiComponent, constraints: Any?) {
         if (constraints == null) {
-            throw new IllegalArgumentException("component requires constraints.");
-        } else if (!(constraints instanceof int[])) {
-            throw new IllegalArgumentException("Constraints must be an int array");
+            throw IllegalArgumentException("component requires constraints.")
+        } else if (constraints !is IntArray) {
+            throw IllegalArgumentException("Constraints must be an int array")
         }
-        addComponent(comp, (int[]) constraints);
+        addComponent(comp, (constraints as IntArray?)!!)
     }
 
-    public void addComponent(GuiComponent comp, int[] constraints) {
-        if (constraints.length != 2 && constraints.length != 4) {
-            throw new IllegalArgumentException("Constraints must have either 2 or 4 elements.");
+    private fun addComponent(comp: GuiComponent, constraints: IntArray) {
+        if (constraints.size != 2 && constraints.size != 4) {
+            throw IllegalArgumentException("Constraints must have either 2 or 4 elements.")
         }
-        int x = constraints[0];
-        int y = constraints[1];
-        int w = 1;
-        int h = 1;
-        if (constraints.length == 4) {
-            w = constraints[2];
-            h = constraints[3];
+        val x = constraints[0]
+        val y = constraints[1]
+        var w = 1
+        var h = 1
+        if (constraints.size == 4) {
+            w = constraints[2]
+            h = constraints[3]
         }
-        ILocation rect = new Location(x, y, w, h);
+        val rect = Location(x, y, w, h)
         try {
-            checkBoundsIfValid(rect);
-            grid.put(rect.asImmutable(), comp);
-        } catch (Exception e) {
-            LogManager.getLogger().catching(e);
+            checkBoundsIfValid(rect)
+            grid[rect.asImmutable()] = comp
+        } catch (e: Exception) {
+            LogManager.getLogger().catching(e)
         }
+
     }
 
     /**
      * Checks if the rectangle is valid. A rectangle is valid if x and y are
      * above 0 and x + width < cols and y + height < rows
      */
-    private void checkBoundsIfValid(ILocation b) {
-        if (b.getXWidth() - 1 > cols || b.getYHeight() - 1 > rows || b.getXPos() < 0 || b.getYPos() < 0) {
-            throw new IndexOutOfBoundsException(String.format(
-                    "x:%s y:%s w:%s h:%s cols:%s rows:%s", b.getXPos(), b.getYPos(), b.getWidth(), b.getHeight(), cols, rows));
+    private fun checkBoundsIfValid(b: ILocation) {
+        if (b.xWidth - 1 > cols || b.yHeight - 1 > rows || b.xPos < 0 || b.yPos < 0) {
+            throw IndexOutOfBoundsException("x:${b.xPos} y:${b.yPos} w:${b.width} h:${b.height} cols:$cols rows:$rows")
         }
-        for (ILocation r : grid.keySet()) {
+        for ((r, c) in grid) {
             if (b.contains(r)) {
-                throw new IllegalArgumentException("Area " + b + " already contains "
-                        + grid.get(r).getClass().getName());
+                throw IllegalArgumentException("Area $b already contains ${c.javaClass.name}")
             }
         }
     }
 
-    @Override
-    public void removeComponent(GuiComponent comp) {
-        ILocation remove = null;
-        for (Entry<ILocation, GuiComponent> entry : grid.entrySet()) {
-            if (entry.getValue() == comp) {
-                remove = entry.getKey();
-                break;
+    override fun removeComponent(comp: GuiComponent) {
+        var remove: ILocation? = null
+        for ((key, value) in grid) {
+            if (value === comp) {
+                remove = key
+                break
             }
         }
-        grid.remove(remove);
+        grid.remove(remove)
     }
 
-    @Override
-    public void layoutComponents(GuiPanel parent) {
-        ILocation loc = parent.getLocation();
-        int colW = loc.getWidth() / cols;
-        int rowH = loc.getHeight() / rows;
-        for (Map.Entry<ILocation, GuiComponent> entry : grid.entrySet()) {
-            ILocation bounds = entry.getKey();
-            int x = loc.getXPos() + bounds.getXPos() * colW;
-            int width = bounds.getWidth() * colW;
-            int y = loc.getYPos() + bounds.getYPos() * rowH;
-            int height = bounds.getHeight() * rowH;
-            entry.getValue().setLocation(new Location(x, y, width, height));
+    override fun layoutComponents(parent: GuiPanel) {
+        val loc = parent.location
+        val colW = loc.width / cols
+        val rowH = loc.height / rows
+        for ((bounds, value) in grid) {
+            val x = loc.xPos + bounds.xPos * colW
+            val width = bounds.width * colW
+            val y = loc.yPos + bounds.yPos * rowH
+            val height = bounds.height * rowH
+            value.location = Location(x, y, width, height)
         }
-    }
-
-    @Override
-    public Dim getLayoutSize() {
-        return new Dim(cols, rows);
     }
 
 }

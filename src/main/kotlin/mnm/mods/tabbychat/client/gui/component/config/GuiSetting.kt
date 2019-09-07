@@ -1,78 +1,34 @@
-package mnm.mods.tabbychat.client.gui.component.config;
+package mnm.mods.tabbychat.client.gui.component.config
 
-import mnm.mods.tabbychat.util.config.Value;
-import mnm.mods.tabbychat.client.gui.component.GuiComponent;
-import mnm.mods.tabbychat.client.gui.component.GuiWrappedComponent;
-import mnm.mods.tabbychat.client.gui.component.IGuiInput;
-
-import javax.annotation.Nonnull;
+import mnm.mods.tabbychat.util.config.AbstractValue
+import mnm.mods.tabbychat.client.gui.component.GuiComponent
+import mnm.mods.tabbychat.client.gui.component.GuiWrappedComponent
+import mnm.mods.tabbychat.client.gui.component.IGuiInput
 
 /**
  * A base setting gui wrapper.
  *
  * @author Matthew
  * @param <T> The setting type
- */
-public abstract class GuiSetting<T> extends GuiComponent implements IGuiInput<T> {
+</T> */
+abstract class GuiSetting<T> internal constructor() : GuiComponent(), IGuiInput<T> {
 
-    private final Value<T> setting;
+    abstract class Wrapped<T, W : GuiComponent>
+    internal constructor(val setting: AbstractValue<T>, wrap: W)
+        : GuiWrappedComponent<W>(wrap), IGuiInput<T>
 
-    GuiSetting(Value<T> setting) {
-        this.setting = setting;
-        this.setValue(setting.get());
-    }
+    open class GuiSettingWrapped<T, Wrapper>
+    internal constructor(setting: AbstractValue<T>, input: Wrapper)
+        : Wrapped<T, Wrapper>(setting, input) where Wrapper : GuiComponent, Wrapper : IGuiInput<T> {
 
-    /**
-     * Gets the setting object.
-     *
-     * @return The setting object
-     */
-    public Value<T> getSetting() {
-        return this.setting;
-    }
+        override var value: T
+            get() = delegate.value
+            set(value) {
+                delegate.value = value
+            }
 
-    @Override
-    public void tick() {
-        getSetting().set(getValue());
-    }
-
-    private abstract static class Wrapped<T, W extends GuiComponent> extends GuiWrappedComponent<W> implements IGuiInput<T> {
-
-        private final Value<T> setting;
-
-        Wrapped(Value<T> setting, @Nonnull W wrap) {
-            super(wrap);
-            this.setting = setting;
-        }
-
-        public Value<T> getSetting() {
-            return this.setting;
-        }
-
-        @Override
-        public void tick() {
-            super.tick();
-            getSetting().set(getValue());
-        }
-
-    }
-
-    public static class GuiSettingWrapped<T, Wrapper extends GuiComponent & IGuiInput<T>>
-            extends Wrapped<T, Wrapper> {
-
-        GuiSettingWrapped(Value<T> setting, @Nonnull Wrapper input) {
-            super(setting, input);
-            input.setValue(setting.get());
-        }
-
-        @Override
-        public T getValue() {
-            return getComponent().getValue();
-        }
-
-        @Override
-        public void setValue(T value) {
-            getComponent().setValue(value);
+        init {
+            input.value = setting.value
         }
 
     }

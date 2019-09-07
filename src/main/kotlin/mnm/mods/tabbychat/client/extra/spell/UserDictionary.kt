@@ -1,29 +1,28 @@
-package mnm.mods.tabbychat.client.extra.spell;
+package mnm.mods.tabbychat.client.extra.spell
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.UncheckedIOException;
+import java.io.BufferedReader
+import java.io.IOException
+import java.io.Reader
+import java.io.UncheckedIOException
 
-import com.swabunga.spell.engine.SpellDictionaryHashMap;
+import com.swabunga.spell.engine.SpellDictionaryHashMap
 
 /**
- * Dictionary that supports {@code #} comments
+ * Dictionary that supports `#` comments
  */
-public class UserDictionary extends SpellDictionaryHashMap {
+class UserDictionary
+@Throws(IOException::class)
+internal constructor(reader: Reader) : SpellDictionaryHashMap(reader) {
 
-    UserDictionary(Reader reader) throws IOException {
-        super(reader);
-    }
-
-    @Override
-    protected void createDictionary(BufferedReader in) throws IOException {
+    @Throws(IOException::class)
+    override fun createDictionary(reader: BufferedReader) {
         try {
-            in.lines()
-                    .filter(line -> line.startsWith("#") && !line.trim().isEmpty())
-                    .forEach(this::putWord);
-        } catch (UncheckedIOException e) {
-            throw e.getCause();
+            reader.lineSequence()
+                    .filter { line -> line.startsWith("#") && line.trim { it <= ' ' }.isNotEmpty() }
+                    .forEach { this.putWord(it) }
+        } catch (e: UncheckedIOException) {
+            throw e.cause!!
         }
+
     }
 }

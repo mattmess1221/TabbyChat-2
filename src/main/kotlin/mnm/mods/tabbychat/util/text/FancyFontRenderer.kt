@@ -1,50 +1,44 @@
-package mnm.mods.tabbychat.util.text;
+package mnm.mods.tabbychat.util.text
 
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.gui.AbstractGui
+import net.minecraft.client.gui.FontRenderer
+import net.minecraft.util.text.ITextComponent
 
-public class FancyFontRenderer extends AbstractGui {
+class FancyFontRenderer(private val fontRenderer: FontRenderer) : AbstractGui() {
 
-    private final FontRenderer fontRenderer;
-
-    public FancyFontRenderer(FontRenderer fr) {
-        this.fontRenderer = fr;
+    fun drawChat(chat: ITextComponent, x: Float, y: Float) {
+        this.drawChat(chat, x, y, true)
     }
 
-    public void drawChat(ITextComponent chat, float x, float y) {
-        this.drawChat(chat, x, y, true);
+    fun drawChat(chat: ITextComponent, x: Float, y: Float, shadow: Boolean) {
+        drawChat(chat, x, y, -1, shadow)
     }
 
-    public void drawChat(ITextComponent chat, float x, float y, boolean shadow) {
-        drawChat(chat, x, y, -1, shadow);
+    fun drawChat(chat: ITextComponent, x: Float, y: Float, color: Int) {
+        this.drawChat(chat, x, y, color, true)
     }
 
-    public void drawChat(ITextComponent chat, float x, float y, int color) {
-        this.drawChat(chat, x, y, color, true);
-    }
+    fun drawChat(chat: ITextComponent, x: Float, y: Float, color: Int, shadow: Boolean) {
+        var y = y
 
-    public void drawChat(ITextComponent chat, float x, float y, int color, boolean shadow) {
-
-        float x1 = x;
-        for (ITextComponent c : chat) {
-            if (c instanceof FancyTextComponent) {
-                FancyTextComponent fcc = (FancyTextComponent) c;
-                for (String s : c.getString().split("\r?\n")) {
-                    int length = fontRenderer.getStringWidth(s);
-                    fill((int) x1, (int) y, (int) x1 + length, (int) y - fontRenderer.FONT_HEIGHT, fcc.getFancyStyle().getHighlight().getHex());
-                    hLine((int) x1, (int) x1 + length, (int) y + fontRenderer.FONT_HEIGHT - 1, fcc.getFancyStyle().getUnderline().getHex());
+        var x1 = x
+        for (c in chat) {
+            if (c is FancyText) {
+                for (s in c.getString().lines().dropLastWhile { it.isEmpty() }) {
+                    val length = fontRenderer.getStringWidth(s)
+                    fill(x1.toInt(), y.toInt(), x1.toInt() + length, y.toInt() - fontRenderer.FONT_HEIGHT, c.fancyStyle.highlight!!.hex)
+                    hLine(x1.toInt(), x1.toInt() + length, y.toInt() + fontRenderer.FONT_HEIGHT - 1, c.fancyStyle.underline!!.hex)
                 }
             }
-            x1 += fontRenderer.getStringWidth(c.getUnformattedComponentText());
+            x1 += fontRenderer.getStringWidth(c.unformattedComponentText).toFloat()
         }
-        for (String s : chat.getString().split("\r?\n")) {
+        for (s in chat.string.lines().dropLastWhile { it.isEmpty() }) {
             if (shadow) {
-                fontRenderer.drawStringWithShadow(s, x, y, color);
-            }else {
-                fontRenderer.drawString(s, x, y, color);
+                fontRenderer.drawStringWithShadow(s, x, y, color)
+            } else {
+                fontRenderer.drawString(s, x, y, color)
             }
-            y += fontRenderer.FONT_HEIGHT;
+            y += fontRenderer.FONT_HEIGHT.toFloat()
         }
     }
 

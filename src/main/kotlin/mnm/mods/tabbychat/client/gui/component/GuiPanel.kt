@@ -1,66 +1,62 @@
-package mnm.mods.tabbychat.client.gui.component;
+package mnm.mods.tabbychat.client.gui.component
 
-import com.google.common.collect.Lists;
-import mnm.mods.tabbychat.client.gui.component.layout.ILayout;
-import mnm.mods.tabbychat.util.Dim;
-import net.minecraft.client.gui.IGuiEventListener;
-import net.minecraft.client.gui.INestedGuiEventHandler;
-
-import java.util.List;
-import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import mnm.mods.tabbychat.client.gui.component.layout.ILayout
+import mnm.mods.tabbychat.util.Dim
+import net.minecraft.client.gui.IGuiEventListener
+import net.minecraft.client.gui.INestedGuiEventHandler
+import kotlin.math.max
 
 /**
  * A component that can contain multiple components.
  *
  * @author Matthew
  */
-public class GuiPanel extends GuiComponent implements INestedGuiEventHandler {
+open class GuiPanel() : GuiComponent(), INestedGuiEventHandler {
 
-    private List<GuiComponent> components = Lists.newArrayList();
-    private ILayout layout;
-    private IGuiEventListener focused;
+    private val components: MutableList<GuiComponent> = mutableListOf()
+    var layout: ILayout? = null
 
-    private boolean dragging;
+    private var focused: IGuiEventListener? = null
+    private var dragging: Boolean = false
 
-    public GuiPanel(ILayout layout) {
-        setLayout(layout);
+    override var minimumSize: Dim
+        get() = layout?.layoutSize ?: run {
+            var width = 0
+            var height = 0
+            for (gc in components) {
+                width = max(width, gc.location.width)
+                height = max(height, gc.location.height)
+            }
+            Dim(width, height)
+        }
+        set(value) {
+            super.minimumSize = value
+        }
+
+    constructor(layout: ILayout) : this() {
+        this.layout = layout
     }
 
-    public GuiPanel() {
+    override fun render(mouseX: Int, mouseY: Int, parTicks: Float) {
+        layout?.layoutComponents(this)
+        this.children().asSequence()
+                .filter { it.visible }
+                .forEach {
+                    it.render(mouseX, mouseY, parTicks)
+                }
+
+        super.render(mouseX, mouseY, parTicks)
     }
 
-    @Override
-    public void render(int mouseX, int mouseY, float parTicks) {
-        getLayout().ifPresent(layout -> layout.layoutComponents(this));
-        this.components.stream()
-                .filter(GuiComponent::isVisible)
-                .forEach(gc -> gc.render(mouseX, mouseY, parTicks));
-
-        super.render(mouseX, mouseY, parTicks);
+    override fun renderCaption(x: Int, y: Int) {
+        super.renderCaption(x, y)
+        this.children().asSequence()
+                .filter { it.visible }
+                .forEach { it.renderCaption(x, y) }
     }
 
-    @Override
-    public void renderCaption(int mouseX, int mouseY) {
-        super.renderCaption(mouseX, mouseY);
-        this.children().stream()
-                .filter(GuiComponent::isVisible)
-                .forEach(gc -> gc.renderCaption(mouseX, mouseY));
-    }
-
-    @Override
-    public void tick() {
-        children().forEach(GuiComponent::tick);
-    }
-
-    /**
-     * Adds a component to this panel.
-     *
-     * @param guiComponent The component
-     */
-    public void add(GuiComponent guiComponent) {
-        add(guiComponent, (Object) null);
+    override fun tick() {
+        children().forEach { it.tick() }
     }
 
     /**
@@ -69,23 +65,22 @@ public class GuiPanel extends GuiComponent implements INestedGuiEventHandler {
      * @param guiComponent The component
      * @param constraints  The constraints
      */
-    public void add(GuiComponent guiComponent, Object constraints) {
-        if (guiComponent != null) {
-            guiComponent.setParent(this);
-            components.add(guiComponent);
-            getLayout().ifPresent(layout -> layout.addComponent(guiComponent, constraints));
-        }
+    fun <T : GuiComponent> add(guiComponent: T, constraints: Any? = null): T {
+        guiComponent.parent = this
+        components.add(guiComponent)
+        layout?.addComponent(guiComponent, constraints)
+        return guiComponent
     }
 
     /**
      * Removes all components from this panel.
      */
-    public void clear() {
-        components.forEach(comp -> {
-            comp.setParent(null);
-            getLayout().ifPresent(layout -> layout.removeComponent(comp));
-        });
-        components.clear();
+    fun clear() {
+        components.forEach { comp ->
+            comp.parent = null
+            layout?.removeComponent(comp)
+        }
+        components.clear()
     }
 
     /**
@@ -93,87 +88,49 @@ public class GuiPanel extends GuiComponent implements INestedGuiEventHandler {
      *
      * @param guiComp The component to remove
      */
-    public void remove(GuiComponent guiComp) {
-        components.remove(guiComp);
-        getLayout().ifPresent(layout -> layout.removeComponent(guiComp));
+    fun remove(guiComp: GuiComponent) {
+        components.remove(guiComp)
+        layout?.removeComponent(guiComp)
     }
 
-    @Nonnull
-    public List<GuiComponent> children() {
-        return components;
+    override fun children(): List<GuiComponent> {
+        return components
     }
 
-    @Nullable
-    @Override
-    public IGuiEventListener getFocused() {
-        return focused;
+    override fun getFocused(): IGuiEventListener? {
+        return focused
     }
 
 
-    public void setFocused(IGuiEventListener focused) {
-        this.focused = focused;
+    override fun setFocused(focused: IGuiEventListener?) {
+        this.focused = focused
     }
 
-    /**
-     * Sets the layout for this panel.
-     *
-     * @param lmg The layout manager
-     */
-    public void setLayout(ILayout lmg) {
-        this.layout = lmg;
+
+    override fun isDragging(): Boolean {
+        return this.dragging
     }
 
-    /**
-     * Gets the layout for this panel.
-     *
-     * @return The layout
-     */
-    public Optional<ILayout> getLayout() {
-        return Optional.ofNullable(layout);
+    override fun setDragging(p_195072_1_: Boolean) {
+        this.dragging = p_195072_1_
     }
 
-    @Override
-    public boolean isDragging() {
-        return this.dragging;
+    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
+        return super<INestedGuiEventHandler>.mouseClicked(mouseX, mouseY, button)
     }
 
-    @Override
-    public final void setDragging(boolean p_195072_1_) {
-        this.dragging = p_195072_1_;
+    override fun mouseReleased(x: Double, y: Double, b: Int): Boolean {
+        return super<INestedGuiEventHandler>.mouseReleased(x, y, b)
     }
 
-    @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        return INestedGuiEventHandler.super.mouseClicked(mouseX, mouseY, button);
+    override fun mouseDragged(x: Double, y: Double, b: Int, dx: Double, dy: Double): Boolean {
+        return super<INestedGuiEventHandler>.mouseDragged(x, y, b, dx, dy)
     }
 
-    @Override
-    public boolean mouseReleased(double x, double y, int b) {
-        return INestedGuiEventHandler.super.mouseReleased(x, y, b);
+    override fun changeFocus(p_changeFocus_1_: Boolean): Boolean {
+        return super<INestedGuiEventHandler>.changeFocus(p_changeFocus_1_)
     }
-
-    @Override
-    public boolean mouseDragged(double x, double y, int b, double dx, double dy) {
-        return INestedGuiEventHandler.super.mouseDragged(x, y, b, dx, dy);
-    }
-
-    @Override
-    public void onClosed() {
-        this.children().forEach(GuiComponent::onClosed);
-    }
-
-    @Nonnull
-    @Override
-    public Dim getMinimumSize() {
-
-        return getLayout().map(ILayout::getLayoutSize).orElseGet(() -> {
-            int width = 0;
-            int height = 0;
-            for (GuiComponent gc : components) {
-                width = Math.max(width, gc.getLocation().getWidth());
-                height = Math.max(height, gc.getLocation().getHeight());
-            }
-            return new Dim(width, height);
-        });
+    override fun onClosed() {
+        this.children().forEach { it.onClosed() }
     }
 }

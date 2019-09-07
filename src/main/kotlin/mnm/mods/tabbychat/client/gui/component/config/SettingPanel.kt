@@ -1,46 +1,26 @@
-package mnm.mods.tabbychat.client.gui.component.config;
+package mnm.mods.tabbychat.client.gui.component.config
 
-import mnm.mods.tabbychat.util.config.SettingsFile;
-import mnm.mods.tabbychat.client.gui.component.GuiPanel;
+import mnm.mods.tabbychat.util.config.SettingsFile
+import mnm.mods.tabbychat.client.gui.component.GuiPanel
 
 /**
  * Base class for a setting panel.
  */
-public abstract class SettingPanel<T extends SettingsFile> extends GuiPanel {
+abstract class SettingPanel<T : SettingsFile> : GuiPanel() {
 
-    private String displayString;
-
-    /**
-     * Called when this category is activated and displayed.
-     */
-    public void initGUI() {}
+    abstract val displayString: String
 
     /**
-     * Sets the display string for this category.
-     *
-     * @param string The display string
-     */
-    public void setDisplayString(String string) {
-        this.displayString = string;
-    }
-
-    /**
-     * Gets the display string for this category. It is shown with the button
-     * used to activate it.
-     *
-     * @return The display string
-     */
-    public String getDisplayString() {
-        return this.displayString;
-    }
-
-    /**
-     * Gets the {@link SettingsFile} used for this category. Used for loading
+     * Gets the [SettingsFile] used for this category. Used for loading
      * and saving the settings file.
      *
      * @return The settings
      */
-    public abstract T getSettings();
+    abstract val settings: T
 
+    /**
+     * Called when this category is activated and displayed.
+     */
+    open fun initGUI() {}
 
 }

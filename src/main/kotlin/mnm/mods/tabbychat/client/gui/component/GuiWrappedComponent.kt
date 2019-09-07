@@ -1,121 +1,67 @@
-package mnm.mods.tabbychat.client.gui.component;
+package mnm.mods.tabbychat.client.gui.component
 
-import mnm.mods.tabbychat.util.Color;
-import mnm.mods.tabbychat.util.Dim;
-import mnm.mods.tabbychat.util.ILocation;
-import net.minecraft.client.gui.IGuiEventListener;
-import net.minecraft.util.text.ITextComponent;
+import mnm.mods.tabbychat.util.Color
+import mnm.mods.tabbychat.util.Dim
+import mnm.mods.tabbychat.util.ILocation
+import net.minecraft.client.gui.IGuiEventListener
+import net.minecraft.util.text.ITextComponent
 
-import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+open class GuiWrappedComponent<T : GuiComponent>(val delegate: T) : GuiComponent(), IGuiEventListener by delegate {
 
-public class GuiWrappedComponent<T extends GuiComponent> extends GuiComponent implements IGuiEventListenerDelegate {
+    override var location: ILocation
+        get() = delegate.location
+        set(location) {
+            delegate.location = location
+        }
 
-    private final T wrapper;
+    override var parent: GuiPanel?
+        get() = delegate.parent
+        set(value) {
+            delegate.parent = value
+        }
 
-    public GuiWrappedComponent(@Nonnull T wrap) {
-        this.wrapper = wrap;
+    override var minimumSize: Dim
+        get() = delegate.minimumSize
+        set(size) {
+            delegate.minimumSize = size
+        }
+
+    override var primaryColor: Color?
+        get() = delegate.primaryColor
+        set(value) {
+            delegate.primaryColor = value
+        }
+
+    override var secondaryColor: Color?
+        get() = delegate.secondaryColor
+        set(value) {
+            delegate.secondaryColor = value
+        }
+
+    override var isEnabled: Boolean
+        get() = delegate.isEnabled
+        set(enabled) {
+            delegate.isEnabled = enabled
+        }
+
+    override var isVisible: Boolean
+        get() = delegate.isVisible
+        set(visible) {
+            delegate.isVisible = visible
+        }
+
+    override var caption: ITextComponent?
+        get() = delegate.caption
+        set(value) {
+            delegate.caption = value
+        }
+
+    override fun render(mouseX: Int, mouseY: Int, parTicks: Float) {
+        delegate.render(mouseX, mouseY, parTicks)
     }
 
-    public T getComponent() {
-        return wrapper;
-    }
-
-    @Nullable
-    @Override
-    public IGuiEventListener delegate() {
-        return wrapper;
-    }
-
-    @Override
-    public void render(int mouseX, int mouseY, float parTicks) {
-        wrapper.render(mouseX, mouseY, parTicks);
-    }
-
-    @Override
-    public void tick() {
-        wrapper.tick();
-    }
-
-    @Override
-    public ILocation getLocation() {
-        return wrapper.getLocation();
-    }
-
-    @Override
-    public void setLocation(ILocation location) {
-        wrapper.setLocation(location);
-    }
-
-    @Override
-    public Optional<GuiPanel> getParent() {
-        return wrapper.getParent();
-    }
-
-    @Override
-    void setParent(GuiPanel guiPanel) {
-        wrapper.setParent(guiPanel);
-    }
-
-    @Override
-    public void setMinimumSize(Dim size) {
-        wrapper.setMinimumSize(size);
-    }
-
-    @Override
-    public Dim getMinimumSize() {
-        return wrapper.getMinimumSize();
-    }
-
-    @Override
-    public Optional<Color> getPrimaryColor() {
-        return wrapper.getPrimaryColor();
-    }
-
-    @Override
-    public void setPrimaryColor(Color color) {
-        wrapper.setPrimaryColor(color);
-    }
-
-    @Override
-    public Optional<Color> getSecondaryColor() {
-        return wrapper.getSecondaryColor();
-    }
-
-    @Override
-    public void setSecondaryColor(Color color) {
-        wrapper.setSecondaryColor(color);
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return wrapper.isEnabled();
-    }
-
-    @Override
-    public void setEnabled(boolean enabled) {
-        wrapper.setEnabled(enabled);
-    }
-
-    @Override
-    public boolean isVisible() {
-        return wrapper.isVisible();
-    }
-
-    @Override
-    public void setVisible(boolean visible) {
-        wrapper.setVisible(visible);
-    }
-
-    @Override
-    public void setCaption(ITextComponent text) {
-        wrapper.setCaption(text);
-    }
-
-    @Override
-    public Optional<ITextComponent> getCaption() {
-        return wrapper.getCaption();
+    override fun tick() {
+        delegate.tick()
     }
 
 }

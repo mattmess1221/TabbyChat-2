@@ -1,70 +1,57 @@
-package mnm.mods.tabbychat.client.gui;
+package mnm.mods.tabbychat.client.gui
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import net.minecraft.client.MainWindow;
-import net.minecraft.client.gui.toasts.IToast;
-import net.minecraft.client.gui.toasts.ToastGui;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import org.lwjgl.opengl.GL11;
+import com.mojang.blaze3d.platform.GlStateManager
+import net.minecraft.client.gui.toasts.IToast
+import net.minecraft.client.gui.toasts.ToastGui
+import net.minecraft.util.text.ITextComponent
+import net.minecraft.util.text.TextFormatting
+import org.lwjgl.opengl.GL11
 
-import javax.annotation.Nonnull;
+class NotificationToast(private val owner: String, title: ITextComponent) : IToast {
+    private val title: String = title.string
 
-public class NotificationToast implements IToast {
+    private var firstDrawTime: Long = 0
+    private var newDisplay: Boolean = false
 
-    private String owner;
-    private String title;
-
-    private long firstDrawTime;
-    private boolean newDisplay;
-
-    public NotificationToast(String owner, ITextComponent title) {
-        this.owner = owner;
-        this.title = title.getString();
-    }
-
-    @Nonnull
-    public IToast.Visibility draw(@Nonnull ToastGui toastGui, long delta) {
+    override fun draw(toastGui: ToastGui, delta: Long): IToast.Visibility {
         if (this.newDisplay) {
-            this.firstDrawTime = delta;
-            this.newDisplay = false;
+            this.firstDrawTime = delta
+            this.newDisplay = false
         }
-        int x = 10;
-        int textWidth = toastGui.getMinecraft().fontRenderer.getStringWidth(title);
-        final long delay = 500;
-        int maxSize = textWidth - 150;
-        long timeElapsed = delta - firstDrawTime - delay;
+        var x = 10
+        val textWidth = toastGui.minecraft.fontRenderer.getStringWidth(title)
+        val delay: Long = 500
+        val maxSize = textWidth - 150
+        val timeElapsed = delta - firstDrawTime - delay
         if (timeElapsed > 0 && textWidth > maxSize) {
-            x = Math.max((int) (-maxSize * (timeElapsed) / (8000L) + x), -maxSize);
+            x = Math.max((-maxSize * timeElapsed / 8000L + x).toInt(), -maxSize)
         }
 
-        toastGui.getMinecraft().getTextureManager().bindTexture(TEXTURE_TOASTS);
-        GlStateManager.color3f(1.0F, 1.0F, 1.0F);
-        toastGui.blit(0, 0, 0, 0, 160, 32);
+        toastGui.minecraft.getTextureManager().bindTexture(IToast.TEXTURE_TOASTS)
+        GlStateManager.color3f(1.0f, 1.0f, 1.0f)
+        toastGui.blit(0, 0, 0, 0, 160, 32)
 
-        toastGui.getMinecraft().fontRenderer.drawString(TextFormatting.UNDERLINE + this.owner, 8.0F, 6.0F, -256);
+        toastGui.minecraft.fontRenderer.drawString(TextFormatting.UNDERLINE.toString() + this.owner, 8.0f, 6.0f, -256)
 
-        MainWindow window = toastGui.getMinecraft().mainWindow;
-        double height = window.getScaledHeight();
-        double scale = window.getGuiScaleFactor();
+        val window = toastGui.minecraft.mainWindow
+        val height = window.scaledHeight.toDouble()
+        val scale = window.guiScaleFactor
 
-        float[] trans = new float[16];
-        GL11.glGetFloatv(GL11.GL_MODELVIEW_MATRIX, trans);
-        float xpos = trans[12];
+        val trans = FloatArray(16)
+        GL11.glGetFloatv(GL11.GL_MODELVIEW_MATRIX, trans)
+        val xpos = trans[12]
 
-        GL11.glEnable(GL11.GL_SCISSOR_TEST);
-        GL11.glScissor((int) ((xpos + 10) * scale), (int) ((height - 32) * scale), (int) (140 * scale), (int) (32 * scale));
+        GL11.glEnable(GL11.GL_SCISSOR_TEST)
+        GL11.glScissor(((xpos + 10) * scale).toInt(), ((height - 32) * scale).toInt(), (140 * scale).toInt(), (32 * scale).toInt())
 
-        toastGui.getMinecraft().fontRenderer.drawString(this.title, x, 16.0F, -1);
+        toastGui.minecraft.fontRenderer.drawString(this.title, x.toFloat(), 16.0f, -1)
 
-        GL11.glDisable(GL11.GL_SCISSOR_TEST);
+        GL11.glDisable(GL11.GL_SCISSOR_TEST)
 
-        return delta - this.firstDrawTime < 10000L ? IToast.Visibility.SHOW : IToast.Visibility.HIDE;
+        return if (delta - this.firstDrawTime < 10000L) IToast.Visibility.SHOW else IToast.Visibility.HIDE
     }
 
-    @Override
-    @Nonnull
-    public String getType() {
-        return this.owner;
+    override fun getType(): String {
+        return this.owner
     }
 }

@@ -1,28 +1,28 @@
-package mnm.mods.util.test;
+package mnm.mods.util.test
 
-import static org.junit.Assert.*;
+import org.junit.Assert.*
 
-import org.junit.Test;
+import org.junit.Test
 
-import mnm.mods.tabbychat.util.Color;
+import mnm.mods.tabbychat.util.Color
 
-public class ColorTest {
+class ColorTest {
 
     @Test
-    public void testHex() {
-        Color c = Color.of(0x44771200);
-        assertEquals(c.getRed(), 0x77);
-        assertEquals(c.getGreen(), 0x12);
-        assertEquals(c.getBlue(), 0x00);
-        assertEquals(c.getAlpha(), 0x44);
+    fun testHex() {
+        val c = Color(0x44771200)
+        assertEquals(c.red.toLong(), 0x77)
+        assertEquals(c.green.toLong(), 0x12)
+        assertEquals(c.blue.toLong(), 0x00)
+        assertEquals(c.alpha.toLong(), 0x44)
 
-        assertEquals(c.getHex(), 0x44771200);
+        assertEquals(c.hex.toLong(), 0x44771200)
     }
 
     @Test
-    public void testEquals() {
-        assertEquals(Color.RED, Color.of(0xffff5555));
-        assertEquals(Color.of(0xffff5555), Color.of(0xff, 0x55, 0x55, 0xff));
+    fun testEquals() {
+        assertEquals(Color.RED, Color(-0xaaab))
+        assertEquals(Color(-0xaaab), Color(0xff, 0x55, 0x55, 0xff))
     }
 
 }

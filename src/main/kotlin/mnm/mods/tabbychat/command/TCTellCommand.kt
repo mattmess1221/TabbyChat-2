@@ -1,47 +1,47 @@
-package mnm.mods.tabbychat.command;
+package mnm.mods.tabbychat.command
 
-import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import mnm.mods.tabbychat.TabbyChat;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.arguments.ComponentArgument;
-import net.minecraft.command.arguments.EntityArgument;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.text.ITextComponent;
+import com.mojang.brigadier.Command
+import com.mojang.brigadier.CommandDispatcher
+import com.mojang.brigadier.arguments.StringArgumentType
+import com.mojang.brigadier.context.CommandContext
+import com.mojang.brigadier.exceptions.CommandSyntaxException
+import mnm.mods.tabbychat.TabbyChat
+import net.minecraft.command.CommandSource
+import net.minecraft.command.arguments.ComponentArgument
+import net.minecraft.command.arguments.EntityArgument
+import net.minecraft.entity.player.ServerPlayerEntity
+import net.minecraft.util.text.ITextComponent
 
-import java.util.Collection;
+import net.minecraft.command.Commands.argument
+import net.minecraft.command.Commands.literal
 
-import static net.minecraft.command.Commands.argument;
-import static net.minecraft.command.Commands.literal;
+object TCTellCommand : Command<CommandSource> {
 
-public class TCTellCommand {
+    private val TARGETS = "targets"
+    private val CHANNEL = "channel"
+    private val MESSAGE = "message"
 
-    private static final String TARGETS = "targets";
-    private static final String CHANNEL = "channel";
-    private static final String MESSAGE = "message";
-
-    public static void register(CommandDispatcher<CommandSource> dispatcher) {
+    fun register(dispatcher: CommandDispatcher<CommandSource>) {
         dispatcher.register(literal("tctell")
-                .requires(source -> source.hasPermissionLevel(2))
+                .requires { source -> source.hasPermissionLevel(2) }
                 .then(argument(TARGETS, EntityArgument.players())
                         .then(argument(CHANNEL, StringArgumentType.string())
                                 .then(argument(MESSAGE, ComponentArgument.component())
-                                        .executes(TCTellCommand::execute)))));
+                                        .executes(this)))))
     }
 
-    private static int execute(CommandContext<CommandSource> context) throws CommandSyntaxException {
+    @Throws(CommandSyntaxException::class)
+    override fun run(context: CommandContext<CommandSource>): Int {
 
-        Collection<ServerPlayerEntity> players = EntityArgument.getPlayers(context, TARGETS);
-        String channel = "#" + StringArgumentType.getString(context, CHANNEL);
-        ITextComponent message = ComponentArgument.getComponent(context, MESSAGE);
+        val players = EntityArgument.getPlayers(context, TARGETS)
+        val channel = "#" + StringArgumentType.getString(context, CHANNEL)
+        val message = ComponentArgument.getComponent(context, MESSAGE)
 
-        for (ServerPlayerEntity player : players) {
-            TabbyChat.sendTo(player, channel, message);
+        for (player in players) {
+            TabbyChat.sendTo(player, channel, message)
         }
 
-        return players.size();
+        return players.size
     }
 
 }

@@ -1,18 +1,12 @@
-package mnm.mods.tabbychat.client.gui.component.config;
+package mnm.mods.tabbychat.client.gui.component.config
 
-import mnm.mods.tabbychat.util.config.Value;
-import mnm.mods.tabbychat.client.gui.component.GuiText;
-import mnm.mods.tabbychat.client.gui.component.config.GuiSetting.GuiSettingWrapped;
+import mnm.mods.tabbychat.client.gui.component.GuiText
+import mnm.mods.tabbychat.client.gui.component.config.GuiSetting.GuiSettingWrapped
+import mnm.mods.tabbychat.util.config.Value
 
 /**
- * A Gui input that wraps a {@link GuiText}.
+ * A Gui input that wraps a [GuiText].
  *
  * @author Matthew
  */
-public class GuiSettingString extends GuiSettingWrapped<String, GuiText> {
-
-    public GuiSettingString(Value<String> setting) {
-        super(setting, new GuiText());
-    }
-
-}
+class GuiSettingString(setting: Value<String>) : GuiSettingWrapped<String, GuiText>(setting, GuiText())

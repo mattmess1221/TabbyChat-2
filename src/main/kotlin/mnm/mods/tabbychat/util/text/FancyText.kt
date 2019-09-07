@@ -1,66 +1,52 @@
-package mnm.mods.tabbychat.util.text;
+package mnm.mods.tabbychat.util.text
 
-import com.google.common.collect.Streams;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponent;
+import com.google.common.collect.Streams
+import mnm.mods.tabbychat.util.Color
+import net.minecraft.util.text.ITextComponent
+import net.minecraft.util.text.TextComponent
+import java.util.stream.Stream
 
-import java.util.Iterator;
-import java.util.stream.Stream;
+class FancyText(val text: ITextComponent) : TextComponent() {
 
-public class FancyTextComponent extends TextComponent {
-
-    private final ITextComponent text;
-    private FancyTextStyle style;
-
-    public FancyTextComponent(ITextComponent parent) {
-        if (parent instanceof FancyTextComponent)
-            throw new IllegalArgumentException("Parent text cannot be fancy");
-        this.text = parent;
+    data class FancyStyle(var color: Color = Color.WHITE,
+                          var underline: Color? = null,
+                          var highlight: Color? = null) {
+        fun copy(other: FancyStyle): FancyStyle {
+            return FancyStyle(other.color, other.underline, other.highlight)
+        }
     }
 
-    @Override
-    public String getUnformattedComponentText() {
-        return text.getUnformattedComponentText();
+    var fancyStyle = FancyStyle()
+
+    fun fancyStyle(block: FancyStyle.() -> Unit) = apply {
+        fancyStyle.block()
     }
 
-    @Override
-    public ITextComponent shallowCopy() {
-        ITextComponent text = this.text.shallowCopy();
-        FancyTextComponent fcc = new FancyTextComponent(text);
-        fcc.setFancyStyle(getFancyStyle().createCopy());
-        return fcc;
+    init {
+        require(text !is FancyText) { "Parent text cannot be fancy" }
     }
 
-    @Override
-    public Iterator<ITextComponent> iterator() {
+    override fun getUnformattedComponentText(): String = text.unformattedComponentText
+
+    override fun shallowCopy(): ITextComponent = FancyText(text.shallowCopy()).also {
+        it.fancyStyle = fancyStyle.copy()
+    }
+
+    override fun iterator(): MutableIterator<ITextComponent> {
         // don't iterate using the vanilla components
-        return Streams.stream(this.text.iterator())
-                .map(it -> it instanceof FancyTextComponent ? it
-                        : new FancyTextComponent(it).setFancyStyle(this.getFancyStyle())).iterator();
+        return this.text.asSequence()
+                .map {
+                    it as? FancyText ?: FancyText(it).also {text ->
+                        text.fancyStyle = this.fancyStyle.copy()
+                    }
+                }.iterator() as MutableIterator
     }
 
-    @Override
-    public Stream<ITextComponent> stream() {
-        return Streams.concat(Stream.of(this), getSiblings().stream().flatMap(ITextComponent::stream));
+    override fun stream(): Stream<ITextComponent> {
+        return Streams.concat(Stream.of(this), getSiblings().stream().flatMap { it.stream() })
     }
 
-    public ITextComponent getText() {
-        return text;
-    }
-
-    public FancyTextStyle getFancyStyle() {
-        if (this.style == null)
-            this.style = new FancyTextStyle();
-        return this.style;
-    }
-
-    public FancyTextComponent setFancyStyle(FancyTextStyle style) {
-        this.style = style;
-        return this;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("FancyText{text=%s, fancystyle=%s}", text, style);
+    override fun toString(): String {
+        return String.format("FancyText{text=%s, fancystyle=%s}", text, style)
     }
 }

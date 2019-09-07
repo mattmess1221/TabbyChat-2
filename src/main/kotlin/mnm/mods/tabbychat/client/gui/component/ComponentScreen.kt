@@ -1,55 +1,39 @@
-package mnm.mods.tabbychat.client.gui.component;
+package mnm.mods.tabbychat.client.gui.component
 
-import mnm.mods.tabbychat.util.Location;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.IGuiEventListener;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.util.text.ITextComponent;
-
-import javax.annotation.Nonnull;
-import java.util.List;
+import mnm.mods.tabbychat.util.Location
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.IGuiEventListener
+import net.minecraft.client.gui.screen.Screen
+import net.minecraft.util.text.ITextComponent
 
 /**
  * A panel wrapper for a screen.
  */
-public class ComponentScreen extends Screen {
-
-    private final GuiPanel PANEL = new GuiPanel();
-
-    public ComponentScreen(ITextComponent title) {
-        super(title);
-    }
-
-    @Override
-    public void render(int mouseX, int mouseY, float tick) {
-        PANEL.render(mouseX, mouseY, tick);
-        PANEL.renderCaption(mouseX, mouseY);
-    }
-
-    @Override
-    public void tick() {
-        PANEL.tick();
-    }
-
-    @Override
-    @Nonnull
-    public List<? extends IGuiEventListener> children() {
-        return PANEL.children();
-    }
-
-    @Override
-    public void init(Minecraft mc, int width, int height) {
-        PANEL.setLocation(new Location(0, 0, width, height));
-        PANEL.clear();
-        super.init(mc, width, height);
-    }
+open class ComponentScreen(title: ITextComponent) : Screen(title) {
 
     /**
      * Gets the main panel on this screen. Add things to this.
-     * 
+     *
      * @return The main panel
      */
-    protected GuiPanel getPanel() {
-        return PANEL;
+    protected val panel = GuiPanel()
+
+    override fun render(mouseX: Int, mouseY: Int, tick: Float) {
+        panel.render(mouseX, mouseY, tick)
+        panel.renderCaption(mouseX, mouseY)
+    }
+
+    override fun tick() {
+        panel.tick()
+    }
+
+    override fun children(): List<IGuiEventListener> {
+        return panel.children()
+    }
+
+    override fun init(mc: Minecraft, width: Int, height: Int) {
+        panel.location = Location(0, 0, width, height)
+        panel.clear()
+        super.init(mc, width, height)
     }
 }

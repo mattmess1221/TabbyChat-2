@@ -1,89 +1,73 @@
-package mnm.mods.tabbychat.client.gui.settings;
+package mnm.mods.tabbychat.client.gui.settings
 
-import mnm.mods.tabbychat.client.TabbyChatClient;
-import mnm.mods.tabbychat.client.gui.component.GuiLabel;
-import mnm.mods.tabbychat.client.gui.component.config.GuiSettingBoolean;
-import mnm.mods.tabbychat.client.gui.component.config.GuiSettingEnum;
-import mnm.mods.tabbychat.client.gui.component.config.GuiSettingString;
-import mnm.mods.tabbychat.client.gui.component.config.GuiSettingStringList;
-import mnm.mods.tabbychat.client.gui.component.config.SettingPanel;
-import mnm.mods.tabbychat.client.gui.component.layout.GuiGridLayout;
-import mnm.mods.tabbychat.client.settings.GeneralServerSettings;
-import mnm.mods.tabbychat.client.settings.ServerSettings;
-import mnm.mods.tabbychat.util.ChannelPatterns;
-import mnm.mods.tabbychat.util.Color;
-import mnm.mods.tabbychat.util.MessagePatterns;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.util.text.TranslationTextComponent;
+import mnm.mods.tabbychat.client.TabbyChatClient
+import mnm.mods.tabbychat.client.gui.component.GuiLabel
+import mnm.mods.tabbychat.client.gui.component.config.*
+import mnm.mods.tabbychat.client.gui.component.layout.GuiGridLayout
+import mnm.mods.tabbychat.client.settings.ServerSettings
+import mnm.mods.tabbychat.util.ChannelPatterns
+import mnm.mods.tabbychat.util.Color
+import mnm.mods.tabbychat.util.MessagePatterns
+import mnm.mods.tabbychat.util.Translation
 
-import static mnm.mods.tabbychat.util.Translation.*;
+internal class GuiSettingsServer : SettingPanel<ServerSettings>() {
 
-public class GuiSettingsServer extends SettingPanel<ServerSettings> {
+    override val displayString: String by Translation.SETTINGS_SERVER
+    override val settings = TabbyChatClient.serverSettings!!
 
-    GuiSettingsServer() {
-        this.setLayout(new GuiGridLayout(10, 20));
-        this.setDisplayString(I18n.format(SETTINGS_SERVER));
-        this.setSecondaryColor(Color.of(255, 215, 0, 64));
+    init {
+        this.layout = GuiGridLayout(10, 20)
+        this.secondaryColor = Color(255, 215, 0, 64)
     }
 
-    @Override
-    public void initGUI() {
-        GeneralServerSettings sett = getSettings().general;
+    override fun initGUI() {
+        val sett = settings.general
 
-        int pos = 1;
-        this.add(new GuiLabel(new TranslationTextComponent(CHANNELS_ENABLED)), new int[]{2, pos});
-        GuiSettingBoolean chkChannels = new GuiSettingBoolean(sett.channelsEnabled);
-        chkChannels.setCaption(new TranslationTextComponent(CHANNELS_ENABLED_DESC));
-        this.add(chkChannels, new int[]{1, pos});
-
-        pos += 1;
-        this.add(new GuiLabel(new TranslationTextComponent(PM_ENABLED)), new int[]{2, pos});
-        GuiSettingBoolean chkPM = new GuiSettingBoolean(sett.pmEnabled);
-        chkPM.setCaption(new TranslationTextComponent(PM_ENABLED_DESC));
-        this.add(chkPM, new int[]{1, pos});
-
-        pos += 1;
-        add(new GuiLabel(new TranslationTextComponent(USE_DEFAULT)), new int[]{2, pos});
-        add(new GuiSettingBoolean(sett.useDefaultTab), new int[]{1, pos});
-
-        pos += 2;
-        this.add(new GuiLabel(new TranslationTextComponent(CHANNEL_PATTERN)), new int[]{1, pos});
-        GuiSettingEnum<ChannelPatterns> enmChanPat = new GuiSettingEnum<>(sett.channelPattern,
-                ChannelPatterns.values());
-        enmChanPat.setCaption(new TranslationTextComponent(CHANNEL_PATTERN_DESC));
-        this.add(enmChanPat, new int[]{5, pos, 4, 1});
-
-        pos += 2;
-        this.add(new GuiLabel(new TranslationTextComponent(MESSAGE_PATTERN)), new int[]{1, pos});
-        if (sett.messegePattern.get() == null) {
-            sett.messegePattern.set(MessagePatterns.WHISPERS);
+        var pos = 1
+        this.add(GuiLabel(Translation.CHANNELS_ENABLED.toComponent()), intArrayOf(2, pos))
+        this.add(GuiSettingBoolean(sett.channelsEnabled), intArrayOf(1, pos)).apply {
+            caption = Translation.CHANNELS_ENABLED_DESC.toComponent()
         }
-        GuiSettingEnum<MessagePatterns> enmMsg = new GuiSettingEnum<>(sett.messegePattern, MessagePatterns.values());
-        enmMsg.setCaption(new TranslationTextComponent(MESSAGE_PATTERN_DESC));
-        this.add(enmMsg, new int[]{5, pos, 4, 1});
 
-        pos += 2;
-        this.add(new GuiLabel(new TranslationTextComponent(IGNORED_CHANNELS)), new int[]{0, pos});
-        GuiSettingStringList strIgnored = new GuiSettingStringList(sett.ignoredChannels);
-        strIgnored.setCaption(new TranslationTextComponent(IGNORED_CHANNELS_DESC));
-        this.add(strIgnored, new int[]{5, pos, 5, 1});
+        pos += 1
+        this.add(GuiLabel(Translation.PM_ENABLED.toComponent()), intArrayOf(2, pos))
+        this.add(GuiSettingBoolean(sett.pmEnabled), intArrayOf(1, pos)).apply {
+            caption = Translation.PM_ENABLED_DESC.toComponent()
+        }
 
-        pos += 2;
-        this.add(new GuiLabel(new TranslationTextComponent(DEFAULT_CHANNEL_COMMAND)), new int[]{0, pos});
-        GuiSettingString strChannels = new GuiSettingString(sett.channelCommand);
-        strChannels.setCaption(new TranslationTextComponent(DEFAULT_CHANNEL_COMMAND_DESC));
-        this.add(strChannels, new int[]{5, pos, 5, 1});
+        pos += 1
+        this.add(GuiLabel(Translation.USE_DEFAULT.toComponent()), intArrayOf(2, pos))
+        this.add(GuiSettingBoolean(sett.useDefaultTab), intArrayOf(1, pos))
 
-        pos += 2;
-        this.add(new GuiLabel(new TranslationTextComponent(DEFAULT_CHANNEL)), new int[]{0, pos});
-        GuiSettingString strMessages = new GuiSettingString(sett.defaultChannel);
-        strMessages.setCaption(new TranslationTextComponent(DEFAULT_CHANNEL_DESC));
-        this.add(strMessages, new int[]{5, pos, 5, 1});
-    }
+        pos += 2
+        this.add(GuiLabel(Translation.CHANNEL_PATTERN.toComponent()), intArrayOf(1, pos))
+        this.add(GuiSettingEnum(sett.channelPattern, ChannelPatterns.values()), intArrayOf(5, pos, 4, 1)).apply {
+            caption = Translation.CHANNEL_PATTERN_DESC.toComponent()
+        }
 
-    @Override
-    public ServerSettings getSettings() {
-        return TabbyChatClient.getInstance().getServerSettings();
+        pos += 2
+        this.add(GuiLabel(Translation.MESSAGE_PATTERN.toComponent()), intArrayOf(1, pos))
+        this.add(GuiSettingEnum(sett.messegePattern, MessagePatterns.values()), intArrayOf(5, pos, 4, 1)).apply {
+            caption = Translation.MESSAGE_PATTERN_DESC.toComponent()
+        }
+
+        pos += 2
+        this.add(GuiLabel(Translation.IGNORED_CHANNELS.toComponent()), intArrayOf(0, pos))
+        this.add(GuiSettingStringList(sett.ignoredChannels), intArrayOf(5, pos, 5, 1)).apply {
+            caption = Translation.IGNORED_CHANNELS_DESC.toComponent()
+        }
+
+        pos += 2
+        this.add(GuiLabel(Translation.DEFAULT_CHANNEL_COMMAND.toComponent()), intArrayOf(0, pos))
+        this.add(GuiSettingString(sett.channelCommand), intArrayOf(5, pos, 5, 1)).apply {
+            caption = Translation.DEFAULT_CHANNEL_COMMAND_DESC.toComponent()
+        }
+
+        pos += 2
+        this.add(GuiLabel(Translation.DEFAULT_CHANNEL.toComponent()), intArrayOf(0, pos))
+        this.add(GuiSettingString(sett.defaultChannel), intArrayOf(5, pos, 5, 1)).apply {
+            caption = Translation.DEFAULT_CHANNEL_DESC.toComponent()
+        }
     }
 
 }

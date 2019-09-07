@@ -1,9 +1,11 @@
-package mnm.mods.tabbychat.client.gui.component;
+package mnm.mods.tabbychat.client.gui.component
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import mnm.mods.tabbychat.TabbyChat;
-import mnm.mods.tabbychat.util.ILocation;
-import net.minecraft.util.ResourceLocation;
+import com.mojang.blaze3d.platform.GlStateManager
+import mnm.mods.tabbychat.TabbyChat
+import mnm.mods.tabbychat.*
+import mnm.mods.tabbychat.util.ILocation
+import mnm.mods.tabbychat.util.mc
+import net.minecraft.util.ResourceLocation
 
 /**
  * Represents a colored area. Transparency is represented using a transparency
@@ -11,17 +13,18 @@ import net.minecraft.util.ResourceLocation;
  *
  * @author Matthew
  */
-public class GuiRectangle extends GuiComponent {
+open class GuiRectangle : GuiComponent() {
 
-    private static final ResourceLocation TRANSPARENCY = new ResourceLocation(TabbyChat.MODID, "textures/transparency.png");
+    override fun render(mouseX: Int, mouseY: Int, parTicks: Float) {
+        GlStateManager.enableBlend()
+        mc.getTextureManager().bindTexture(TRANSPARENCY)
+        val loc = location
+        blit(loc.xPos, loc.yPos, 0f, 0f, loc.width, loc.height, 5, 5)
+        fill(loc.xPos, loc.yPos, loc.xWidth, loc.yHeight, primaryColorProperty.hex)
+        GlStateManager.disableBlend()
+    }
 
-    @Override
-    public void render(int mouseX, int mouseY, float parTicks) {
-        GlStateManager.enableBlend();
-        mc.getTextureManager().bindTexture(TRANSPARENCY);
-        ILocation loc = getLocation();
-        blit(loc.getXPos(), loc.getYPos(), 0, 0, loc.getWidth(), loc.getHeight(), 5, 5);
-        fill(loc.getXPos(), loc.getYPos(), loc.getXWidth(), loc.getYHeight(), getPrimaryColorProperty().getHex());
-        GlStateManager.disableBlend();
+    companion object {
+        private val TRANSPARENCY = ResourceLocation(MODID, "textures/transparency.png")
     }
 }

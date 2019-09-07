@@ -1,20 +1,20 @@
-package mnm.mods.tabbychat.client.settings;
+package mnm.mods.tabbychat.client.settings
 
-import mnm.mods.tabbychat.util.ChannelPatterns;
-import mnm.mods.tabbychat.util.MessagePatterns;
-import mnm.mods.tabbychat.util.config.Value;
-import mnm.mods.tabbychat.util.config.ValueList;
-import mnm.mods.tabbychat.util.config.ValueObject;
+import mnm.mods.tabbychat.util.ChannelPatterns
+import mnm.mods.tabbychat.util.MessagePatterns
+import mnm.mods.tabbychat.util.config.Value
+import mnm.mods.tabbychat.util.config.ValueList
+import mnm.mods.tabbychat.util.config.ValueObject
 
-public class GeneralServerSettings extends ValueObject {
+class GeneralServerSettings : ValueObject() {
 
-    public Value<Boolean> channelsEnabled = value(true);
-    public Value<Boolean> pmEnabled = value(true);
-    public Value<ChannelPatterns> channelPattern = value(ChannelPatterns.BRACKETS);
-    public Value<MessagePatterns> messegePattern = value(MessagePatterns.WHISPERS);
-    public Value<Boolean> useDefaultTab = value(true);
-    public ValueList<String> ignoredChannels = list();
-    public Value<String> defaultChannel = value("");
-    public Value<String> channelCommand = value("");
-    public Value<String> messageCommand = value("");
+    val channelsEnabled = Value(true)
+    val pmEnabled = Value(true)
+    val channelPattern = Value(ChannelPatterns.BRACKETS)
+    val messegePattern = Value(MessagePatterns.WHISPERS)
+    val useDefaultTab = Value(true)
+    val ignoredChannels = ValueList<String>()
+    val defaultChannel = Value("")
+    val channelCommand = Value("")
+    val messageCommand = Value("")
 }

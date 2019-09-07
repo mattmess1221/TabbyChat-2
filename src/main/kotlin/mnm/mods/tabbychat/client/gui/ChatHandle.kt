@@ -1,36 +1,27 @@
-package mnm.mods.tabbychat.client.gui;
+package mnm.mods.tabbychat.client.gui
 
-import mnm.mods.tabbychat.util.Color;
-import mnm.mods.tabbychat.util.Dim;
-import mnm.mods.tabbychat.util.ILocation;
-import mnm.mods.tabbychat.util.Location;
-import mnm.mods.tabbychat.client.gui.component.GuiComponent;
+import mnm.mods.tabbychat.client.gui.component.GuiComponent
+import mnm.mods.tabbychat.util.Color
+import mnm.mods.tabbychat.util.Dim
+import mnm.mods.tabbychat.util.Location
+import mnm.mods.tabbychat.util.mc
 
-import javax.annotation.Nonnull;
+class ChatHandle internal constructor() : GuiComponent() {
 
-public class ChatHandle extends GuiComponent {
-
-    ChatHandle() {
-        setLocation(new Location(0, 0, 10, 10));
+    init {
+        location = Location(0, 0, 10, 10)
+        minimumSize = Dim(12, 12)
     }
 
-    @Override
-    public void render(int mouseX, int mouseY, float parTicks) {
-        ILocation loc = getLocation();
-        int color = getColor(loc.contains(mouseX, mouseY)).getHex();
-        hLine(loc.getXPos() + 3, loc.getXWidth() - 4, loc.getYPos() + 4, color);
-        vLine(loc.getXWidth() - 4, loc.getYPos() + 4, loc.getYHeight() - 2, color);
+    override fun render(mouseX: Int, mouseY: Int, parTicks: Float) {
+        val loc = location
+        val color = getColor(loc.contains(mouseX, mouseY)).hex
+        hLine(loc.xPos + 3, loc.xWidth - 4, loc.yPos + 4, color)
+        vLine(loc.xWidth - 4, loc.yPos + 4, loc.yHeight - 2, color)
     }
 
-    @Nonnull
-    private Color getColor(boolean hovered) {
-        int opac = (int) (mc.gameSettings.chatOpacity * 255);
-        return Color.of(255, 255, hovered ? 160 : 255, opac);
-    }
-
-    @Nonnull
-    @Override
-    public Dim getMinimumSize() {
-        return new Dim(12, 12);
+    private fun getColor(hovered: Boolean): Color {
+        val opac = (mc.gameSettings.chatOpacity * 255).toInt()
+        return Color(255, 255, if (hovered) 160 else 255, opac)
     }
 }

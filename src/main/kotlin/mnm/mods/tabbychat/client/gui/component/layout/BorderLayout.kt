@@ -1,14 +1,10 @@
-package mnm.mods.tabbychat.client.gui.component.layout;
+package mnm.mods.tabbychat.client.gui.component.layout
 
-import com.google.common.collect.Maps;
-import mnm.mods.tabbychat.client.gui.component.GuiComponent;
-import mnm.mods.tabbychat.client.gui.component.GuiPanel;
-import mnm.mods.tabbychat.util.Dim;
-import mnm.mods.tabbychat.util.ILocation;
-import mnm.mods.tabbychat.util.Location;
-
-import java.util.EnumMap;
-import java.util.Map.Entry;
+import mnm.mods.tabbychat.client.gui.component.GuiComponent
+import mnm.mods.tabbychat.client.gui.component.GuiPanel
+import mnm.mods.tabbychat.util.Dim
+import mnm.mods.tabbychat.util.Location
+import java.util.*
 
 /**
  * A recreation of Border Layout.
@@ -16,171 +12,160 @@ import java.util.Map.Entry;
  * @author Matthew Matthew
  * @see java.awt.BorderLayout
  */
-public class BorderLayout implements ILayout {
+class BorderLayout : ILayout {
 
-    private EnumMap<Position, GuiComponent> components = Maps.newEnumMap(Position.class);
+    private val components = EnumMap<Position, GuiComponent>(Position::class.java)
 
-    @Override
-    public void addComponent(GuiComponent comp, Object constraints) {
-        if (constraints == null || constraints instanceof Position) {
-            addComponent((Position) constraints, comp);
+    override val layoutSize: Dim
+        get() {
+            var width = 0
+            var height = 0
+            for ((key, value) in components) {
+                val (width1, height1) = value.minimumSize
+                when (key!!) {
+                    Position.CENTER -> {
+                        width += width1
+                        height += height1
+                    }
+                    Position.EAST, Position.WEST -> width += width1
+                    Position.NORTH, Position.SOUTH -> height += height1
+                }
+            }
+            return Dim(width, height)
+        }
+
+    override fun addComponent(comp: GuiComponent, constraints: Any?) {
+        if (constraints == null || constraints is Position) {
+            addComponent(constraints as Position?, comp)
         } else {
-            throw new IllegalArgumentException(
-                    "cannot add to layout: constraint must be a Position enum");
+            throw IllegalArgumentException(
+                    "cannot add to layout: constraint must be a Position enum")
         }
     }
 
-    private synchronized void addComponent(Position constraint, GuiComponent comp) {
-        if (constraint == null) {
-            constraint = Position.CENTER;
-        }
-
-        components.put(constraint, comp);
+    @Synchronized
+    private fun addComponent(constraint: Position?, comp: GuiComponent) {
+        components[constraint ?: Position.CENTER] = comp
     }
 
-    @Override
-    public synchronized void removeComponent(GuiComponent comp) {
-        components.values().remove(comp);
+    @Synchronized
+    override fun removeComponent(comp: GuiComponent) {
+        components.values.remove(comp)
     }
 
-    @Override
-    public void layoutComponents(GuiPanel parent) {
-        ILocation pbounds = parent.getLocation();
-        GuiComponent center = components.get(Position.CENTER);
-        GuiComponent north = components.get(Position.NORTH);
-        GuiComponent south = components.get(Position.SOUTH);
-        GuiComponent west = components.get(Position.WEST);
-        GuiComponent east = components.get(Position.EAST);
+    override fun layoutComponents(parent: GuiPanel) {
+        val pbounds = parent.location
+        val center = components[Position.CENTER]
+        val north = components[Position.NORTH]
+        val south = components[Position.SOUTH]
+        val west = components[Position.WEST]
+        val east = components[Position.EAST]
 
         if (north != null) {
-            north.setLocation(new Location(pbounds.getXPos(), pbounds.getYPos(), pbounds.getWidth(), north.getMinimumSize().height));
+            north.location = Location(pbounds.xPos, pbounds.yPos, pbounds.width, north.minimumSize.height)
         }
 
         if (west != null) {
-            Location bounds = pbounds.copy();
-            bounds.setWidth(west.getMinimumSize().width);
+            val bounds = pbounds.copy()
+            bounds.width = west.minimumSize.width
 
             if (north != null) {
-                bounds.setYPos(north.getLocation().getYHeight());
+                bounds.yPos = north.location.yHeight
             }
 
             if (south == null) {
                 if (north == null) {
-                    bounds.setHeight(pbounds.getHeight());
+                    bounds.height = pbounds.height
                 } else {
-                    bounds.setHeight(pbounds.getHeight() - north.getLocation().getHeight());
+                    bounds.height = pbounds.height - north.location.height
                 }
             } else {
                 if (north == null) {
-                    bounds.setHeight(pbounds.getHeight() - south.getLocation().getHeight());
+                    bounds.height = pbounds.height - south.location.height
                 } else {
-                    bounds.setHeight(pbounds.getHeight() - south.getLocation().getHeight() - north.getLocation().getHeight());
+                    bounds.height = pbounds.height - south.location.height - north.location.height
                 }
             }
-            west.setLocation(bounds);
+            west.location = bounds
         }
 
         if (center != null) {
-            Location bounds = pbounds.copy();
+            val bounds = pbounds.copy()
 
             if (north != null) {
-                bounds.setYPos(north.getLocation().getYHeight() + 1);
+                bounds.yPos = north.location.yHeight + 1
             }
 
             if (west != null) {
-                bounds.setXPos(west.getLocation().getXWidth());
+                bounds.xPos = west.location.xWidth
             }
 
             if (east == null) {
                 if (west == null) {
-                    bounds.setWidth(pbounds.getWidth());
+                    bounds.width = pbounds.width
                 } else {
-                    bounds.setWidth(pbounds.getWidth() - west.getLocation().getWidth());
+                    bounds.width = pbounds.width - west.location.width
                 }
             } else {
                 if (west == null) {
-                    bounds.setWidth(pbounds.getWidth() - east.getLocation().getWidth());
+                    bounds.width = pbounds.width - east.location.width
                 } else {
-                    bounds.setWidth(pbounds.getWidth() - east.getLocation().getWidth() - west.getLocation().getWidth());
+                    bounds.width = pbounds.width - east.location.width - west.location.width
                 }
             }
 
             if (south == null) {
                 if (north == null) {
-                    bounds.setHeight(pbounds.getHeight());
+                    bounds.height = pbounds.height
                 } else {
-                    bounds.setHeight(pbounds.getHeight() - north.getLocation().getHeight());
+                    bounds.height = pbounds.height - north.location.height
                 }
             } else {
                 if (north == null) {
-                    bounds.setHeight(pbounds.getHeight() - south.getLocation().getHeight() - 1);
+                    bounds.height = pbounds.height - south.location.height - 1
                 } else {
-                    bounds.setHeight(pbounds.getHeight() - south.getLocation().getHeight() - north.getLocation().getHeight() - 2);
+                    bounds.height = pbounds.height - south.location.height - north.location.height - 2
                 }
             }
-            center.setLocation(bounds);
+            center.location = bounds
         }
 
         if (east != null) {
-            Location bounds = pbounds.copy();
+            val bounds = pbounds.copy()
 
-            bounds.setXPos(pbounds.getXWidth() - east.getMinimumSize().width);
-            bounds.setWidth(east.getMinimumSize().width);
+            bounds.xPos = pbounds.xWidth - east.minimumSize.width
+            bounds.width = east.minimumSize.width
             if (north != null) {
-                bounds.setYPos(north.getLocation().getYHeight());
+                bounds.yPos = north.location.yHeight
             }
             if (south == null) {
                 if (north == null) {
-                    bounds.setHeight(pbounds.getHeight());
+                    bounds.height = pbounds.height
                 } else {
-                    bounds.setHeight(pbounds.getHeight() - north.getMinimumSize().height);
+                    bounds.height = pbounds.height - north.minimumSize.height
                 }
             } else {
                 if (north == null) {
-                    bounds.setHeight(pbounds.getHeight() - south.getMinimumSize().height);
+                    bounds.height = pbounds.height - south.minimumSize.height
                 } else {
-                    bounds.setHeight(pbounds.getHeight() - south.getMinimumSize().height - north.getMinimumSize().height);
+                    bounds.height = pbounds.height - south.minimumSize.height - north.minimumSize.height
                 }
             }
-            east.setLocation(bounds);
+            east.location = bounds
         }
 
         if (south != null) {
 
-            int x = pbounds.getXPos();
-            int y = pbounds.getYHeight() - south.getLocation().getHeight();
-            int width = pbounds.getWidth();
-            int height = south.getMinimumSize().height;
+            val x = pbounds.xPos
+            val y = pbounds.yHeight - south.location.height
+            val width = pbounds.width
+            val height = south.minimumSize.height
 
-            south.setLocation(new Location(x, y, width, height));
+            south.location = Location(x, y, width, height)
         }
     }
 
-    @Override
-    public Dim getLayoutSize() {
-        int width = 0;
-        int height = 0;
-        for (Entry<Position, GuiComponent> comp : components.entrySet()) {
-            Dim size = comp.getValue().getMinimumSize();
-            switch (comp.getKey()) {
-            case CENTER:
-                width += size.width;
-                height += size.height;
-                break;
-            case EAST:
-            case WEST:
-                width += size.width;
-                break;
-            case NORTH:
-            case SOUTH:
-                height += size.height;
-                break;
-            }
-        }
-        return new Dim(width, height);
-    }
-
-    public enum Position {
+    enum class Position {
         NORTH,
         SOUTH,
         EAST,

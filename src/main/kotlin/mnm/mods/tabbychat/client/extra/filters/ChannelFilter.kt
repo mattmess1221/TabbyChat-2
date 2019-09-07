@@ -1,38 +1,26 @@
-package mnm.mods.tabbychat.client.extra.filters;
+package mnm.mods.tabbychat.client.extra.filters
 
-import mnm.mods.tabbychat.client.ChatManager;
-import mnm.mods.tabbychat.client.TabbyChatClient;
-import mnm.mods.tabbychat.api.Channel;
-import mnm.mods.tabbychat.api.filters.Filter;
-import mnm.mods.tabbychat.api.filters.FilterEvent;
-import mnm.mods.tabbychat.client.settings.GeneralServerSettings;
+import mnm.mods.tabbychat.client.ChatManager
+import mnm.mods.tabbychat.client.TabbyChatClient
+import mnm.mods.tabbychat.api.Channel
+import mnm.mods.tabbychat.api.filters.Filter
+import mnm.mods.tabbychat.api.filters.FilterEvent
+import mnm.mods.tabbychat.client.settings.GeneralServerSettings
 
-import java.util.regex.Pattern;
-import javax.annotation.Nonnull;
+import java.util.regex.Pattern
 
-public class ChannelFilter implements Filter {
+class ChannelFilter : Filter {
 
-    private final ChatManager chat;
+    override val pattern: Pattern
+        get() = TabbyChatClient.serverSettings!!.general.channelPattern.value.pattern
 
-    public ChannelFilter(ChatManager chat) {
-        this.chat = chat;
-    }
+    override fun action(event: FilterEvent) {
 
-    @Nonnull
-    @Override
-    public Pattern getPattern() {
-        return TabbyChatClient.getInstance().getServerSettings().general.channelPattern.get().getPattern();
-    }
-
-    @Override
-    public void action(FilterEvent event) {
-
-        GeneralServerSettings general = TabbyChatClient.getInstance().getServerSettings().general;
-        if (general.channelsEnabled.get()) {
-            String chan = event.matcher.group(1);
-            Channel dest = chat.getChannel(chan);
-            event.channels.add(dest);
-
+        val general = TabbyChatClient.serverSettings!!.general
+        if (general.channelsEnabled.value) {
+            val chan = event.matcher.group(1)
+            val dest = ChatManager.getChannel(chan)
+            event.channels.add(dest)
         }
 
     }

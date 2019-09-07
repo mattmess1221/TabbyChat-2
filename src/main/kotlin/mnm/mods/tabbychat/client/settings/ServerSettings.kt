@@ -1,42 +1,33 @@
-package mnm.mods.tabbychat.client.settings;
+package mnm.mods.tabbychat.client.settings
 
-import io.netty.channel.local.LocalAddress;
-import mnm.mods.tabbychat.client.ChatChannel;
-import mnm.mods.tabbychat.client.UserChannel;
-import mnm.mods.tabbychat.client.extra.filters.UserFilter;
-import mnm.mods.tabbychat.util.IPUtils;
-import mnm.mods.tabbychat.util.config.SettingsFile;
-import mnm.mods.tabbychat.util.config.ValueList;
-import mnm.mods.tabbychat.util.config.ValueMap;
+import mnm.mods.tabbychat.client.ChatChannel
+import mnm.mods.tabbychat.client.UserChannel
+import mnm.mods.tabbychat.client.extra.filters.UserFilter
+import mnm.mods.tabbychat.util.config.SettingsFile
+import mnm.mods.tabbychat.util.config.ValueList
+import mnm.mods.tabbychat.util.config.ValueMap
+import mnm.mods.tabbychat.util.div
+import mnm.mods.tabbychat.util.toPath
+import mnm.mods.tabbychat.util.urlEncoded
+import java.net.InetSocketAddress
+import java.net.SocketAddress
+import java.nio.file.Path
 
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+class ServerSettings(
+        parent: Path,
+        @field:Transient val socket: SocketAddress
+) : SettingsFile(parent / socket2path(socket) / "server.json") {
 
-public class ServerSettings extends SettingsFile {
+    val general = GeneralServerSettings()
+    val filters = ValueList<UserFilter>()
+    val channels = ValueMap<ChatChannel>()
+    val pms = ValueMap<UserChannel>()
 
-    public GeneralServerSettings general = new GeneralServerSettings();
-    public ValueList<UserFilter> filters = list();
-    public ValueMap<ChatChannel> channels = map();
-    public ValueMap<UserChannel> pms = map();
-
-    private transient final SocketAddress ip;
-
-    public ServerSettings(Path parent, SocketAddress url) {
-        super(parent.resolve(getIPForFileName(url)).resolve("server.json"));
-        this.ip = url;
-    }
-
-    private static Path getIPForFileName(SocketAddress addr) {
-        if (addr instanceof LocalAddress) {
-            return Paths.get("singleplayer");
+    private companion object {
+        fun socket2path(addr: SocketAddress): Path {
+            return (addr as? InetSocketAddress)?.let {
+                "multiplayer" / it.toString().urlEncoded
+            } ?: "singleplayer".toPath()
         }
-        return Paths.get("multiplayer", IPUtils.getFileSafeAddress((InetSocketAddress) addr));
     }
-
-    public SocketAddress getSocket() {
-        return this.ip;
-    }
-
 }

@@ -1,55 +1,51 @@
-package mnm.mods.tabbychat.api;
+package mnm.mods.tabbychat.api
 
-import com.mojang.authlib.GameProfile;
-import net.minecraft.util.text.ITextComponent;
-
-import java.util.List;
-import java.util.Set;
+import net.minecraft.util.text.ITextComponent
 
 /**
  * Represents the Chat.
  */
-public interface Chat {
+interface Chat {
 
     /**
-     * Gets a {@link Channel} of the given name. Creates a new one if it doesn't
-     * exist. Is the equivalent of calling {@code getChannel(name, false);}
+     * Gets an immutable set of all [Channel]s currently displayed.
+     *
+     * @return An array of channels
+     */
+    val channels: Set<Channel>
+
+    /**
+     * Gets a [Channel] of the given name. Creates a new one if it doesn't
+     * exist. Is the equivalent of calling `getChannel(name, false);`
      *
      * @param name Then name of the channel
      * @return The channel
      */
-    Channel getChannel(String name);
+    fun getChannel(name: String): Channel
 
     /**
-     * Gets a {@link Channel} of the given name and gives it the specified PM
+     * Gets a [Channel] of the given name and gives it the specified PM
      * status. Creates a new one if it doesn't exist. This allows a channel to
      * have the same name as a player without their tabs being merged.
      *
      * @param user The object representing the user
      * @return The channel
      */
-    Channel getUserChannel(String user);
+    fun getUserChannel(user: String): Channel
 
-    /**
-     * Gets an immutable set of all {@link Channel}s currently displayed.
-     *
-     * @return An array of channels
-     */
-    Set<? extends Channel> getChannels();
+    fun getMessages(channel: Channel): List<Message>
 
-    List<? extends Message> getMessages(Channel channel);
+    fun addMessage(channel: Channel, message: ITextComponent)
 
-    void addMessage(Channel channel, ITextComponent message);
-
-    default void addMessage(Set<? extends Channel> channels, ITextComponent message) {
-        for (Channel chan : channels) {
-            addMessage(chan, message);
+    fun addMessage(channels: Set<Channel>, message: ITextComponent) {
+        for (chan in channels) {
+            addMessage(chan, message)
         }
     }
 
-    default void addMessages(Channel channel, Iterable<ITextComponent> messages) {
-        for (ITextComponent msg : messages) {
-            addMessage(channel, msg);
+    fun addMessages(channel: Channel, messages: Iterable<ITextComponent>) {
+        for (msg in messages) {
+            addMessage(channel, msg)
         }
     }
 
@@ -58,7 +54,7 @@ public interface Chat {
      *
      * @param message
      */
-    default void broadcast(ITextComponent message) {
-        addMessage(getChannels(), message);
+    fun broadcast(message: ITextComponent) {
+        addMessage(channels, message)
     }
 }

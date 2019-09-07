@@ -1,64 +1,45 @@
-package mnm.mods.tabbychat.client.util;
+package mnm.mods.tabbychat.client.util
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.Minecraft
+import net.minecraft.util.math.MathHelper
 
 /**
  * Modified version of ScaledResolution. Supports arbitrary dimensions
- * 
- * @author Matthew
  */
-public class ScaledDimension {
+class ScaledDimension(width: Int, height: Int) {
 
-    private final double scaledWidthD;
-    private final double scaledHeightD;
-    private int scaledWidth;
-    private int scaledHeight;
-    private int scaleFactor;
+    val scaledWidth_double: Double
+    val scaledHeight_double: Double
+    var scaledWidth: Int = 0
+        private set
+    var scaledHeight: Int = 0
+        private set
+    var scaleFactor: Int = 0
+        private set
 
-    public ScaledDimension(int width, int height) {
-        this.scaledWidth = width;
-        this.scaledHeight = height;
-        this.scaleFactor = 1;
-        Minecraft mc = Minecraft.getInstance();
-        boolean unicode = mc.getForceUnicodeFont();
-        int scale = mc.gameSettings.guiScale;
+    init {
+        this.scaledWidth = width
+        this.scaledHeight = height
+        this.scaleFactor = 1
+        val mc = Minecraft.getInstance()
+        val unicode = mc.forceUnicodeFont
+        var scale = mc.gameSettings.guiScale
 
         if (scale == 0) {
-            scale = 1000;
+            scale = 1000
         }
 
         while (this.scaleFactor < scale && this.scaledWidth / (this.scaleFactor + 1) >= 320 && this.scaledHeight / (this.scaleFactor + 1) >= 240) {
-            ++this.scaleFactor;
+            ++this.scaleFactor
         }
 
         if (unicode && this.scaleFactor % 2 != 0 && this.scaleFactor != 1) {
-            --this.scaleFactor;
+            --this.scaleFactor
         }
 
-        this.scaledWidthD = (double) this.scaledWidth / (double) this.scaleFactor;
-        this.scaledHeightD = (double) this.scaledHeight / (double) this.scaleFactor;
-        this.scaledWidth = MathHelper.ceil(this.scaledWidthD);
-        this.scaledHeight = MathHelper.ceil(this.scaledHeightD);
-    }
-
-    public int getScaledWidth() {
-        return this.scaledWidth;
-    }
-
-    public int getScaledHeight() {
-        return this.scaledHeight;
-    }
-
-    public double getScaledWidth_double() {
-        return this.scaledWidthD;
-    }
-
-    public double getScaledHeight_double() {
-        return this.scaledHeightD;
-    }
-
-    public int getScaleFactor() {
-        return this.scaleFactor;
+        this.scaledWidth_double = this.scaledWidth.toDouble() / this.scaleFactor.toDouble()
+        this.scaledHeight_double = this.scaledHeight.toDouble() / this.scaleFactor.toDouble()
+        this.scaledWidth = MathHelper.ceil(this.scaledWidth_double)
+        this.scaledHeight = MathHelper.ceil(this.scaledHeight_double)
     }
 }

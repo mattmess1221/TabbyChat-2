@@ -1,34 +1,28 @@
-package mnm.mods.tabbychat.client;
+package mnm.mods.tabbychat.client
 
-import java.util.Objects;
+open class ChatChannel internal constructor(
+        override val name: String) : AbstractChannel(name) {
 
-public class ChatChannel extends AbstractChannel {
+    override val displayName: String
+        get() = "#" + alias!!
 
-    private final String name;
-
-    ChatChannel(String name) {
-        super(name);
-        this.name = name;
+    override fun hashCode(): Int {
+        return toString().hashCode()
     }
 
-    @Override
-    public String getName() {
-        return this.name;
+    override fun toString(): String {
+        return "#$name"
     }
 
-    @Override
-    public String getDisplayName() {
-        return "#" + getAlias();
-    }
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
 
-    @Override
-    public int hashCode() {
-        return toString().hashCode();
-    }
+        other as ChatChannel
 
-    @Override
-    public String toString() {
-        return "#" + name;
+        if (name != other.name) return false
+
+        return true
     }
 
 }

@@ -1,143 +1,132 @@
-package mnm.mods.tabbychat.client.core;
+package mnm.mods.tabbychat.client.core
 
-import mnm.mods.tabbychat.client.AbstractChannel;
-import mnm.mods.tabbychat.client.TabbyChatClient;
-import mnm.mods.tabbychat.client.gui.ChatBox;
-import mnm.mods.tabbychat.client.gui.component.GuiText;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.IGuiEventListener;
-import net.minecraft.client.gui.screen.ChatScreen;
-import net.minecraftforge.client.event.GuiScreenEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-import org.lwjgl.glfw.GLFW;
+import mnm.mods.tabbychat.client.TabbyChatClient
+import mnm.mods.tabbychat.client.gui.ChatBox
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.IGuiEventListener
+import net.minecraft.client.gui.screen.ChatScreen
+import net.minecraftforge.client.event.GuiScreenEvent
+import net.minecraftforge.eventbus.api.EventPriority
+import net.minecraftforge.eventbus.api.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.lwjgl.glfw.GLFW
 
-import java.util.List;
+class GuiChatTC(private val chat: ChatBox) {
 
-public class GuiChatTC {
-
-    private final ChatBox chat;
-
-    public GuiChatTC(ChatBox chat) {
-        this.chat = chat;
-    }
-
-    @SuppressWarnings("unchecked")
     @SubscribeEvent
-    public void initGui(GuiScreenEvent.InitGuiEvent.Post event) {
-        if (event.getGui() instanceof ChatScreen) {
-            ChatScreen guichat = (ChatScreen) event.getGui();
-            AbstractChannel chan = chat.getActiveChannel();
+    fun initGui(event: GuiScreenEvent.InitGuiEvent.Post) {
+        if (event.gui is ChatScreen) {
+            val guichat = event.gui as ChatScreen
+            val chan = chat.activeChannel
             if (guichat.defaultInputFieldText.isEmpty()
-                    && !chan.isPrefixHidden()
-                    && !chan.getPrefix().isEmpty()) {
-                guichat.defaultInputFieldText = chan.getPrefix() + " ";
+                    && !chan.isPrefixHidden
+                    && chan.prefix.isNotEmpty()) {
+                guichat.defaultInputFieldText = chan.prefix + " "
             }
-            GuiText text = chat.getChatInput().getTextField();
-            guichat.inputField = text.getTextField();
-            text.setValue(guichat.defaultInputFieldText);
+            val text = chat.chatInput.textField
+            guichat.inputField = text.textField
+            text.value = guichat.defaultInputFieldText
 
-            chat.getChatInput().setTextFormatter(guichat::formatMessage);
-            text.getTextField().func_212954_a(guichat::func_212997_a);
+            chat.chatInput.setTextFormatter { p_195130_1_, p_195130_2_ -> guichat.formatMessage(p_195130_1_, p_195130_2_) }
+            text.textField.func_212954_a { guichat.func_212997_a(it) }
 
-            List<IGuiEventListener> children = (List<IGuiEventListener>) guichat.children();
-            children.set(0, chat);
+            val children = guichat.children() as MutableList<IGuiEventListener>
+            children[0] = chat
         }
     }
 
     @SubscribeEvent
-    public void onTick(TickEvent.ClientTickEvent event) {
-        if (Minecraft.getInstance().currentScreen instanceof ChatScreen && event.phase == TickEvent.Phase.END) {
-            chat.tick();
+    fun onTick(event: TickEvent.ClientTickEvent) {
+        if (Minecraft.getInstance().currentScreen is ChatScreen && event.phase == TickEvent.Phase.END) {
+            chat.tick()
         }
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public void onRenderChat(GuiScreenEvent.DrawScreenEvent.Pre event) {
-        if (event.getGui() instanceof ChatScreen) {
-            event.setCanceled(true);
-            this.chat.update((ChatScreen) event.getGui());
-            this.chat.render(event.getMouseX(), event.getMouseY(), event.getRenderPartialTicks());
+    fun onRenderChat(event: GuiScreenEvent.DrawScreenEvent.Pre) {
+        if (event.gui is ChatScreen) {
+            event.isCanceled = true
+            this.chat.update(event.gui as ChatScreen)
+            this.chat.render(event.mouseX, event.mouseY, event.renderPartialTicks)
         }
     }
 
     @SubscribeEvent
-    public void onKeyPressed(GuiScreenEvent.KeyboardKeyPressedEvent.Pre event) {
-        if (event.getGui() instanceof ChatScreen) {
-            if (keyPressed((ChatScreen) event.getGui(), event.getKeyCode())
-                    || this.chat.keyPressed(event.getKeyCode(), event.getScanCode(), event.getModifiers())) {
-                event.setCanceled(true);
+    fun onKeyPressed(event: GuiScreenEvent.KeyboardKeyPressedEvent.Pre) {
+        if (event.gui is ChatScreen) {
+            if (keyPressed(event.gui as ChatScreen, event.keyCode) || this.chat.keyPressed(event.keyCode, event.scanCode, event.modifiers)) {
+                event.isCanceled = true
             }
         }
     }
 
     @SubscribeEvent
-    public void onKeyReleased(GuiScreenEvent.KeyboardKeyReleasedEvent.Pre event) {
-        if (event.getGui() instanceof ChatScreen) {
-            if (this.chat.keyPressed(event.getKeyCode(), event.getScanCode(), event.getModifiers())) {
-                event.setCanceled(true);
+    fun onKeyReleased(event: GuiScreenEvent.KeyboardKeyReleasedEvent.Pre) {
+        if (event.gui is ChatScreen) {
+            if (this.chat.keyPressed(event.keyCode, event.scanCode, event.modifiers)) {
+                event.isCanceled = true
             }
         }
     }
 
     @SubscribeEvent
-    public void onCharTyped(GuiScreenEvent.KeyboardCharTypedEvent.Pre event) {
-        if (event.getGui() instanceof ChatScreen) {
-            if (this.chat.charTyped(event.getCodePoint(), event.getModifiers())) {
-                event.setCanceled(true);
+    fun onCharTyped(event: GuiScreenEvent.KeyboardCharTypedEvent.Pre) {
+        if (event.gui is ChatScreen) {
+            if (this.chat.charTyped(event.codePoint, event.modifiers)) {
+                event.isCanceled = true
             }
         }
     }
 
     @SubscribeEvent
-    public void onMouseClicked(GuiScreenEvent.MouseClickedEvent.Pre event) {
-        if (event.getGui() instanceof ChatScreen) {
-            if (this.chat.mouseClicked(event.getMouseX(), event.getMouseY(), event.getButton())) {
-                event.setCanceled(true);
-            }
-        }
-    }
-    @SubscribeEvent
-    public void onMouseReleased(GuiScreenEvent.MouseReleasedEvent.Pre event) {
-        if (event.getGui() instanceof ChatScreen) {
-            if (this.chat.mouseReleased(event.getMouseX(), event.getMouseY(), event.getButton())) {
-                event.setCanceled(true);
+    fun onMouseClicked(event: GuiScreenEvent.MouseClickedEvent.Pre) {
+        if (event.gui is ChatScreen) {
+            if (this.chat.mouseClicked(event.mouseX, event.mouseY, event.button)) {
+                event.isCanceled = true
             }
         }
     }
 
     @SubscribeEvent
-    public void onMouseDragged(GuiScreenEvent.MouseDragEvent.Pre event) {
-        if (event.getGui() instanceof ChatScreen) {
-            if (this.chat.mouseDragged(event.getMouseX(), event.getMouseY(), event.getMouseButton(), event.getDragX(), event.getDragY())) {
-                event.setCanceled(true);
+    fun onMouseReleased(event: GuiScreenEvent.MouseReleasedEvent.Pre) {
+        if (event.gui is ChatScreen) {
+            if (this.chat.mouseReleased(event.mouseX, event.mouseY, event.button)) {
+                event.isCanceled = true
+            }
+        }
+    }
+
+    @SubscribeEvent
+    fun onMouseDragged(event: GuiScreenEvent.MouseDragEvent.Pre) {
+        if (event.gui is ChatScreen) {
+            if (this.chat.mouseDragged(event.mouseX, event.mouseY, event.mouseButton, event.dragX, event.dragY)) {
+                event.isCanceled = true
             }
         }
     }
 
 
     @SubscribeEvent
-    public void onMouseScrolled(GuiScreenEvent.MouseScrollEvent.Pre event) {
-        if (event.getGui() instanceof ChatScreen) {
-            if (this.chat.mouseScrolled(event.getMouseX(), event.getMouseY(), event.getScrollDelta())) {
-                event.setCanceled(true);
+    fun onMouseScrolled(event: GuiScreenEvent.MouseScrollEvent.Pre) {
+        if (event.gui is ChatScreen) {
+            if (this.chat.mouseScrolled(event.mouseX, event.mouseY, event.scrollDelta)) {
+                event.isCanceled = true
             }
         }
     }
 
-    private boolean keyPressed(ChatScreen guichat, int key) {
+    private fun keyPressed(guichat: ChatScreen, key: Int): Boolean {
         if (key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER) {
-            Minecraft.getInstance().ingameGUI.getChatGUI().resetScroll();
-            GuiText text = this.chat.getChatInput().getTextField();
-            guichat.sendMessage(text.getValue());
-            text.setValue(guichat.defaultInputFieldText);
+            Minecraft.getInstance().ingameGUI.chatGUI.resetScroll()
+            val text = this.chat.chatInput.textField
+            guichat.sendMessage(text.value)
+            text.value = guichat.defaultInputFieldText
 
-            if (!TabbyChatClient.getInstance().getSettings().advanced.keepChatOpen.get()) {
-                Minecraft.getInstance().displayGuiScreen(null);
+            if (!TabbyChatClient.settings.advanced.keepChatOpen.value) {
+                Minecraft.getInstance().displayGuiScreen(null)
             }
-            return true;
+            return true
         }
-        return false;
+        return false
     }
 }

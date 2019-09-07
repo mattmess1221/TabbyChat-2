@@ -1,95 +1,37 @@
-package mnm.mods.tabbychat.api.filters;
+package mnm.mods.tabbychat.api.filters
 
-import com.google.common.base.Strings;
-
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.regex.Pattern;
-import javax.annotation.Nullable;
+import java.util.regex.Pattern
 
 /**
  * Defines the settings used by filters.
  */
-public class FilterSettings {
+class FilterSettings {
 
     // destinations
-    private final Set<String> channels = new HashSet<>();
-    private boolean remove;
-    private boolean raw = true;
-    private boolean regex;
-    private int flags;
+    val channels: MutableSet<String> = mutableSetOf()
+    var isRemove: Boolean = false
+    var isRaw = true
+    var isRegex: Boolean = false
+    var flags: Int = 0
+        private set
 
     // notifications
-    private boolean soundNotification = false;
-    private String soundName = "";
+    var isSoundNotification = false
+    var soundName: String? = null
 
-    public Set<String> getChannels() {
-        return channels;
-    }
+    var isCaseInsensitive: Boolean
+        get() = getFlag(Pattern.CASE_INSENSITIVE)
+        set(value) = setFlag(Pattern.CASE_INSENSITIVE, value)
 
-    public boolean isRemove() {
-        return remove;
-    }
-
-    public void setRemove(boolean value) {
-        this.remove = value;
-    }
-
-    public boolean isRaw() {
-        return raw;
-    }
-
-    public void setRaw(boolean raw) {
-        this.raw = raw;
-    }
-
-    public boolean isRegex() {
-        return regex;
-    }
-
-    public void setRegex(boolean regex) {
-        this.regex = regex;
-    }
-
-    public boolean isCaseInsensitive() {
-        return getFlag(Pattern.CASE_INSENSITIVE);
-    }
-
-    public void setCaseInsensitive(boolean value) {
-        setFlag(Pattern.CASE_INSENSITIVE, value);
-    }
-
-    private void setFlag(int flag, boolean value) {
+    private fun setFlag(flag: Int, value: Boolean) {
         if (value) {
-            this.flags |= flag;
+            this.flags = this.flags or flag
         } else {
-            this.flags &= ~flag;
+            this.flags = this.flags and flag.inv()
         }
     }
 
-    private boolean getFlag(int flag) {
-        return (flags & flag) != 0;
+    private fun getFlag(flag: Int): Boolean {
+        return flags and flag != 0
     }
-
-    public int getFlags() {
-        return flags;
-    }
-
-    public boolean isSoundNotification() {
-        return soundNotification;
-    }
-
-    public void setSoundNotification(boolean sound) {
-        this.soundNotification = sound;
-    }
-
-    public Optional<String> getSoundName() {
-        return Optional.ofNullable(soundName);
-    }
-
-    public void setSoundName(@Nullable String soundName) {
-        this.soundName = Strings.isNullOrEmpty(soundName) ? null : soundName;
-    }
-
 }

@@ -1,135 +1,117 @@
-package mnm.mods.tabbychat.client.gui.settings;
+package mnm.mods.tabbychat.client.gui.settings
 
-import mnm.mods.tabbychat.client.TabbyChatClient;
-import mnm.mods.tabbychat.client.extra.filters.GuiFilterEditor;
-import mnm.mods.tabbychat.client.extra.filters.UserFilter;
-import mnm.mods.tabbychat.client.gui.component.GuiButton;
-import mnm.mods.tabbychat.client.gui.component.GuiPanel;
-import mnm.mods.tabbychat.client.gui.component.config.SettingPanel;
-import mnm.mods.tabbychat.client.gui.component.layout.BorderLayout;
-import mnm.mods.tabbychat.client.gui.component.layout.FlowLayout;
-import mnm.mods.tabbychat.client.settings.ServerSettings;
-import mnm.mods.tabbychat.util.Color;
-import net.minecraft.client.resources.I18n;
+import mnm.mods.tabbychat.client.TabbyChatClient
+import mnm.mods.tabbychat.client.extra.filters.GuiFilterEditor
+import mnm.mods.tabbychat.client.extra.filters.UserFilter
+import mnm.mods.tabbychat.client.gui.component.GuiButton
+import mnm.mods.tabbychat.client.gui.component.GuiPanel
+import mnm.mods.tabbychat.client.gui.component.config.SettingPanel
+import mnm.mods.tabbychat.client.gui.component.layout.BorderLayout
+import mnm.mods.tabbychat.client.gui.component.layout.FlowLayout
+import mnm.mods.tabbychat.client.settings.ServerSettings
+import mnm.mods.tabbychat.util.Color
+import mnm.mods.tabbychat.util.Translation.FILTERS
 
-import static mnm.mods.tabbychat.util.Translation.FILTERS;
+class GuiSettingsFilters internal constructor() : SettingPanel<ServerSettings>() {
 
-public class GuiSettingsFilters extends SettingPanel<ServerSettings> {
+    override val displayString by FILTERS
+    override val settings: ServerSettings = TabbyChatClient.serverSettings!!
 
-    private GuiFilterEditor currentFilter;
+    private var currentFilter: GuiFilterEditor? = null
 
-    private int index = 0;
+    private var index = 0
 
-    private GuiButton prev;
-    private GuiButton next;
-    private GuiButton delete;
+    private lateinit var prev: GuiButton
+    private lateinit var next: GuiButton
+    private lateinit var delete: GuiButton
 
-    GuiSettingsFilters() {
-        setLayout(new BorderLayout());
-        this.setDisplayString(I18n.format(FILTERS));
-        this.setSecondaryColor(Color.of(50, 200, 50, 64));
+
+    init {
+        layout = BorderLayout()
+        secondaryColor = Color(50, 200, 50, 64)
     }
 
-    @Override
-    public void initGUI() {
-        index = getSettings().filters.get().size() - 1;
+    override fun initGUI() {
+        index = settings.filters.size - 1
 
-        GuiPanel panel = new GuiPanel(new FlowLayout());
-        this.add(panel, BorderLayout.Position.NORTH);
+        val panel = add(GuiPanel(FlowLayout()), BorderLayout.Position.NORTH)
 
-        prev = new GuiButton("<") {
-            @Override
-            public void onClick(double mouseX, double mouseY) {
-                select(index - 1);
+        prev = panel.add(object : GuiButton("<") {
+            override fun onClick(mouseX: Double, mouseY: Double) {
+                select(index - 1)
             }
-        };
-        panel.add(prev);
+        })
 
-        GuiButton _new = new GuiButton("+"){//I18n.format(FILTERS_NEW)) {
-            @Override
-            public void onClick(double mouseX, double mouseY) {
-                add();
+        panel.add(object : GuiButton("+") {
+            override fun onClick(mouseX: Double, mouseY: Double) {
+                add()
             }
-        };
+        })
+        delete = panel.add( object : GuiButton("-") {
+            override fun onClick(mouseX: Double, mouseY: Double) {
+                delete(index)
+            }
+        })
+        next = panel.add(object : GuiButton(">") {
+            override fun onClick(mouseX: Double, mouseY: Double) {
+                select(index + 1)
+            }
+        })
 
-        panel.add(_new);
-        delete = new GuiButton("-") {//I18n.format("selectServer.delete")){
-            @Override
-            public void onClick(double mouseX, double mouseY) {
-                delete(index);
-            }
-        };
-        panel.add(delete);
-
-        next = new GuiButton(">") {
-            @Override
-            public void onClick(double mouseX, double mouseY) {
-                select(index + 1);
-            }
-        };
-        panel.add(next);
-        prev.setEnabled(false);
+        prev.isEnabled = false
         if (index == -1) {
-            delete.setEnabled(false);
-            next.setEnabled(false);
+            delete.isEnabled = false
+            next.isEnabled = false
         } else {
-            select(index);
+            select(index)
         }
 
-        update();
+        update()
     }
 
-    @Override
-    public ServerSettings getSettings() {
-        return TabbyChatClient.getInstance().getServerSettings();
+    private fun select(i: Int) {
+        this.index = i
+        currentFilter?.let {remove(it)}
+
+        val filter = settings.filters[i]
+        currentFilter = this.add(GuiFilterEditor(filter),  BorderLayout.Position.CENTER)
+        focused = currentFilter
+
+        update()
     }
 
-    private void select(int i) {
-        this.index = i;
-        if (currentFilter != null) {
-            this.remove(currentFilter);
-        }
-
-        UserFilter filter = getSettings().filters.get(i);
-        currentFilter = new GuiFilterEditor(filter);
-        this.add(currentFilter, BorderLayout.Position.CENTER);
-        setFocused(currentFilter);
-
-        update();
-    }
-
-    private void delete(int i) {
+    private fun delete(i: Int) {
         // deletes a filter
-        getSettings().filters.remove(i);
-        this.remove(this.currentFilter);
-        update();
+        settings.filters.removeAt(i)
+        this.remove(this.currentFilter!!)
+        update()
     }
 
-    private void add() {
+    private fun add() {
         // creates a new filter, adds it to the list, and selects it.
-        getSettings().filters.add(new UserFilter());
-        select(getSettings().filters.get().size() - 1);
-        update();
+        settings.filters.add(UserFilter())
+        select(settings.filters.size - 1)
+        update()
     }
 
-    private void update() {
-        this.next.setEnabled(true);
-        this.prev.setEnabled(true);
-        this.delete.setEnabled(true);
+    private fun update() {
+        this.next.isEnabled = true
+        this.prev.isEnabled = true
+        this.delete.isEnabled = true
 
-        int size = getSettings().filters.get().size();
+        val size = settings.filters.size
 
         if (index >= size - 1) {
-            this.next.setEnabled(false);
-            index = size - 1;
+            this.next.isEnabled = false
+            index = size - 1
         }
         if (index < 1) {
-            this.prev.setEnabled(false);
-            index = 0;
+            this.prev.isEnabled = false
+            index = 0
         }
         if (size < 1) {
-            this.delete.setEnabled(false);
-            this.index = 0;
+            this.delete.isEnabled = false
+            this.index = 0
         }
     }
 }

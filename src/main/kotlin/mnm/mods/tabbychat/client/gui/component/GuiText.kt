@@ -1,105 +1,74 @@
-package mnm.mods.tabbychat.client.gui.component;
+package mnm.mods.tabbychat.client.gui.component
 
-import mnm.mods.tabbychat.util.Color;
-import mnm.mods.tabbychat.util.ILocation;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.IGuiEventListener;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import org.apache.commons.lang3.StringUtils;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import mnm.mods.tabbychat.util.Color
+import mnm.mods.tabbychat.util.ILocation
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.IGuiEventListener
+import net.minecraft.client.gui.widget.TextFieldWidget
 
 /**
- * A gui component that wraps {@link TextFieldWidget}.
+ * A gui component that wraps [TextFieldWidget].
  *
  * @author Matthew
  */
-public class GuiText extends GuiComponent implements IGuiInput<String>, IGuiEventListenerDelegate {
+open class GuiText @JvmOverloads constructor(
+        val textField: TextFieldWidget = TextFieldWidget(Minecraft.getInstance().fontRenderer, 0, 0, 1, 1, "")
+) : GuiComponent(), IGuiInput<String>, IGuiEventListener by textField {
+    var hint: String? = null
 
-    private final TextFieldWidget textField;
-    private String hint;
+    override var location: ILocation
+        get() = super.location
+        set(bounds) {
+            updateTextbox(bounds)
+            super.location = bounds
+        }
 
-    public GuiText() {
-        this(new TextFieldWidget(Minecraft.getInstance().fontRenderer, 0, 0, 1, 1, ""));
-    }
+    override var primaryColor: Color?
+        get() = super.primaryColor
+        set(foreColor) {
+            foreColor?.run { textField.setTextColor(hex) }
+            super.primaryColor = foreColor
+        }
 
-    public GuiText(@Nonnull TextFieldWidget textField) {
-        this.textField = textField;
+    override var value: String
+        get() = textField.text
+        set(value) {
+            textField.text = value
+        }
+
+    init {
         // This text field must not be calibrated for someone of your...
         // generous..ness
         // I'll add a few 0s to the maximum length...
-        this.textField.setMaxStringLength(10000);
+        this.textField.maxStringLength = 10000
 
         // you look great, by the way.
 
     }
 
-    @Override
-    public boolean mouseClicked(double p_mouseClicked_1_, double p_mouseClicked_3_, int p_mouseClicked_5_) {
-        return IGuiEventListenerDelegate.super.mouseClicked(p_mouseClicked_1_, p_mouseClicked_3_, p_mouseClicked_5_);
+//    override fun mouseClicked(p_mouseClicked_1_: Double, p_mouseClicked_3_: Double, p_mouseClicked_5_: Int): Boolean {
+//        return false
+//    }
+
+
+    private fun updateTextbox(loc: ILocation) {
+        this.textField.x = loc.xPos
+        this.textField.y = loc.yPos
+        this.textField.width = loc.width
+        this.textField.height = loc.height
     }
 
-    @Nullable
-    @Override
-    public IGuiEventListener delegate() {
-        return this.textField;
+    override fun tick() {
+        textField.tick()
     }
 
-    @Override
-    public void setLocation(ILocation bounds) {
-        updateTextbox(bounds);
-        super.setLocation(bounds);
-    }
+    override fun render(mouseX: Int, mouseY: Int, parTicks: Float) {
+        textField.render(mouseX, mouseY, parTicks)
 
-    private void updateTextbox(ILocation loc) {
-        this.textField.x = loc.getXPos();
-        this.textField.y = loc.getYPos();
-        this.textField.setWidth(loc.getWidth());
-        this.textField.setHeight(loc.getHeight());
-    }
-
-    @Override
-    public void tick() {
-        textField.tick();
-    }
-
-    @Override
-    public void render(int mouseX, int mouseY, float parTicks) {
-        textField.render(mouseX, mouseY, parTicks);
-
-        super.render(mouseX, mouseY, parTicks);
-        if (textField.isFocused() && !StringUtils.isEmpty(getHint())) {
+        super.render(mouseX, mouseY, parTicks)
+        if (textField.isFocused && !hint.isNullOrEmpty()) {
             // draw the hint above.
-            renderCaption(getHint(), 1, -5);
+            renderCaption(hint!!, 1, -5)
         }
-    }
-
-    @Override
-    public void setPrimaryColor(Color foreColor) {
-        textField.setTextColor(foreColor.getHex());
-        super.setPrimaryColor(foreColor);
-    }
-
-    @Override
-    public String getValue() {
-        return textField.getText();
-    }
-
-    @Override
-    public void setValue(String value) {
-        textField.setText(value);
-    }
-
-    public String getHint() {
-        return hint;
-    }
-
-    public void setHint(String hint) {
-        this.hint = hint;
-    }
-
-    public TextFieldWidget getTextField() {
-        return textField;
     }
 }
