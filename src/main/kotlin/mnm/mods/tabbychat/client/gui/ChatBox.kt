@@ -99,7 +99,7 @@ object ChatBox : GuiPanel(BorderLayout()) {
     var location: ILocation = TabbyChatClient.settings.advanced.chatboxLocation
         set(location) {
             normalizeLocation(location).also {
-                if (location != location) {
+                if (field != location) {
                     field = location
                     val sett = TabbyChatClient.settings
                     sett.advanced.chatboxLocation = location
@@ -195,8 +195,6 @@ object ChatBox : GuiPanel(BorderLayout()) {
     private fun runActivationCommand(channel: AbstractChannel) {
         var cmd = channel.command
         if (cmd.isEmpty()) {
-
-
             val pat = if (channel is UserChannel) {
                 settings.general.messageCommand.value
             } else {
@@ -269,7 +267,6 @@ object ChatBox : GuiPanel(BorderLayout()) {
 
     private fun handleDragging(mx: Double, my: Double) {
         if (drag != null) {
-
             if (!dragMode) {
                 location = Location(
                         tempbox!!.xPos,

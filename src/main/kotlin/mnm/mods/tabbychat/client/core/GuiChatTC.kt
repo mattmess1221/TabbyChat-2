@@ -54,79 +54,65 @@ object GuiChatTC {
     @SubscribeEvent
     fun onKeyPressed(event: GuiScreenEvent.KeyboardKeyPressedEvent.Pre) {
         if (event.gui is ChatScreen) {
-            if (keyPressed(event.gui as ChatScreen, event.keyCode) || ChatBox.keyPressed(event.keyCode, event.scanCode, event.modifiers)) {
-                event.isCanceled = true
-            }
+            event.isCanceled = keyPressed(event.gui as ChatScreen, event.keyCode) || ChatBox.keyPressed(event.keyCode, event.scanCode, event.modifiers)
         }
     }
 
     @SubscribeEvent
     fun onKeyReleased(event: GuiScreenEvent.KeyboardKeyReleasedEvent.Pre) {
         if (event.gui is ChatScreen) {
-            if (ChatBox.keyPressed(event.keyCode, event.scanCode, event.modifiers)) {
-                event.isCanceled = true
-            }
+            event.isCanceled = ChatBox.keyPressed(event.keyCode, event.scanCode, event.modifiers)
         }
     }
 
     @SubscribeEvent
     fun onCharTyped(event: GuiScreenEvent.KeyboardCharTypedEvent.Pre) {
         if (event.gui is ChatScreen) {
-            if (ChatBox.charTyped(event.codePoint, event.modifiers)) {
-                event.isCanceled = true
-            }
+            event.isCanceled = ChatBox.charTyped(event.codePoint, event.modifiers)
         }
     }
 
     @SubscribeEvent
     fun onMouseClicked(event: GuiScreenEvent.MouseClickedEvent.Pre) {
         if (event.gui is ChatScreen) {
-            if (ChatBox.mouseClicked(event.mouseX, event.mouseY, event.button)) {
-                event.isCanceled = true
-            }
+            event.isCanceled = ChatBox.mouseClicked(event.mouseX, event.mouseY, event.button)
         }
     }
 
     @SubscribeEvent
     fun onMouseReleased(event: GuiScreenEvent.MouseReleasedEvent.Pre) {
         if (event.gui is ChatScreen) {
-            if (ChatBox.mouseReleased(event.mouseX, event.mouseY, event.button)) {
-                event.isCanceled = true
-            }
+            event.isCanceled = ChatBox.mouseReleased(event.mouseX, event.mouseY, event.button)
         }
     }
+}
 
-    @SubscribeEvent
-    fun onMouseDragged(event: GuiScreenEvent.MouseDragEvent.Pre) {
-        if (event.gui is ChatScreen) {
-            if (ChatBox.mouseDragged(event.mouseX, event.mouseY, event.mouseButton, event.dragX, event.dragY)) {
-                event.isCanceled = true
-            }
-        }
+@SubscribeEvent
+fun onMouseDragged(event: GuiScreenEvent.MouseDragEvent.Pre) {
+    if (event.gui is ChatScreen) {
+        event.isCanceled = ChatBox.mouseDragged(event.mouseX, event.mouseY, event.mouseButton, event.dragX, event.dragY)
     }
+}
 
 
-    @SubscribeEvent
-    fun onMouseScrolled(event: GuiScreenEvent.MouseScrollEvent.Pre) {
-        if (event.gui is ChatScreen) {
-            if (ChatBox.mouseScrolled(event.mouseX, event.mouseY, event.scrollDelta)) {
-                event.isCanceled = true
-            }
-        }
+@SubscribeEvent
+fun onMouseScrolled(event: GuiScreenEvent.MouseScrollEvent.Pre) {
+    if (event.gui is ChatScreen) {
+        event.isCanceled = ChatBox.mouseScrolled(event.mouseX, event.mouseY, event.scrollDelta)
     }
+}
 
-    private fun keyPressed(guichat: ChatScreen, key: Int): Boolean {
-        if (key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER) {
-            Minecraft.getInstance().ingameGUI.chatGUI.resetScroll()
-            val text = ChatBox.chatInput.textField
-            guichat.sendMessage(text.value)
-            text.value = guichat.defaultInputFieldText
+private fun keyPressed(guichat: ChatScreen, key: Int): Boolean {
+    if (key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER) {
+        Minecraft.getInstance().ingameGUI.chatGUI.resetScroll()
+        val text = ChatBox.chatInput.textField
+        guichat.sendMessage(text.value)
+        text.value = guichat.defaultInputFieldText
 
-            if (!TabbyChatClient.settings.advanced.keepChatOpen.value) {
-                Minecraft.getInstance().displayGuiScreen(null)
-            }
-            return true
+        if (!TabbyChatClient.settings.advanced.keepChatOpen.value) {
+            Minecraft.getInstance().displayGuiScreen(null)
         }
-        return false
+        return true
     }
+    return false
 }
