@@ -40,16 +40,16 @@ abstract class ValueObject<T : ValueObject<T>> : AbstractValue<T>() {
 
     internal val properties: MutableMap<String, AbstractValue<out Any>> = mutableMapOf()
 
-    protected inline fun <reified T : Any> value(noinline default: () -> T) = ValueProvider {
-        Value(typeToken(), default)
+    protected inline fun <reified T : Any> value(type: TypeToken<T> = typeToken(), noinline default: () -> T) = ValueProvider {
+        Value(type, default)
     }
 
-    protected inline fun <reified T : Any> list() = ValueProvider {
-        ValueList<T>(typeToken())
+    protected inline fun <reified T : Any> list(type: TypeToken<MutableList<T>> = typeToken()) = ValueProvider {
+        ValueList(type)
     }
 
-    protected inline fun <reified T> map() = ValueProvider {
-        ValueMap<T>(typeToken())
+    protected inline fun <reified T> map(type: TypeToken<MutableMap<String, T>> = typeToken()) = ValueProvider {
+        ValueMap(type)
     }
 
     protected fun <T : ValueObject<T>> obj(default: () -> T) = ValueProvider(default)

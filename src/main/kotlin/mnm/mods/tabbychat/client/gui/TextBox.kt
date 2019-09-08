@@ -39,8 +39,8 @@ object TextBox : GuiWrappedComponent<GuiText>(GuiText(
     private var cursorCounter: Int = 0
     private val spellcheck: Spellcheck = TabbyChatClient.spellcheck
 
-    private var textFormatter: (String, Int) -> String = { text, _ -> text }
-    private var suggestion: String? = null
+    var textFormatter: (String, Int) -> String = { text, _ -> text }
+    var suggestion: String? = null
 
     val wrappedLines: List<String>
         get() = fr.listFormattedStringToWidth(textField.value, location.width)
@@ -65,8 +65,7 @@ object TextBox : GuiWrappedComponent<GuiText>(GuiText(
 
     override var minimumSize: Dim
         get() = Dim(100, (fr.FONT_HEIGHT + 2) * wrappedLines.size)
-        set(value) {
-            super.minimumSize = value
+        set(_) {
         }
 
     var text: String
@@ -88,7 +87,7 @@ object TextBox : GuiWrappedComponent<GuiText>(GuiText(
     }
 
     override fun onClosed() {
-        this.textField.value = ""
+        this.text = ""
         super.onClosed()
     }
 
@@ -236,10 +235,6 @@ object TextBox : GuiWrappedComponent<GuiText>(GuiText(
 
     override fun tick() {
         this.cursorCounter++
-    }
-
-    fun setTextFormatter(textFormatter: (String, Int) -> String) {
-        this.textFormatter = textFormatter
     }
 
     override fun mouseClicked(x: Double, y: Double, button: Int): Boolean {

@@ -29,8 +29,7 @@ open class GuiPanel() : GuiComponent(), INestedGuiEventHandler {
             }
             Dim(width, height)
         }
-        set(value) {
-            super.minimumSize = value
+        set(_) {
         }
 
     constructor(layout: ILayout) : this() {

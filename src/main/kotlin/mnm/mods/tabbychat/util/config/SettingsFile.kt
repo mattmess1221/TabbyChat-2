@@ -22,7 +22,7 @@ import java.nio.file.Path
 abstract class SettingsFile<T : SettingsFile<T>>(@field:Transient val path: Path) : ValueObject<SettingsFile<T>>() {
 
     private val gson = GsonBuilder()
-            .registerTypeAdapter(this::class.java, Serializer())
+            .registerTypeAdapter(SettingsFile::class.java, Serializer())
             .setPrettyPrinting()
             .registerTypeAdapterFactory(EnumTypeAdapterFactory())
             .create()
