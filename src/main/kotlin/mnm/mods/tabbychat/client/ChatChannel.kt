@@ -4,7 +4,7 @@ open class ChatChannel internal constructor(
         override val name: String) : AbstractChannel(name) {
 
     override val displayName: String
-        get() = "#" + alias!!
+        get() = "#$alias"
 
     override fun hashCode(): Int {
         return toString().hashCode()

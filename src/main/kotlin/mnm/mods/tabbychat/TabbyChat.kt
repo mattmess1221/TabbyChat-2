@@ -4,28 +4,32 @@ import mnm.mods.tabbychat.client.TabbyChatClient
 import mnm.mods.tabbychat.command.TCTellCommand
 import mnm.mods.tabbychat.net.SNetworkVersion
 import mnm.mods.tabbychat.net.SSendChannelMessage
+import net.alexwells.kottle.FMLKotlinModLoadingContext
 import net.minecraft.entity.player.ServerPlayerEntity
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.text.ITextComponent
 import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.event.entity.player.PlayerEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
-import net.minecraftforge.fml.common.gameevent.PlayerEvent
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext
 import net.minecraftforge.fml.loading.FMLPaths
 import net.minecraftforge.fml.network.NetworkDirection
 import net.minecraftforge.fml.network.NetworkRegistry
 import net.minecraftforge.fml.network.simple.SimpleChannel
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
-
 import java.nio.file.Path
 
+val TabbyChat get() = TabbyChatMod.instance
+
 @Mod(MODID)
-object TabbyChat {
+class TabbyChatMod {
+
+    companion object {
+        lateinit var instance: TabbyChatMod
+    }
 
     val logger: Logger = LogManager.getLogger(MODID)
 
@@ -35,13 +39,15 @@ object TabbyChat {
     private val versionChannel = initVersionNetwork()
 
     init {
+        instance = this
         MinecraftForge.EVENT_BUS.register(this)
-        FMLJavaModLoadingContext.get().modEventBus.register(this)
+        FMLKotlinModLoadingContext.get().modEventBus.register(this)
     }
 
     @SubscribeEvent
     fun initClient(event: FMLClientSetupEvent) {
-        FMLJavaModLoadingContext.get().modEventBus.register(TabbyChatClient)
+        logger.info("client setup")
+        FMLKotlinModLoadingContext.get().modEventBus.register(TabbyChatClient)
     }
 
     @SubscribeEvent
@@ -95,7 +101,7 @@ object TabbyChat {
     }
 
     fun sendTo(player: ServerPlayerEntity, channel: String, text: ITextComponent) {
-        TabbyChat.channel.sendTo(SSendChannelMessage(channel, text), player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT)
+        this.channel.sendTo(SSendChannelMessage(channel, text), player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT)
     }
 }
 

@@ -36,32 +36,24 @@ class GuiSettingsFilters internal constructor() : SettingPanel<ServerSettings>()
 
         val panel = add(GuiPanel(FlowLayout()), BorderLayout.Position.NORTH)
 
-        prev = panel.add(object : GuiButton("<") {
-            override fun onClick(mouseX: Double, mouseY: Double) {
-                select(index - 1)
-            }
+        prev = panel.add(GuiButton("<") {
+            select(index - 1)
         })
 
-        panel.add(object : GuiButton("+") {
-            override fun onClick(mouseX: Double, mouseY: Double) {
-                add()
-            }
+        panel.add(GuiButton("+") {
+            add()
         })
-        delete = panel.add( object : GuiButton("-") {
-            override fun onClick(mouseX: Double, mouseY: Double) {
-                delete(index)
-            }
+        delete = panel.add(GuiButton("-") {
+            delete(index)
         })
-        next = panel.add(object : GuiButton(">") {
-            override fun onClick(mouseX: Double, mouseY: Double) {
-                select(index + 1)
-            }
+        next = panel.add(GuiButton(">") {
+            select(index + 1)
         })
 
-        prev.isEnabled = false
+        prev.active = false
         if (index == -1) {
-            delete.isEnabled = false
-            next.isEnabled = false
+            delete.active = false
+            next.active = false
         } else {
             select(index)
         }
@@ -71,11 +63,11 @@ class GuiSettingsFilters internal constructor() : SettingPanel<ServerSettings>()
 
     private fun select(i: Int) {
         this.index = i
-        currentFilter?.let {remove(it)}
+        currentFilter?.let { remove(it) }
 
         val filter = settings.filters[i]
-        currentFilter = this.add(GuiFilterEditor(filter),  BorderLayout.Position.CENTER)
-        focused = currentFilter
+        currentFilter = this.add(GuiFilterEditor(filter), BorderLayout.Position.CENTER)
+        setFocused(currentFilter)
 
         update()
     }
@@ -95,22 +87,22 @@ class GuiSettingsFilters internal constructor() : SettingPanel<ServerSettings>()
     }
 
     private fun update() {
-        this.next.isEnabled = true
-        this.prev.isEnabled = true
-        this.delete.isEnabled = true
+        this.next.active = true
+        this.prev.active = true
+        this.delete.active = true
 
         val size = settings.filters.size
 
         if (index >= size - 1) {
-            this.next.isEnabled = false
+            this.next.active = false
             index = size - 1
         }
         if (index < 1) {
-            this.prev.isEnabled = false
+            this.prev.active = false
             index = 0
         }
         if (size < 1) {
-            this.delete.isEnabled = false
+            this.delete.active = false
             this.index = 0
         }
     }

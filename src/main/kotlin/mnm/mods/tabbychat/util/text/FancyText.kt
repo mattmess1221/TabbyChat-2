@@ -9,8 +9,8 @@ import java.util.stream.Stream
 class FancyText(val text: ITextComponent) : TextComponent() {
 
     data class FancyStyle(var color: Color = Color.WHITE,
-                          var underline: Color? = null,
-                          var highlight: Color? = null) {
+                          var underline: Color = Color(0),
+                          var highlight: Color = Color(0)) {
         fun copy(other: FancyStyle): FancyStyle {
             return FancyStyle(other.color, other.underline, other.highlight)
         }

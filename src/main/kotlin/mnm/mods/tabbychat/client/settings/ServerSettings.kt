@@ -15,13 +15,13 @@ import java.nio.file.Path
 
 class ServerSettings(
         parent: Path,
-        @field:Transient val socket: SocketAddress
-) : SettingsFile(parent / socket2path(socket) / "server.json") {
+        val socket: SocketAddress
+) : SettingsFile<ServerSettings>(parent / socket2path(socket) / "server.json") {
 
-    val general = GeneralServerSettings()
-    val filters = ValueList<UserFilter>()
-    val channels = ValueMap<ChatChannel>()
-    val pms = ValueMap<UserChannel>()
+    val general: GeneralServerSettings by obj { GeneralServerSettings() }
+    val filters: ValueList<UserFilter> by list()
+    val channels: ValueMap<ChatChannel> by map()
+    val pms: ValueMap<UserChannel> by map()
 
     private companion object {
         fun socket2path(addr: SocketAddress): Path {

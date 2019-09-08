@@ -15,29 +15,47 @@
         "configurations": [
             "annotationProcessor",
             "api",
+            "apiDependenciesMetadata",
             "apiElements",
             "archives",
             "compile",
             "compileClasspath",
             "compileOnly",
+            "compileOnlyDependenciesMetadata",
             "default",
             "deobf",
             "implementation",
+            "implementationDependenciesMetadata",
             "include",
+            "kotlinCompilerClasspath",
+            "kotlinCompilerPluginClasspath",
+            "kotlinNativeCompilerPluginClasspath",
+            "kotlinScriptDef",
+            "kotlinScriptDefExtensions",
             "minecraft",
+            "mod",
             "runtime",
             "runtimeClasspath",
             "runtimeElements",
             "runtimeOnly",
+            "runtimeOnlyDependenciesMetadata",
             "shadow",
+            "sourceArtifacts",
             "testAnnotationProcessor",
+            "testApi",
+            "testApiDependenciesMetadata",
             "testCompile",
             "testCompileClasspath",
             "testCompileOnly",
+            "testCompileOnlyDependenciesMetadata",
             "testImplementation",
+            "testImplementationDependenciesMetadata",
+            "testKotlinScriptDef",
+            "testKotlinScriptDefExtensions",
             "testRuntime",
             "testRuntimeClasspath",
-            "testRuntimeOnly"
+            "testRuntimeOnly",
+            "testRuntimeOnlyDependenciesMetadata"
         ],
         "extensions": [
             {
@@ -46,14 +64,39 @@
                 "name": "ext"
             },
             {
-                "type": "net.minecraftforge.gradle.userdev.UserDevExtension",
+                "type": "org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension",
                 "target": "org.gradle.api.Project",
-                "name": "minecraft"
+                "name": "kotlin"
             },
             {
                 "type": "org.gradle.api.plugins.ExtraPropertiesExtension",
-                "target": "net.minecraftforge.gradle.userdev.UserDevExtension",
+                "target": "org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension",
                 "name": "ext"
+            },
+            {
+                "type": "org.jetbrains.kotlin.gradle.dsl.ExperimentalExtension",
+                "target": "org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension",
+                "name": "experimental"
+            },
+            {
+                "type": "org.gradle.api.plugins.ExtraPropertiesExtension",
+                "target": "org.jetbrains.kotlin.gradle.dsl.ExperimentalExtension",
+                "name": "ext"
+            },
+            {
+                "type": "org.gradle.api.NamedDomainObjectContainer<org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet>",
+                "target": "org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension",
+                "name": "sourceSets"
+            },
+            {
+                "type": "org.gradle.api.plugins.ExtraPropertiesExtension",
+                "target": "org.gradle.api.NamedDomainObjectContainer<org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet>",
+                "name": "ext"
+            },
+            {
+                "type": "org.jetbrains.kotlin.gradle.testing.internal.KotlinTestsRegistry",
+                "target": "org.gradle.api.Project",
+                "name": "kotlinTestRegistry"
             },
             {
                 "type": "org.gradle.api.internal.plugins.DefaultArtifactPublicationSet",
@@ -73,6 +116,16 @@
             {
                 "type": "org.gradle.api.plugins.ExtraPropertiesExtension",
                 "target": "org.gradle.api.reporting.ReportingExtension",
+                "name": "ext"
+            },
+            {
+                "type": "net.minecraftforge.gradle.userdev.UserDevExtension",
+                "target": "org.gradle.api.Project",
+                "name": "minecraft"
+            },
+            {
+                "type": "org.gradle.api.plugins.ExtraPropertiesExtension",
+                "target": "net.minecraftforge.gradle.userdev.UserDevExtension",
                 "name": "ext"
             },
             {
@@ -103,6 +156,16 @@
             {
                 "type": "org.gradle.api.plugins.ExtraPropertiesExtension",
                 "target": "com.github.jengelman.gradle.plugins.shadow.ShadowExtension",
+                "name": "ext"
+            },
+            {
+                "type": "org.jetbrains.kotlin.gradle.scripting.ScriptingExtension",
+                "target": "org.gradle.api.Project",
+                "name": "kotlinScripting"
+            },
+            {
+                "type": "org.gradle.api.plugins.ExtraPropertiesExtension",
+                "target": "org.jetbrains.kotlin.gradle.scripting.ScriptingExtension",
                 "name": "ext"
             },
             {

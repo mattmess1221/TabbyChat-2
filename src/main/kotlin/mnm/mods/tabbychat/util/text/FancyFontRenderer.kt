@@ -26,8 +26,8 @@ class FancyFontRenderer(private val fontRenderer: FontRenderer) : AbstractGui() 
             if (c is FancyText) {
                 for (s in c.getString().lines().dropLastWhile { it.isEmpty() }) {
                     val length = fontRenderer.getStringWidth(s)
-                    fill(x1.toInt(), y.toInt(), x1.toInt() + length, y.toInt() - fontRenderer.FONT_HEIGHT, c.fancyStyle.highlight!!.hex)
-                    hLine(x1.toInt(), x1.toInt() + length, y.toInt() + fontRenderer.FONT_HEIGHT - 1, c.fancyStyle.underline!!.hex)
+                    fill(x1.toInt(), y.toInt(), x1.toInt() + length, y.toInt() - fontRenderer.FONT_HEIGHT, c.fancyStyle.highlight.hex)
+                    hLine(x1.toInt(), x1.toInt() + length, y.toInt() + fontRenderer.FONT_HEIGHT - 1, c.fancyStyle.underline.hex)
                 }
             }
             x1 += fontRenderer.getStringWidth(c.unformattedComponentText).toFloat()

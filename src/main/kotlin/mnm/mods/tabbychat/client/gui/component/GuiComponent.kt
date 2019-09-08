@@ -2,9 +2,10 @@ package mnm.mods.tabbychat.client.gui.component
 
 import com.mojang.blaze3d.platform.GlStateManager
 import mnm.mods.tabbychat.util.*
-import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.AbstractGui
+import net.minecraft.client.gui.IGuiEventListener
+import net.minecraft.client.gui.IRenderable
 import net.minecraft.client.gui.screen.Screen
-import net.minecraft.client.gui.widget.Widget
 import net.minecraft.util.text.ITextComponent
 import net.minecraftforge.fml.client.config.GuiUtils
 import org.apache.commons.lang3.StringEscapeUtils
@@ -15,10 +16,8 @@ import kotlin.math.max
  *
  * @author Matthew
  */
-abstract class GuiComponent : Widget(0, 0, "") {
+abstract class GuiComponent : AbstractGui(), IRenderable, IGuiEventListener {
 
-    open var secondaryColor: Color? = null
-    open var primaryColor: Color? = null
     open var parent: GuiPanel? = null
 
     /**
@@ -31,7 +30,22 @@ abstract class GuiComponent : Widget(0, 0, "") {
         }
 
     open var minimumSize = Dim(0, 0)
-    open var caption: ITextComponent? = null
+
+    open var active: Boolean = true
+
+    open var visible: Boolean = true
+        set(visible) {
+            if (!visible) {
+                this.onClosed()
+            }
+            field = visible
+        }
+
+    open var focused = false
+    open var hovered = false
+
+    open var secondaryColor: Color? = null
+    open var primaryColor: Color? = null
 
     val primaryColorProperty: Color
         get() = getProperty { it.primaryColor } ?: Color.WHITE
@@ -39,77 +53,11 @@ abstract class GuiComponent : Widget(0, 0, "") {
     val secondaryColorProperty: Color
         get() = getProperty { it.secondaryColor } ?: Color.NONE
 
-    /**
-     * Disabled components will not handle mouse or keyboard events.
-     */
-    open var isEnabled: Boolean
-        get() = active
-        set(enabled) {
-            this.active = enabled
+
+    override fun render(x: Int, y: Int, parTicks: Float) {
+        if (visible) {
+            hovered = location.contains(x, y)
         }
-
-    /**
-     * The component's visibility. Non-visible components are not rendered.
-     */
-    open var isVisible: Boolean
-        get() = visible
-        set(visible) {
-            if (!visible) {
-                this.onClosed()
-            }
-            this.visible = visible
-        }
-
-    /**
-     * Draws this component on screen.
-     *
-     * @param mouseX   The mouse x
-     * @param mouseY   The mouse y
-     * @param parTicks
-     */
-    override fun renderButton(mouseX: Int, mouseY: Int, parTicks: Float) {}
-
-    open fun renderCaption(x: Int, y: Int) {
-        caption?.formattedText
-                ?.takeIf { it.isNotEmpty() && location.contains(x, y) }
-                ?.also {
-                    renderCaption(it, x, y)
-                }
-    }
-
-    protected fun renderCaption(caption: String, x: Int, y: Int) {
-        var caption = caption
-        var x = x
-        var y = y
-        caption = StringEscapeUtils.unescapeJava(caption)
-        val list = caption.lines().dropLastWhile { it.isEmpty() }
-
-        var w = 0
-        // find the largest width
-        for (s in list) {
-            w = max(w, mc.fontRenderer.getStringWidth(s))
-        }
-        y -= mc.fontRenderer.FONT_HEIGHT * list.size
-
-        val point = location.point
-        val sw = mc.mainWindow.scaledWidth
-        var w2 = w
-        val x2 = x
-        while (x2 - 8 + point.x + w2 + 20 > sw) {
-            x--
-            w2--
-        }
-        x += location.xPos
-        y += location.yPos
-        // put it on top
-        GlStateManager.pushMatrix()
-        fill(x - 2, y - 2, x + w + 2, y + mc.fontRenderer.FONT_HEIGHT * list.size + 1, -0x33cccccd)
-        renderBorders(x - 2, y - 2, x + w + 2, y + mc.fontRenderer.FONT_HEIGHT * list.size + 1, -0x33555556)
-        for (s in list) {
-            mc.fontRenderer.drawStringWithShadow(s, x.toFloat(), y.toFloat(), this.primaryColorProperty.hex)
-            y += mc.fontRenderer.FONT_HEIGHT
-        }
-        GlStateManager.popMatrix()
     }
 
     protected fun renderBorders(x1: Int, y1: Int, x2: Int, y2: Int, color: Int) {
@@ -145,6 +93,51 @@ abstract class GuiComponent : Widget(0, 0, "") {
         return ((255 - o) * amt).toInt()
     }
 
+    open fun onClick(x: Double, y: Double) = Unit
+    open fun onRelease(x: Double, y: Double) = Unit
+    open fun onDrag(x: Double, y: Double, dx: Double, dy: Double) = Unit
+
+    override fun mouseClicked(x: Double, y: Double, button: Int): Boolean {
+        if (active && visible && isValidButton(button) && this.clicked(x, y)) {
+            this.onClick(x, y)
+            return true
+        }
+        return false
+    }
+
+    override fun mouseReleased(x: Double, y: Double, button: Int): Boolean {
+        if (isValidButton(button)) {
+            onRelease(x, y)
+            return true
+        }
+        return false
+    }
+
+    override fun mouseDragged(x: Double, y: Double, button: Int, dx: Double, dy: Double): Boolean {
+        if (isValidButton(button)) {
+            onDrag(x, y, dx, dy)
+            return true
+        }
+        return false
+    }
+
+    open fun isValidButton(button: Int) = button == 0
+
+    override fun changeFocus(focus: Boolean): Boolean {
+        if (active && visible) {
+            focused = !focused
+            onFocusedChanged(focused)
+            return this.focused
+        }
+        return false
+    }
+
+    open fun onFocusedChanged(focus: Boolean) = Unit
+
+    override fun isMouseOver(x: Double, y: Double): Boolean {
+        return this.active && this.visible && location.contains(x, y)
+    }
+
     /**
      * Updates the component. Called when it is called on the [Screen].
      */
@@ -155,13 +148,10 @@ abstract class GuiComponent : Widget(0, 0, "") {
      */
     open fun onClosed() {}
 
-    override fun clicked(x: Double, y: Double): Boolean {
+    fun clicked(x: Double, y: Double): Boolean {
         return isMouseOver(x, y)
     }
 
-    override fun isMouseOver(x: Double, y: Double): Boolean {
-        return this.isEnabled && this.isVisible && location.contains(x, y)
-    }
 
     internal fun <T> getProperty(prop: (GuiComponent) -> T?): T? {
         return prop(this) ?: parent?.getProperty(prop)

@@ -13,7 +13,9 @@ import mnm.mods.tabbychat.client.extra.spell.Spellcheck
 import mnm.mods.tabbychat.client.settings.ServerSettings
 import mnm.mods.tabbychat.client.settings.TabbySettings
 import mnm.mods.tabbychat.util.ChatTextUtils
+import mnm.mods.tabbychat.util.listen
 import mnm.mods.tabbychat.util.mc
+import net.alexwells.kottle.KotlinEventBusSubscriber
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.IngameGui
 import net.minecraft.client.gui.NewChatGui
@@ -21,30 +23,30 @@ import net.minecraft.resources.IReloadableResourceManager
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.event.TickEvent
 import net.minecraftforge.eventbus.api.EventPriority
 import net.minecraftforge.eventbus.api.SubscribeEvent
-import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper
-import net.minecraftforge.fml.common.gameevent.TickEvent
-import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent
 import net.minecraftforge.fml.loading.FMLPaths
 
 object TabbyChatClient {
-    lateinit var spellcheck: Spellcheck private set
+    val spellcheck = Spellcheck(TabbyChat.dataFolder)
 
-    val settings: TabbySettings = TabbySettings(TabbyChat.dataFolder).apply { load() }
+
+    val settings: TabbySettings = TabbySettings(TabbyChat.dataFolder).apply {
+        TabbyChat.logger.info("Loading TabbyChat settings")
+        load()
+    }
     var serverSettings: ServerSettings? = null
 
-    @SubscribeEvent
-    fun onLoadingFinished(event: FMLLoadCompleteEvent) {
-
-        TabbyChat.logger.info(STARTUP, "Minecraft load complete!")
-
-        spellcheck = Spellcheck(TabbyChat.dataFolder)        // Keeps the current language updated whenever it is changed.
+    init {
+        // Keeps the current language updated whenever it is changed.
         val irrm = mc.resourceManager as IReloadableResourceManager
         irrm.addReloadListener(spellcheck)
 
-        MinecraftForge.EVENT_BUS.addListener(EventPriority.LOW, this::removeChannelTags)
+        MinecraftForge.EVENT_BUS.listen<MessageAddedToChannelEvent.Pre>(EventPriority.LOW) {
+            removeChannelTags(it)
+        }
         MinecraftForge.EVENT_BUS.register(ChatAddonAntiSpam)
         MinecraftForge.EVENT_BUS.register(FilterAddon)
         MinecraftForge.EVENT_BUS.register(ChatLogging(FMLPaths.GAMEDIR.get().resolve("logs/chat")))
@@ -64,7 +66,7 @@ object TabbyChatClient {
         }
     }
 
-    @Mod.EventBusSubscriber(modid = MODID, value = [Dist.CLIENT])
+    @KotlinEventBusSubscriber(modid = MODID, value = [Dist.CLIENT])
     private object StartListener {
         var IngameGui.chat: NewChatGui
             get() = this.chatGUI
@@ -77,22 +79,20 @@ object TabbyChatClient {
                 }
             }
 
-        @JvmStatic
         @SubscribeEvent
         fun onGuiOpen(event: TickEvent.ClientTickEvent) {
             // Do the first tick, then unregister self.
             // essentially an on-thread startup complete listener
             val mc = Minecraft.getInstance()
             mc.ingameGUI.chat = GuiNewChatTC
-            MinecraftForge.EVENT_BUS.unregister(StartListener::class.java)
+            MinecraftForge.EVENT_BUS.unregister(StartListener)
         }
     }
 
-    @Mod.EventBusSubscriber(modid = MODID, value = [Dist.CLIENT])
+    @KotlinEventBusSubscriber(modid = MODID, value = [Dist.CLIENT])
     private object NullScreenListener {
         // Listens for a null GuiScreen. Null means we're in-game
         // TODO workaround for lack of client network events. Replace when possible
-        @JvmStatic
         @SubscribeEvent
         fun onGuiOpen(event: GuiOpenEvent) {
             if (event.gui == null) {
@@ -103,6 +103,7 @@ object TabbyChatClient {
                 } else {
                     val address = connection.networkManager.remoteAddress
                     if (serverSettings?.socket != address) {
+                        TabbyChat.logger.info("Loading settings for server $address")
                         serverSettings = ServerSettings(TabbyChat.dataFolder, address).apply {
                             load()
 

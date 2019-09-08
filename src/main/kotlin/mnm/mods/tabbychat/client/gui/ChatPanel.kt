@@ -6,10 +6,10 @@ import mnm.mods.tabbychat.util.mc
 
 class ChatPanel : GuiPanel {
 
-    override var isVisible: Boolean
-        get() = super.isVisible && mc.ingameGUI.chatGUI.chatOpen
+    override var visible: Boolean
+        get() = super.visible && mc.ingameGUI.chatGUI.chatOpen
         set(value: Boolean) {
-            super.isVisible = value
+            super.visible = value
         }
 
     constructor() : super()

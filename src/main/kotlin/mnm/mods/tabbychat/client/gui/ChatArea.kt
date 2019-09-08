@@ -21,7 +21,14 @@ class ChatArea : GuiComponent() {
 
     var scrollPos = 0
         set(scroll) {
-            field = scroll.coerceIn(0, chat.size - mc.ingameGUI.chatGUI.lineCount)
+            val size = chat.size - mc.ingameGUI.chatGUI.lineCount
+            field = if (size < 0 || scroll < 0) {
+                0
+            } else if (scroll > size) {
+                size
+            } else {
+                scroll
+            }
         }
 
     override var location: ILocation
@@ -44,7 +51,7 @@ class ChatArea : GuiComponent() {
             super.location = value
         }
 
-    override var isVisible: Boolean
+    override var visible: Boolean
         get() {
 
             val visible = visibleChat
@@ -54,7 +61,7 @@ class ChatArea : GuiComponent() {
             return mc.gameSettings.chatVisibility != ChatVisibility.HIDDEN && (mc.ingameGUI.chatGUI.chatOpen || vis === LocalVisibility.ALWAYS || height != 0)
         }
         set(value) {
-            super.isVisible = value
+            super.visible = value
         }
 
     internal val chat: List<ChatMessage>

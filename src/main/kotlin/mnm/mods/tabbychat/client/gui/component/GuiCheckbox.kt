@@ -11,8 +11,9 @@ import net.minecraftforge.fml.client.config.GuiUtils
  *
  * @author Matthew
  */
-class GuiCheckbox : GuiButton(""), IGuiInput<Boolean> {
+class GuiCheckbox : AbstractGuiButton(), IGuiInput<Boolean> {
 
+    override val text: String = ""
     override var value: Boolean = false
 
     init {
@@ -32,7 +33,7 @@ class GuiCheckbox : GuiButton(""), IGuiInput<Boolean> {
         this.drawString(mc.fontRenderer, text, loc.xWidth + 2, loc.yPos + 2, primaryColorProperty.hex)
     }
 
-    override fun onClick(mouseX: Double, mouseY: Double) {
+    override fun onPress() {
         value = !value
     }
 }

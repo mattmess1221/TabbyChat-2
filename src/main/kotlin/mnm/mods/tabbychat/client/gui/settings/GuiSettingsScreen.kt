@@ -59,10 +59,8 @@ class GuiSettingsScreen(channel: Channel?) : ComponentScreen(StringTextComponent
         this.settingsPanel.add(panel, BorderLayout.Position.WEST)
         settingsList = panel.add(GuiPanel(VerticalLayout()), BorderLayout.Position.WEST)
 
-        panel.add<GuiButton>(object : GuiButton("Close") {
-            override fun onClick(mouseX: Double, mouseY: Double) {
-                mc.displayGuiScreen(null)
-            }
+        panel.add(GuiButton("Close") {
+            mc.displayGuiScreen(null)
         }, BorderLayout.Position.SOUTH).apply {
             location = Location(0, 0, 40, 10)
             secondaryColor = Color(0, 255, 0, 127)
@@ -70,12 +68,10 @@ class GuiSettingsScreen(channel: Channel?) : ComponentScreen(StringTextComponent
 
         // Populate the settings
         for (sett in panels) {
-            val button = object : SettingsButton(sett) {
-                override fun onClick(mouseX: Double, mouseY: Double) {
-                    selectSetting(settings)
-                }
+            val button = SettingsButton(sett) {
+                selectSetting(sett)
             }
-            settingsList.add<SettingsButton>(button, null)
+            settingsList.add(button)
             sett.initGUI()
         }
         selectSetting(selectedSetting ?: panels[0])
@@ -121,10 +117,11 @@ class GuiSettingsScreen(channel: Channel?) : ComponentScreen(StringTextComponent
     private fun selectSetting(setting: SettingPanel<*>) {
         //        setting.clearComponents();
         deactivateAll()
-        settingsPanel.remove(selectedSetting!!)
-        selectedSetting = setting
-        activate(setting.javaClass)
-        this.settingsPanel.add(this.selectedSetting!!, BorderLayout.Position.CENTER)
+        selectedSetting?.apply { settingsPanel.remove(this) }
+        selectedSetting = settingsPanel.add(setting, BorderLayout.Position.CENTER) {
+            activate(this.javaClass)
+        }
+
     }
 
     companion object {

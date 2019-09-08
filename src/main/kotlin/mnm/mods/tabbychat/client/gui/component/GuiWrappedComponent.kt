@@ -3,10 +3,8 @@ package mnm.mods.tabbychat.client.gui.component
 import mnm.mods.tabbychat.util.Color
 import mnm.mods.tabbychat.util.Dim
 import mnm.mods.tabbychat.util.ILocation
-import net.minecraft.client.gui.IGuiEventListener
-import net.minecraft.util.text.ITextComponent
 
-open class GuiWrappedComponent<T : GuiComponent>(val delegate: T) : GuiComponent(), IGuiEventListener by delegate {
+open class GuiWrappedComponent<T : GuiComponent>(delegate: T) : GuiWrappedEventListener<T>(delegate) {
 
     override var location: ILocation
         get() = delegate.location
@@ -38,26 +36,42 @@ open class GuiWrappedComponent<T : GuiComponent>(val delegate: T) : GuiComponent
             delegate.secondaryColor = value
         }
 
-    override var isEnabled: Boolean
-        get() = delegate.isEnabled
+    override var active: Boolean
+        get() = delegate.active
         set(enabled) {
-            delegate.isEnabled = enabled
+            delegate.active = enabled
         }
 
-    override var isVisible: Boolean
-        get() = delegate.isVisible
+    override var visible: Boolean
+        get() = delegate.visible
         set(visible) {
-            delegate.isVisible = visible
+            delegate.visible = visible
         }
 
-    override var caption: ITextComponent?
-        get() = delegate.caption
+    override var focused: Boolean
+        get() = delegate.focused
         set(value) {
-            delegate.caption = value
+            delegate.focused = value
         }
 
-    override fun render(mouseX: Int, mouseY: Int, parTicks: Float) {
-        delegate.render(mouseX, mouseY, parTicks)
+    override fun isValidButton(button: Int): Boolean {
+        return delegate.isValidButton(button)
+    }
+
+    override var hovered: Boolean
+        get() = delegate.hovered
+        set(value) {
+            delegate.hovered = value
+        }
+
+//    override var caption: ITextComponent?
+//        get() = delegate.caption
+//        set(value) {
+//            delegate.caption = value
+//        }
+
+    override fun render(x: Int, y: Int, parTicks: Float) {
+        delegate.render(x, y, parTicks)
     }
 
     override fun tick() {

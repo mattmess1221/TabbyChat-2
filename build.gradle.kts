@@ -27,10 +27,14 @@ val SourceSetContainer.main by sourceSets.getting
 
 configurations {
     create("include")
+    create("mod")
 }
 
 repositories {
     jcenter()
+    maven("https://minecraft.curseforge.com/api/maven/") {
+        name = "curseforge"
+    }
 }
 
 dependencies {
@@ -40,7 +44,9 @@ dependencies {
     include("net.sf.jazzy:jazzy:0.5.2-rtext-1.4.1-2")
 
     testImplementation("junit:junit:4.12")
-    implementation(kotlin("stdlib-jdk8"))
+    compileOnly(kotlin("stdlib-jdk8"))
+    compile("kottle:Kottle:1.1.1")
+    mod("kottle:Kottle:1.1.1")
 }
 minecraft {
     mappings(mappings_channel, mappings_version)
@@ -56,6 +62,9 @@ minecraft {
             mods {
                 create("tabbychat") {
                     source(sourceSets.main)
+                }
+                create("kottle") {
+
                 }
             }
             ideaModule = "${project.name}.main"
@@ -84,6 +93,24 @@ tasks {
                 "Implementation-Timestamp" to Date()
         ))
     }
+
+    val uninstallMods by creating(Delete::class) {
+        delete(fileTree("run/mods"))
+    }
+
+    val installMods by creating(Copy::class) {
+        dependsOn(uninstallMods)
+        val mod by configurations.getting
+        from(mod)
+        include("**/*.jar")
+        into(file("run/mods"))
+    }
+
+    afterEvaluate {
+        getByName("prepareRuns") {
+            dependsOn(installMods)
+        }
+    }
 }
 val TaskContainer.shadowJar by tasks.getting
 val TaskContainer.createMcpToSrg by tasks.getting
@@ -101,11 +128,6 @@ artifacts {
 defaultArtifacts {
 
 }
-val compileKotlin: KotlinCompile by tasks
-compileKotlin.kotlinOptions {
-    jvmTarget = "1.8"
-}
-val compileTestKotlin: KotlinCompile by tasks
-compileTestKotlin.kotlinOptions {
-    jvmTarget = "1.8"
+tasks.withType<KotlinCompile> {
+    kotlinOptions.jvmTarget = "1.8"
 }

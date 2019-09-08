@@ -37,7 +37,7 @@ object TextBox : GuiWrappedComponent<GuiText>(GuiText(
     private val fr = mc.fontRenderer
     val textField = this.delegate
     private var cursorCounter: Int = 0
-    private val spellcheck: Spellcheck? = TabbyChatClient.spellcheck
+    private val spellcheck: Spellcheck = TabbyChatClient.spellcheck
 
     private var textFormatter: (String, Int) -> String = { text, _ -> text }
     private var suggestion: String? = null
@@ -47,7 +47,7 @@ object TextBox : GuiWrappedComponent<GuiText>(GuiText(
 
     private val formattedLines: List<ITextComponent>
         get() {
-            spellcheck!!.checkSpelling(text)
+            spellcheck.checkSpelling(text)
             val formatter: (String, Int) -> ITextComponent? = { line, len ->
                 SpellingFormatter(spellcheck).apply(textFormatter(line, len)
                 )
@@ -75,14 +75,12 @@ object TextBox : GuiWrappedComponent<GuiText>(GuiText(
             textField.value = text
         }
 
-    override var isVisible: Boolean
-        get() = super.isVisible && mc.ingameGUI.chatGUI.chatOpen
-        set(value) {
-            super.isVisible = value
+    override var visible: Boolean
+        get() = mc.ingameGUI.chatGUI.chatOpen
+        set(_) {
         }
 
     init {
-
         textField.textField.maxStringLength = ChatManager.MAX_CHAT_LENGTH
         textField.textField.setCanLoseFocus(false)
         textField.textField.setEnableBackgroundDrawing(false)
@@ -94,7 +92,8 @@ object TextBox : GuiWrappedComponent<GuiText>(GuiText(
         super.onClosed()
     }
 
-    override fun render(mouseX: Int, mouseY: Int, parTicks: Float) {
+    override fun render(x: Int, y: Int, parTicks: Float) {
+        if (!visible) return
         GlStateManager.enableBlend()
         drawModalCorners(MODAL)
         GlStateManager.disableBlend()
@@ -244,16 +243,8 @@ object TextBox : GuiWrappedComponent<GuiText>(GuiText(
         this.textFormatter = textFormatter
     }
 
-    override fun charTyped(key: Char, mods: Int): Boolean {
-        try {
-            return super.charTyped(key, mods)
-        } finally {
-            spellcheck!!.checkSpelling(text)
-        }
-    }
-
-    override fun mouseClicked(x: Double, y: Double, mouseButton: Int): Boolean {
-        if (mouseButton == 0) {
+    override fun mouseClicked(x: Double, y: Double, button: Int): Boolean {
+        if (button == 0) {
             val bounds = this.location
 
             val width = bounds.width - 1
@@ -272,7 +263,7 @@ object TextBox : GuiWrappedComponent<GuiText>(GuiText(
                 }
             }
             index += fr.trimStringToWidth(lines[row], x.toInt() - 3).length
-            textField.textField.cursorPosition = index
+            delegate.textField.cursorPosition = index
             return true
         }
         return false

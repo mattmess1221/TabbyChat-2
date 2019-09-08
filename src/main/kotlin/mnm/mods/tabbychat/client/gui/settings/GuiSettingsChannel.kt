@@ -4,17 +4,12 @@ import mnm.mods.tabbychat.client.AbstractChannel
 import mnm.mods.tabbychat.client.ChatChannel
 import mnm.mods.tabbychat.client.TabbyChatClient
 import mnm.mods.tabbychat.client.gui.ChatBox
+import mnm.mods.tabbychat.client.gui.component.*
 import mnm.mods.tabbychat.client.settings.ServerSettings
 import mnm.mods.tabbychat.util.Color
 import mnm.mods.tabbychat.util.Location
 import mnm.mods.tabbychat.client.gui.component.layout.BorderLayout
-import mnm.mods.tabbychat.client.gui.component.GuiButton
-import mnm.mods.tabbychat.client.gui.component.GuiCheckbox
 import mnm.mods.tabbychat.client.gui.component.layout.GuiGridLayout
-import mnm.mods.tabbychat.client.gui.component.GuiLabel
-import mnm.mods.tabbychat.client.gui.component.GuiPanel
-import mnm.mods.tabbychat.client.gui.component.GuiScrollingPanel
-import mnm.mods.tabbychat.client.gui.component.GuiText
 import mnm.mods.tabbychat.client.gui.component.layout.VerticalLayout
 import mnm.mods.tabbychat.client.gui.component.config.SettingPanel
 import mnm.mods.tabbychat.util.Translation
@@ -45,12 +40,14 @@ internal class GuiSettingsChannel(private var channel: AbstractChannel? = null) 
             contentPanel.apply {
                 layout = VerticalLayout()
                 for (channel in settings.channels.values) {
-                    add(ChannelButton(channel), null)
+                    add(ChannelButton(channel)) {
+                        location = Location(0, 0, 60, 15)
+                    }
                 }
             }
         }
 
-        this.add(GuiPanel(), BorderLayout.Position.CENTER).apply {
+        panel = this.add(GuiPanel(), BorderLayout.Position.CENTER).apply {
             layout = GuiGridLayout(8, 20)
         }
 
@@ -60,7 +57,7 @@ internal class GuiSettingsChannel(private var channel: AbstractChannel? = null) 
     private fun select(channel: AbstractChannel?) {
 
         for (comp in channels.contentPanel.children()) {
-            comp.isEnabled = (comp as ChannelButton).channel !== channel
+            comp.active = (comp as ChannelButton).channel !== channel
         }
 
         var pos = 1
@@ -101,31 +98,26 @@ internal class GuiSettingsChannel(private var channel: AbstractChannel? = null) 
             value = channel.command
         }
 
-        this.panel.add<GuiButton>(object : GuiButton(I18n.format("gui.done")) {
-            override fun onClick(mouseX: Double, mouseY: Double) {
-                save()
-            }
+        this.panel.add(GuiButton(I18n.format("gui.done")) {
+            save()
         }, intArrayOf(2, 15, 4, 2))
 
-        this.panel.add<GuiButton>(object : GuiButton(Translation.CHANNEL_FORGET.translate()) {
-            override fun onClick(mouseX: Double, mouseY: Double) {
+        this.panel.add(GuiButton(Translation.CHANNEL_FORGET.translate()) {
 
-//                val channel = this@GuiSettingsChannel.channel
-                // remove from chat
-                ChatBox.removeChannel(channel)
-                // remove from settings file
-                settings.channels.remove(channel.name)
-                // don't add this channel again.
-                settings.general.ignoredChannels.add(channel.toString())
-                // remove from settings gui
-                for (comp in channels.contentPanel.children()) {
-                    if (comp is ChannelButton && comp.channel === channel) {
-                        channels.contentPanel.remove(comp)
-                        break
-                    }
+            // remove from chat
+            ChatBox.removeChannel(channel)
+            // remove from settings file
+            settings.channels.remove(channel.name)
+            // don't add this channel again.
+            settings.general.ignoredChannels.add(channel.toString())
+            // remove from settings gui
+            for (comp in channels.contentPanel.children()) {
+                if (comp is ChannelButton && comp.channel === channel) {
+                    channels.contentPanel.remove(comp)
+                    break
                 }
-                select(null)
             }
+            select(null)
         }, intArrayOf(2, 17, 4, 2))
     }
 
@@ -138,13 +130,11 @@ internal class GuiSettingsChannel(private var channel: AbstractChannel? = null) 
         }
     }
 
-    inner class ChannelButton internal constructor(internal val channel: ChatChannel) : GuiButton(channel.name) {
+    private inner class ChannelButton internal constructor(internal val channel: ChatChannel) : AbstractGuiButton() {
 
-        init {
-            location = Location(0, 0, 60, 15)
-        }
+        override val text: String = channel.name
 
-        override fun onClick(mouseX: Double, mouseY: Double) {
+        override fun onPress() {
             select(channel)
         }
     }

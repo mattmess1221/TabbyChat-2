@@ -2,6 +2,7 @@ package mnm.mods.tabbychat.client.gui
 
 import com.google.common.collect.ImmutableSet
 import mnm.mods.tabbychat.MODID
+import mnm.mods.tabbychat.TabbyChat
 import mnm.mods.tabbychat.api.Channel
 import mnm.mods.tabbychat.api.ChannelStatus
 import mnm.mods.tabbychat.api.events.MessageAddedToChannelEvent
@@ -9,10 +10,7 @@ import mnm.mods.tabbychat.client.*
 import mnm.mods.tabbychat.client.gui.component.GuiPanel
 import mnm.mods.tabbychat.client.gui.component.layout.BorderLayout
 import mnm.mods.tabbychat.client.util.ScaledDimension
-import mnm.mods.tabbychat.util.ILocation
-import mnm.mods.tabbychat.util.Location
-import mnm.mods.tabbychat.util.Vec2i
-import mnm.mods.tabbychat.util.mc
+import mnm.mods.tabbychat.util.*
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.IGuiEventListener
 import net.minecraft.client.gui.screen.ChatScreen
@@ -98,7 +96,7 @@ object ChatBox : GuiPanel(BorderLayout()) {
     private lateinit var chat: ChatScreen
 
     override// save bounds
-    var location: ILocation = super.location
+    var location: ILocation = TabbyChatClient.settings.advanced.chatboxLocation
         set(location) {
             normalizeLocation(location).also {
                 if (location != location) {
@@ -112,12 +110,12 @@ object ChatBox : GuiPanel(BorderLayout()) {
         }
 
     init {
+        TabbyChat.logger.info("ChatBox size+location: $location")
+
         tray = this.add(ChatTray(), BorderLayout.Position.NORTH)
         chatArea = this.add(ChatArea(), BorderLayout.Position.CENTER)
         chatInput = this.add(TextBox, BorderLayout.Position.SOUTH)
         this.add(Scrollbar(chatArea), BorderLayout.Position.EAST)
-
-        super.location = TabbyChatClient.settings.advanced.chatboxLocation
 
         this.channels.add(DefaultChannel)
         this.tray.addChannel(DefaultChannel)
@@ -126,8 +124,12 @@ object ChatBox : GuiPanel(BorderLayout()) {
 
         super.tick()
 
-        MinecraftForge.EVENT_BUS.addListener(::messageScroller)
-        MinecraftForge.EVENT_BUS.addListener(::addChatMessage)
+        MinecraftForge.EVENT_BUS.listen<MessageAddedToChannelEvent.Post> {
+            messageScroller(it)
+        }
+        MinecraftForge.EVENT_BUS.listen<MessageAddedToChannelEvent.Post> {
+            addChatMessage(it)
+        }
     }
 
     fun update(chat: ChatScreen) {

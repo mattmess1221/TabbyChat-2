@@ -1,14 +1,12 @@
 package mnm.mods.tabbychat.util
 
-import mnm.mods.tabbychat.STARTUP
-import mnm.mods.tabbychat.TabbyChat
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.IngameGui
-import net.minecraft.client.gui.NewChatGui
 import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.StringTextComponent
 import net.minecraft.util.text.Style
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper
+import net.minecraftforge.eventbus.api.Event
+import net.minecraftforge.eventbus.api.EventPriority
+import net.minecraftforge.eventbus.api.IEventBus
 import java.net.URLEncoder
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -29,4 +27,11 @@ fun String.toComponent() = StringTextComponent(this)
 
 fun <T : ITextComponent> T.style(block: Style.() -> Unit): T = apply { style.block() }
 
-val mc get() = Minecraft.getInstance()
+val mc: Minecraft get() = Minecraft.getInstance()
+
+inline fun <reified T : Event> IEventBus.listen(
+        priority: EventPriority = EventPriority.NORMAL,
+        cancelled: Boolean = false,
+        crossinline listener: (T) -> Unit) {
+    this.addListener(priority, cancelled, T::class.java) { listener(it) }
+}

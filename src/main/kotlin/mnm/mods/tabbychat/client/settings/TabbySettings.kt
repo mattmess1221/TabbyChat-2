@@ -5,8 +5,8 @@ import mnm.mods.tabbychat.util.div
 
 import java.nio.file.Path
 
-class TabbySettings(parent: Path) : SettingsFile(parent / "tabbychat.json") {
+class TabbySettings(parent: Path) : SettingsFile<TabbySettings>(parent / "tabbychat.json") {
 
-    val general = GeneralSettings()
-    val advanced = AdvancedSettings()
+    val general by obj { GeneralSettings() }
+    val advanced by obj { AdvancedSettings() }
 }

@@ -73,13 +73,13 @@ abstract class GuiNumericUpDown<T : Number> private constructor() : GuiPanel(), 
         double += n * interval
     }
 
-    private inner class UpDown(text: String, private val direction: Int) : GuiButton(text) {
+    private inner class UpDown(override val text: String, private val direction: Int) : AbstractGuiButton() {
 
         init {
             secondaryColor = Color.DARK_GRAY
         }
 
-        override fun onClick(mouseX: Double, mouseY: Double) {
+        override fun onPress() {
             increment(direction)
         }
     }
@@ -89,7 +89,7 @@ abstract class GuiNumericUpDown<T : Number> private constructor() : GuiPanel(), 
      *
      * @author Matthew
      */
-    class IntUpDown() : GuiNumericUpDown<Int>() {
+    class IntUpDown : GuiNumericUpDown<Int>() {
         override var value: Int
             get() = double.toInt()
             set(i) {

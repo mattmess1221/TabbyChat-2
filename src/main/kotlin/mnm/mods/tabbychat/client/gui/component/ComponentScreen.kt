@@ -20,7 +20,6 @@ open class ComponentScreen(title: ITextComponent) : Screen(title) {
 
     override fun render(mouseX: Int, mouseY: Int, tick: Float) {
         panel.render(mouseX, mouseY, tick)
-        panel.renderCaption(mouseX, mouseY)
     }
 
     override fun tick() {

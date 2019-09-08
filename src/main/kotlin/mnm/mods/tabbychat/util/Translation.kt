@@ -1,7 +1,7 @@
 package mnm.mods.tabbychat.util
 
 object Translation {
-    private val String.tr: Translatable get() = { this } as Translatable
+    private val String.tr: Translatable get() = Translatable { this }
 
     val TABBYCHAT = "tabbychat".tr
 

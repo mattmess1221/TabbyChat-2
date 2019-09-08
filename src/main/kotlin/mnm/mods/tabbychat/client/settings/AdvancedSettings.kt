@@ -7,19 +7,19 @@ import mnm.mods.tabbychat.util.config.AbstractValue
 import mnm.mods.tabbychat.util.config.Value
 import mnm.mods.tabbychat.util.config.ValueObject
 
-class AdvancedSettings : ValueObject() {
+class AdvancedSettings : ValueObject<AdvancedSettings>() {
 
-    private val chatX = Value(5)
-    private val chatY = Value(17)
-    private val chatW = Value(300)
-    private val chatH = Value(160)
-    val unfocHeight = Value(0.5f)
-    val fadeTime = Value(200)
-    val historyLen = Value(100)
-    val hideTag = Value(false)
-    val keepChatOpen = Value(false)
-    val spelling = Value(true)
-    val visibility = Value(LocalVisibility.NORMAL)
+    private val chatX: Value<Int> by value { 5 }
+    private val chatY: Value<Int> by value { 17 }
+    private val chatW: Value<Int> by value { 300 }
+    private val chatH: Value<Int> by value { 160 }
+    val unfocHeight: Value<Float> by value { 0.5f }
+    val fadeTime: Value<Int> by value { 200 }
+    val historyLen: Value<Int> by value { 100 }
+    val hideTag: Value<Boolean> by value { false }
+    val keepChatOpen: Value<Boolean> by value { false }
+    val spelling: Value<Boolean> by value { true }
+    val visibility: Value<LocalVisibility> by value { LocalVisibility.NORMAL }
 
     var chatboxLocation: ILocation
         get() = Location(

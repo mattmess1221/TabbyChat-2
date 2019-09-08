@@ -3,24 +3,29 @@ package mnm.mods.tabbychat.client.gui.component
 import com.mojang.blaze3d.platform.GLX
 import com.mojang.blaze3d.platform.GlStateManager
 import mnm.mods.tabbychat.util.Dim
-import mnm.mods.tabbychat.util.ILocation
 import mnm.mods.tabbychat.util.TexturedModal
 import mnm.mods.tabbychat.util.mc
 import net.minecraft.client.audio.SimpleSound
 import net.minecraft.client.audio.SoundHandler
-import net.minecraft.client.gui.FontRenderer
+import net.minecraft.client.gui.AbstractGui
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.SoundEvent
 import net.minecraft.util.SoundEvents
 import org.lwjgl.opengl.GL11
-import java.util.Optional
 
 /**
  * A [net.minecraft.client.gui.widget.button.Button] for the GuiComponent system.
  */
-open class GuiButton(open var text: String = "") : GuiComponent() {
+class GuiButton(override val text: String, val callback: () -> Unit = {}) : AbstractGuiButton() {
 
-    var sound: SoundEvent? = SoundEvents.UI_BUTTON_CLICK
+    override fun onPress() = callback()
+}
+
+abstract class AbstractGuiButton() : GuiComponent() {
+
+    var sound: SoundEvent? = null
+
+    abstract val text: String
 
     override var minimumSize: Dim
         get() = Dim(mc.fontRenderer.getStringWidth(this.text) + 8, 20)
@@ -28,12 +33,9 @@ open class GuiButton(open var text: String = "") : GuiComponent() {
             super.minimumSize = value
         }
 
-    override fun playDownSound(soundHandlerIn: SoundHandler) {
-        val sound = sound
-        if (sound != null) {
-            soundHandlerIn.play(SimpleSound.master(sound, 1.0f))
-        }
-    }
+    abstract fun onPress()
+
+    override fun onClick(x: Double, y: Double) = onPress()
 
     override fun render(mouseX: Int, mouseY: Int, parTicks: Float) {
         val fontrenderer = mc.fontRenderer
@@ -55,7 +57,7 @@ open class GuiButton(open var text: String = "") : GuiComponent() {
 
         var textColor = 0xE0E0E0
 
-        if (!this.isEnabled) {
+        if (!this.active) {
             textColor = 0xA0A0A0
         } else if (hovered) {
             textColor = 0xFFFFA0
@@ -70,7 +72,7 @@ open class GuiButton(open var text: String = "") : GuiComponent() {
     }
 
     private fun getHoverState(hovered: Boolean): TexturedModal {
-        if (!this.isEnabled) {
+        if (!this.active) {
             return MODAL_DISABLE
         }
         if (hovered) {

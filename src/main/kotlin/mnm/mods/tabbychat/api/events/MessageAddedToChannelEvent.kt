@@ -5,10 +5,7 @@ import net.minecraft.util.text.ITextComponent
 import net.minecraftforge.eventbus.api.Cancelable
 import net.minecraftforge.eventbus.api.Event
 
-abstract class MessageAddedToChannelEvent protected constructor(
-        open val text: ITextComponent?,
-        open val id: Int,
-        val channel: Channel) : Event() {
+sealed class MessageAddedToChannelEvent(open val text: ITextComponent?, open val id: Int, val channel: Channel) : Event() {
 
     @Cancelable
     class Pre(override var text: ITextComponent?,

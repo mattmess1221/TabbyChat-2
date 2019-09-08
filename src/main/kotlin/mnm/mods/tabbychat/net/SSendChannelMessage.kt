@@ -13,8 +13,8 @@ import java.util.function.Supplier
 
 class SSendChannelMessage {
 
-    private var channel: String
-    private var message: ITextComponent
+    val channel: String
+    val message: ITextComponent
 
     constructor(buffer: PacketBuffer) {
         channel = buffer.readString(20)

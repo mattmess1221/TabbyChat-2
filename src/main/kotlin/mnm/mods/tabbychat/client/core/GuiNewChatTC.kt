@@ -22,7 +22,7 @@ object GuiNewChatTC : NewChatGui(mc) {
     init {
         this.prevScreenHeight = mc.mainWindow.height
 
-        MinecraftForge.EVENT_BUS.register(GuiChatTC(ChatBox))
+        MinecraftForge.EVENT_BUS.register(GuiChatTC)
     }
 
     override fun refreshChat() {

@@ -34,12 +34,12 @@ internal class GuiSettingsGeneral : SettingPanel<TabbySettings>() {
         var pos = 1
         add(GuiLabel(Translation.LOG_CHAT.toComponent()), intArrayOf(2, pos))
         add(GuiSettingBoolean(sett.logChat), intArrayOf(1, pos)).apply {
-            caption = Translation.LOG_CHAT_DESC.toComponent()
+            //            caption = Translation.LOG_CHAT_DESC.toComponent()
         }
 
         add(GuiLabel(Translation.SPLIT_LOG.toComponent()), intArrayOf(7, pos))
         add(GuiSettingBoolean(sett.splitLog), intArrayOf(6, pos)).apply {
-            caption = Translation.SPLIT_LOG_DESC.toComponent()
+            //            caption = Translation.SPLIT_LOG_DESC.toComponent()
         }
 
         pos += 2
@@ -52,12 +52,12 @@ internal class GuiSettingsGeneral : SettingPanel<TabbySettings>() {
 
         pos += 2
         add(GuiLabel(Translation.TIMESTAMP_COLOR.toComponent()), intArrayOf(3, pos))
-        add(GuiSettingEnum(sett.timestampColor, colors) { { "colors.$friendlyName" } as Translatable }, intArrayOf(5, pos, 4, 1))
+        add(GuiSettingEnum(sett.timestampColor, colors) { Translatable { "colors.$friendlyName" } }, intArrayOf(5, pos, 4, 1))
 
         pos += 2
         add(GuiLabel(Translation.ANTI_SPAM.toComponent()), intArrayOf(2, pos))
         add(GuiSettingBoolean(sett.antiSpam), intArrayOf(1, pos)).apply {
-            caption = Translation.ANTI_SPAM_DESC.toComponent()
+            // caption = Translation.ANTI_SPAM_DESC.toComponent()
         }
 
         pos += 2
@@ -69,7 +69,7 @@ internal class GuiSettingsGeneral : SettingPanel<TabbySettings>() {
                 interval = 0.05
                 format = NumberFormat.getPercentInstance()
             }
-            caption = Translation.SPAM_PREJUDICE_DESC.toComponent()
+            // caption = Translation.SPAM_PREJUDICE_DESC.toComponent()
         }
 
         pos += 2

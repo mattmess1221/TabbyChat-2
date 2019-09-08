@@ -77,12 +77,12 @@ class ChatLogging(private val directory: Path) {
                 val server = logFolder
                 logFile = findFile(directory.resolve(server)).also {
 
-                    TabbyChat.logger.debug(CHATBOX, "Using log file {}", logFile)
+                    TabbyChat.logger.debug(CHATBOX, "Using log file {}", it)
 
                     Files.createDirectories(it.parent)
                     Files.createFile(it)
                     IOUtils.closeQuietly(out)
-                    this.out = PrintStream(Files.newOutputStream(logFile!!, StandardOpenOption.APPEND), true, "UTF-8")
+                    this.out = PrintStream(Files.newOutputStream(it, StandardOpenOption.APPEND), true, "UTF-8")
 
                     // compress log
                     if (prev != null && prev.get(Calendar.DATE) != date!!.get(Calendar.DATE)) {

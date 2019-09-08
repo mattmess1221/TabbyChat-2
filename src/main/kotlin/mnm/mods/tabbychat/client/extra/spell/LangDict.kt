@@ -20,12 +20,16 @@ interface LangDict {
         fun fromLanguage(lang: String): LangDict {
             val path = String.format("dicts/%s.dic", lang)
             return if (Files.isRegularFile(TabbyChat.dataFolder.resolve(path))) {
-                { Files.newInputStream(TabbyChat.dataFolder.resolve(path)) } as LangDict
+                LangDict { Files.newInputStream(TabbyChat.dataFolder.resolve(path)) }
             } else {
                 val res = ResourceLocation(MODID, path)
                 val resmgr = Minecraft.getInstance().resourceManager
-                { resmgr.getResource(res).inputStream } as LangDict
+                LangDict { resmgr.getResource(res).inputStream }
             }
         }
     }
+}
+
+operator fun LangDict.Companion.invoke(function: () -> InputStream) = object : LangDict {
+    override fun openStream() = function()
 }

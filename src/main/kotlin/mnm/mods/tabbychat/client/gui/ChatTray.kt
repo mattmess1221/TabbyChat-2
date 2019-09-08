@@ -27,6 +27,7 @@ class ChatTray internal constructor() : GuiPanel(BorderLayout()) {
         }
 
     init {
+        minimumSize = Dim(40, 20)
         this.add(tabList, BorderLayout.Position.CENTER)
         val controls = ChatPanel(FlowLayout())
         controls.add(ToggleButton(), null)
@@ -55,15 +56,14 @@ class ChatTray internal constructor() : GuiPanel(BorderLayout()) {
     }
 
     fun addChannel(channel: AbstractChannel) {
-        val gc = ChatTab(channel)
-        map[channel] = gc
-        tabList.add<GuiComponent>(gc, null)
+        tabList.add(ChatTab(channel)){
+            map[channel] = this
+        }
     }
 
     fun removeChannel(channel: Channel) {
         if (channel in map) {
-            val gc = map.remove(channel)!!
-            this.tabList.remove(gc)
+            this.tabList.remove(map.remove(channel)!!)
         }
     }
 

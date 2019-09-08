@@ -4,7 +4,6 @@ import mnm.mods.tabbychat.*
 import mnm.mods.tabbychat.client.gui.NotificationToast
 import net.minecraft.client.Minecraft
 import net.minecraft.network.PacketBuffer
-import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.TranslationTextComponent
 import net.minecraftforge.fml.network.NetworkEvent
 
@@ -12,7 +11,7 @@ import java.util.function.Supplier
 
 class SNetworkVersion {
 
-    private var version: String
+    val version: String
 
     constructor(buffer: PacketBuffer) {
         version = buffer.readString(20)

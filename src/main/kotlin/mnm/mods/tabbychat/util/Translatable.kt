@@ -11,7 +11,6 @@ import kotlin.reflect.KProperty
  *
  * @author Matthew
  */
-@FunctionalInterface
 interface Translatable {
 
     /**
@@ -36,4 +35,10 @@ interface Translatable {
     fun toComponent(vararg args: Any) = TranslationTextComponent(unlocalized, *args)
 
     operator fun getValue(thisRef: Any, property: KProperty<*>) = translate()
+
+    companion object {
+        operator fun invoke(unloc: () -> String) = object : Translatable {
+            override val unlocalized: String = unloc()
+        }
+    }
 }

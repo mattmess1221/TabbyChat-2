@@ -28,7 +28,7 @@ class GuiSettingEnum<T>(
 
     private val values: List<T> = ImmutableList.copyOf(values)
 
-    private var text: String? = null
+    private var text: String = ""
     override var value: T = setting.value
         set(value) {
             this.text = namer(value).translate()
@@ -68,7 +68,7 @@ class GuiSettingEnum<T>(
     override fun render(mouseX: Int, mouseY: Int, parTicks: Float) {
         val loc = this.location
         fill(loc.xPos, loc.yPos, loc.xWidth, loc.yHeight, -0x1000000)
-        val string = mc.fontRenderer.trimStringToWidth(text!!, loc.width)
+        val string = mc.fontRenderer.trimStringToWidth(text, loc.width)
         val xPos = loc.xCenter - mc.fontRenderer.getStringWidth(string) / 2
         val yPos = loc.yCenter - 4
         mc.fontRenderer.drawString(string, xPos.toFloat(), yPos.toFloat(), primaryColorProperty.hex)

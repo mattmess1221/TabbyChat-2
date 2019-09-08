@@ -16,7 +16,7 @@ open class GuiPanel() : GuiComponent(), INestedGuiEventHandler {
     private val components: MutableList<GuiComponent> = mutableListOf()
     var layout: ILayout? = null
 
-    private var focused: IGuiEventListener? = null
+    private var focused2: IGuiEventListener? = null
     private var dragging: Boolean = false
 
     override var minimumSize: Dim
@@ -37,22 +37,15 @@ open class GuiPanel() : GuiComponent(), INestedGuiEventHandler {
         this.layout = layout
     }
 
-    override fun render(mouseX: Int, mouseY: Int, parTicks: Float) {
+    override fun render(x: Int, y: Int, parTicks: Float) {
+        super.render(x, y, parTicks)
+
         layout?.layoutComponents(this)
         this.children().asSequence()
-                .filter { it.visible }
                 .forEach {
-                    it.render(mouseX, mouseY, parTicks)
+                    it.render(x, y, parTicks)
                 }
 
-        super.render(mouseX, mouseY, parTicks)
-    }
-
-    override fun renderCaption(x: Int, y: Int) {
-        super.renderCaption(x, y)
-        this.children().asSequence()
-                .filter { it.visible }
-                .forEach { it.renderCaption(x, y) }
     }
 
     override fun tick() {
@@ -65,8 +58,9 @@ open class GuiPanel() : GuiComponent(), INestedGuiEventHandler {
      * @param guiComponent The component
      * @param constraints  The constraints
      */
-    fun <T : GuiComponent> add(guiComponent: T, constraints: Any? = null): T {
+    fun <T : GuiComponent> add(guiComponent: T, constraints: Any? = null, config: T.() -> Unit = {}): T {
         guiComponent.parent = this
+        guiComponent.config()
         components.add(guiComponent)
         layout?.addComponent(guiComponent, constraints)
         return guiComponent
@@ -97,16 +91,6 @@ open class GuiPanel() : GuiComponent(), INestedGuiEventHandler {
         return components
     }
 
-    override fun getFocused(): IGuiEventListener? {
-        return focused
-    }
-
-
-    override fun setFocused(focused: IGuiEventListener?) {
-        this.focused = focused
-    }
-
-
     override fun isDragging(): Boolean {
         return this.dragging
     }
@@ -114,6 +98,13 @@ open class GuiPanel() : GuiComponent(), INestedGuiEventHandler {
     override fun setDragging(p_195072_1_: Boolean) {
         this.dragging = p_195072_1_
     }
+
+    override fun setFocused(focused: IGuiEventListener?) {
+        this.focused2 = focused
+    }
+
+    override fun getFocused(): IGuiEventListener? = focused2
+
 
     override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
         return super<INestedGuiEventHandler>.mouseClicked(mouseX, mouseY, button)
@@ -127,9 +118,26 @@ open class GuiPanel() : GuiComponent(), INestedGuiEventHandler {
         return super<INestedGuiEventHandler>.mouseDragged(x, y, b, dx, dy)
     }
 
+    override fun mouseScrolled(p_mouseScrolled_1_: Double, p_mouseScrolled_3_: Double, p_mouseScrolled_5_: Double): Boolean {
+        return super<INestedGuiEventHandler>.mouseScrolled(p_mouseScrolled_1_, p_mouseScrolled_3_, p_mouseScrolled_5_)
+    }
+
+    override fun keyPressed(p_keyPressed_1_: Int, p_keyPressed_2_: Int, p_keyPressed_3_: Int): Boolean {
+        return super<INestedGuiEventHandler>.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_)
+    }
+
+    override fun keyReleased(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
+        return super<INestedGuiEventHandler>.keyReleased(keyCode, scanCode, modifiers)
+    }
+
+    override fun charTyped(p_charTyped_1_: Char, p_charTyped_2_: Int): Boolean {
+        return super<INestedGuiEventHandler>.charTyped(p_charTyped_1_, p_charTyped_2_)
+    }
+
     override fun changeFocus(p_changeFocus_1_: Boolean): Boolean {
         return super<INestedGuiEventHandler>.changeFocus(p_changeFocus_1_)
     }
+
     override fun onClosed() {
         this.children().forEach { it.onClosed() }
     }

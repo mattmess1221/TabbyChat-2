@@ -4,21 +4,32 @@ import com.mojang.blaze3d.platform.GlStateManager
 import mnm.mods.tabbychat.client.AbstractChannel
 import mnm.mods.tabbychat.client.TabbyChatClient
 import mnm.mods.tabbychat.api.ChannelStatus
+import mnm.mods.tabbychat.client.gui.component.AbstractGuiButton
 import mnm.mods.tabbychat.client.gui.settings.GuiSettingsScreen
 import mnm.mods.tabbychat.client.gui.component.GuiButton
+import mnm.mods.tabbychat.client.gui.component.GuiComponent
 import mnm.mods.tabbychat.util.*
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.screen.Screen
 
-class ChatTab internal constructor(private val channel: AbstractChannel) : GuiButton(channel.displayName) {
+class ChatTab internal constructor(private val channel: AbstractChannel) : GuiComponent() {
+
+    var text: String = channel.displayName
+        get() {
+            return when (ChatBox.status[channel]) {
+                ChannelStatus.ACTIVE -> "[$field]"
+                ChannelStatus.UNREAD -> "<$field>"
+                else -> field
+            }
+        }
 
     init {
         val chan = "<${channel.displayName}>"
         minimumSize = Dim(mc.fontRenderer.getStringWidth(chan) + 8, 14)
     }
 
-    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
-        if (location.contains(mouseX, mouseY)) {
+    override fun mouseClicked(x: Double, y: Double, button: Int): Boolean {
+        if (super.mouseClicked(x, y, button)) {
             if (button == 0) {
                 if (Screen.hasShiftDown()) {
                     // Remove channel
@@ -41,11 +52,15 @@ class ChatTab internal constructor(private val channel: AbstractChannel) : GuiBu
         return false
     }
 
+    override fun isValidButton(button: Int): Boolean {
+        return true
+    }
+
     private fun openSettings() {
         Minecraft.getInstance().displayGuiScreen(GuiSettingsScreen(channel))
     }
 
-    override fun render(mouseX: Int, mouseY: Int, parTicks: Float) {
+    override fun render(x: Int, y: Int, parTicks: Float) {
         val status = ChatBox.status[channel]
         if (mc.ingameGUI.chatGUI.chatOpen
                 || status != null && status > ChannelStatus.PINGED && TabbyChatClient.settings.general.unreadFlashing.value
@@ -53,7 +68,7 @@ class ChatTab internal constructor(private val channel: AbstractChannel) : GuiBu
             val loc = location
             GlStateManager.enableBlend()
             GlStateManager.color4f(1f, 1f, 1f, mc.gameSettings.chatOpacity.toFloat())
-            drawModalCorners(getStatusModal(loc.contains(mouseX, mouseY)))
+            drawModalCorners(getStatusModal(loc.contains(x, y)))
 
             val txtX = loc.xCenter
             val txtY = loc.yCenter - 2
@@ -64,20 +79,6 @@ class ChatTab internal constructor(private val channel: AbstractChannel) : GuiBu
             GlStateManager.disableBlend()
         }
     }
-
-    override var text: String
-        get() {
-            val alias = channel.displayName
-
-            return when (ChatBox.status[channel]) {
-                ChannelStatus.ACTIVE -> "[$alias]"
-                ChannelStatus.UNREAD -> "<$alias>"
-                else -> alias
-            }
-        }
-        set(value) {
-            super.text = value
-        }
 
     private fun getStatusModal(hovered: Boolean): TexturedModal {
         if (hovered) {

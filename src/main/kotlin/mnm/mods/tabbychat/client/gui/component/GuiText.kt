@@ -2,6 +2,7 @@ package mnm.mods.tabbychat.client.gui.component
 
 import mnm.mods.tabbychat.util.Color
 import mnm.mods.tabbychat.util.ILocation
+import mnm.mods.tabbychat.util.mc
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.IGuiEventListener
 import net.minecraft.client.gui.widget.TextFieldWidget
@@ -11,9 +12,9 @@ import net.minecraft.client.gui.widget.TextFieldWidget
  *
  * @author Matthew
  */
-open class GuiText @JvmOverloads constructor(
-        val textField: TextFieldWidget = TextFieldWidget(Minecraft.getInstance().fontRenderer, 0, 0, 1, 1, "")
-) : GuiComponent(), IGuiInput<String>, IGuiEventListener by textField {
+open class GuiText(
+        val textField: TextFieldWidget = TextFieldWidget(mc.fontRenderer, 0, 0, 1, 1, "")
+) : GuiWrappedEventListener<TextFieldWidget>(textField), IGuiInput<String> {
     var hint: String? = null
 
     override var location: ILocation
@@ -46,11 +47,6 @@ open class GuiText @JvmOverloads constructor(
 
     }
 
-//    override fun mouseClicked(p_mouseClicked_1_: Double, p_mouseClicked_3_: Double, p_mouseClicked_5_: Int): Boolean {
-//        return false
-//    }
-
-
     private fun updateTextbox(loc: ILocation) {
         this.textField.x = loc.xPos
         this.textField.y = loc.yPos
@@ -68,7 +64,7 @@ open class GuiText @JvmOverloads constructor(
         super.render(mouseX, mouseY, parTicks)
         if (textField.isFocused && !hint.isNullOrEmpty()) {
             // draw the hint above.
-            renderCaption(hint!!, 1, -5)
+//            renderCaption(hint!!, mouseX + 1, mouseY - 5)
         }
     }
 }

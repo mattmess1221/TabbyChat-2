@@ -1,6 +1,6 @@
 
-modLoader="javafml" #mandatory
-loaderVersion="[28,)"#mandatory
+modLoader="kotlinfml" #mandatory
+loaderVersion="[1,)"#mandatory
 issueTrackerURL="https://github.com/killjoy1221/TabbyChat-2/issues/" #optional
 url="https://minecraft.curseforge.com/projects/tabbychat-2"
 

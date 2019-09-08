@@ -1,6 +1,7 @@
 package mnm.mods.tabbychat.client.gui.settings
 
 import com.mojang.blaze3d.platform.GlStateManager
+import mnm.mods.tabbychat.client.gui.component.AbstractGuiButton
 import mnm.mods.tabbychat.util.Dim
 import mnm.mods.tabbychat.util.ILocation
 import mnm.mods.tabbychat.util.Location
@@ -8,7 +9,10 @@ import mnm.mods.tabbychat.client.gui.component.GuiButton
 import mnm.mods.tabbychat.client.gui.component.config.SettingPanel
 import mnm.mods.tabbychat.util.mc
 
-open class SettingsButton internal constructor(val settings: SettingPanel<*>) : GuiButton(settings.displayString) {
+class SettingsButton internal constructor(val settings: SettingPanel<*>, val callback: () -> Unit = {}) : AbstractGuiButton() {
+
+    override val text: String = settings.displayString
+
     private var displayX = 30
 
     init {
@@ -16,6 +20,8 @@ open class SettingsButton internal constructor(val settings: SettingPanel<*>) : 
         minimumSize = location.size
         secondaryColor = settings.secondaryColor
     }
+
+    override fun onPress() = callback()
 
     override fun render(mouseX: Int, mouseY: Int, parTicks: Float) {
         if (active && displayX > 20) {

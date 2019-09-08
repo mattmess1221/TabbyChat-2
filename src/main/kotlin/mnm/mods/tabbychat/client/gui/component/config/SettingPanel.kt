@@ -6,7 +6,7 @@ import mnm.mods.tabbychat.client.gui.component.GuiPanel
 /**
  * Base class for a setting panel.
  */
-abstract class SettingPanel<T : SettingsFile> : GuiPanel() {
+abstract class SettingPanel<T : SettingsFile<T>> : GuiPanel() {
 
     abstract val displayString: String
 

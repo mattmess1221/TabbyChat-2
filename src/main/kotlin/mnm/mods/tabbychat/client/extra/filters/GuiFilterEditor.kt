@@ -28,19 +28,15 @@ class GuiFilterEditor(private val filter: UserFilter) : GuiPanel() {
     private val btnIgnoreCase: ToggleButton
     private val btnRaw: ToggleButton
 
-    internal inner class ToggleButton constructor(text: String) : GuiButton(text) {
+    internal inner class ToggleButton(text: String) : AbstractGuiButton() {
 
-        override var text: String
+        override val text: String = text
             get() {
-                val text = super.text
                 val color = if (active) TextFormatting.GREEN else TextFormatting.RED
-                return color.toString() + text
-            }
-            set(value) {
-                super.text = value
+                return color.toString() + field
             }
 
-        override fun onClick(mouseX: Double, mouseY: Double) {
+        override fun onPress() {
             active = !active
         }
     }
@@ -54,39 +50,40 @@ class GuiFilterEditor(private val filter: UserFilter) : GuiPanel() {
         var pos = 0
 
         this.add(GuiLabel(Translation.FILTER_NAME.toComponent()), intArrayOf(1, pos))
-        txtName = this.add(GuiText(), intArrayOf(5, pos, 10, 1))
-        txtName.value = filter.name
+        txtName = this.add(GuiText(), intArrayOf(5, pos, 10, 1)) {
+            value = filter.name
+        }
 
         pos += 2
         this.add(GuiLabel(Translation.FILTER_DESTINATIONS.toComponent()), intArrayOf(1, pos))
-        txtDestinations = this.add(GuiText(), intArrayOf(8, pos, 10, 1)).apply {
+        txtDestinations = this.add(GuiText(), intArrayOf(8, pos, 10, 1)) {
             value = settings.channels.joinToString(", ")
-            caption = Translation.FILTER_DESTIONATIONS_DESC.toComponent()
+//            caption = Translation.FILTER_DESTIONATIONS_DESC.toComponent()
         }
 
         pos += 1
-        btnRegexp = this.add(ToggleButton(".*"), intArrayOf(1, pos, 2, 1)).apply {
+        btnRegexp = this.add(ToggleButton(".*"), intArrayOf(1, pos, 2, 1)) {
             active = filter.settings.isRegex
-            caption = Translation.FILTER_REGEX.toComponent()
+//            caption = Translation.FILTER_REGEX.toComponent()
         }
-        btnIgnoreCase = this.add(ToggleButton("Aa"), intArrayOf(3, pos, 2, 1)).apply {
+        btnIgnoreCase = this.add(ToggleButton("Aa"), intArrayOf(3, pos, 2, 1)) {
             active = settings.isCaseInsensitive
-            caption = Translation.FILTER_IGNORE_CASE.toComponent()
+//            caption = Translation.FILTER_IGNORE_CASE.toComponent()
         }
-        btnRaw = this.add(ToggleButton("&0"), intArrayOf(5, pos, 2, 1)).apply {
+        btnRaw = this.add(ToggleButton("&0"), intArrayOf(5, pos, 2, 1)) {
             active = settings.isRaw
-            caption = Translation.FILTER_RAW_INPUT.toComponent()
+//            caption = Translation.FILTER_RAW_INPUT.toComponent()
         }
 
         pos += 2
         this.add(GuiLabel(Translation.FILTER_HIDE.toComponent()), intArrayOf(2, pos))
-        chkRemove = this.add(GuiCheckbox(), intArrayOf(1, pos)).apply {
+        chkRemove = this.add(GuiCheckbox(), intArrayOf(1, pos)) {
             value = settings.isRemove
         }
 
         pos += 1
         this.add(GuiLabel(Translation.FILTER_AUDIO_NOTIFY.toComponent()), intArrayOf(2, pos))
-        chkSound = this.add(GuiCheckbox(), intArrayOf(1, pos)).apply {
+        chkSound = this.add(GuiCheckbox(), intArrayOf(1, pos)) {
             value = settings.isSoundNotification
         }
 
@@ -116,11 +113,11 @@ class GuiFilterEditor(private val filter: UserFilter) : GuiPanel() {
                 hint = Joiner.on('\n').join(list)
                 if ((key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER) && list.isNotEmpty()) {
                     this.value = list[0]
-                    this@GuiFilterEditor.focused = null
+                    setFocused(null)
                 }
                 return super.charTyped(c, key)
             }
-        }, intArrayOf(3, pos, 14, 1)).apply {
+        }, intArrayOf(3, pos, 14, 1)) {
             value = settings.soundName ?: ""
             textField.setValidator { txt -> ResourceLocation.tryCreate(txt) != null }
             textField.func_212954_a { s ->
@@ -149,17 +146,15 @@ class GuiFilterEditor(private val filter: UserFilter) : GuiPanel() {
                 }
                 return r
             }
-        }, intArrayOf(8, pos, 12, 1)).apply {
+        }, intArrayOf(8, pos, 12, 1)) {
             value = pattern
         }
 
         pos++
         this.add(lblError, intArrayOf(4, pos))
 
-        this.add<GuiButton>(object : GuiButton(I18n.format("gui.done")) {
-            override fun onClick(mouseX: Double, mouseY: Double) {
-                accept()
-            }
+        this.add(GuiButton(I18n.format("gui.done")) {
+            accept()
         }, intArrayOf(5, 14, 4, 1))
     }
 
