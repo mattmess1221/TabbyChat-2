@@ -81,10 +81,10 @@ object TextBox : GuiWrappedComponent<GuiText>(GuiText(
         }
 
     init {
-        textField.textField.maxStringLength = ChatManager.MAX_CHAT_LENGTH
-        textField.textField.setCanLoseFocus(false)
-        textField.textField.setEnableBackgroundDrawing(false)
-        textField.textField.setFocused2(true)
+        textField.delegate.maxStringLength = ChatManager.MAX_CHAT_LENGTH
+        textField.delegate.setCanLoseFocus(false)
+        textField.delegate.setEnableBackgroundDrawing(false)
+        textField.delegate.setFocused2(true)
     }
 
     override fun onClosed() {
@@ -104,7 +104,7 @@ object TextBox : GuiWrappedComponent<GuiText>(GuiText(
     }
 
     private fun drawCursor() {
-        val textField = this.textField.textField
+        val textField = this.textField.delegate
 
         // keeps track of all the characters. Used to compensate for spaces
         var totalPos = 0
@@ -217,7 +217,7 @@ object TextBox : GuiWrappedComponent<GuiText>(GuiText(
         }
         yPos -= fr.FONT_HEIGHT + 2
 
-        val flag2 = textField.textField.cursorPosition < text.length || text.length >= textField.textField.maxStringLength
+        val flag2 = textField.delegate.cursorPosition < text.length || text.length >= textField.delegate.maxStringLength
 
         val x = loc.xPos + 3
         if (!flag2 && suggestion != null) {
@@ -230,7 +230,7 @@ object TextBox : GuiWrappedComponent<GuiText>(GuiText(
      * Draws the blue selection box. Forwards to [TextFieldWidget.drawSelectionBox]
      */
     private fun drawSelectionBox(x1: Int, y1: Int, x2: Int, y2: Int) {
-        this.textField.textField.drawSelectionBox(
+        this.textField.delegate.drawSelectionBox(
                 x1 + location.xPos, y1 + location.yPos,
                 x2 + location.xPos, y2 + location.yPos)
     }
@@ -263,7 +263,7 @@ object TextBox : GuiWrappedComponent<GuiText>(GuiText(
                 }
             }
             index += fr.trimStringToWidth(lines[row], x.toInt() - 3).length
-            delegate.textField.cursorPosition = index
+            delegate.delegate.cursorPosition = index
             return true
         }
         return false

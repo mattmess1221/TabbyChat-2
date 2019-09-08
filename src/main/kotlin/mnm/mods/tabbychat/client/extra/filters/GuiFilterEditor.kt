@@ -100,7 +100,7 @@ class GuiFilterEditor(private val filter: UserFilter) : GuiPanel() {
                     index--
                 }
                 // suggest sounds
-                val value = value.toLowerCase().substring(0, textField.cursorPosition)
+                val value = value.toLowerCase().substring(0, delegate.cursorPosition)
                 var list = GameRegistry.findRegistry(SoundEvent::class.java).keys.asSequence()
                         .map { it.toString() }
                         .filter { s -> s.contains(value) }
@@ -119,8 +119,8 @@ class GuiFilterEditor(private val filter: UserFilter) : GuiPanel() {
             }
         }, intArrayOf(3, pos, 14, 1)) {
             value = settings.soundName ?: ""
-            textField.setValidator { txt -> ResourceLocation.tryCreate(txt) != null }
-            textField.func_212954_a { s ->
+            delegate.setValidator { txt -> ResourceLocation.tryCreate(txt) != null }
+            delegate.func_212954_a { s ->
                 val res = ResourceLocation.tryCreate(s)
                 play.sound = ForgeRegistries.SOUND_EVENTS.getValue(res)
             }

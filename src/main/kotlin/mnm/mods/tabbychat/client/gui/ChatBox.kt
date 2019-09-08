@@ -72,14 +72,14 @@ object ChatBox : GuiPanel(BorderLayout()) {
                 text.text = ""
                 if (!channel.isPrefixHidden && channel.prefix.isNotEmpty()) {
                     // target has prefix visible
-                    text.textField.textField.text = channel.prefix + " "
+                    text.textField.delegate.text = channel.prefix + " "
                 }
             }
             // set max text length
             val hidden = channel.isPrefixHidden
             val prefLength = if (hidden) channel.prefix.length + 1 else 0
 
-            text.textField.textField.maxStringLength = ChatManager.MAX_CHAT_LENGTH - prefLength
+            text.textField.delegate.maxStringLength = ChatManager.MAX_CHAT_LENGTH - prefLength
 
             // reset scroll
             // TODO per-channel scroll settings?

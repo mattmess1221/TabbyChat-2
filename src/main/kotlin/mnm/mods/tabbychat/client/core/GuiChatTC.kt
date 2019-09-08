@@ -24,11 +24,11 @@ object GuiChatTC {
                 guichat.defaultInputFieldText = chan.prefix + " "
             }
             val text = ChatBox.chatInput.textField
-            guichat.inputField = text.textField
+            guichat.inputField = text.delegate
             text.value = guichat.defaultInputFieldText
 
             ChatBox.chatInput.setTextFormatter { p_195130_1_, p_195130_2_ -> guichat.formatMessage(p_195130_1_, p_195130_2_) }
-            text.textField.func_212954_a { guichat.func_212997_a(it) }
+            text.delegate.func_212954_a { guichat.func_212997_a(it) }
 
             val children = guichat.children() as MutableList<IGuiEventListener>
             children[0] = ChatBox

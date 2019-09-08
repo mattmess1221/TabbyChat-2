@@ -20,21 +20,20 @@ open class GuiWrappedEventListener<T : IGuiEventListener>(val delegate: T) : Gui
         return delegate.mouseDragged(x, y, button, dx, dy)
     }
 
-    override fun mouseScrolled(p_mouseScrolled_1_: Double, p_mouseScrolled_3_: Double, p_mouseScrolled_5_: Double): Boolean {
-        return delegate.mouseScrolled(p_mouseScrolled_1_, p_mouseScrolled_3_, p_mouseScrolled_5_)
+    override fun mouseScrolled(x: Double, y: Double, scroll: Double): Boolean {
+        return delegate.mouseScrolled(x, y, scroll)
     }
 
-
-    override fun keyPressed(p_keyPressed_1_: Int, p_keyPressed_2_: Int, p_keyPressed_3_: Int): Boolean {
-        return delegate.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_)
+    override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
+        return delegate.keyPressed(keyCode, scanCode, modifiers)
     }
 
     override fun keyReleased(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
         return delegate.keyReleased(keyCode, scanCode, modifiers)
     }
 
-    override fun charTyped(p_charTyped_1_: Char, p_charTyped_2_: Int): Boolean {
-        return delegate.charTyped(p_charTyped_1_, p_charTyped_2_)
+    override fun charTyped(x: Char, y: Int): Boolean {
+        return delegate.charTyped(x, y)
     }
 
     override fun changeFocus(focus: Boolean): Boolean {
