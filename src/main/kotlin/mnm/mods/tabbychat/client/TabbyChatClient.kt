@@ -106,13 +106,12 @@ object TabbyChatClient {
                         TabbyChat.logger.info("Loading settings for server $address")
                         serverSettings = ServerSettings(TabbyChat.dataFolder, address).apply {
                             load()
-
-                            // load chat
-                            try {
-                                ChatManager.loadFrom(path.parent)
-                            } catch (e: Exception) {
-                                TabbyChat.logger.warn(CHATBOX, "Unable to load chat data.", e)
-                            }
+                        }
+                        // load chat
+                        try {
+                            ChatManager.loadFrom(serverSettings!!.path.parent)
+                        } catch (e: Exception) {
+                            TabbyChat.logger.warn(CHATBOX, "Unable to load chat data.", e)
                         }
                     }
                 }

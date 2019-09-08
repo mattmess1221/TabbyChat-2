@@ -41,7 +41,7 @@ object ChatManager : Chat {
             .registerTypeAdapter(LocalDateTime::class.java, DateTimeTypeAdapter())
             .create()
 
-    val MAX_CHAT_LENGTH = 256
+    const val MAX_CHAT_LENGTH = 256
 
     private val lock = Any()
 
@@ -62,8 +62,8 @@ object ChatManager : Chat {
     override val channels: Set<Channel>
         get() = ImmutableSet.copyOf<Channel>(ChatBox.getChannels())
 
-    private fun server(): ServerSettings? {
-        return TabbyChatClient.serverSettings
+    private fun server(): ServerSettings {
+        return TabbyChatClient.serverSettings!!
     }
 
     private fun settings(): TabbySettings {
@@ -75,11 +75,11 @@ object ChatManager : Chat {
     }
 
     override fun getChannel(name: String): Channel {
-        return allChannels.getOrPut(name, getChannel(name, server()!!.channels) { ChatChannel(name) })
+        return allChannels.getOrPut(name, getChannel(name, server().channels) { ChatChannel(name) })
     }
 
     override fun getUserChannel(user: String): Channel {
-        return allPms.getOrPut(user, getChannel(user, server()!!.pms) { UserChannel(user) })
+        return allPms.getOrPut(user, getChannel(user, server().pms) { UserChannel(user) })
     }
 
     private fun <T> getChannel(name: String, config: ValueMap<T>, absent: () -> T): () -> T {
@@ -190,13 +190,13 @@ object ChatManager : Chat {
     @Throws(IOException::class)
     fun loadFrom(dir: Path) {
         synchronized(lock) {
-            loadFrom_(dir)
+            loadFromPrivate(dir)
         }
     }
 
     @Synchronized
     @Throws(IOException::class)
-    private fun loadFrom_(dir: Path) {
+    private fun loadFromPrivate(dir: Path) {
         val file = dir.resolve("data.gz")
         if (Files.notExists(file)) {
             return
@@ -227,7 +227,7 @@ object ChatManager : Chat {
     fun save() {
         synchronized(lock) {
             try {
-                saveTo(server()!!.path.parent)
+                saveTo(server().path.parent)
             } catch (e: IOException) {
                 TabbyChat.logger.warn(CHATBOX, "Error while saving chat data", e)
             }
@@ -246,7 +246,7 @@ object ChatManager : Chat {
         }
     }
 
-    private class PersistantChat internal constructor(
+    private class PersistantChat(
             messages: Map<Channel, List<ChatMessage>>?,
             active: Collection<AbstractChannel>?,
             datetime: LocalDateTime? = LocalDateTime.now()
