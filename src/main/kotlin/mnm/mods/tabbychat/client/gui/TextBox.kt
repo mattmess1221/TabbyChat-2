@@ -93,7 +93,6 @@ object TextBox : GuiWrappedComponent<GuiText>(GuiText(
     }
 
     override fun render(x: Int, y: Int, parTicks: Float) {
-        if (!visible) return
         GlStateManager.enableBlend()
         drawModalCorners(MODAL)
         GlStateManager.disableBlend()

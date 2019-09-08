@@ -55,9 +55,7 @@ abstract class GuiComponent : AbstractGui(), IRenderable, IGuiEventListener {
 
 
     override fun render(x: Int, y: Int, parTicks: Float) {
-        if (visible) {
-            hovered = location.contains(x, y)
-        }
+        hovered = location.contains(x, y)
     }
 
     protected fun renderBorders(x1: Int, y1: Int, x2: Int, y2: Int, color: Int) {

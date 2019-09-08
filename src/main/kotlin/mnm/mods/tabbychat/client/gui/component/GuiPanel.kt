@@ -42,6 +42,7 @@ open class GuiPanel() : GuiComponent(), INestedGuiEventHandler {
 
         layout?.layoutComponents(this)
         this.children().asSequence()
+                .filter { it.visible }
                 .forEach {
                     it.render(x, y, parTicks)
                 }

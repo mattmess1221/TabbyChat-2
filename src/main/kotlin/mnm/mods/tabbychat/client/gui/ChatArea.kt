@@ -53,9 +53,7 @@ class ChatArea : GuiComponent() {
 
     override var visible: Boolean
         get() {
-
-            val visible = visibleChat
-            val height = visible.size * mc.fontRenderer.FONT_HEIGHT
+            val height = visibleChat.size * mc.fontRenderer.FONT_HEIGHT
             val vis = TabbyChatClient.settings.advanced.visibility.value
 
             return mc.gameSettings.chatVisibility != ChatVisibility.HIDDEN && (mc.ingameGUI.chatGUI.chatOpen || vis === LocalVisibility.ALWAYS || height != 0)
@@ -123,8 +121,7 @@ class ChatArea : GuiComponent() {
         super.onClosed()
     }
 
-    override fun render(mouseX: Int, mouseY: Int, parTicks: Float) {
-
+    override fun render(x: Int, y: Int, parTicks: Float) {
         val visible = visibleChat
         GlStateManager.enableBlend()
         val opac = mc.gameSettings.chatOpacity.toFloat()
