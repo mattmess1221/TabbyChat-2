@@ -1,6 +1,5 @@
 package mnm.mods.tabbychat.client.extra.filters
 
-import com.google.common.base.Joiner
 import mnm.mods.tabbychat.client.gui.component.*
 import mnm.mods.tabbychat.client.gui.component.layout.GuiGridLayout
 import mnm.mods.tabbychat.util.Color
@@ -30,14 +29,16 @@ class GuiFilterEditor(private val filter: UserFilter) : GuiPanel() {
 
     internal inner class ToggleButton(text: String) : AbstractGuiButton() {
 
+        var toggle = false
+
         override val text: String = text
             get() {
-                val color = if (active) TextFormatting.GREEN else TextFormatting.RED
+                val color = if (toggle) TextFormatting.GREEN else TextFormatting.RED
                 return color.toString() + field
             }
 
         override fun onPress() {
-            active = !active
+            toggle = !toggle
         }
     }
 
@@ -63,15 +64,15 @@ class GuiFilterEditor(private val filter: UserFilter) : GuiPanel() {
 
         pos += 1
         btnRegexp = this.add(ToggleButton(".*"), intArrayOf(1, pos, 2, 1)) {
-            active = filter.settings.isRegex
+            toggle = filter.settings.isRegex
 //            caption = Translation.FILTER_REGEX.toComponent()
         }
         btnIgnoreCase = this.add(ToggleButton("Aa"), intArrayOf(3, pos, 2, 1)) {
-            active = settings.isCaseInsensitive
+            toggle = settings.isCaseInsensitive
 //            caption = Translation.FILTER_IGNORE_CASE.toComponent()
         }
         btnRaw = this.add(ToggleButton("&0"), intArrayOf(5, pos, 2, 1)) {
-            active = settings.isRaw
+            toggle = settings.isRaw
 //            caption = Translation.FILTER_RAW_INPUT.toComponent()
         }
 
@@ -110,7 +111,7 @@ class GuiFilterEditor(private val filter: UserFilter) : GuiPanel() {
                 if (list.size > max) {
                     list = list.subList(index, index + max)
                 }
-                hint = Joiner.on('\n').join(list)
+                hint = list.joinToString("\n")
                 if ((key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER) && list.isNotEmpty()) {
                     this.value = list[0]
                     setFocused(null)
@@ -129,25 +130,22 @@ class GuiFilterEditor(private val filter: UserFilter) : GuiPanel() {
 
         pos += 2
         this.add(GuiLabel(Translation.FILTER_EXPRESSION.toComponent()), intArrayOf(1, pos))
-        txtPattern = this.add<GuiText>(object : GuiText() {
-            override fun charTyped(c: Char, key: Int): Boolean {
-                val r = super.charTyped(c, key)
+        txtPattern = this.add(GuiText(), intArrayOf(8, pos, 12, 1)) {
+            value = pattern
+            delegate.func_212954_a {
                 primaryColor = Color.WHITE
                 lblError.text = null
                 if (btnRegexp.active) {
                     // check valid regex
                     try {
-                        filter.testPattern(value)
+                        filter.testPattern(it)
                     } catch (e: UserFilter.UserPatternException) {
                         primaryColor = Color.RED
                         lblError.text = e.cause?.localizedMessage?.toComponent()
                     }
 
                 }
-                return r
             }
-        }, intArrayOf(8, pos, 12, 1)) {
-            value = pattern
         }
 
         pos++
@@ -166,9 +164,9 @@ class GuiFilterEditor(private val filter: UserFilter) : GuiPanel() {
                 channels.clear()
                 channels.addAll(txtDestinations.value.split(",").filter { it.isNotBlank() })
                 isRemove = chkRemove.value
-                isCaseInsensitive = btnIgnoreCase.active
-                isRegex = btnRegexp.active
-                isRaw = btnRaw.active
+                isCaseInsensitive = btnIgnoreCase.toggle
+                isRegex = btnRegexp.toggle
+                isRaw = btnRaw.toggle
 
                 isSoundNotification = chkSound.value
                 soundName = txtSound.value

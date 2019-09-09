@@ -28,7 +28,7 @@ class GuiSettingEnum<T>(
 
     private val values: List<T> = ImmutableList.copyOf(values)
 
-    private var text: String = ""
+    private var text: String = namer(setting.value).translate()
     override var value: T = setting.value
         set(value) {
             this.text = namer(value).translate()

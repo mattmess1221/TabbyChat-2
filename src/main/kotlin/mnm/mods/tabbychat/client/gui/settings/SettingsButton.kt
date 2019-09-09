@@ -9,9 +9,10 @@ import mnm.mods.tabbychat.client.gui.component.GuiButton
 import mnm.mods.tabbychat.client.gui.component.config.SettingPanel
 import mnm.mods.tabbychat.util.mc
 
-class SettingsButton internal constructor(val settings: SettingPanel<*>, val callback: () -> Unit = {}) : AbstractGuiButton() {
+class SettingsButton internal constructor(val settings: SettingPanel<*>, val callback: (SettingPanel<*>) -> Unit = {}) : AbstractGuiButton() {
 
     override val text: String = settings.displayString
+    var displayed = false
 
     private var displayX = 30
 
@@ -21,12 +22,12 @@ class SettingsButton internal constructor(val settings: SettingPanel<*>, val cal
         secondaryColor = settings.secondaryColor
     }
 
-    override fun onPress() = callback()
+    override fun onPress() = callback(settings)
 
     override fun render(mouseX: Int, mouseY: Int, parTicks: Float) {
-        if (active && displayX > 20) {
+        if (displayed && displayX > 20) {
             displayX -= 2
-        } else if (!active && displayX < 30) {
+        } else if (!displayed && displayX < 30) {
             displayX += 2
         }
         val loc = this.location

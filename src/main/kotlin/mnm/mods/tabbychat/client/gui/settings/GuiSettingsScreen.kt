@@ -35,7 +35,7 @@ class GuiSettingsScreen(channel: Channel?) : ComponentScreen(StringTextComponent
 
         for ((key, value) in settings) {
             try {
-                if (selectedSetting != null && selectedSetting!!.javaClass == key) {
+                if (selectedSetting != null && key.isInstance(selectedSetting)) {
                     panels.add(selectedSetting!!)
                 } else {
                     panels.add(value())
@@ -49,11 +49,11 @@ class GuiSettingsScreen(channel: Channel?) : ComponentScreen(StringTextComponent
 
     public override fun init() {
 
-        settingsPanel = panel.add(GuiPanel(BorderLayout()), null)
-
-        val x = this.width / 2 - 300 / 2
-        val y = this.height / 2 - 200 / 2
-        settingsPanel.location = Location(x, y, 300, 200)
+        settingsPanel = panel.add(GuiPanel(BorderLayout())) {
+            val x = width / 2 - 300 / 2
+            val y = height / 2 - 200 / 2
+            location = Location(x, y, 300, 200)
+        }
 
         val panel = GuiPanel(BorderLayout())
         this.settingsPanel.add(panel, BorderLayout.Position.WEST)
@@ -68,10 +68,7 @@ class GuiSettingsScreen(channel: Channel?) : ComponentScreen(StringTextComponent
 
         // Populate the settings
         for (sett in panels) {
-            val button = SettingsButton(sett) {
-                selectSetting(sett)
-            }
-            settingsList.add(button)
+            settingsList.add(SettingsButton(sett, this::selectSetting))
             sett.initGUI()
         }
         selectSetting(selectedSetting ?: panels[0])
@@ -93,7 +90,7 @@ class GuiSettingsScreen(channel: Channel?) : ComponentScreen(StringTextComponent
     private fun deactivateAll() {
         for (comp in settingsList.children()) {
             if (comp is SettingsButton) {
-                comp.active = false
+                comp.displayed = false
             }
         }
     }
@@ -101,7 +98,7 @@ class GuiSettingsScreen(channel: Channel?) : ComponentScreen(StringTextComponent
     private fun <T : SettingPanel<*>> activate(settingClass: Class<T>) {
         for (comp in settingsList.children()) {
             if (comp is SettingsButton && comp.settings.javaClass == settingClass) {
-                comp.active = true
+                comp.displayed = true
                 break
             }
         }
