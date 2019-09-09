@@ -11,7 +11,7 @@ import kotlin.math.max
  *
  * @author Matthew
  */
-open class GuiPanel() : GuiComponent(), INestedGuiEventHandler {
+open class GuiPanel : GuiComponent(), INestedGuiEventHandler {
 
     private val components: MutableList<GuiComponent> = mutableListOf()
     var layout: ILayout? = null
@@ -31,10 +31,6 @@ open class GuiPanel() : GuiComponent(), INestedGuiEventHandler {
         }
         set(_) {
         }
-
-    constructor(layout: ILayout) : this() {
-        this.layout = layout
-    }
 
     override fun render(x: Int, y: Int, parTicks: Float) {
         super.render(x, y, parTicks)
@@ -106,36 +102,36 @@ open class GuiPanel() : GuiComponent(), INestedGuiEventHandler {
     override fun getFocused(): IGuiEventListener? = focused2
 
 
-    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
-        return super<INestedGuiEventHandler>.mouseClicked(mouseX, mouseY, button)
+    override fun mouseClicked(x: Double, y: Double, button: Int): Boolean {
+        return super<INestedGuiEventHandler>.mouseClicked(x, y, button)
     }
 
-    override fun mouseReleased(x: Double, y: Double, b: Int): Boolean {
-        return super<INestedGuiEventHandler>.mouseReleased(x, y, b)
+    override fun mouseReleased(x: Double, y: Double, button: Int): Boolean {
+        return super<INestedGuiEventHandler>.mouseReleased(x, y, button)
     }
 
-    override fun mouseDragged(x: Double, y: Double, b: Int, dx: Double, dy: Double): Boolean {
-        return super<INestedGuiEventHandler>.mouseDragged(x, y, b, dx, dy)
+    override fun mouseDragged(x: Double, y: Double, button: Int, dx: Double, dy: Double): Boolean {
+        return super<INestedGuiEventHandler>.mouseDragged(x, y, button, dx, dy)
     }
 
-    override fun mouseScrolled(p_mouseScrolled_1_: Double, p_mouseScrolled_3_: Double, p_mouseScrolled_5_: Double): Boolean {
-        return super<INestedGuiEventHandler>.mouseScrolled(p_mouseScrolled_1_, p_mouseScrolled_3_, p_mouseScrolled_5_)
+    override fun mouseScrolled(x: Double, y: Double, scroll: Double): Boolean {
+        return super<INestedGuiEventHandler>.mouseScrolled(x, y, scroll)
     }
 
-    override fun keyPressed(p_keyPressed_1_: Int, p_keyPressed_2_: Int, p_keyPressed_3_: Int): Boolean {
-        return super<INestedGuiEventHandler>.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_)
+    override fun keyPressed(key: Int, scanCode: Int, modifiers: Int): Boolean {
+        return super<INestedGuiEventHandler>.keyPressed(key, scanCode, modifiers)
     }
 
-    override fun keyReleased(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
-        return super<INestedGuiEventHandler>.keyReleased(keyCode, scanCode, modifiers)
+    override fun keyReleased(key: Int, scanCode: Int, modifiers: Int): Boolean {
+        return super<INestedGuiEventHandler>.keyReleased(key, scanCode, modifiers)
     }
 
-    override fun charTyped(p_charTyped_1_: Char, p_charTyped_2_: Int): Boolean {
-        return super<INestedGuiEventHandler>.charTyped(p_charTyped_1_, p_charTyped_2_)
+    override fun charTyped(char: Char, modifiers: Int): Boolean {
+        return super<INestedGuiEventHandler>.charTyped(char, modifiers)
     }
 
-    override fun changeFocus(p_changeFocus_1_: Boolean): Boolean {
-        return super<INestedGuiEventHandler>.changeFocus(p_changeFocus_1_)
+    override fun changeFocus(focus: Boolean): Boolean {
+        return super<INestedGuiEventHandler>.changeFocus(focus)
     }
 
     override fun onClosed() {

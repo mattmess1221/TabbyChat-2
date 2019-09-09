@@ -34,7 +34,9 @@ class GuiSettingsFilters internal constructor() : SettingPanel<ServerSettings>()
     override fun initGUI() {
         index = settings.filters.size - 1
 
-        val panel = add(GuiPanel(FlowLayout()), BorderLayout.Position.NORTH)
+        val panel = add(GuiPanel(), BorderLayout.Position.NORTH) {
+            layout = FlowLayout()
+        }
 
         prev = panel.add(GuiButton("<") {
             select(index - 1)

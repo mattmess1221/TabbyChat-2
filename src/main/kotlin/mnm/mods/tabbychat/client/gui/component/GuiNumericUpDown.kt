@@ -7,7 +7,7 @@ import mnm.mods.tabbychat.client.gui.component.layout.BorderLayout
 import mnm.mods.tabbychat.util.Color
 import mnm.mods.tabbychat.util.ILocation
 import mnm.mods.tabbychat.util.Location
-import net.minecraft.util.text.StringTextComponent
+import mnm.mods.tabbychat.util.toComponent
 import java.text.NumberFormat
 
 /**
@@ -16,7 +16,7 @@ import java.text.NumberFormat
  *
  * @param <T> The number type.
  * @author Matthew
-</T> */
+ */
 abstract class GuiNumericUpDown<T : Number> private constructor() : GuiPanel(), IGuiInput<T> {
 
     var min = java.lang.Double.MIN_VALUE
@@ -28,36 +28,28 @@ abstract class GuiNumericUpDown<T : Number> private constructor() : GuiPanel(), 
             field = value.coerceIn(min, max)
         }
 
-    var format = NumberFormat.getNumberInstance()
+    var format: NumberFormat = NumberFormat.getNumberInstance()
 
     init {
         layout = BorderLayout()
 
-        run {
-            val text = GuiPanel(AbsoluteLayout())
-            val rect = object : GuiRectangle() {
+        add(GuiPanel(), BorderLayout.Position.CENTER) {
+            layout = AbsoluteLayout()
+            add(object:GuiRectangle() {
                 override var location: ILocation
                     get() = parent?.location ?: super.location
                     set(value) {
                         super.location = value
                     }
+            }) {
+                primaryColor = Color.BLACK
             }
-            rect.primaryColor = Color.BLACK
-            text.add(rect)
-
-            val label = GuiLabel(StringTextComponent(format.format(value)))
-            text.add(label, Location(5, 1, 0, 0))
-
-            add(text, BorderLayout.Position.CENTER)
+            add(GuiLabel(format.format(value).toComponent()), Location(5, 1, 0, 0))
         }
-        run {
-            val pnlButtons = GuiPanel(AbsoluteLayout())
-            val up = UpDown("\u2191", 1) // up arrow
-            val down = UpDown("\u2193", -1) // down arrow
-            pnlButtons.add(up, Location(0, 0, 5, 5))
-            pnlButtons.add(down, Location(0, 5, 5, 5))
-
-            add(pnlButtons, BorderLayout.Position.EAST)
+        add(GuiPanel(), BorderLayout.Position.EAST) {
+            layout = AbsoluteLayout()
+            add(UpDown("\u2191", 1), Location(0, 0, 5, 5))
+            add(UpDown("\u2193", -1), Location(0, 5, 5, 5))
         }
     }
 

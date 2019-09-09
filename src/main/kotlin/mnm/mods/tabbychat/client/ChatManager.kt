@@ -10,9 +10,8 @@ import mnm.mods.tabbychat.api.events.MessageAddedToChannelEvent
 import mnm.mods.tabbychat.client.gui.ChatBox
 import mnm.mods.tabbychat.client.settings.ServerSettings
 import mnm.mods.tabbychat.client.settings.TabbySettings
-import mnm.mods.tabbychat.util.ChannelTypeAdapter
 import mnm.mods.tabbychat.util.ChatTextUtils
-import mnm.mods.tabbychat.util.DateTimeTypeAdapter
+import mnm.mods.tabbychat.util.ToStringAdapter
 import mnm.mods.tabbychat.util.config.ValueMap
 import mnm.mods.tabbychat.util.style
 import net.minecraft.client.Minecraft
@@ -37,8 +36,10 @@ object ChatManager : Chat {
             .registerTypeHierarchyAdapter(ITextComponent::class.java, ITextComponent.Serializer())
             .registerTypeAdapter(Style::class.java, Style.Serializer())
             .registerTypeAdapterFactory(EnumTypeAdapterFactory())
-            .registerTypeHierarchyAdapter(Channel::class.java, ChannelTypeAdapter(this))
-            .registerTypeAdapter(LocalDateTime::class.java, DateTimeTypeAdapter())
+            .registerTypeHierarchyAdapter(Channel::class.java, ToStringAdapter {
+                this.parseChannel(it) ?: throw IOException("Serialized channels must start with @ or #")
+            })
+            .registerTypeAdapter(LocalDateTime::class.java, ToStringAdapter(LocalDateTime::parse))
             .create()
 
     const val MAX_CHAT_LENGTH = 256

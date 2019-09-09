@@ -49,15 +49,19 @@ class GuiSettingsScreen(channel: Channel?) : ComponentScreen(StringTextComponent
 
     public override fun init() {
 
-        settingsPanel = panel.add(GuiPanel(BorderLayout())) {
+        settingsPanel = panel.add(GuiPanel()) {
+            layout = BorderLayout()
             val x = width / 2 - 300 / 2
             val y = height / 2 - 200 / 2
             location = Location(x, y, 300, 200)
         }
 
-        val panel = GuiPanel(BorderLayout())
-        this.settingsPanel.add(panel, BorderLayout.Position.WEST)
-        settingsList = panel.add(GuiPanel(VerticalLayout()), BorderLayout.Position.WEST)
+        val panel = this.settingsPanel.add(panel, BorderLayout.Position.WEST) {
+            layout = BorderLayout()
+        }
+        settingsList = panel.add(GuiPanel(), BorderLayout.Position.WEST) {
+            layout = VerticalLayout()
+        }
 
         panel.add(GuiButton("Close") {
             mc.displayGuiScreen(null)

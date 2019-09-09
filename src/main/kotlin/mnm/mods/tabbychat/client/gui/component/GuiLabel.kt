@@ -17,7 +17,7 @@ open class GuiLabel(var text: ITextComponent? = null) : GuiComponent() {
 
     var angle: Float = 0.toFloat()
 
-    override fun render(mouseX: Int, mouseY: Int, parTicks: Float) {
+    override fun render(x: Int, y: Int, parTicks: Float) {
         if (text == null)
             return
         GlStateManager.pushMatrix()

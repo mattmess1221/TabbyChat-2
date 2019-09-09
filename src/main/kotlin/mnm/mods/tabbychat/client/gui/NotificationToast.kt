@@ -6,6 +6,7 @@ import net.minecraft.client.gui.toasts.ToastGui
 import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.TextFormatting
 import org.lwjgl.opengl.GL11
+import kotlin.math.max
 
 class NotificationToast(private val owner: String, title: ITextComponent) : IToast {
     private val title: String = title.string
@@ -24,7 +25,7 @@ class NotificationToast(private val owner: String, title: ITextComponent) : IToa
         val maxSize = textWidth - 150
         val timeElapsed = delta - firstDrawTime - delay
         if (timeElapsed > 0 && textWidth > maxSize) {
-            x = Math.max((-maxSize * timeElapsed / 8000L + x).toInt(), -maxSize)
+            x = max((-maxSize * timeElapsed / 8000L + x).toInt(), -maxSize)
         }
 
         toastGui.minecraft.getTextureManager().bindTexture(IToast.TEXTURE_TOASTS)

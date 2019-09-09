@@ -13,10 +13,10 @@ import mnm.mods.tabbychat.client.gui.component.layout.FlowLayout
 import mnm.mods.tabbychat.util.*
 import mnm.mods.tabbychat.util.config.Value
 
-class ChatTray internal constructor() : GuiPanel(BorderLayout()) {
+class ChatTray internal constructor() : GuiPanel() {
 
-    private val tabList = GuiPanel(FlowLayout())
-    private val handle = ChatHandle()
+    private val tabList: GuiPanel
+    private val handle: GuiComponent = ChatHandle()
 
     private val map = HashMap<Channel, GuiComponent>()
 
@@ -27,23 +27,26 @@ class ChatTray internal constructor() : GuiPanel(BorderLayout()) {
         }
 
     init {
+        layout = BorderLayout()
         minimumSize = Dim(40, 20)
-        this.add(tabList, BorderLayout.Position.CENTER)
-        val controls = ChatPanel(FlowLayout())
-        controls.add(ToggleButton(), null)
-        controls.add<GuiComponent>(handle, null)
-        this.add(controls, BorderLayout.Position.EAST)
-
+        tabList = this.add(GuiPanel(), BorderLayout.Position.CENTER) {
+            layout = FlowLayout()
+        }
+        this.add(ChatPanel(), BorderLayout.Position.EAST) {
+            layout = FlowLayout()
+            add(ToggleButton())
+            add(handle)
+        }
     }
 
-    override fun render(mouseX: Int, mouseY: Int, parTicks: Float) {
+    override fun render(x: Int, y: Int, parTicks: Float) {
         if (mc.ingameGUI.chatGUI.chatOpen) {
             GlStateManager.enableBlend()
             GlStateManager.color4f(1f, 1f, 1f, mc.gameSettings.chatOpacity.toFloat())
             drawModalCorners(MODAL)
             GlStateManager.disableBlend()
         }
-        super.render(mouseX, mouseY, parTicks)
+        super.render(x, y, parTicks)
     }
 
     override fun tick() {
@@ -56,7 +59,7 @@ class ChatTray internal constructor() : GuiPanel(BorderLayout()) {
     }
 
     fun addChannel(channel: AbstractChannel) {
-        tabList.add(ChatTab(channel)){
+        tabList.add(ChatTab(channel)) {
             map[channel] = this
         }
     }
@@ -94,7 +97,7 @@ class ChatTray internal constructor() : GuiPanel(BorderLayout()) {
                 super.minimumSize = value
             }
 
-        override fun render(mouseX: Int, mouseY: Int, parTicks: Float) {
+        override fun render(x: Int, y: Int, parTicks: Float) {
             GlStateManager.enableBlend()
             val loc = location
             val opac = (mc.gameSettings.chatOpacity * 255).toInt() shl 24

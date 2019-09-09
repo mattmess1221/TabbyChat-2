@@ -1,13 +1,11 @@
 package mnm.mods.tabbychat.client.gui
 
 import com.mojang.blaze3d.platform.GlStateManager
+import mnm.mods.tabbychat.api.ChannelStatus
 import mnm.mods.tabbychat.client.AbstractChannel
 import mnm.mods.tabbychat.client.TabbyChatClient
-import mnm.mods.tabbychat.api.ChannelStatus
-import mnm.mods.tabbychat.client.gui.component.AbstractGuiButton
-import mnm.mods.tabbychat.client.gui.settings.GuiSettingsScreen
-import mnm.mods.tabbychat.client.gui.component.GuiButton
 import mnm.mods.tabbychat.client.gui.component.GuiComponent
+import mnm.mods.tabbychat.client.gui.settings.GuiSettingsScreen
 import mnm.mods.tabbychat.util.*
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.screen.Screen

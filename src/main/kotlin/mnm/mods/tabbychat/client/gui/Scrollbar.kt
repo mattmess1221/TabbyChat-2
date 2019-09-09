@@ -7,7 +7,7 @@ import kotlin.math.max
 
 class Scrollbar(private val chat: ChatArea) : GuiComponent() {
 
-    override fun render(mouseX: Int, mouseY: Int, parTicks: Float) {
+    override fun render(x: Int, y: Int, parTicks: Float) {
         if (mc.ingameGUI.chatGUI.chatOpen) {
             val scroll = chat.scrollPos.toFloat()
             val max = chat.location.height.toFloat()
@@ -23,7 +23,7 @@ class Scrollbar(private val chat: ChatArea) : GuiComponent() {
 
             val loc = location
             fill(loc.xPos, loc.yPos + pos, loc.xPos + 1, loc.yPos + pos + size.toInt(), -1)
-            super.render(mouseX, mouseY, parTicks)
+            super.render(x, y, parTicks)
         }
     }
 

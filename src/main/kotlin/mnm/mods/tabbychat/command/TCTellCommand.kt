@@ -17,13 +17,13 @@ import net.minecraft.command.Commands.literal
 
 object TCTellCommand : Command<CommandSource> {
 
-    private val TARGETS = "targets"
-    private val CHANNEL = "channel"
-    private val MESSAGE = "message"
+    private const val TARGETS = "targets"
+    private const val CHANNEL = "channel"
+    private const val MESSAGE = "message"
 
     fun register(dispatcher: CommandDispatcher<CommandSource>) {
         dispatcher.register(literal("tctell")
-                .requires { source -> source.hasPermissionLevel(2) }
+                .requires { it.hasPermissionLevel(2) }
                 .then(argument(TARGETS, EntityArgument.players())
                         .then(argument(CHANNEL, StringArgumentType.string())
                                 .then(argument(MESSAGE, ComponentArgument.component())

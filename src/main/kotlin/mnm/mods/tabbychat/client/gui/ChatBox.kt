@@ -2,7 +2,6 @@ package mnm.mods.tabbychat.client.gui
 
 import com.google.common.collect.ImmutableSet
 import mnm.mods.tabbychat.MODID
-import mnm.mods.tabbychat.TabbyChat
 import mnm.mods.tabbychat.api.Channel
 import mnm.mods.tabbychat.api.ChannelStatus
 import mnm.mods.tabbychat.api.events.MessageAddedToChannelEvent
@@ -19,12 +18,10 @@ import net.minecraft.client.renderer.Rectangle2d
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.MathHelper
 import net.minecraftforge.common.MinecraftForge
-import java.util.*
-import java.util.function.Predicate
 import kotlin.math.max
 import kotlin.math.min
 
-object ChatBox : GuiPanel(BorderLayout()) {
+object ChatBox : GuiPanel() {
 
     val GUI_LOCATION = ResourceLocation(MODID, "textures/chatbox.png")
     var chatArea: ChatArea
@@ -110,7 +107,7 @@ object ChatBox : GuiPanel(BorderLayout()) {
         }
 
     init {
-        TabbyChat.logger.info("ChatBox size+location: $location")
+        layout = BorderLayout()
 
         tray = this.add(ChatTray(), BorderLayout.Position.NORTH)
         chatArea = this.add(ChatArea(), BorderLayout.Position.CENTER)
@@ -182,9 +179,8 @@ object ChatBox : GuiPanel(BorderLayout()) {
         ChatManager.save()
     }
 
-
     fun clearMessages() {
-        this.channels.removeIf(Predicate.isEqual<Any>(DefaultChannel).negate())
+        this.channels.removeIf { it !== DefaultChannel }
 
         this.tray.clearMessages()
         status[DefaultChannel] = ChannelStatus.ACTIVE
@@ -219,10 +215,10 @@ object ChatBox : GuiPanel(BorderLayout()) {
         }
     }
 
-    override fun render(mouseX: Int, mouseY: Int, parTicks: Float) {
-        handleDragging(mouseX.toDouble(), mouseY.toDouble())
+    override fun render(x: Int, y: Int, parTicks: Float) {
+        handleDragging(x.toDouble(), y.toDouble())
 
-        super.render(mouseX, mouseY, parTicks)
+        super.render(x, y, parTicks)
         if (mc.ingameGUI.chatGUI.chatOpen) {
             val fr = Minecraft.getInstance().fontRenderer
             val loc = location
@@ -230,7 +226,7 @@ object ChatBox : GuiPanel(BorderLayout()) {
             val xPos = chat.commandUsagePosition + loc.xPos
             var yPos = loc.yHeight - chat.commandUsage.size * height
             when {
-                chat.suggestions != null -> chat.suggestions.render(mouseX, mouseY)
+                chat.suggestions != null -> chat.suggestions.render(x, y)
                 xPos + chat.commandUsageWidth > loc.xWidth -> {
 
                     for ((i, s) in chat.commandUsage.withIndex()) {
@@ -249,20 +245,20 @@ object ChatBox : GuiPanel(BorderLayout()) {
                 }
             }
 
-            val itextcomponent = mc.ingameGUI.chatGUI.getTextComponent(mouseX.toDouble(), mouseY.toDouble())
+            val itextcomponent = mc.ingameGUI.chatGUI.getTextComponent(x.toDouble(), y.toDouble())
             if (itextcomponent != null && itextcomponent.style.hoverEvent != null) {
-                chat.renderComponentHoverEffect(itextcomponent, mouseX, mouseY)
+                chat.renderComponentHoverEffect(itextcomponent, x, y)
             }
         }
     }
 
-    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
-        if (button == 0 && (tray.location.contains(mouseX, mouseY) || Screen.hasAltDown() && location.contains(mouseX, mouseY))) {
-            dragMode = !tray.isHandleHovered(mouseX, mouseY)
-            drag = Vec2i(mouseX.toInt(), mouseY.toInt())
+    override fun mouseClicked(x: Double, y: Double, button: Int): Boolean {
+        if (button == 0 && (tray.location.contains(x, y) || Screen.hasAltDown() && location.contains(x, y))) {
+            dragMode = !tray.isHandleHovered(x, y)
+            drag = Vec2i(x.toInt(), y.toInt())
             tempbox = location.copy()
         }
-        return super.mouseClicked(mouseX, mouseY, button)
+        return super.mouseClicked(x, y, button)
     }
 
     private fun handleDragging(mx: Double, my: Double) {
@@ -283,16 +279,16 @@ object ChatBox : GuiPanel(BorderLayout()) {
         }
     }
 
-    override fun mouseReleased(x: Double, y: Double, b: Int): Boolean {
+    override fun mouseReleased(x: Double, y: Double, button: Int): Boolean {
         if (drag != null) {
             drag = null
             tempbox = null
         }
-        return super.mouseReleased(x, y, b)
+        return super.mouseReleased(x, y, button)
     }
 
-    override fun mouseScrolled(p_mouseScrolled_1_: Double, p_mouseScrolled_3_: Double, p_mouseScrolled_5_: Double): Boolean {
-        return this.chatArea.mouseScrolled(p_mouseScrolled_1_, p_mouseScrolled_3_, p_mouseScrolled_5_)
+    override fun mouseScrolled(x: Double, y: Double, scroll: Double): Boolean {
+        return this.chatArea.mouseScrolled(x, y, scroll)
     }
 
     private fun normalizeLocation(bounds: ILocation): ILocation {

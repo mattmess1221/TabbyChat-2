@@ -13,9 +13,9 @@ class ChatHandle internal constructor() : GuiComponent() {
         minimumSize = Dim(12, 12)
     }
 
-    override fun render(mouseX: Int, mouseY: Int, parTicks: Float) {
+    override fun render(x: Int, y: Int, parTicks: Float) {
         val loc = location
-        val color = getColor(loc.contains(mouseX, mouseY)).hex
+        val color = getColor(loc.contains(x, y)).hex
         hLine(loc.xPos + 3, loc.xWidth - 4, loc.yPos + 4, color)
         vLine(loc.xWidth - 4, loc.yPos + 4, loc.yHeight - 2, color)
     }

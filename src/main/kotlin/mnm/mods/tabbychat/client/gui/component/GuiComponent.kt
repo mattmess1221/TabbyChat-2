@@ -1,15 +1,11 @@
 package mnm.mods.tabbychat.client.gui.component
 
-import com.mojang.blaze3d.platform.GlStateManager
 import mnm.mods.tabbychat.util.*
 import net.minecraft.client.gui.AbstractGui
 import net.minecraft.client.gui.IGuiEventListener
 import net.minecraft.client.gui.IRenderable
 import net.minecraft.client.gui.screen.Screen
-import net.minecraft.util.text.ITextComponent
 import net.minecraftforge.fml.client.config.GuiUtils
-import org.apache.commons.lang3.StringEscapeUtils
-import kotlin.math.max
 
 /**
  * The base class for all gui components.

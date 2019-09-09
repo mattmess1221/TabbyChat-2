@@ -15,7 +15,7 @@ import net.minecraft.util.ResourceLocation
  */
 open class GuiRectangle : GuiComponent() {
 
-    override fun render(mouseX: Int, mouseY: Int, parTicks: Float) {
+    override fun render(x: Int, y: Int, parTicks: Float) {
         GlStateManager.enableBlend()
         mc.getTextureManager().bindTexture(TRANSPARENCY)
         val loc = location
