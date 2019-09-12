@@ -1,11 +1,9 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import java.util.Date
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "1.3.50"
-    `java-library`
-    id("net.minecraftforge.gradle") version "3.0.138"
+    id("net.minecraftforge.gradle") version "3.0.142"
     id("com.github.johnrengelman.shadow") version "4.0.4"
 }
 
@@ -22,13 +20,10 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-val Project.sourceSets: SourceSetContainer by project
-val SourceSetContainer.main by sourceSets.getting
-
-configurations {
-    create("include")
-    create("mod")
-}
+val ConfigurationContainer.include by configurations.creating
+val ConfigurationContainer.mod by configurations.creating
+val DependencyHandlerScope.include by configurations.getting
+val DependencyHandlerScope.mod by configurations.getting
 
 repositories {
     jcenter()
@@ -40,31 +35,28 @@ repositories {
 dependencies {
     minecraft("net.minecraftforge:forge:$forge_version")
 
-    implementation("net.sf.jazzy:jazzy:0.5.2-rtext-1.4.1-2")
-    include("net.sf.jazzy:jazzy:0.5.2-rtext-1.4.1-2")
+    include(implementation("net.sf.jazzy:jazzy:0.5.2-rtext-1.4.1-2")!!)
 
     testImplementation("junit:junit:4.12")
     compileOnly(kotlin("stdlib-jdk8"))
-    compile("kottle:Kottle:1.1.1")
-    mod("kottle:Kottle:1.1.1")
+    mod(compile("kottle:Kottle:1.1.1")!!)
 }
 minecraft {
     mappings(mappings_channel, mappings_version)
     accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))
     runs {
-        create("client") {
+        val client by creating {
+
+            fun properties(vararg props: Pair<String, String>) = properties(mapOf(*props))
+
             workingDirectory = file("run").absolutePath
 
-            properties(mapOf(
-                    "forge.logging.markers" to "SCAN",
-                    "forge.logging.console.level" to "info"))
+            property("forge.logging.markers", "SCAN")
+            property("forge.logging.console.level", "info")
 
             mods {
-                create("tabbychat") {
-                    source(sourceSets.main)
-                }
-                create("kottle") {
-
+                val tabbychat by creating {
+                    source(sourceSets.main.get())
                 }
             }
             ideaModule = "${project.name}.main"
@@ -72,18 +64,17 @@ minecraft {
     }
 }
 
+
 tasks {
 
-    getByName<Jar>("jar") {
-        classifier = "base"
-    }
-    getByName<ShadowJar>("shadowJar") {
-        classifier = ""
+    shadowJar {
+        archiveClassifier.set("release")
         configurations = listOf(project.configurations.include)
         relocate("com.swabunga", "mnm.mods.tabbychat.redist.com.swabunga")
     }
+
     withType<Jar> {
-        manifest.attributes(mapOf(
+        manifest.attributes(
                 "Specification-Title" to project.name,
                 "Specification-Vendor" to "killjoy1221",
                 "Specification-Version" to project.version,
@@ -91,7 +82,7 @@ tasks {
                 "Implementation-Version" to project.version,
                 "Implementation-Vendor" to "killjoy1221",
                 "Implementation-Timestamp" to Date()
-        ))
+        )
     }
 
     val uninstallMods by creating(Delete::class) {
@@ -100,33 +91,26 @@ tasks {
 
     val installMods by creating(Copy::class) {
         dependsOn(uninstallMods)
-        val mod by configurations.getting
-        from(mod)
+        from(configurations.mod)
         include("**/*.jar")
         into(file("run/mods"))
     }
 
     afterEvaluate {
-        getByName("prepareRuns") {
+        named("prepareRuns") {
             dependsOn(installMods)
         }
     }
 }
-val TaskContainer.shadowJar by tasks.getting
-val TaskContainer.createMcpToSrg by tasks.getting
-
 reobf {
-    create("shadowJar") {
+    val shadowJar by creating {
         dependsOn(tasks.createMcpToSrg)
-        mappings = tasks.createMcpToSrg.outputs.files.singleFile
+        mappings = tasks.createMcpToSrg.get().outputs.files.singleFile
     }
 }
 
 artifacts {
-    add("archives", tasks.shadowJar)
-}
-defaultArtifacts {
-
+    archives(tasks.shadowJar)
 }
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
