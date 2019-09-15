@@ -9,7 +9,6 @@ import mnm.mods.tabbychat.client.DefaultChannel
 import mnm.mods.tabbychat.client.gui.component.ComponentScreen
 import mnm.mods.tabbychat.client.gui.component.GuiButton
 import mnm.mods.tabbychat.client.gui.component.GuiPanel
-import mnm.mods.tabbychat.client.gui.component.config.SettingPanel
 import mnm.mods.tabbychat.client.gui.component.layout.BorderLayout
 import mnm.mods.tabbychat.client.gui.component.layout.VerticalLayout
 import mnm.mods.tabbychat.util.Color
@@ -24,8 +23,8 @@ class GuiSettingsScreen(channel: Channel?) : ComponentScreen(StringTextComponent
     private val panels = mutableListOf<SettingPanel<*>>()
 
     private lateinit var settingsPanel: GuiPanel
-
     private lateinit var settingsList: GuiPanel
+
     private var selectedSetting: SettingPanel<*>? = null
 
     init {
@@ -56,7 +55,7 @@ class GuiSettingsScreen(channel: Channel?) : ComponentScreen(StringTextComponent
             location = Location(x, y, 300, 200)
         }
 
-        val panel = this.settingsPanel.add(panel, BorderLayout.Position.WEST) {
+        val panel = this.settingsPanel.add(GuiPanel(), BorderLayout.Position.WEST) {
             layout = BorderLayout()
         }
         settingsList = panel.add(GuiPanel(), BorderLayout.Position.WEST) {

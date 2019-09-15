@@ -63,24 +63,22 @@ object ChatManager : Chat {
     override val channels: Set<Channel>
         get() = ImmutableSet.copyOf<Channel>(ChatBox.getChannels())
 
-    private fun server(): ServerSettings {
-        return TabbyChatClient.serverSettings!!
-    }
+    private val server: ServerSettings
+        get() = TabbyChatClient.serverSettings
 
-    private fun settings(): TabbySettings {
-        return TabbyChatClient.settings
-    }
+    private val settings: TabbySettings
+        get() = TabbyChatClient.settings
 
     init {
         allChannels["*"] = DefaultChannel
     }
 
     override fun getChannel(name: String): Channel {
-        return allChannels.getOrPut(name, getChannel(name, server().channels) { ChatChannel(name) })
+        return allChannels.getOrPut(name, getChannel(name, server.channels) { ChatChannel(name) })
     }
 
     override fun getUserChannel(user: String): Channel {
-        return allPms.getOrPut(user, getChannel(user, server().pms) { UserChannel(user) })
+        return allPms.getOrPut(user, getChannel(user, server.pms) { UserChannel(user) })
     }
 
     private fun <T> getChannel(name: String, config: ValueMap<T>, absent: () -> T): () -> T {
@@ -147,7 +145,7 @@ object ChatManager : Chat {
         val messages = getChannelMessages(channel)
         messages.add(0, msg)
 
-        trimMessages(messages, settings().advanced.historyLen.value)
+        trimMessages(messages, settings.advanced.historyLen.value)
 
         MinecraftForge.EVENT_BUS.post(MessageAddedToChannelEvent.Post(text, id, channel))
 
@@ -228,7 +226,7 @@ object ChatManager : Chat {
     fun save() {
         synchronized(lock) {
             try {
-                saveTo(server().path.parent)
+                saveTo(server.path.parent)
             } catch (e: IOException) {
                 TabbyChat.logger.warn(CHATBOX, "Error while saving chat data", e)
             }

@@ -2,11 +2,7 @@ package mnm.mods.tabbychat.client.gui.settings
 
 import com.mojang.blaze3d.platform.GlStateManager
 import mnm.mods.tabbychat.client.gui.component.AbstractGuiButton
-import mnm.mods.tabbychat.util.Dim
-import mnm.mods.tabbychat.util.ILocation
 import mnm.mods.tabbychat.util.Location
-import mnm.mods.tabbychat.client.gui.component.GuiButton
-import mnm.mods.tabbychat.client.gui.component.config.SettingPanel
 import mnm.mods.tabbychat.util.mc
 
 class SettingsButton internal constructor(val settings: SettingPanel<*>, val callback: (SettingPanel<*>) -> Unit = {}) : AbstractGuiButton() {

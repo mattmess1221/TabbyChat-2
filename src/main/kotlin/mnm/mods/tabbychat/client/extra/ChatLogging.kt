@@ -5,39 +5,75 @@ import mnm.mods.tabbychat.CHATBOX
 import mnm.mods.tabbychat.TabbyChat
 import mnm.mods.tabbychat.api.events.ChatMessageEvent.ChatReceivedEvent
 import mnm.mods.tabbychat.client.TabbyChatClient
+import mnm.mods.tabbychat.util.div
+import mnm.mods.tabbychat.util.mc
 import mnm.mods.tabbychat.util.urlEncoded
-import net.minecraft.client.Minecraft
 import net.minecraftforge.eventbus.api.EventPriority
 import net.minecraftforge.eventbus.api.SubscribeEvent
+import net.minecraftforge.fml.loading.FMLPaths
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream
 import org.apache.commons.compress.compressors.gzip.GzipUtils
-import org.apache.commons.io.IOUtils
+import java.io.Closeable
 import java.io.IOException
 import java.io.PrintStream
 import java.net.SocketAddress
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardOpenOption
-import java.nio.file.attribute.BasicFileAttributes
-import java.text.SimpleDateFormat
-import java.util.*
-import java.util.function.BiPredicate
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
-class ChatLogging(private val directory: Path) {
+object ChatLogging {
 
-    private var date: Calendar? = null
-    private var server: SocketAddress? = null
-    private var logFile: Path? = null
-    private var out: PrintStream? = null
+    private val LOG_NAME_FORMAT = DateTimeFormatter.ISO_LOCAL_DATE
+    private val LOG_FORMAT = DateTimeFormatter.ISO_LOCAL_TIME
 
-    private val logFolder: String
-        get() {
-            return if (server is LocalAddress || server == null) {
-                "singleplayer"
-            } else {
-                server.toString().urlEncoded
+    private val directory = FMLPaths.GAMEDIR.get() / "logs/chat"
+
+    class LogFile(val server: SocketAddress, val date: LocalDate = LocalDate.now()) : Closeable {
+
+        private val dateString = LOG_NAME_FORMAT.format(date)
+        private val logFolder = (server as? LocalAddress)?.let { "singleplayer" } ?: server.toString().urlEncoded
+        private val logFile = findFile(directory / logFolder).also {
+            TabbyChat.logger.debug(CHATBOX, "Using log file {}", it)
+
+            Files.createDirectories(it.parent)
+            Files.createFile(it)
+        }
+
+        private val out = PrintStream(Files.newOutputStream(logFile, StandardOpenOption.APPEND), true, "UTF-8")
+
+        fun println(msg: Any) {
+            out.println("[%s] %s".format(LOG_FORMAT.format(LocalDateTime.now()), msg))
+        }
+
+        private tailrec fun findFile(dir: Path, file: Path = dir / "$dateString.log", i: Int = 0): Path {
+            if (fileExists(file)) {
+                return findFile(dir, dir / "$dateString-$i.log", i + 1)
+            }
+            return file
+
+        }
+
+        private fun fileExists(file: Path): Boolean {
+            if (Files.notExists(file)) {
+                val gzip = GzipUtils.getCompressedFilename(file.fileName.toString())
+                val gzipFile = file.resolveSibling(gzip)
+                return Files.exists(gzipFile)
+            }
+            return true
+        }
+
+        override fun close() {
+            out.close()
+            if (LocalDate.now() != date) {
+                gzipFile(logFile)
             }
         }
+    }
+
+    private var log: LogFile? = null
 
     init {
         try {
@@ -45,20 +81,14 @@ class ChatLogging(private val directory: Path) {
         } catch (e: IOException) {
             TabbyChat.logger.error(CHATBOX, "Errored while compressing logs", e)
         }
-
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     fun onChatReceived(message: ChatReceivedEvent) {
         val text = message.text
         if (text != null && TabbyChatClient.settings.general.logChat.value) {
-
             checkLog()
-            if (out == null) {
-                return
-            }
-
-            out!!.println(LOG_FORMAT.format(Calendar.getInstance().time) + text.string)
+            log?.println("[%s] %s".format(LOG_FORMAT.format(LocalDateTime.now()), text.string))
         }
     }
 
@@ -67,46 +97,35 @@ class ChatLogging(private val directory: Path) {
      * compressed the previous file.
      */
     private fun checkLog() {
-        val cal = Calendar.getInstance()
         if (shouldChangeLogFile()) {
-            val prev = date
-            date = cal
-            server = Minecraft.getInstance().player.connection.networkManager.remoteAddress
             try {
-                val old = logFile
-                val server = logFolder
-                logFile = findFile(directory.resolve(server)).also {
-
-                    TabbyChat.logger.debug(CHATBOX, "Using log file {}", it)
-
-                    Files.createDirectories(it.parent)
-                    Files.createFile(it)
-                    IOUtils.closeQuietly(out)
-                    this.out = PrintStream(Files.newOutputStream(it, StandardOpenOption.APPEND), true, "UTF-8")
-
-                    // compress log
-                    if (prev != null && prev.get(Calendar.DATE) != date!!.get(Calendar.DATE)) {
-                        gzipFile(old!!)
-                    }
+                val server = mc.connection?.networkManager?.remoteAddress
+                if (server != null) {
+                    log?.closeQuietly()
+                    log = LogFile(server)
                 }
-
-
             } catch (e: IOException) {
                 TabbyChat.logger.warn(CHATBOX, "Unable to create log file", e)
-                this.date = null
-                this.out = null
+                this.log = null
             }
+        }
+    }
 
+    private fun Closeable.closeQuietly() {
+        try {
+            close()
+        } catch(e: IOException) {
+            // ignore
         }
     }
 
     private fun shouldChangeLogFile(): Boolean {
 
-        if (date == null) {
+        if (log == null) {
             return true
         }
-        val day = Calendar.getInstance().get(Calendar.DATE) != date!!.get(Calendar.DATE)
-        val ip = TabbyChatClient.serverSettings!!.socket !== server
+        val day = LocalDate.now() != log?.date
+        val ip = mc.connection?.networkManager?.remoteAddress !== log?.server
         return day || ip
     }
 
@@ -116,7 +135,7 @@ class ChatLogging(private val directory: Path) {
             return
         }
 
-        Files.find(directory, 1, BiPredicate(::isLogFile)).forEach { file ->
+        Files.list(directory).filter { it.endsWith(".log") }.forEach { file ->
             try {
                 TabbyChat.logger.debug(CHATBOX, "Compressing log file {}", file)
                 gzipFile(file)
@@ -126,45 +145,14 @@ class ChatLogging(private val directory: Path) {
         }
     }
 
-    companion object {
-
-        private val LOG_NAME_FORMAT = SimpleDateFormat("yyyy'-'MM'-'dd")
-        private val LOG_FORMAT = SimpleDateFormat("'['HH':'mm':'ss'] '")
-
-        private fun isLogFile(file: Path, attrs: BasicFileAttributes): Boolean {
-            return file.endsWith(".log")
-        }
-
-        @Throws(IOException::class)
-        private fun gzipFile(file: Path) {
-            val name = GzipUtils.getCompressedFilename(file.fileName.toString())
-            val dest = file.resolveSibling(name)
-            GzipCompressorOutputStream(Files.newOutputStream(dest)).use {
-                // Copy contents to gzip stream
-                Files.copy(file, it)
-                Files.delete(file) // delete the file
-            }
-        }
-
-        private fun findFile(dir: Path): Path {
-            val date = LOG_NAME_FORMAT.format(Calendar.getInstance().time)
-            var file = dir.resolve("$date.log")
-            var i = 0
-            while (fileExists(file)) {
-                i++
-                file = dir.resolve(String.format("%s-%d.log", date, i))
-            }
-
-            return file
-        }
-
-        private fun fileExists(file: Path): Boolean {
-            var file = file
-            if (Files.notExists(file)) {
-                val gzip = GzipUtils.getCompressedFilename(file.fileName.toString())
-                file = file.resolveSibling(gzip)
-            }
-            return Files.exists(file)
+    @Throws(IOException::class)
+    private fun gzipFile(file: Path) {
+        val name = GzipUtils.getCompressedFilename(file.fileName.toString())
+        val dest = file.parent / name
+        GzipCompressorOutputStream(Files.newOutputStream(dest)).use {
+            // Copy contents to gzip stream
+            Files.copy(file, it)
+            Files.delete(file) // delete the original
         }
     }
 }

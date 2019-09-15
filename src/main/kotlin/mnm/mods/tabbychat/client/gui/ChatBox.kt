@@ -186,7 +186,7 @@ object ChatBox : GuiPanel() {
         status[DefaultChannel] = ChannelStatus.ACTIVE
     }
 
-    private val settings get() = TabbyChatClient.serverSettings!!
+    private val settings get() = TabbyChatClient.serverSettings
 
     private fun runActivationCommand(channel: AbstractChannel) {
         var cmd = channel.command

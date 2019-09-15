@@ -23,8 +23,6 @@ interface Translatable {
     /**
      * Translates this string.
      *
-     *
-     *
      * @param params Translation parameters
      * @return The translated string
      */
@@ -38,7 +36,7 @@ interface Translatable {
 
     companion object {
         operator fun invoke(unloc: () -> String) = object : Translatable {
-            override val unlocalized: String = unloc()
+            override val unlocalized: String get() = unloc()
         }
     }
 }

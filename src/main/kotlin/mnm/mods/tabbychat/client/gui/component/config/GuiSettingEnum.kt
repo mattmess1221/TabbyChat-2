@@ -17,7 +17,7 @@ class GuiSettingEnum<T>(
         setting: Value<T>,
         values: Array<T>,
         private val namer: T.() -> Translatable = {
-            this as? Translatable ?: { toString() } as Translatable
+            this as? Translatable ?: Translatable { toString() }
         }) : GuiSetting<T>() {
 
     companion object {

@@ -13,7 +13,7 @@ import mnm.mods.tabbychat.util.Translation
 internal class GuiSettingsServer : SettingPanel<ServerSettings>() {
 
     override val displayString: String by Translation.SETTINGS_SERVER
-    override val settings = TabbyChatClient.serverSettings!!
+    override val settings = TabbyChatClient.serverSettings
 
     init {
         this.layout = GuiGridLayout(10, 20)

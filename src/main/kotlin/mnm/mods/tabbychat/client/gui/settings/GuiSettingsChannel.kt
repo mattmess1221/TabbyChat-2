@@ -11,7 +11,6 @@ import mnm.mods.tabbychat.util.Location
 import mnm.mods.tabbychat.client.gui.component.layout.BorderLayout
 import mnm.mods.tabbychat.client.gui.component.layout.GuiGridLayout
 import mnm.mods.tabbychat.client.gui.component.layout.VerticalLayout
-import mnm.mods.tabbychat.client.gui.component.config.SettingPanel
 import mnm.mods.tabbychat.util.Translation
 import net.minecraft.client.resources.I18n
 
@@ -27,7 +26,7 @@ internal class GuiSettingsChannel(private var channel: AbstractChannel? = null) 
 
     override val displayString by Translation.CHANNEL_TITLE
 
-    override val settings: ServerSettings = TabbyChatClient.serverSettings!!
+    override val settings: ServerSettings = TabbyChatClient.serverSettings
 
     init {
         this.layout = BorderLayout()

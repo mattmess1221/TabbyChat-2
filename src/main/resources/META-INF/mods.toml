@@ -15,7 +15,7 @@ description="Chat overhaul"
 [[dependencies.tabbychat]] #optional
     modId="forge" #mandatory
     mandatory=true #mandatory
-    versionRange="[28,)" #mandatory
+    versionRange="[28.1,)" #mandatory
     ordering="NONE"
     side="BOTH"
 [[dependencies.tabbychat]]

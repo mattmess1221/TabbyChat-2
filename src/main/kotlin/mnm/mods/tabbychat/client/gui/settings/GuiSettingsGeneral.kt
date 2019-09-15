@@ -5,7 +5,6 @@ import mnm.mods.tabbychat.client.gui.component.GuiLabel
 import mnm.mods.tabbychat.client.gui.component.config.GuiSettingBoolean
 import mnm.mods.tabbychat.client.gui.component.config.GuiSettingEnum
 import mnm.mods.tabbychat.client.gui.component.config.GuiSettingNumber.GuiSettingDouble
-import mnm.mods.tabbychat.client.gui.component.config.SettingPanel
 import mnm.mods.tabbychat.client.gui.component.layout.GuiGridLayout
 import mnm.mods.tabbychat.client.settings.TabbySettings
 import mnm.mods.tabbychat.util.Color

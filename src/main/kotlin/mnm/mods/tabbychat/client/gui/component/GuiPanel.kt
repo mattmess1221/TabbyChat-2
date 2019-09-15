@@ -13,6 +13,15 @@ import kotlin.math.max
  */
 open class GuiPanel : GuiComponent(), INestedGuiEventHandler {
 
+    private val root: GuiPanel
+        get() {
+            var child = parent
+            while (child?.parent != null) {
+                child = child.parent
+            }
+            return child ?: this
+        }
+
     private val components: MutableList<GuiComponent> = mutableListOf()
     var layout: ILayout? = null
 
@@ -55,11 +64,26 @@ open class GuiPanel : GuiComponent(), INestedGuiEventHandler {
      * @param constraints  The constraints
      */
     fun <T : GuiComponent> add(guiComponent: T, constraints: Any? = null, config: T.() -> Unit = {}): T {
+        require(guiComponent.parent == null) { "Component already has a parent." }
         guiComponent.parent = this
         guiComponent.config()
         components.add(guiComponent)
         layout?.addComponent(guiComponent, constraints)
+        root.checkForHijacking()
         return guiComponent
+    }
+
+    /**
+     * Checks all the parents to make sure no-one shares any children or have any duplicates.
+     */
+    private fun checkForHijacking(list: MutableList<GuiComponent> = mutableListOf()) {
+        for (c in children()) {
+            require(c !in list) { "YEET: $c is in $list" }
+            list.add(c)
+            if (c is GuiPanel) {
+                c.checkForHijacking(list)
+            }
+        }
     }
 
     /**
@@ -79,8 +103,10 @@ open class GuiPanel : GuiComponent(), INestedGuiEventHandler {
      * @param guiComp The component to remove
      */
     fun remove(guiComp: GuiComponent) {
+        require(guiComp.parent == this) { "Component does not belong to this panel" }
         components.remove(guiComp)
         layout?.removeComponent(guiComp)
+        guiComp.parent = null
     }
 
     override fun children(): List<GuiComponent> {

@@ -20,10 +20,10 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-val ConfigurationContainer.include by configurations.creating
-val ConfigurationContainer.mod by configurations.creating
-val DependencyHandlerScope.include by configurations.getting
-val DependencyHandlerScope.mod by configurations.getting
+val ConfigurationContainer.include: Configuration by configurations.creating
+val ConfigurationContainer.mod: Configuration by configurations.creating
+fun DependencyHandlerScope.include(dep: Any) = add("include", dep)
+fun DependencyHandlerScope.mod(dep: Any) = add("mod", dep)
 
 repositories {
     jcenter()

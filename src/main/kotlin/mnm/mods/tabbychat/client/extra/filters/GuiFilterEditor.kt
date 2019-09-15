@@ -93,11 +93,11 @@ class GuiFilterEditor(private val filter: UserFilter) : GuiPanel() {
         txtSound = this.add<GuiText>(object : GuiText() {
             private var index: Int = 0
 
-            override fun charTyped(c: Char, key: Int): Boolean {
+            override fun charTyped(code: Char, modifiers: Int): Boolean {
                 val max = 10
-                if (key == GLFW.GLFW_KEY_DOWN) {
+                if (modifiers == GLFW.GLFW_KEY_DOWN) {
                     index++
-                } else if (key == GLFW.GLFW_KEY_UP) {
+                } else if (modifiers == GLFW.GLFW_KEY_UP) {
                     index--
                 }
                 // suggest sounds
@@ -112,11 +112,11 @@ class GuiFilterEditor(private val filter: UserFilter) : GuiPanel() {
                     list = list.subList(index, index + max)
                 }
                 hint = list.joinToString("\n")
-                if ((key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER) && list.isNotEmpty()) {
+                if ((modifiers == GLFW.GLFW_KEY_ENTER || modifiers == GLFW.GLFW_KEY_KP_ENTER) && list.isNotEmpty()) {
                     this.value = list[0]
                     setFocused(null)
                 }
-                return super.charTyped(c, key)
+                return super.charTyped(code, modifiers)
             }
         }, intArrayOf(3, pos, 14, 1)) {
             value = settings.soundName ?: ""

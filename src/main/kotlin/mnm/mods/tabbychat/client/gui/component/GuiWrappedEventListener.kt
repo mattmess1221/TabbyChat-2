@@ -32,8 +32,8 @@ open class GuiWrappedEventListener<T : IGuiEventListener>(val delegate: T) : Gui
         return delegate.keyReleased(keyCode, scanCode, modifiers)
     }
 
-    override fun charTyped(x: Char, y: Int): Boolean {
-        return delegate.charTyped(x, y)
+    override fun charTyped(code: Char, modifiers: Int): Boolean {
+        return delegate.charTyped(code, modifiers)
     }
 
     override fun changeFocus(focus: Boolean): Boolean {

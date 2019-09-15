@@ -9,7 +9,6 @@ import mnm.mods.tabbychat.client.gui.component.GuiLabel
 import mnm.mods.tabbychat.client.gui.component.config.GuiSettingBoolean
 import mnm.mods.tabbychat.client.gui.component.config.GuiSettingEnum
 import mnm.mods.tabbychat.client.gui.component.config.GuiSettingNumber.GuiSettingInt
-import mnm.mods.tabbychat.client.gui.component.config.SettingPanel
 import mnm.mods.tabbychat.util.Translation
 
 class GuiAdvancedSettings : SettingPanel<TabbySettings>() {

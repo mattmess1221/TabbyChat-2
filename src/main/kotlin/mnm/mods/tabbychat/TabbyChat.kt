@@ -47,6 +47,7 @@ class TabbyChatMod {
     @SubscribeEvent
     fun initClient(event: FMLClientSetupEvent) {
         logger.info("client setup")
+        MinecraftForge.EVENT_BUS.register(TabbyChatClient)
         FMLKotlinModLoadingContext.get().modEventBus.register(TabbyChatClient)
     }
 

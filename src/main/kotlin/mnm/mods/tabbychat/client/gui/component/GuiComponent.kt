@@ -145,7 +145,7 @@ abstract class GuiComponent : AbstractGui(), IRenderable, IGuiEventListener {
     fun clicked(x: Double, y: Double): Boolean {
         return isMouseOver(x, y)
     }
-    
+
     internal fun <T> getProperty(prop: (GuiComponent) -> T?): T? {
         return prop(this) ?: parent?.getProperty(prop)
     }

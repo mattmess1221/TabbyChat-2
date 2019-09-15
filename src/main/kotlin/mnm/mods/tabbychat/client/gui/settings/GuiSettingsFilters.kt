@@ -5,7 +5,6 @@ import mnm.mods.tabbychat.client.extra.filters.GuiFilterEditor
 import mnm.mods.tabbychat.client.extra.filters.UserFilter
 import mnm.mods.tabbychat.client.gui.component.GuiButton
 import mnm.mods.tabbychat.client.gui.component.GuiPanel
-import mnm.mods.tabbychat.client.gui.component.config.SettingPanel
 import mnm.mods.tabbychat.client.gui.component.layout.BorderLayout
 import mnm.mods.tabbychat.client.gui.component.layout.FlowLayout
 import mnm.mods.tabbychat.client.settings.ServerSettings
@@ -15,7 +14,7 @@ import mnm.mods.tabbychat.util.Translation.FILTERS
 class GuiSettingsFilters internal constructor() : SettingPanel<ServerSettings>() {
 
     override val displayString by FILTERS
-    override val settings: ServerSettings = TabbyChatClient.serverSettings!!
+    override val settings: ServerSettings = TabbyChatClient.serverSettings
 
     private var currentFilter: GuiFilterEditor? = null
 
