@@ -39,7 +39,7 @@ dependencies {
 
     testImplementation("junit:junit:4.12")
     compileOnly(kotlin("stdlib-jdk8"))
-    mod(compile("kottle:Kottle:1.1.1")!!)
+    mod(compileOnly("kottle:Kottle:1.1.1")!!)
 }
 minecraft {
     mappings(mappings_channel, mappings_version)

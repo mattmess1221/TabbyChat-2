@@ -6,8 +6,6 @@ import kotlin.properties.Delegates
 
 /**
  * A gui component that wraps [TextFieldWidget].
- *
- * @author Matthew
  */
 open class GuiText(
         textField: TextFieldWidget = TextFieldWidget(mc.fontRenderer, 0, 0, 1, 1, "")
@@ -29,6 +27,7 @@ open class GuiText(
         get() = delegate.text
         set(value) {
             delegate.text = value
+            delegate.cursorPosition = 0
         }
 
     init {

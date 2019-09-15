@@ -4,8 +4,8 @@ import mnm.mods.tabbychat.CONFIG
 import mnm.mods.tabbychat.TabbyChat
 import mnm.mods.tabbychat.api.Channel
 import mnm.mods.tabbychat.client.AbstractChannel
-import mnm.mods.tabbychat.client.ChatManager
 import mnm.mods.tabbychat.client.DefaultChannel
+import mnm.mods.tabbychat.client.TabbyChatClient
 import mnm.mods.tabbychat.client.gui.component.ComponentScreen
 import mnm.mods.tabbychat.client.gui.component.GuiButton
 import mnm.mods.tabbychat.client.gui.component.GuiPanel
@@ -20,8 +20,6 @@ import kotlin.reflect.KClass
 
 class GuiSettingsScreen(channel: Channel?) : ComponentScreen(StringTextComponent("Settings")) {
 
-    private val panels = mutableListOf<SettingPanel<*>>()
-
     private lateinit var settingsPanel: GuiPanel
     private lateinit var settingsList: GuiPanel
 
@@ -31,7 +29,10 @@ class GuiSettingsScreen(channel: Channel?) : ComponentScreen(StringTextComponent
         if (channel !== DefaultChannel) {
             selectedSetting = GuiSettingsChannel(channel as AbstractChannel?)
         }
+    }
 
+    public override fun init() {
+        val panels = mutableListOf<SettingPanel<*>>()
         for ((key, value) in settings) {
             try {
                 if (selectedSetting != null && key.isInstance(selectedSetting)) {
@@ -44,9 +45,6 @@ class GuiSettingsScreen(channel: Channel?) : ComponentScreen(StringTextComponent
             }
 
         }
-    }
-
-    public override fun init() {
 
         settingsPanel = panel.add(GuiPanel()) {
             layout = BorderLayout()
@@ -71,22 +69,27 @@ class GuiSettingsScreen(channel: Channel?) : ComponentScreen(StringTextComponent
 
         // Populate the settings
         for (sett in panels) {
-            settingsList.add(SettingsButton(sett, this::selectSetting))
+            settingsList.add(SettingsButton(sett) {
+                selectedSetting?.apply {
+                    settingsPanel.remove(this)
+                }
+                selectSetting(it)
+            })
             sett.initGUI()
         }
         selectSetting(selectedSetting ?: panels[0])
     }
 
-    override fun onClose() {
-        super.onClose()
-        for (settingPanel in panels) {
-            settingPanel.settings.save()
-        }
-        ChatManager.markDirty(null)
+    override fun removed() {
+        TabbyChatClient.settings.save()
+        TabbyChatClient.serverSettings.save()
     }
 
     override fun init(mc: Minecraft, width: Int, height: Int) {
-        this.panels.forEach { it.clear() }
+        selectedSetting?.apply {
+            parent = null
+            clear()
+        }
         super.init(mc, width, height)
     }
 
@@ -108,20 +111,16 @@ class GuiSettingsScreen(channel: Channel?) : ComponentScreen(StringTextComponent
     }
 
     override fun render(mouseX: Int, mouseY: Int, tick: Float) {
-        // drawDefaultBackground();
         val rect = settingsPanel.location
         fill(rect.xPos, rect.yPos, rect.xWidth, rect.yHeight, Integer.MIN_VALUE)
         super.render(mouseX, mouseY, tick)
     }
 
     private fun selectSetting(setting: SettingPanel<*>) {
-        //        setting.clearComponents();
         deactivateAll()
-        selectedSetting?.apply { settingsPanel.remove(this) }
         selectedSetting = settingsPanel.add(setting, BorderLayout.Position.CENTER) {
             activate(this.javaClass)
         }
-
     }
 
     companion object {

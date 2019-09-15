@@ -1,6 +1,7 @@
 package mnm.mods.tabbychat.client.gui.component.config
 
 import com.google.common.collect.ImmutableList
+import mnm.mods.tabbychat.client.gui.component.GuiComponent
 import mnm.mods.tabbychat.util.Color
 import mnm.mods.tabbychat.util.Translatable
 import mnm.mods.tabbychat.util.config.Value
@@ -11,14 +12,13 @@ import mnm.mods.tabbychat.util.mc
  * toString() method or provide a names array during construction.
  *
  * @param <T> The type
- * @author Matthew
  */
 class GuiSettingEnum<T>(
-        setting: Value<T>,
+        override val setting: Value<T>,
         values: Array<T>,
         private val namer: T.() -> Translatable = {
             this as? Translatable ?: Translatable { toString() }
-        }) : GuiSetting<T>() {
+        }) : GuiComponent(), GuiSetting<Value<T>, T> {
 
     companion object {
         fun <T : Translatable> of(setting: Value<T>, values: Array<T>) = GuiSettingEnum(setting, values) {
@@ -32,6 +32,7 @@ class GuiSettingEnum<T>(
     override var value: T = setting.value
         set(value) {
             this.text = namer(value).translate()
+            setting.value = value
             field = value
         }
 
@@ -65,7 +66,7 @@ class GuiSettingEnum<T>(
         return false
     }
 
-    override fun render(mouseX: Int, mouseY: Int, parTicks: Float) {
+    override fun render(x: Int, y: Int, parTicks: Float) {
         val loc = this.location
         fill(loc.xPos, loc.yPos, loc.xWidth, loc.yHeight, -0x1000000)
         val string = mc.fontRenderer.trimStringToWidth(text, loc.width)

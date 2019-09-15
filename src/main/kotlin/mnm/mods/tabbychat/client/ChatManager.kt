@@ -71,18 +71,32 @@ object ChatManager : Chat {
 
     init {
         allChannels["*"] = DefaultChannel
+        settings.general.timestampChat.listen {
+            markDirty()
+        }
+        settings.general.timestampColor.listen {
+            markDirty()
+        }
+        settings.general.timestampStyle.listen {
+            markDirty()
+        }
     }
 
     override fun getChannel(name: String): Channel {
-        return allChannels.getOrPut(name, getChannel(name, server.channels) { ChatChannel(name) })
+        return allChannels.getOrPut(name) {
+            server.channels.getOrPut(name) {
+                ChatChannel(name)
+            }
+        }
     }
 
     override fun getUserChannel(user: String): Channel {
-        return allPms.getOrPut(user, getChannel(user, server.pms) { UserChannel(user) })
-    }
+        return allPms.getOrPut(user) {
+            server.pms.getOrPut(user) {
+                UserChannel(user)
+            }
+        }
 
-    private fun <T> getChannel(name: String, config: ValueMap<T>, absent: () -> T): () -> T {
-        return { config.getOrPut(name, absent) }
     }
 
     /**
@@ -116,7 +130,7 @@ object ChatManager : Chat {
         return msgsplit.getOrPut(channel) { ChatTextUtils.split(getMessages(channel), width) }
     }
 
-    fun markDirty(channel: Channel?) {
+    fun markDirty(channel: Channel? = null) {
         if (channel == null) {
             this.msgsplit.clear()
         } else {

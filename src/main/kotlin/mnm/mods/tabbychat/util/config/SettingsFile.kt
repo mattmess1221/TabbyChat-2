@@ -117,7 +117,7 @@ abstract class SettingsFile<T : SettingsFile<T>>(@field:Transient val path: Path
                     is Value<*> -> gson.toJson(value.value, value.type.type, writer)
                     is ValueList<*> -> gson.toJson(value.value, value.type.type, writer)
                     is ValueMap<*> -> gson.toJson(value.value, value.type.type, writer)
-                    is ValueObject<*> -> writeObject(writer, value.value.properties)
+                    is ValueObject<*> -> writeObject(writer, value.properties)
                 }
             }
             writer.endObject()

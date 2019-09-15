@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.RenderComponentsUtil
 import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.StringTextComponent
+import net.minecraft.util.text.TextComponent
 
 object ChatTextUtils {
 
@@ -42,9 +43,11 @@ object ChatTextUtils {
         if (date != null && settings.timestampChat.value) {
             val stamp = settings.timestampStyle.value
             val format = settings.timestampColor.value
-            return "${stamp.format(date)} ".toComponent().style {
-                color = format
-            }.appendSibling(msg.message)
+            return "".toComponent()
+                    .appendSibling("${stamp.format(date)} ".toComponent().style {
+                        color = format
+                    })
+                    .appendSibling(msg.message)
         }
         return msg.message
 

@@ -4,6 +4,7 @@ import mnm.mods.tabbychat.client.gui.component.layout.BorderLayout
 import mnm.mods.tabbychat.util.Dim
 import mnm.mods.tabbychat.util.Location
 import mnm.mods.tabbychat.client.gui.component.layout.BorderLayout.Position
+import mnm.mods.tabbychat.util.ILocation
 import mnm.mods.tabbychat.util.mc
 import org.lwjgl.opengl.GL11
 import kotlin.math.max
@@ -27,9 +28,9 @@ class GuiScrollingPanel : GuiPanel() {
 
     init {
         layout = BorderLayout()
-        this.add(GuiPanel().apply {
+        this.add(GuiPanel(), Position.CENTER) {
             add(contentPanel)
-        }, Position.CENTER)
+        }
         this.add(Scrollbar(), Position.EAST)
     }
 
@@ -38,6 +39,13 @@ class GuiScrollingPanel : GuiPanel() {
         val rect = location
         this.contentPanel.location = contentPanel.location.copy().apply {
             xPos = rect.xPos
+            val height = contentPanel.minimumSize.height
+            if (yPos - height <= rect.yPos) {
+                yPos = rect.yPos
+            }
+            if (yPos > rect.yHeight) {
+                yPos = rect.yHeight - height
+            }
         }
 
         val height = mc.mainWindow.height.toDouble()
@@ -53,22 +61,9 @@ class GuiScrollingPanel : GuiPanel() {
     }
 
     override fun mouseScrolled(x: Double, y: Double, scroll: Double): Boolean {
-        val rect = contentPanel.location.copy()
-        val scr = (rect.yPos + scroll * 8).toInt()
-        rect.yPos = scr
-
-        val prect = contentPanel.parent!!.location
-        val (_, height) = contentPanel.minimumSize
-        if (rect.yPos + height < prect.height) {
-            rect.yPos = prect.height - height
+        contentPanel.location = contentPanel.location.copy().apply {
+            yPos = (yPos + scroll * 8).toInt()
         }
-        val parent = parent
-
-        if (rect.yPos > parent!!.location.yPos) {
-            rect.yPos = parent.location.yPos
-        }
-
-        contentPanel.location = rect
         return true
     }
 

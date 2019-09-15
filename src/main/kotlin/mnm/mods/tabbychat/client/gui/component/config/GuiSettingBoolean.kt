@@ -1,12 +1,9 @@
 package mnm.mods.tabbychat.client.gui.component.config
 
-import mnm.mods.tabbychat.util.config.AbstractValue
 import mnm.mods.tabbychat.client.gui.component.GuiCheckbox
-import mnm.mods.tabbychat.client.gui.component.config.GuiSetting.GuiSettingWrapped
+import mnm.mods.tabbychat.util.config.Value
 
 /**
  * A gui input for booleans as a checkbox.
- *
- * @author Matthew
  */
-class GuiSettingBoolean(setting: AbstractValue<Boolean>) : GuiSettingWrapped<Boolean, GuiCheckbox>(setting, GuiCheckbox())
+class GuiSettingBoolean(setting: Value<Boolean>) : GuiSetting.ValueSetting<Boolean, GuiCheckbox>(setting, GuiCheckbox())
