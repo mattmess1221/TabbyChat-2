@@ -5,9 +5,8 @@ import com.google.gson.JsonParseException
 import com.google.gson.TypeAdapter
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
-import mnm.mods.tabbychat.CONFIG
-import mnm.mods.tabbychat.TabbyChat
 import net.minecraft.util.EnumTypeAdapterFactory
+import org.apache.logging.log4j.LogManager
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.NoSuchFileException
@@ -16,10 +15,12 @@ import java.nio.file.Path
 /**
  * Used for creating settings and saving/loading them in the JSON format. Start
  * by creating delegate properties.
- *
- * @author Matthew Messinger
  */
-abstract class SettingsFile<T : SettingsFile<T>>(@field:Transient val path: Path) : ValueObject<SettingsFile<T>>() {
+abstract class SettingsFile<T : SettingsFile<T>>(val path: Path) : ValueObject<T>() {
+
+    companion object {
+        private val logger = LogManager.getLogger()
+    }
 
     private val gson = GsonBuilder()
             .registerTypeAdapter(this::class.java, Serializer())
@@ -29,53 +30,27 @@ abstract class SettingsFile<T : SettingsFile<T>>(@field:Transient val path: Path
 
     fun save() {
         try {
-            this.properties.forEach { (t, u) ->
-
-            }
             Files.createDirectories(path.parent)
             Files.newBufferedWriter(path).use {
                 gson.toJson(this, it)
             }
         } catch (e: IOException) {
-            TabbyChat.logger.error(CONFIG, "Failed to save config to {}", path, e)
-        }
-
-    }
-
-    operator fun String.times(amt: Int): String {
-        val sb = StringBuilder()
-        for (i in 0 until amt) {
-            sb.append(this)
-        }
-        return sb.toString()
-    }
-
-    private fun debugProperties(obj: ValueObject<*>, depth: Int=0) {
-        val prefix = "\t" * depth
-        obj.properties.forEach { (name, value) ->
-            if (value is ValueObject<*>) {
-                TabbyChat.logger.info("$prefix$name -> {")
-                debugProperties(value, depth + 1)
-                TabbyChat.logger.info("$prefix}")
-            } else {
-                TabbyChat.logger.info("$prefix$name -> ${value.type}")
-            }
+            logger.error("Failed to save config to {}", path, e)
         }
     }
 
     fun load() {
-        debugProperties(this)
         try {
             Files.newBufferedReader(path).use {
                 gson.fromJson(it, javaClass)
             }
         } catch (e: NoSuchFileException) {
-            TabbyChat.logger.info(CONFIG, "Saving default config to {}", path)
+            logger.info("Saving default config to {}", path)
             save()
         } catch (e: IOException) {
-            TabbyChat.logger.error(CONFIG, "Failed to load config from {}", path, e)
+            logger.error("Failed to load config from {}", path, e)
         } catch (e: JsonParseException) {
-            TabbyChat.logger.error(CONFIG, "Syntax or schema error in {}", path, e)
+            logger.error("Syntax or schema error in {}", path, e)
         }
 
     }

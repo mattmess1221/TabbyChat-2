@@ -41,6 +41,7 @@ class ValueMap<T>(
 ) : AbstractValue<MutableMap<String, T>>(), MutableMap<String, T> by value
 
 abstract class ValueObject<T : ValueObject<T>> : AbstractValue<T>() {
+    @Suppress("UNCHECKED_CAST")
     override val type: TypeToken<T> = TypeToken.of(this.javaClass) as TypeToken<T>
     @Suppress("UNCHECKED_CAST")
     override val value: T
