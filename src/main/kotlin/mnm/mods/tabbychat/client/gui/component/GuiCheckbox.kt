@@ -21,7 +21,7 @@ class GuiCheckbox : AbstractGuiButton(), IGuiInput<Boolean> {
         secondaryColor = Color(-0x66000060)
     }
 
-    override fun render(mouseX: Int, mouseY: Int, parTicks: Float) {
+    override fun render(x: Int, y: Int, parTicks: Float) {
         val mc = Minecraft.getInstance()
 
         val loc = location

@@ -292,7 +292,6 @@ object ChatBox : GuiPanel() {
     }
 
     private fun normalizeLocation(bounds: ILocation): ILocation {
-        var bounds = bounds
         val scale = mc.gameSettings.chatScale
 
         // original dims
@@ -345,7 +344,7 @@ object ChatBox : GuiPanel() {
 
         // reset the location if it changed.
         if (x1 != x || y1 != y || w1 != w || h1 != h) {
-            bounds = Location(
+            return Location(
                     MathHelper.ceil(x1 / scale),
                     MathHelper.ceil(y1 / scale),
                     MathHelper.ceil(w1 / scale),

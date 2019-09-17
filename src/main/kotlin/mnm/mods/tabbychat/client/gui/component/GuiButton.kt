@@ -5,12 +5,8 @@ import com.mojang.blaze3d.platform.GlStateManager
 import mnm.mods.tabbychat.util.Dim
 import mnm.mods.tabbychat.util.TexturedModal
 import mnm.mods.tabbychat.util.mc
-import net.minecraft.client.audio.SimpleSound
-import net.minecraft.client.audio.SoundHandler
-import net.minecraft.client.gui.AbstractGui
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.SoundEvent
-import net.minecraft.util.SoundEvents
 import org.lwjgl.opengl.GL11
 
 /**
@@ -37,7 +33,7 @@ abstract class AbstractGuiButton() : GuiComponent() {
 
     override fun onClick(x: Double, y: Double) = onPress()
 
-    override fun render(mouseX: Int, mouseY: Int, parTicks: Float) {
+    override fun render(x: Int, y: Int, parTicks: Float) {
         val fontrenderer = mc.fontRenderer
         val bounds = location
 
@@ -46,7 +42,7 @@ abstract class AbstractGuiButton() : GuiComponent() {
         mc.getTextureManager().bindTexture(WIDGETS)
         GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f)
 
-        val hovered = bounds.contains(mouseX, mouseY)
+        val hovered = bounds.contains(x, y)
 
         val modal = this.getHoverState(hovered)
         GlStateManager.enableBlend()
@@ -63,10 +59,7 @@ abstract class AbstractGuiButton() : GuiComponent() {
             textColor = 0xFFFFA0
         }
 
-        val x = bounds.xCenter
-        val y = bounds.yCenter - fontrenderer.FONT_HEIGHT / 2
-
-        this.drawCenteredString(fontrenderer, text, x, y, textColor)
+        this.drawCenteredString(fontrenderer, text, bounds.xCenter, bounds.yCenter - fontrenderer.FONT_HEIGHT / 2, textColor)
 
         GlStateManager.popMatrix()
     }

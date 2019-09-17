@@ -20,7 +20,7 @@ class SettingsButton internal constructor(val settings: SettingPanel<*>, val cal
 
     override fun onPress() = callback(settings)
 
-    override fun render(mouseX: Int, mouseY: Int, parTicks: Float) {
+    override fun render(x: Int, y: Int, parTicks: Float) {
         if (displayed && displayX > 20) {
             displayX -= 2
         } else if (!displayed && displayX < 30) {

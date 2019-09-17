@@ -19,26 +19,26 @@ class FancyFontRenderer(private val fontRenderer: FontRenderer) : AbstractGui() 
     }
 
     fun drawChat(chat: ITextComponent, x: Float, y: Float, color: Int, shadow: Boolean) {
-        var y = y
-
-        var x1 = x
+        var column = x
         for (c in chat) {
             if (c is FancyText) {
                 for (s in c.getString().lines().dropLastWhile { it.isEmpty() }) {
                     val length = fontRenderer.getStringWidth(s)
-                    fill(x1.toInt(), y.toInt(), x1.toInt() + length, y.toInt() - fontRenderer.FONT_HEIGHT, c.fancyStyle.highlight.hex)
-                    hLine(x1.toInt(), x1.toInt() + length, y.toInt() + fontRenderer.FONT_HEIGHT - 1, c.fancyStyle.underline.hex)
+                    fill(column.toInt(), y.toInt(), column.toInt() + length, y.toInt() - fontRenderer.FONT_HEIGHT, c.fancyStyle.highlight.hex)
+                    hLine(column.toInt(), column.toInt() + length, y.toInt() + fontRenderer.FONT_HEIGHT - 1, c.fancyStyle.underline.hex)
                 }
             }
-            x1 += fontRenderer.getStringWidth(c.unformattedComponentText).toFloat()
+            column += fontRenderer.getStringWidth(c.unformattedComponentText).toFloat()
         }
+
+        var line = y
         for (s in chat.string.lines().dropLastWhile { it.isEmpty() }) {
             if (shadow) {
-                fontRenderer.drawStringWithShadow(s, x, y, color)
+                fontRenderer.drawStringWithShadow(s, x, line, color)
             } else {
-                fontRenderer.drawString(s, x, y, color)
+                fontRenderer.drawString(s, x, line, color)
             }
-            y += fontRenderer.FONT_HEIGHT.toFloat()
+            line += fontRenderer.FONT_HEIGHT.toFloat()
         }
     }
 

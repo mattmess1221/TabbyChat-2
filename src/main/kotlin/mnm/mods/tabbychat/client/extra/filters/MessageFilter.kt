@@ -13,14 +13,14 @@ class MessageFilter : Filter {
 
     override val pattern: Pattern
         get() {
-            val messege = TabbyChatClient.serverSettings!!.general.messegePattern.value
+            val messege = TabbyChatClient.serverSettings.general.messegePattern.value
             val pattern = String.format("(?:%s|%s)", messege.outgoing, messege.incoming)
             return Pattern.compile(pattern)
         }
 
     override fun action(event: FilterEvent) {
 
-        if (TabbyChatClient.serverSettings!!.general.pmEnabled.value) {
+        if (TabbyChatClient.serverSettings.general.pmEnabled.value) {
             // 0 = whole message, 1 = outgoing recipient, 2 = incoming recipient
             var player: String? = event.matcher.group(1)
             // For when it's an incoming message.

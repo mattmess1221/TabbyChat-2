@@ -98,19 +98,11 @@ class ChatArea : GuiComponent() {
     }
 
     override fun mouseScrolled(x: Double, y: Double, scroll: Double): Boolean {
-        var scroll = scroll
         // One tick = 120
         if (location.contains(x, y) && scroll != 0.0) {
-            if (scroll > 1) {
-                scroll = 1.0
-            }
-            if (scroll < -1) {
-                scroll = -1.0
-            }
-            if (Screen.hasShiftDown()) {
-                scroll *= 7.0
-            }
-            scroll(scroll.toInt())
+            val s = scroll.coerceIn(-1.0, 1.0)
+            scroll((if (Screen.hasShiftDown()) s * 7 else s).toInt())
+
             return true
         }
         return false

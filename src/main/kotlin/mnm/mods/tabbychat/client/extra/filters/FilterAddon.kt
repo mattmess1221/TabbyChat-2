@@ -24,7 +24,9 @@ object FilterAddon {
     @SubscribeEvent
     fun onChatRecieved(message: ChatReceivedEvent) {
         // We're possibly not in game.
-        val settings = TabbyChatClient.serverSettings ?: return
+        if (mc.connection == null) return
+
+        val settings = TabbyChatClient.serverSettings
 
         val text = message.text
         if (text != null) {

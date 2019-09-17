@@ -38,7 +38,7 @@ dependencies {
     include(implementation("net.sf.jazzy:jazzy:0.5.2-rtext-1.4.1-2")!!)
 
     testImplementation("junit:junit:4.12")
-    compileOnly(kotlin("stdlib-jdk8"))
+    implementation(kotlin("stdlib-jdk8"))
     mod(compileOnly("kottle:Kottle:1.1.1")!!)
 }
 minecraft {
