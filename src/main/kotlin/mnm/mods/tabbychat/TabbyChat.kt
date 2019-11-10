@@ -22,14 +22,9 @@ import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.nio.file.Path
 
-val TabbyChat get() = TabbyChatMod.instance
-
 @Mod(MODID)
-class TabbyChatMod {
+object TabbyChat {
 
-    companion object {
-        lateinit var instance: TabbyChatMod
-    }
 
     val logger: Logger = LogManager.getLogger(MODID)
 
@@ -39,7 +34,6 @@ class TabbyChatMod {
     private val versionChannel = initVersionNetwork()
 
     init {
-        instance = this
         MinecraftForge.EVENT_BUS.register(this)
         FMLKotlinModLoadingContext.get().modEventBus.register(this)
     }
@@ -105,5 +99,3 @@ class TabbyChatMod {
         this.channel.sendTo(SSendChannelMessage(channel, text), player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT)
     }
 }
-
-

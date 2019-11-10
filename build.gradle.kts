@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "1.3.50"
-    id("net.minecraftforge.gradle") version "3.0.142"
+    id("net.minecraftforge.gradle") version "3.0.154"
     id("com.github.johnrengelman.shadow") version "4.0.4"
 }
 
@@ -39,7 +39,7 @@ dependencies {
 
     testImplementation("junit:junit:4.12")
     implementation(kotlin("stdlib-jdk8"))
-    mod(compileOnly("kottle:Kottle:1.1.1")!!)
+    mod(implementation("kottle:Kottle:1.2.1")!!)
 }
 minecraft {
     mappings(mappings_channel, mappings_version)
