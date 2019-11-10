@@ -92,18 +92,15 @@ object ChatBox : GuiPanel() {
 
     private lateinit var chat: ChatScreen
 
-    override// save bounds
-    var location: ILocation = TabbyChatClient.settings.advanced.chatboxLocation
+    // save bounds
+    override var location: ILocation = TabbyChatClient.settings.advanced.chatboxLocation
         set(location) {
-            normalizeLocation(location).also {
-                if (field != location) {
-                    field = location
-                    val sett = TabbyChatClient.settings
-                    sett.advanced.chatboxLocation = location
-                    sett.save()
-                }
+            if (field != location) {
+                field = location
+                val sett = TabbyChatClient.settings
+                sett.advanced.chatboxLocation = location
+                sett.save()
             }
-
         }
 
     init {
@@ -127,6 +124,10 @@ object ChatBox : GuiPanel() {
         MinecraftForge.EVENT_BUS.listen<MessageAddedToChannelEvent.Post> {
             addChatMessage(it)
         }
+    }
+
+    override fun tick() {
+        location = normalizeLocation(location)
     }
 
     fun update(chat: ChatScreen) {
