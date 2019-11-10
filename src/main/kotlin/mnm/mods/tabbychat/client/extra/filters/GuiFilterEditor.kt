@@ -93,11 +93,11 @@ class GuiFilterEditor(private val filter: UserFilter) : GuiPanel() {
         txtSound = this.add<GuiText>(object : GuiText() {
             private var index: Int = 0
 
-            override fun charTyped(code: Char, modifiers: Int): Boolean {
+            override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
                 val max = 10
-                if (modifiers == GLFW.GLFW_KEY_DOWN) {
+                if (keyCode == GLFW.GLFW_KEY_DOWN) {
                     index++
-                } else if (modifiers == GLFW.GLFW_KEY_UP) {
+                } else if (keyCode == GLFW.GLFW_KEY_UP) {
                     index--
                 }
                 // suggest sounds
@@ -107,19 +107,22 @@ class GuiFilterEditor(private val filter: UserFilter) : GuiPanel() {
                         .filter { s -> s.contains(value) }
                         .toList()
 
-                index = index.coerceIn(0, list.size - max)
+                index = index.coerceAtMost(list.size - max)
+                index = index.coerceAtLeast(0)
                 if (list.size > max) {
                     list = list.subList(index, index + max)
                 }
                 hint = list.joinToString("\n")
-                if ((modifiers == GLFW.GLFW_KEY_ENTER || modifiers == GLFW.GLFW_KEY_KP_ENTER) && list.isNotEmpty()) {
+
+                if ((keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) && list.isNotEmpty()) {
                     this.value = list[0]
                     setFocused(null)
                 }
-                return super.charTyped(code, modifiers)
+                return super.keyPressed(keyCode, scanCode, modifiers)
             }
         }, intArrayOf(3, pos, 14, 1)) {
             value = settings.soundName ?: ""
+            delegate.maxStringLength = 100
             delegate.setValidator { txt -> ResourceLocation.tryCreate(txt) != null }
             delegate.func_212954_a { s ->
                 val res = ResourceLocation.tryCreate(s)

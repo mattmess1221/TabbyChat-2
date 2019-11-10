@@ -1,7 +1,9 @@
 package mnm.mods.tabbychat.client.gui.component
 
+import com.mojang.blaze3d.platform.GlStateManager
 import mnm.mods.tabbychat.util.mc
 import net.minecraft.client.gui.widget.TextFieldWidget
+import org.apache.commons.lang3.StringEscapeUtils
 import kotlin.properties.Delegates
 
 /**
@@ -50,7 +52,30 @@ open class GuiText(
         super.render(x, y, parTicks)
         if (delegate.isFocused && !hint.isNullOrEmpty()) {
             // draw the hint above.
-//            renderCaption(hint!!, mouseX + 1, mouseY - 5)
+            val loc = location
+            renderHint(StringEscapeUtils.unescapeJava(hint), loc.xPos + 1, loc.yPos - 5)
         }
+    }
+
+    private fun renderHint(hint: String, xPos: Int, yPos: Int) {
+        val list = hint.split("\n")
+
+        // find the largest width
+        val w = list.map { mc.fontRenderer.getStringWidth(it) }.max() ?: 0
+        val h = mc.fontRenderer.FONT_HEIGHT * list.size
+        val x = xPos
+        var y = yPos - mc.fontRenderer.FONT_HEIGHT * list.size
+
+        // put it on top
+        GlStateManager.pushMatrix()
+        fill(x - 2, y - 2, x + w + 2, y + h + 1, 0xcc333333.toInt())
+        renderBorders(x - 2, y - 2, x + w + 2, y + h + 1, 0xccaaaaaa.toInt())
+
+        list.forEach {
+            mc.fontRenderer.drawStringWithShadow(it, x.toFloat(), y.toFloat(), -1)
+            y += mc.fontRenderer.FONT_HEIGHT
+        }
+
+        GlStateManager.popMatrix()
     }
 }

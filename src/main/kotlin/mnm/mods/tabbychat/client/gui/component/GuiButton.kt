@@ -5,6 +5,7 @@ import com.mojang.blaze3d.platform.GlStateManager
 import mnm.mods.tabbychat.util.Dim
 import mnm.mods.tabbychat.util.TexturedModal
 import mnm.mods.tabbychat.util.mc
+import net.minecraft.client.audio.SimpleSound
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.SoundEvent
 import org.lwjgl.opengl.GL11
@@ -31,7 +32,14 @@ abstract class AbstractGuiButton() : GuiComponent() {
 
     abstract fun onPress()
 
-    override fun onClick(x: Double, y: Double) = onPress()
+    override fun onClick(x: Double, y: Double) {
+        sound?.play(1.0f)
+        onPress()
+    }
+
+    fun SoundEvent.play(volume: Float) {
+        mc.soundHandler.play(SimpleSound.master(this, volume))
+    }
 
     override fun render(x: Int, y: Int, parTicks: Float) {
         val fontrenderer = mc.fontRenderer
