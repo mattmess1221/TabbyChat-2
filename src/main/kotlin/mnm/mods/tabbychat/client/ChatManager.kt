@@ -118,6 +118,17 @@ object ChatManager : Chat {
 
     }
 
+    fun coerceChannelName(name: String): String {
+        if (name.isBlank()) {
+            return "#"
+        }
+        var firstChar = name.first()
+        if (firstChar != '#' && firstChar != '@') {
+            return "#$name"
+        }
+        return name
+    }
+
     override fun getMessages(channel: Channel): List<ChatMessage> {
         return Collections.unmodifiableList(getChannelMessages(channel))
     }

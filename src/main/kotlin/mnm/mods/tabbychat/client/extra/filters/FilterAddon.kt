@@ -20,7 +20,6 @@ object FilterAddon {
             }
     )
 
-
     @SubscribeEvent
     fun onChatRecieved(message: ChatReceivedEvent) {
         // We're possibly not in game.

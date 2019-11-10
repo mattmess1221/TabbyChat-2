@@ -103,6 +103,7 @@ class UserFilter : Filter {
             if (name == null)
                 continue
 
+            name = ChatManager.coerceChannelName(name)
             ChatManager.parseChannel(name)?.also { event.channels.add(it) }
 
         }
