@@ -28,7 +28,7 @@ object GuiChatTC {
             text.value = guichat.defaultInputFieldText
 
             ChatBox.chatInput.textFormatter = guichat::formatMessage
-            text.delegate.func_212954_a { guichat.func_212997_a(it) }
+            text.delegate.setResponder { guichat.func_212997_a(it) }
 
             val children = guichat.children() as MutableList<IGuiEventListener>
             children[0] = ChatBox
@@ -85,34 +85,33 @@ object GuiChatTC {
             event.isCanceled = ChatBox.mouseReleased(event.mouseX, event.mouseY, event.button)
         }
     }
-}
 
-@SubscribeEvent
-fun onMouseDragged(event: GuiScreenEvent.MouseDragEvent.Pre) {
-    if (event.gui is ChatScreen) {
-        event.isCanceled = ChatBox.mouseDragged(event.mouseX, event.mouseY, event.mouseButton, event.dragX, event.dragY)
-    }
-}
-
-
-@SubscribeEvent
-fun onMouseScrolled(event: GuiScreenEvent.MouseScrollEvent.Pre) {
-    if (event.gui is ChatScreen) {
-        event.isCanceled = ChatBox.mouseScrolled(event.mouseX, event.mouseY, event.scrollDelta)
-    }
-}
-
-private fun keyPressed(guichat: ChatScreen, key: Int): Boolean {
-    if (key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER) {
-        Minecraft.getInstance().ingameGUI.chatGUI.resetScroll()
-        val text = ChatBox.chatInput.textField
-        guichat.sendMessage(text.value)
-        text.value = guichat.defaultInputFieldText
-
-        if (!TabbyChatClient.settings.advanced.keepChatOpen.value) {
-            Minecraft.getInstance().displayGuiScreen(null)
+    @SubscribeEvent
+    fun onMouseDragged(event: GuiScreenEvent.MouseDragEvent.Pre) {
+        if (event.gui is ChatScreen) {
+            event.isCanceled = ChatBox.mouseDragged(event.mouseX, event.mouseY, event.mouseButton, event.dragX, event.dragY)
         }
-        return true
     }
-    return false
+
+    @SubscribeEvent
+    fun onMouseScrolled(event: GuiScreenEvent.MouseScrollEvent.Pre) {
+        if (event.gui is ChatScreen) {
+            event.isCanceled = ChatBox.mouseScrolled(event.mouseX, event.mouseY, event.scrollDelta)
+        }
+    }
+
+    private fun keyPressed(guichat: ChatScreen, key: Int): Boolean {
+        if (key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER) {
+            Minecraft.getInstance().ingameGUI.chatGUI.resetScroll()
+            val text = ChatBox.chatInput.textField
+            guichat.sendMessage(text.value)
+            text.value = guichat.defaultInputFieldText
+
+            if (!TabbyChatClient.settings.advanced.keepChatOpen.value) {
+                Minecraft.getInstance().displayGuiScreen(null)
+            }
+            return true
+        }
+        return false
+    }
 }

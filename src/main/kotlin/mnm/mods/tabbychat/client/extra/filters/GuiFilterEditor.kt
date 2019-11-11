@@ -124,7 +124,7 @@ class GuiFilterEditor(private val filter: UserFilter) : GuiPanel() {
             value = settings.soundName ?: ""
             delegate.maxStringLength = 100
             delegate.setValidator { txt -> ResourceLocation.tryCreate(txt) != null }
-            delegate.func_212954_a { s ->
+            delegate.setResponder { s ->
                 val res = ResourceLocation.tryCreate(s)
                 play.sound = ForgeRegistries.SOUND_EVENTS.getValue(res)
             }
@@ -135,7 +135,7 @@ class GuiFilterEditor(private val filter: UserFilter) : GuiPanel() {
         this.add(GuiLabel(Translation.FILTER_EXPRESSION.toComponent()), intArrayOf(1, pos))
         txtPattern = this.add(GuiText(), intArrayOf(8, pos, 12, 1)) {
             value = pattern
-            delegate.func_212954_a {
+            delegate.setResponder {
                 primaryColor = Color.WHITE
                 lblError.text = null
                 if (btnRegexp.active) {
