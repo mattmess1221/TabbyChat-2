@@ -6,8 +6,7 @@ import mnm.mods.tabbychat.util.Dim
 import mnm.mods.tabbychat.util.ILocation
 import mnm.mods.tabbychat.util.Location
 import java.lang.Math.max
-
-import java.util.IdentityHashMap
+import java.util.*
 
 class AbsoluteLayout : ILayout {
 

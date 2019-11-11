@@ -12,15 +12,14 @@ import mnm.mods.tabbychat.util.Dim
 import mnm.mods.tabbychat.util.TexturedModal
 import mnm.mods.tabbychat.util.mc
 import mnm.mods.tabbychat.util.text.FancyFontRenderer
-import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.widget.TextFieldWidget
 import net.minecraft.util.text.ITextComponent
-import java.util.ArrayList
+import java.util.*
 import kotlin.math.max
 import kotlin.math.min
 
 object TextBox : GuiWrappedComponent<GuiText>(GuiText(
-        object : TextFieldWidget(Minecraft.getInstance().fontRenderer, 0, 0, 0, 0, "input") {
+        object : TextFieldWidget(mc.fontRenderer, 0, 0, 0, 0, "input") {
             // Dummy textField
             override fun render(x: Int, y: Int, parTicks: Float) {
                 // noop

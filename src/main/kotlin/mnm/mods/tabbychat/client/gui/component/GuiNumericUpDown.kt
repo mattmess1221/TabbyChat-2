@@ -35,7 +35,7 @@ abstract class GuiNumericUpDown<T : Number> private constructor() : GuiPanel(), 
 
         add(GuiPanel(), BorderLayout.Position.CENTER) {
             layout = AbsoluteLayout()
-            add(object:GuiRectangle() {
+            add(object : GuiRectangle() {
                 override var location: ILocation
                     get() = parent?.location ?: super.location
                     set(value) {

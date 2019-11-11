@@ -8,7 +8,7 @@ import com.swabunga.spell.event.SpellChecker
 import com.swabunga.spell.event.StringWordTokenizer
 import mnm.mods.tabbychat.SPELLCHECK
 import mnm.mods.tabbychat.TabbyChat
-import net.minecraft.client.Minecraft
+import mnm.mods.tabbychat.util.mc
 import net.minecraft.resources.IResourceManager
 import net.minecraftforge.resource.IResourceType
 import net.minecraftforge.resource.ISelectiveResourceReloadListener
@@ -100,7 +100,7 @@ class Spellcheck(configDir: Path) : ISelectiveResourceReloadListener {
     }
 
     private fun loadCurrentLanguage() {
-        val lang = Minecraft.getInstance().languageManager.currentLanguage
+        val lang = mc.languageManager.currentLanguage
         try {
             userDict = loadUserDictionary()
             spellCheck = loadDictionary(LangDict.fromLanguage(lang.code)).apply {

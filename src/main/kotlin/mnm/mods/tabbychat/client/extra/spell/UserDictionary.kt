@@ -1,11 +1,10 @@
 package mnm.mods.tabbychat.client.extra.spell
 
+import com.swabunga.spell.engine.SpellDictionaryHashMap
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.Reader
 import java.io.UncheckedIOException
-
-import com.swabunga.spell.engine.SpellDictionaryHashMap
 
 /**
  * Dictionary that supports `#` comments

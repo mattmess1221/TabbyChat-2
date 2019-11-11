@@ -14,7 +14,6 @@ import mnm.mods.tabbychat.client.settings.TabbySettings
 import mnm.mods.tabbychat.util.ChatTextUtils
 import mnm.mods.tabbychat.util.listen
 import mnm.mods.tabbychat.util.mc
-import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.IngameGui
 import net.minecraft.client.gui.NewChatGui
 import net.minecraft.resources.IReloadableResourceManager
@@ -24,7 +23,6 @@ import net.minecraftforge.event.TickEvent
 import net.minecraftforge.eventbus.api.EventPriority
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper
-import net.minecraftforge.fml.loading.FMLPaths
 
 object TabbyChatClient {
     val spellcheck = Spellcheck(TabbyChat.dataFolder)
@@ -78,7 +76,6 @@ object TabbyChatClient {
         fun onGuiOpen(event: TickEvent.ClientTickEvent) {
             // Do the first tick, then unregister self.
             // essentially an on-thread startup complete listener
-            val mc = Minecraft.getInstance()
             mc.ingameGUI.chat = GuiNewChatTC
             MinecraftForge.EVENT_BUS.unregister(StartListener)
         }

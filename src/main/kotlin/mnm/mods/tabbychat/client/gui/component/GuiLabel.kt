@@ -1,9 +1,8 @@
 package mnm.mods.tabbychat.client.gui.component
 
 import com.mojang.blaze3d.platform.GlStateManager
-import mnm.mods.tabbychat.util.ILocation
+import mnm.mods.tabbychat.util.mc
 import mnm.mods.tabbychat.util.text.FancyFontRenderer
-import net.minecraft.client.Minecraft
 import net.minecraft.util.text.ITextComponent
 
 /**
@@ -13,7 +12,7 @@ import net.minecraft.util.text.ITextComponent
  */
 open class GuiLabel(var text: ITextComponent? = null) : GuiComponent() {
 
-    private val fr: FancyFontRenderer = FancyFontRenderer(Minecraft.getInstance().fontRenderer)
+    private val fr: FancyFontRenderer = FancyFontRenderer(mc.fontRenderer)
 
     var angle: Float = 0.toFloat()
 

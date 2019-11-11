@@ -114,7 +114,7 @@ object ChatLogging {
     private fun Closeable.closeQuietly() {
         try {
             close()
-        } catch(e: IOException) {
+        } catch (e: IOException) {
             // ignore
         }
     }

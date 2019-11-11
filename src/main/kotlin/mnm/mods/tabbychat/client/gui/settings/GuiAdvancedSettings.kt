@@ -1,14 +1,14 @@
 package mnm.mods.tabbychat.client.gui.settings
 
 import mnm.mods.tabbychat.client.TabbyChatClient
-import mnm.mods.tabbychat.client.settings.TabbySettings
-import mnm.mods.tabbychat.util.LocalVisibility
-import mnm.mods.tabbychat.util.Color
-import mnm.mods.tabbychat.client.gui.component.layout.GuiGridLayout
 import mnm.mods.tabbychat.client.gui.component.GuiLabel
 import mnm.mods.tabbychat.client.gui.component.config.GuiSettingBoolean
 import mnm.mods.tabbychat.client.gui.component.config.GuiSettingEnum
 import mnm.mods.tabbychat.client.gui.component.config.GuiSettingNumber.GuiSettingInt
+import mnm.mods.tabbychat.client.gui.component.layout.GuiGridLayout
+import mnm.mods.tabbychat.client.settings.TabbySettings
+import mnm.mods.tabbychat.util.Color
+import mnm.mods.tabbychat.util.LocalVisibility
 import mnm.mods.tabbychat.util.Translation
 
 class GuiAdvancedSettings : SettingPanel<TabbySettings>() {

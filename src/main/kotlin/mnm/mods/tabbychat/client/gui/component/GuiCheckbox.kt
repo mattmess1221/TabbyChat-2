@@ -1,9 +1,8 @@
 package mnm.mods.tabbychat.client.gui.component
 
 import mnm.mods.tabbychat.util.Color
-import mnm.mods.tabbychat.util.ILocation
 import mnm.mods.tabbychat.util.Location
-import net.minecraft.client.Minecraft
+import mnm.mods.tabbychat.util.mc
 import net.minecraftforge.fml.client.config.GuiUtils
 
 /**
@@ -22,8 +21,6 @@ class GuiCheckbox : AbstractGuiButton(), IGuiInput<Boolean> {
     }
 
     override fun render(x: Int, y: Int, parTicks: Float) {
-        val mc = Minecraft.getInstance()
-
         val loc = location
         GuiUtils.drawContinuousTexturedBox(WIDGETS, loc.xPos, loc.yPos, 0, 46, loc.width, loc.height, 200, 20, 2, 3, 2, 2, this.blitOffset.toFloat())
 

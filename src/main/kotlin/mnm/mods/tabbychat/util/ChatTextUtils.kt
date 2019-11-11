@@ -4,16 +4,14 @@ import com.google.common.collect.Lists
 import mnm.mods.tabbychat.api.Message
 import mnm.mods.tabbychat.client.ChatMessage
 import mnm.mods.tabbychat.client.TabbyChatClient
-import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.RenderComponentsUtil
 import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.StringTextComponent
-import net.minecraft.util.text.TextComponent
 
 object ChatTextUtils {
 
     fun split(chat: ITextComponent, width: Int): List<ITextComponent> {
-        val fr = Minecraft.getInstance().fontRenderer
+        val fr = mc.fontRenderer
         return RenderComponentsUtil.splitText(chat, width, fr, false, false)
     }
 

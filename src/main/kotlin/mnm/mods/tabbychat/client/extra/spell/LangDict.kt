@@ -2,7 +2,7 @@ package mnm.mods.tabbychat.client.extra.spell
 
 import mnm.mods.tabbychat.MODID
 import mnm.mods.tabbychat.TabbyChat
-import net.minecraft.client.Minecraft
+import mnm.mods.tabbychat.util.mc
 import net.minecraft.util.ResourceLocation
 import java.io.IOException
 import java.io.InputStream
@@ -23,13 +23,13 @@ interface LangDict {
                 LangDict { Files.newInputStream(TabbyChat.dataFolder.resolve(path)) }
             } else {
                 val res = ResourceLocation(MODID, path)
-                val resmgr = Minecraft.getInstance().resourceManager
+                val resmgr = mc.resourceManager
                 LangDict { resmgr.getResource(res).inputStream }
             }
         }
-    }
-}
 
-operator fun LangDict.Companion.invoke(function: () -> InputStream) = object : LangDict {
-    override fun openStream() = function()
+        operator fun invoke(function: () -> InputStream) = object : LangDict {
+            override fun openStream() = function()
+        }
+    }
 }

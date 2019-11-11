@@ -1,6 +1,6 @@
 package mnm.mods.tabbychat.client.util
 
-import net.minecraft.client.Minecraft
+import mnm.mods.tabbychat.util.mc
 import net.minecraft.util.math.MathHelper
 
 /**
@@ -10,18 +10,17 @@ class ScaledDimension(width: Int, height: Int) {
 
     val scaledWidth_double: Double
     val scaledHeight_double: Double
-    var scaledWidth: Int = 0
+    var scaledWidth: Int
         private set
-    var scaledHeight: Int = 0
+    var scaledHeight: Int
         private set
-    var scaleFactor: Int = 0
+    var scaleFactor: Int
         private set
 
     init {
         this.scaledWidth = width
         this.scaledHeight = height
         this.scaleFactor = 1
-        val mc = Minecraft.getInstance()
         val unicode = mc.forceUnicodeFont
         var scale = mc.gameSettings.guiScale
 

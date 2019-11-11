@@ -1,10 +1,8 @@
 package mnm.mods.tabbychat.client
 
-import java.time.LocalDateTime
-
 import mnm.mods.tabbychat.api.Message
 import net.minecraft.util.text.ITextComponent
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 class ChatMessage(
         @Transient val counter: Int,

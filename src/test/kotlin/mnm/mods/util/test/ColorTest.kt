@@ -1,10 +1,8 @@
 package mnm.mods.util.test
 
-import org.junit.Assert.*
-
-import org.junit.Test
-
 import mnm.mods.tabbychat.util.Color
+import org.junit.Assert.assertEquals
+import org.junit.Test
 
 class ColorTest {
 

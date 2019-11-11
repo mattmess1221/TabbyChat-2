@@ -10,7 +10,6 @@ import mnm.mods.tabbychat.client.gui.component.GuiPanel
 import mnm.mods.tabbychat.client.gui.component.layout.BorderLayout
 import mnm.mods.tabbychat.client.util.ScaledDimension
 import mnm.mods.tabbychat.util.*
-import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.IGuiEventListener
 import net.minecraft.client.gui.screen.ChatScreen
 import net.minecraft.client.gui.screen.Screen
@@ -212,7 +211,7 @@ object ChatBox : GuiPanel() {
             if (cmd.length > ChatManager.MAX_CHAT_LENGTH) {
                 cmd = cmd.substring(0, ChatManager.MAX_CHAT_LENGTH)
             }
-            Minecraft.getInstance().player.sendChatMessage(cmd)
+            mc.player.sendChatMessage(cmd)
         }
     }
 
@@ -221,7 +220,7 @@ object ChatBox : GuiPanel() {
 
         super.render(x, y, parTicks)
         if (mc.ingameGUI.chatGUI.chatOpen) {
-            val fr = Minecraft.getInstance().fontRenderer
+            val fr = mc.fontRenderer
             val loc = location
             val height = fr.FONT_HEIGHT + 3
             val xPos = chat.commandUsagePosition + loc.xPos

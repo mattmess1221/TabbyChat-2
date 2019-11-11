@@ -1,8 +1,7 @@
 package mnm.mods.tabbychat.api
 
-import java.time.LocalDateTime
-
 import net.minecraft.util.text.ITextComponent
+import java.time.LocalDateTime
 
 /**
  * Represents a message.

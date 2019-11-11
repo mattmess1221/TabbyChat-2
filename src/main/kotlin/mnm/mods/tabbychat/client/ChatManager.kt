@@ -12,9 +12,8 @@ import mnm.mods.tabbychat.client.settings.ServerSettings
 import mnm.mods.tabbychat.client.settings.TabbySettings
 import mnm.mods.tabbychat.util.ChatTextUtils
 import mnm.mods.tabbychat.util.ToStringAdapter
-import mnm.mods.tabbychat.util.config.ValueMap
+import mnm.mods.tabbychat.util.mc
 import mnm.mods.tabbychat.util.style
-import net.minecraft.client.Minecraft
 import net.minecraft.util.EnumTypeAdapterFactory
 import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.StringTextComponent
@@ -165,7 +164,7 @@ object ChatManager : Chat {
             removeMessages(channel, id)
         }
 
-        val uc = Minecraft.getInstance().ingameGUI.ticks
+        val uc = mc.ingameGUI.ticks
         val msg = ChatMessage(uc, text, id)
         val messages = getChannelMessages(channel)
         messages.add(0, msg)

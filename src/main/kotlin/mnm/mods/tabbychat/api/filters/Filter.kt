@@ -27,7 +27,7 @@ interface Filter {
      * @param string The text component to be processed
      * @return The string which will be used for the
      */
-    open fun prepareText(string: ITextComponent): String {
+    fun prepareText(string: ITextComponent): String {
         return StringUtils.stripControlCodes(string.string)
     }
 

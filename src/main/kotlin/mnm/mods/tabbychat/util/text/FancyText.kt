@@ -36,7 +36,7 @@ class FancyText(val text: ITextComponent) : TextComponent() {
         // don't iterate using the vanilla components
         return this.text.asSequence()
                 .map {
-                    it as? FancyText ?: FancyText(it).also {text ->
+                    it as? FancyText ?: FancyText(it).also { text ->
                         text.fancyStyle = this.fancyStyle.copy()
                     }
                 }.iterator() as MutableIterator

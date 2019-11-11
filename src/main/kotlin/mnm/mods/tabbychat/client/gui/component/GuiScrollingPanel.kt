@@ -1,10 +1,9 @@
 package mnm.mods.tabbychat.client.gui.component
 
 import mnm.mods.tabbychat.client.gui.component.layout.BorderLayout
+import mnm.mods.tabbychat.client.gui.component.layout.BorderLayout.Position
 import mnm.mods.tabbychat.util.Dim
 import mnm.mods.tabbychat.util.Location
-import mnm.mods.tabbychat.client.gui.component.layout.BorderLayout.Position
-import mnm.mods.tabbychat.util.ILocation
 import mnm.mods.tabbychat.util.mc
 import org.lwjgl.opengl.GL11
 import kotlin.math.max

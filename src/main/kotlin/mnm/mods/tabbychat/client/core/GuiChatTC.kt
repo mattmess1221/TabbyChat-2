@@ -2,7 +2,7 @@ package mnm.mods.tabbychat.client.core
 
 import mnm.mods.tabbychat.client.TabbyChatClient
 import mnm.mods.tabbychat.client.gui.ChatBox
-import net.minecraft.client.Minecraft
+import mnm.mods.tabbychat.util.mc
 import net.minecraft.client.gui.IGuiEventListener
 import net.minecraft.client.gui.screen.ChatScreen
 import net.minecraftforge.client.event.GuiScreenEvent
@@ -37,7 +37,7 @@ object GuiChatTC {
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
-        if (Minecraft.getInstance().currentScreen is ChatScreen && event.phase == TickEvent.Phase.END) {
+        if (mc.currentScreen is ChatScreen && event.phase == TickEvent.Phase.END) {
             ChatBox.tick()
         }
     }
@@ -102,13 +102,13 @@ object GuiChatTC {
 
     private fun keyPressed(guichat: ChatScreen, key: Int): Boolean {
         if (key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER) {
-            Minecraft.getInstance().ingameGUI.chatGUI.resetScroll()
+            mc.ingameGUI.chatGUI.resetScroll()
             val text = ChatBox.chatInput.textField
             guichat.sendMessage(text.value)
             text.value = guichat.defaultInputFieldText
 
             if (!TabbyChatClient.settings.advanced.keepChatOpen.value) {
-                Minecraft.getInstance().displayGuiScreen(null)
+                mc.displayGuiScreen(null)
             }
             return true
         }

@@ -3,7 +3,7 @@ package mnm.mods.tabbychat.util
 enum class MessagePatterns(
         translation: Translatable,
         val incoming: String,
-        val outgoing: String) : Translatable by translation{
+        val outgoing: String) : Translatable by translation {
 
     ARROW(Translation.FORMAT_MESSAGE_ARROW,
             "^\\[(.{3,30})[ ]?-\\>[ ]?me\\]",

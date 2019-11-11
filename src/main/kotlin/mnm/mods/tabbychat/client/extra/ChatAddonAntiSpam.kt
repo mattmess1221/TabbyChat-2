@@ -10,7 +10,7 @@ import org.apache.commons.lang3.StringUtils
 
 object ChatAddonAntiSpam {
 
-    private val messageMap= mutableMapOf<Channel, Counter>()
+    private val messageMap = mutableMapOf<Channel, Counter>()
 
     @SubscribeEvent
     fun onMessageAdded(event: MessageAddedToChannelEvent.Pre) {

@@ -1,9 +1,7 @@
 package mnm.mods.tabbychat.client.gui.component
 
 import com.mojang.blaze3d.platform.GlStateManager
-import mnm.mods.tabbychat.TabbyChat
-import mnm.mods.tabbychat.*
-import mnm.mods.tabbychat.util.ILocation
+import mnm.mods.tabbychat.MODID
 import mnm.mods.tabbychat.util.mc
 import net.minecraft.util.ResourceLocation
 

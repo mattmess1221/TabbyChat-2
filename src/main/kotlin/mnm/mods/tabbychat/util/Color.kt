@@ -1,8 +1,7 @@
 package mnm.mods.tabbychat.util
 
 import com.google.gson.annotations.SerializedName
-
-import java.util.Random
+import java.util.*
 
 /**
  * Represents a color and provides an easy way to convert to and from html color
@@ -13,7 +12,7 @@ data class Color constructor(
         @SerializedName("g") val green: Int,
         @SerializedName("b") val blue: Int,
         @SerializedName("a") val alpha: Int
-){
+) {
 
     /**
      * Gets the html hex color code of this color usable by Minecraft's

@@ -5,12 +5,12 @@ import mnm.mods.tabbychat.client.ChatChannel
 import mnm.mods.tabbychat.client.TabbyChatClient
 import mnm.mods.tabbychat.client.gui.ChatBox
 import mnm.mods.tabbychat.client.gui.component.*
-import mnm.mods.tabbychat.client.settings.ServerSettings
-import mnm.mods.tabbychat.util.Color
-import mnm.mods.tabbychat.util.Location
 import mnm.mods.tabbychat.client.gui.component.layout.BorderLayout
 import mnm.mods.tabbychat.client.gui.component.layout.GuiGridLayout
 import mnm.mods.tabbychat.client.gui.component.layout.VerticalLayout
+import mnm.mods.tabbychat.client.settings.ServerSettings
+import mnm.mods.tabbychat.util.Color
+import mnm.mods.tabbychat.util.Location
 import mnm.mods.tabbychat.util.Translation
 import net.minecraft.client.resources.I18n
 

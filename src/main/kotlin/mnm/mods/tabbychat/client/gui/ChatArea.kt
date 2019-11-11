@@ -13,7 +13,7 @@ import net.minecraft.entity.player.ChatVisibility
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.StringTextComponent
-import java.util.ArrayList
+import java.util.*
 
 class ChatArea : GuiComponent() {
 

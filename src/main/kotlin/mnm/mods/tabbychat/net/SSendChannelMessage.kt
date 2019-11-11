@@ -1,14 +1,11 @@
 package mnm.mods.tabbychat.net
 
-import mnm.mods.tabbychat.*
+import mnm.mods.tabbychat.NETWORK
 import mnm.mods.tabbychat.TabbyChat
-import mnm.mods.tabbychat.api.Channel
 import mnm.mods.tabbychat.client.ChatManager
 import net.minecraft.network.PacketBuffer
 import net.minecraft.util.text.ITextComponent
 import net.minecraftforge.fml.network.NetworkEvent
-
-import java.util.Optional
 import java.util.function.Supplier
 
 class SSendChannelMessage {

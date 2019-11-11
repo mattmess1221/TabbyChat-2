@@ -7,7 +7,6 @@ import mnm.mods.tabbychat.client.TabbyChatClient
 import mnm.mods.tabbychat.client.gui.component.GuiComponent
 import mnm.mods.tabbychat.client.gui.settings.GuiSettingsScreen
 import mnm.mods.tabbychat.util.*
-import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.screen.Screen
 
 class ChatTab internal constructor(private val channel: AbstractChannel) : GuiComponent() {
@@ -55,7 +54,7 @@ class ChatTab internal constructor(private val channel: AbstractChannel) : GuiCo
     }
 
     private fun openSettings() {
-        Minecraft.getInstance().displayGuiScreen(GuiSettingsScreen(channel))
+        mc.displayGuiScreen(GuiSettingsScreen(channel))
     }
 
     override fun render(x: Int, y: Int, parTicks: Float) {

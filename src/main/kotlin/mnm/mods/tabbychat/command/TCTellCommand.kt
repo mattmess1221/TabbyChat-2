@@ -7,13 +7,10 @@ import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.exceptions.CommandSyntaxException
 import mnm.mods.tabbychat.TabbyChat
 import net.minecraft.command.CommandSource
-import net.minecraft.command.arguments.ComponentArgument
-import net.minecraft.command.arguments.EntityArgument
-import net.minecraft.entity.player.ServerPlayerEntity
-import net.minecraft.util.text.ITextComponent
-
 import net.minecraft.command.Commands.argument
 import net.minecraft.command.Commands.literal
+import net.minecraft.command.arguments.ComponentArgument
+import net.minecraft.command.arguments.EntityArgument
 
 object TCTellCommand : Command<CommandSource> {
 

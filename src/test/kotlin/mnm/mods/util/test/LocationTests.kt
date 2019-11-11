@@ -1,11 +1,10 @@
 package mnm.mods.util.test
 
-import org.junit.Assert.*
-
-import org.junit.Test
-
 import mnm.mods.tabbychat.util.ILocation
 import mnm.mods.tabbychat.util.Location
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
+import org.junit.Test
 
 class LocationTests {
 

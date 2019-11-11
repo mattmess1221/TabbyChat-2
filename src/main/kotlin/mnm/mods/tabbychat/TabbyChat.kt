@@ -24,8 +24,6 @@ import java.nio.file.Path
 
 @Mod(MODID)
 object TabbyChat {
-
-
     val logger: Logger = LogManager.getLogger(MODID)
 
     val dataFolder: Path = FMLPaths.CONFIGDIR.get().resolve(MODID)
