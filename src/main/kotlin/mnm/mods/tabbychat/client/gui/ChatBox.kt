@@ -9,7 +9,9 @@ import mnm.mods.tabbychat.client.*
 import mnm.mods.tabbychat.client.gui.component.GuiPanel
 import mnm.mods.tabbychat.client.gui.component.layout.BorderLayout
 import mnm.mods.tabbychat.client.util.ScaledDimension
+import mnm.mods.tabbychat.getMainWindow
 import mnm.mods.tabbychat.util.*
+import net.minecraft.client.gui.CommandSuggestionHelper
 import net.minecraft.client.gui.IGuiEventListener
 import net.minecraft.client.gui.screen.ChatScreen
 import net.minecraft.client.gui.screen.Screen
@@ -19,6 +21,13 @@ import net.minecraft.util.math.MathHelper
 import net.minecraftforge.common.MinecraftForge
 import kotlin.math.max
 import kotlin.math.min
+
+val ChatScreen.suggestionHelper get() = this.field_228174_e_
+fun CommandSuggestionHelper.render(x: Int, y: Int) = func_228114_a_(x, y)
+val CommandSuggestionHelper.suggestions get() = field_228108_q_
+val CommandSuggestionHelper.commandUsagePosition get() = field_228104_m_
+val CommandSuggestionHelper.commandUsageWidth get() = field_228105_n_
+val CommandSuggestionHelper.commandUsage get() = field_228103_l_
 
 object ChatBox : GuiPanel() {
 
@@ -131,8 +140,8 @@ object ChatBox : GuiPanel() {
 
     fun update(chat: ChatScreen) {
         this.chat = chat
-        if (chat.suggestions != null && chat.suggestions.field_198505_b !is TCRect) {
-            chat.suggestions.field_198505_b = TCRect(chat.suggestions.field_198505_b)
+        if (chat.suggestionHelper.suggestions != null && chat.suggestionHelper.suggestions.field_228138_b_ !is TCRect) {
+            chat.suggestionHelper.suggestions.field_228138_b_ = TCRect(chat.suggestionHelper.suggestions.field_228138_b_)
         }
     }
 
@@ -211,7 +220,7 @@ object ChatBox : GuiPanel() {
             if (cmd.length > ChatManager.MAX_CHAT_LENGTH) {
                 cmd = cmd.substring(0, ChatManager.MAX_CHAT_LENGTH)
             }
-            mc.player.sendChatMessage(cmd)
+            mc.player?.sendChatMessage(cmd)
         }
     }
 
@@ -223,23 +232,23 @@ object ChatBox : GuiPanel() {
             val fr = mc.fontRenderer
             val loc = location
             val height = fr.FONT_HEIGHT + 3
-            val xPos = chat.commandUsagePosition + loc.xPos
-            var yPos = loc.yHeight - chat.commandUsage.size * height
+            val xPos = chat.suggestionHelper.commandUsagePosition + loc.xPos
+            var yPos = loc.yHeight - chat.suggestionHelper.commandUsage.size * height
             when {
-                chat.suggestions != null -> chat.suggestions.render(x, y)
-                xPos + chat.commandUsageWidth > loc.xWidth -> {
+                chat.suggestionHelper != null -> chat.suggestionHelper.render(x, y)
+                xPos + chat.suggestionHelper.commandUsageWidth > loc.xWidth -> {
 
-                    for ((i, s) in chat.commandUsage.withIndex()) {
+                    for ((i, s) in chat.suggestionHelper.commandUsage.withIndex()) {
                         fill(0,
                                 chat.height - 14 - 12 * i,
-                                chat.commandUsageWidth + 1,
+                                chat.suggestionHelper.commandUsageWidth + 1,
                                 chat.height - 2 - 12 * i,
                                 -0x1000000)
                         fr.drawStringWithShadow(s, 1f, (chat.height - 14 + 2 - 12 * i).toFloat(), -1)
                     }
                 }
-                else -> for (s in chat.commandUsage) {
-                    fill(xPos - 1, yPos, xPos + chat.commandUsageWidth + 1, yPos - height, -0x30000000)
+                else -> for (s in chat.suggestionHelper.commandUsage) {
+                    fill(xPos - 1, yPos, xPos + chat.suggestionHelper.commandUsageWidth + 1, yPos - height, -0x30000000)
                     fr.drawStringWithShadow(s, xPos.toFloat(), (yPos - height + 2).toFloat(), -1)
                     yPos += height
                 }
@@ -306,8 +315,8 @@ object ChatBox : GuiPanel() {
         var x1 = x
         var y1 = y
 
-        val screenW = mc.mainWindow.scaledWidth
-        val screenH = mc.mainWindow.scaledHeight
+        val screenW = mc.getMainWindow().scaledWidth
+        val screenH = mc.getMainWindow().scaledHeight
 
         val hotbar = 25
 

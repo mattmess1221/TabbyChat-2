@@ -1,6 +1,7 @@
 package mnm.mods.tabbychat.client.gui
 
 import com.mojang.blaze3d.platform.GlStateManager
+import com.mojang.blaze3d.systems.RenderSystem
 import mnm.mods.tabbychat.client.ChatManager
 import mnm.mods.tabbychat.client.TabbyChatClient
 import mnm.mods.tabbychat.client.extra.spell.Spellcheck
@@ -91,9 +92,9 @@ object TextBox : GuiWrappedComponent<GuiText>(GuiText(
     }
 
     override fun render(x: Int, y: Int, parTicks: Float) {
-        GlStateManager.enableBlend()
+        RenderSystem.enableBlend()
         drawModalCorners(MODAL)
-        GlStateManager.disableBlend()
+        RenderSystem.disableBlend()
 
         drawText()
         drawCursor()

@@ -1,6 +1,6 @@
 package mnm.mods.tabbychat.client.core
 
-import com.mojang.blaze3d.platform.GlStateManager
+import com.mojang.blaze3d.systems.RenderSystem
 import mnm.mods.tabbychat.CHATBOX
 import mnm.mods.tabbychat.TabbyChat
 import mnm.mods.tabbychat.api.ChannelStatus
@@ -9,6 +9,7 @@ import mnm.mods.tabbychat.client.ChatManager
 import mnm.mods.tabbychat.client.DefaultChannel
 import mnm.mods.tabbychat.client.TabbyChatClient
 import mnm.mods.tabbychat.client.gui.ChatBox
+import mnm.mods.tabbychat.getMainWindow
 import mnm.mods.tabbychat.util.mc
 import net.minecraft.client.gui.NewChatGui
 import net.minecraft.util.text.ITextComponent
@@ -20,7 +21,7 @@ object GuiNewChatTC : NewChatGui(mc) {
     private var prevScreenHeight: Int = 0
 
     init {
-        this.prevScreenHeight = mc.mainWindow.height
+        this.prevScreenHeight = mc.getMainWindow().height
 
         MinecraftForge.EVENT_BUS.register(GuiChatTC)
     }
@@ -39,12 +40,12 @@ object GuiNewChatTC : NewChatGui(mc) {
     }
 
     override fun render(i: Int) {
-        if (prevScreenHeight != mc.mainWindow.height || prevScreenWidth != mc.mainWindow.width) {
+        if (prevScreenHeight != mc.getMainWindow().height || prevScreenWidth != mc.getMainWindow().width) {
 
-            ChatBox.onScreenHeightResize(prevScreenWidth, prevScreenHeight, mc.mainWindow.width, mc.mainWindow.height)
+            ChatBox.onScreenHeightResize(prevScreenWidth, prevScreenHeight, mc.getMainWindow().width, mc.getMainWindow().height)
 
-            prevScreenWidth = mc.mainWindow.width
-            prevScreenHeight = mc.mainWindow.height
+            prevScreenWidth = mc.getMainWindow().width
+            prevScreenHeight = mc.getMainWindow().height
         }
 
         if (chatOpen)
@@ -52,18 +53,18 @@ object GuiNewChatTC : NewChatGui(mc) {
 
         val scale = mc.gameSettings.chatScale
 
-        GlStateManager.popMatrix() // ignore what GuiIngame did.
-        GlStateManager.pushMatrix()
+        RenderSystem.popMatrix() // ignore what GuiIngame did.
+        RenderSystem.pushMatrix()
 
         // Scale it accordingly
-        GlStateManager.scaled(scale, scale, 1.0)
+        RenderSystem.scaled(scale, scale, 1.0)
 
         val mouseX = mc.mouseHelper.mouseX.toInt()
         val mouseY = (-mc.mouseHelper.mouseY - 1).toInt()
         ChatBox.render(mouseX, mouseY, 0f)
 
-        GlStateManager.popMatrix()
-        GlStateManager.pushMatrix() // push to avoid gl errors
+        RenderSystem.popMatrix()
+        RenderSystem.pushMatrix() // push to avoid gl errors
     }
 
     override fun printChatMessageWithOptionalDeletion(ichat: ITextComponent, id: Int) {

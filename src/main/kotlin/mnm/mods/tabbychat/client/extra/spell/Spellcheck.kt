@@ -30,10 +30,6 @@ class Spellcheck(configDir: Path) : ISelectiveResourceReloadListener {
     private var userDict: SpellDictionary? = null
     private val errors = Lists.newArrayList<SpellCheckEvent>()
 
-    init {
-        this.loadCurrentLanguage()
-    }
-
     @Synchronized
     @Throws(IOException::class)
     fun loadDictionary(lang: LangDict): SpellChecker {

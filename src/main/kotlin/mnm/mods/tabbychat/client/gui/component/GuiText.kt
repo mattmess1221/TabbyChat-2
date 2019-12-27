@@ -1,6 +1,6 @@
 package mnm.mods.tabbychat.client.gui.component
 
-import com.mojang.blaze3d.platform.GlStateManager
+import com.mojang.blaze3d.systems.RenderSystem
 import mnm.mods.tabbychat.util.mc
 import net.minecraft.client.gui.widget.TextFieldWidget
 import org.apache.commons.lang3.StringEscapeUtils
@@ -67,7 +67,7 @@ open class GuiText(
         var y = yPos - mc.fontRenderer.FONT_HEIGHT * list.size
 
         // put it on top
-        GlStateManager.pushMatrix()
+        RenderSystem.pushMatrix()
         fill(x - 2, y - 2, x + w + 2, y + h + 1, 0xcc333333.toInt())
         renderBorders(x - 2, y - 2, x + w + 2, y + h + 1, 0xccaaaaaa.toInt())
 
@@ -76,6 +76,6 @@ open class GuiText(
             y += mc.fontRenderer.FONT_HEIGHT
         }
 
-        GlStateManager.popMatrix()
+        RenderSystem.popMatrix()
     }
 }

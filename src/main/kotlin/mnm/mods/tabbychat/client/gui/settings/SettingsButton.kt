@@ -1,6 +1,6 @@
 package mnm.mods.tabbychat.client.gui.settings
 
-import com.mojang.blaze3d.platform.GlStateManager
+import com.mojang.blaze3d.systems.RenderSystem
 import mnm.mods.tabbychat.client.gui.component.AbstractGuiButton
 import mnm.mods.tabbychat.util.Location
 import mnm.mods.tabbychat.util.mc
@@ -32,7 +32,7 @@ class SettingsButton internal constructor(val settings: SettingPanel<*>, val cal
         val y1 = loc.yPos + 1
         val y2 = loc.yHeight - 1
 
-        GlStateManager.enableAlphaTest()
+        RenderSystem.enableAlphaTest()
         fill(x1, y1, x2, y2, secondaryColor!!.hex)
         val string = mc.fontRenderer.trimStringToWidth(text, loc.width)
         mc.fontRenderer.drawString(string, (x1 + 10).toFloat(), (loc.yCenter - 4).toFloat(), primaryColorProperty.hex)

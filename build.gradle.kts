@@ -1,29 +1,21 @@
-import java.util.Date
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.util.*
 
 plugins {
-    kotlin("jvm") version "1.3.50"
-    id("net.minecraftforge.gradle") version "3.0.154"
-    id("com.github.johnrengelman.shadow") version "4.0.4"
+    kotlin("jvm") version "1.3.61"
+    id("net.minecraftforge.gradle") version "3.0.157"
+    id("com.github.johnrengelman.shadow") version "5.2.0"
 }
 
-val release: String by project
-val forge_version: String by project
-val mappings_channel: String by project
-val mappings_version: String by project
-
-if (release != "RELEASE")
-    version = "$version-$release"
+group = "mnm.mods"
+version = "2.4.0-SNAPSHOT"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-val ConfigurationContainer.include: Configuration by configurations.creating
-val ConfigurationContainer.mod: Configuration by configurations.creating
-fun DependencyHandlerScope.include(dep: Any) = add("include", dep)
-fun DependencyHandlerScope.mod(dep: Any) = add("mod", dep)
+val include: Configuration by configurations.creating
+val mod: Configuration by configurations.creating
 
 repositories {
     jcenter()
@@ -33,7 +25,7 @@ repositories {
 }
 
 dependencies {
-    minecraft("net.minecraftforge:forge:$forge_version")
+    minecraft("net.minecraftforge:forge:1.15.1-30.0.16")
 
     include(implementation("net.sf.jazzy:jazzy:0.5.2-rtext-1.4.1-2")!!)
 
@@ -42,10 +34,11 @@ dependencies {
     mod(implementation("kottle:Kottle:1.2.1")!!)
 }
 minecraft {
-    mappings(mappings_channel, mappings_version)
+    mappingChannel = "snapshot"
+    mappingVersion = "20191225-1.14.3"
     accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))
     runs {
-        val client by creating {
+        create("client") {
 
             fun properties(vararg props: Pair<String, String>) = properties(mapOf(*props))
 
@@ -55,7 +48,7 @@ minecraft {
             property("forge.logging.console.level", "info")
 
             mods {
-                val tabbychat by creating {
+                create("tabbychat") {
                     source(sourceSets.main.get())
                 }
             }
@@ -64,54 +57,50 @@ minecraft {
     }
 }
 
+tasks.shadowJar {
+    archiveClassifier.set("release")
+    configurations = listOf(include)
+    relocate("com.swabunga", "mnm.mods.tabbychat.redist.com.swabunga")
+}
 
-tasks {
+tasks.withType<Jar> {
+    manifest.attributes(
+            "Specification-Title" to project.name,
+            "Specification-Vendor" to "killjoy1221",
+            "Specification-Version" to project.version,
+            "Implementation-Title" to project.name,
+            "Implementation-Version" to project.version,
+            "Implementation-Vendor" to "killjoy1221",
+            "Implementation-Timestamp" to Date()
+    )
+}
 
-    shadowJar {
-        archiveClassifier.set("release")
-        configurations = listOf(project.configurations.include)
-        relocate("com.swabunga", "mnm.mods.tabbychat.redist.com.swabunga")
-    }
+task<Delete>("uninstallMods") {
+    delete(fileTree("run/mods"))
+}
 
-    withType<Jar> {
-        manifest.attributes(
-                "Specification-Title" to project.name,
-                "Specification-Vendor" to "killjoy1221",
-                "Specification-Version" to project.version,
-                "Implementation-Title" to project.name,
-                "Implementation-Version" to project.version,
-                "Implementation-Vendor" to "killjoy1221",
-                "Implementation-Timestamp" to Date()
-        )
-    }
+task<Copy>("installMods") {
+    dependsOn("uninstallMods")
+    from(mod)
+    include("**/*.jar")
+    into(file("run/mods"))
+}
 
-    val uninstallMods by creating(Delete::class) {
-        delete(fileTree("run/mods"))
-    }
-
-    val installMods by creating(Copy::class) {
-        dependsOn(uninstallMods)
-        from(configurations.mod)
-        include("**/*.jar")
-        into(file("run/mods"))
-    }
-
-    afterEvaluate {
-        named("prepareRuns") {
-            dependsOn(installMods)
+afterEvaluate {
+    tasks {
+        "prepareRuns" {
+            dependsOn("installMods")
         }
     }
 }
+
 reobf {
-    val shadowJar by creating {
-        dependsOn(tasks.createMcpToSrg)
-        mappings = tasks.createMcpToSrg.get().outputs.files.singleFile
-    }
+    create("shadowJar")
 }
 
 artifacts {
     archives(tasks.shadowJar)
 }
-tasks.withType<KotlinCompile> {
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
 }

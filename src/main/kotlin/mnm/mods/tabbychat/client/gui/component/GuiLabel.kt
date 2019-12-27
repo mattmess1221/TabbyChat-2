@@ -1,6 +1,6 @@
 package mnm.mods.tabbychat.client.gui.component
 
-import com.mojang.blaze3d.platform.GlStateManager
+import com.mojang.blaze3d.systems.RenderSystem
 import mnm.mods.tabbychat.util.mc
 import mnm.mods.tabbychat.util.text.FancyFontRenderer
 import net.minecraft.util.text.ITextComponent
@@ -19,19 +19,19 @@ open class GuiLabel(var text: ITextComponent? = null) : GuiComponent() {
     override fun render(x: Int, y: Int, parTicks: Float) {
         if (text == null)
             return
-        GlStateManager.pushMatrix()
+        RenderSystem.pushMatrix()
 
-        GlStateManager.rotatef(angle, 0f, 0f, angle)
+        RenderSystem.rotatef(angle, 0f, 0f, angle)
         if (angle < 180) {
-            GlStateManager.translated(-angle / 1.5, (-angle / 4).toDouble(), 0.0)
+            RenderSystem.translated(-angle / 1.5, (-angle / 4).toDouble(), 0.0)
         } else {
-            GlStateManager.translated((-angle / 15).toDouble(), (angle / 40).toDouble(), 0.0)
+            RenderSystem.translated((-angle / 15).toDouble(), (angle / 40).toDouble(), 0.0)
         }
 
         val loc = location
         fr.drawChat(text!!, (loc.xPos + 3).toFloat(), (loc.yPos + 3).toFloat(), primaryColorProperty.hex, true)
 
-        GlStateManager.popMatrix()
+        RenderSystem.popMatrix()
     }
 
 }

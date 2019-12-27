@@ -2,6 +2,7 @@ package mnm.mods.tabbychat.client.core
 
 import mnm.mods.tabbychat.client.TabbyChatClient
 import mnm.mods.tabbychat.client.gui.ChatBox
+import mnm.mods.tabbychat.client.gui.suggestionHelper
 import mnm.mods.tabbychat.util.mc
 import net.minecraft.client.gui.IGuiEventListener
 import net.minecraft.client.gui.screen.ChatScreen
@@ -27,7 +28,7 @@ object GuiChatTC {
             guichat.inputField = text.delegate
             text.value = guichat.defaultInputFieldText
 
-            ChatBox.chatInput.textFormatter = guichat::formatMessage
+            ChatBox.chatInput.textFormatter = guichat.suggestionHelper::func_228122_a_
             text.delegate.setResponder { guichat.func_212997_a(it) }
 
             val children = guichat.children() as MutableList<IGuiEventListener>

@@ -1,6 +1,6 @@
 package mnm.mods.tabbychat.client.gui
 
-import com.mojang.blaze3d.platform.GlStateManager
+import com.mojang.blaze3d.systems.RenderSystem
 import mnm.mods.tabbychat.client.AbstractChannel
 import mnm.mods.tabbychat.client.ChatManager
 import mnm.mods.tabbychat.client.ChatMessage
@@ -115,9 +115,9 @@ class ChatArea : GuiComponent() {
 
     override fun render(x: Int, y: Int, parTicks: Float) {
         val visible = visibleChat
-        GlStateManager.enableBlend()
+        RenderSystem.enableBlend()
         val opac = mc.gameSettings.chatOpacity.toFloat()
-        GlStateManager.color4f(1f, 1f, 1f, opac)
+        RenderSystem.color4f(1f, 1f, 1f, opac)
 
         drawModalCorners(MODAL)
 
@@ -130,8 +130,8 @@ class ChatArea : GuiComponent() {
             drawChatLine(line, xPos, yPos)
         }
         blitOffset = 0
-        GlStateManager.disableAlphaTest()
-        GlStateManager.disableBlend()
+        RenderSystem.disableAlphaTest()
+        RenderSystem.disableBlend()
     }
 
     private fun drawChatLine(line: ChatMessage, xPos: Int, yPos: Int) {

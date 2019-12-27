@@ -1,6 +1,6 @@
 package mnm.mods.tabbychat.client.gui
 
-import com.mojang.blaze3d.platform.GlStateManager
+import com.mojang.blaze3d.systems.RenderSystem
 import mnm.mods.tabbychat.api.ChannelStatus
 import mnm.mods.tabbychat.client.AbstractChannel
 import mnm.mods.tabbychat.client.TabbyChatClient
@@ -63,8 +63,8 @@ class ChatTab internal constructor(private val channel: AbstractChannel) : GuiCo
                 || status != null && status > ChannelStatus.PINGED && TabbyChatClient.settings.general.unreadFlashing.value
                 || TabbyChatClient.settings.advanced.visibility.value === LocalVisibility.ALWAYS) {
             val loc = location
-            GlStateManager.enableBlend()
-            GlStateManager.color4f(1f, 1f, 1f, mc.gameSettings.chatOpacity.toFloat())
+            RenderSystem.enableBlend()
+            RenderSystem.color4f(1f, 1f, 1f, mc.gameSettings.chatOpacity.toFloat())
             drawModalCorners(getStatusModal(loc.contains(x, y)))
 
             val txtX = loc.xCenter
@@ -73,7 +73,7 @@ class ChatTab internal constructor(private val channel: AbstractChannel) : GuiCo
             val (red, green, blue) = primaryColorProperty
             val color = Color.getHex(red, green, blue, (mc.gameSettings.chatOpacity * 255).toInt())
             this.drawCenteredString(mc.fontRenderer, this.text, txtX, txtY, color)
-            GlStateManager.disableBlend()
+            RenderSystem.disableBlend()
         }
     }
 

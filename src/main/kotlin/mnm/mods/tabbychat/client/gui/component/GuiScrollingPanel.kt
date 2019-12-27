@@ -2,6 +2,7 @@ package mnm.mods.tabbychat.client.gui.component
 
 import mnm.mods.tabbychat.client.gui.component.layout.BorderLayout
 import mnm.mods.tabbychat.client.gui.component.layout.BorderLayout.Position
+import mnm.mods.tabbychat.getMainWindow
 import mnm.mods.tabbychat.util.Dim
 import mnm.mods.tabbychat.util.Location
 import mnm.mods.tabbychat.util.mc
@@ -47,8 +48,8 @@ class GuiScrollingPanel : GuiPanel() {
             }
         }
 
-        val height = mc.mainWindow.height.toDouble()
-        val scale = mc.mainWindow.guiScaleFactor
+        val height = mc.getMainWindow().height.toDouble()
+        val scale = mc.getMainWindow().guiScaleFactor
 
         GL11.glEnable(GL11.GL_SCISSOR_TEST)
         GL11.glScissor((rect.xPos * scale).toInt(), (height - rect.yHeight * scale).toInt(),

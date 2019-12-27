@@ -1,6 +1,6 @@
 package mnm.mods.tabbychat.client.gui
 
-import com.mojang.blaze3d.platform.GlStateManager
+import com.mojang.blaze3d.systems.RenderSystem
 import mnm.mods.tabbychat.api.Channel
 import mnm.mods.tabbychat.api.ChannelStatus
 import mnm.mods.tabbychat.client.AbstractChannel
@@ -41,10 +41,10 @@ class ChatTray internal constructor() : GuiPanel() {
 
     override fun render(x: Int, y: Int, parTicks: Float) {
         if (mc.ingameGUI.chatGUI.chatOpen) {
-            GlStateManager.enableBlend()
-            GlStateManager.color4f(1f, 1f, 1f, mc.gameSettings.chatOpacity.toFloat())
+            RenderSystem.enableBlend()
+            RenderSystem.color4f(1f, 1f, 1f, mc.gameSettings.chatOpacity.toFloat())
             drawModalCorners(MODAL)
-            GlStateManager.disableBlend()
+            RenderSystem.disableBlend()
         }
         super.render(x, y, parTicks)
     }
@@ -98,7 +98,7 @@ class ChatTray internal constructor() : GuiPanel() {
             }
 
         override fun render(x: Int, y: Int, parTicks: Float) {
-            GlStateManager.enableBlend()
+            RenderSystem.enableBlend()
             val loc = location
             val opac = (mc.gameSettings.chatOpacity * 255).toInt() shl 24
             renderBorders(loc.xPos + 2, loc.yPos + 2, loc.xWidth - 2, loc.yHeight - 2, 0x999999 or opac)
