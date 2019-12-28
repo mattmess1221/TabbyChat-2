@@ -1,33 +1,40 @@
 package mnm.mods.tabbychat.client.settings
 
 import mnm.mods.tabbychat.util.ILocation
+import mnm.mods.tabbychat.util.ImmutableLocation
 import mnm.mods.tabbychat.util.LocalVisibility
-import mnm.mods.tabbychat.util.Location
-import mnm.mods.tabbychat.util.config.ValueObject
+import mnm.mods.tabbychat.util.config.ConfigView
+import mnm.mods.tabbychat.util.config.FileConfigView
 
-class AdvancedSettings : ValueObject<AdvancedSettings>() {
+class AdvancedSettings(config: FileConfigView, path: List<String>) : ConfigView(config, path) {
 
-    private val chatX by value { 5 }
-    private val chatY by value { 17 }
-    private val chatW by value { 300 }
-    private val chatH by value { 160 }
-    val unfocHeight by value { 0.5f }
-    val fadeTime by value { 200 }
-    val historyLen by value { 100 }
-    val hideTag by value { false }
-    val keepChatOpen by value { false }
-    val spelling by value { true }
-    val visibility by value { LocalVisibility.NORMAL }
+    val chatLocation by child(::LocationConfig)
+    val unfocHeight by defining(0.5f)
+    val fadeTime by defining(200)
+    val historyLen by defining(100)
+    val hideTag by defining(false)
+    val keepChatOpen by defining(false)
+    val spelling by defining(true)
+    val visibility by definingEnum(LocalVisibility.NORMAL)
 
-    var chatboxLocation: ILocation
-        get() = Location(
-                chatX.value, chatY.value,
-                chatW.value, chatH.value
-        )
-        set(value) {
-            chatX.value = value.xPos
-            chatY.value = value.yPos
-            chatW.value = value.width
-            chatH.value = value.height
+    class LocationConfig(config: FileConfigView, path: List<String>) : ConfigView(config, path), ILocation {
+        val x by defining(5)
+        val y by defining(17)
+        val w by defining(300)
+        val h by defining(160)
+
+        override var xPos by x
+        override var yPos by y
+        override var width by w
+        override var height by h
+
+        fun merge(loc: ILocation) {
+            xPos = loc.xPos
+            yPos = loc.yPos
+            width = loc.width
+            height = loc.height
         }
+
+        override fun asImmutable() = ImmutableLocation(xPos, yPos, width, height)
+    }
 }

@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList
 import mnm.mods.tabbychat.client.gui.component.GuiComponent
 import mnm.mods.tabbychat.util.Color
 import mnm.mods.tabbychat.util.Translatable
-import mnm.mods.tabbychat.util.config.Value
+import mnm.mods.tabbychat.util.config.Spec
 import mnm.mods.tabbychat.util.mc
 
 /**
@@ -13,28 +13,24 @@ import mnm.mods.tabbychat.util.mc
  *
  * @param <T> The type
  */
-class GuiSettingEnum<T>(
-        override val setting: Value<T>,
+class GuiSettingEnum<T : Any>(
+        setting: Spec<T>,
         values: Array<T>,
         private val namer: T.() -> Translatable = {
             this as? Translatable ?: Translatable { toString() }
-        }) : GuiComponent(), GuiSetting<Value<T>, T> {
+        }) : GuiComponent(), GuiSetting<T> {
+
+    override var value by setting
 
     companion object {
-        fun <T : Translatable> of(setting: Value<T>, values: Array<T>) = GuiSettingEnum(setting, values) {
+        fun <T : Translatable> of(setting: Spec<T>, values: Array<T>) = GuiSettingEnum(setting, values) {
             this
         }
     }
 
     private val values: List<T> = ImmutableList.copyOf(values)
 
-    private var text: String = namer(setting.value).translate()
-    override var value: T = setting.value
-        set(value) {
-            this.text = namer(value).translate()
-            setting.value = value
-            field = value
-        }
+    private val text: String get() = namer(this.value).translate()
 
     init {
         secondaryColor = Color.DARK_GRAY

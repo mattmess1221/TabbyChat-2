@@ -164,8 +164,7 @@ class GuiFilterEditor(private val filter: UserFilter) : GuiPanel() {
             name = txtName.value
             setPattern(txtPattern.value)
             settings.apply {
-                channels.clear()
-                channels.addAll(txtDestinations.value.split(",").filter { it.isNotBlank() })
+                channels = txtDestinations.value.split(",").filter { it.isNotBlank() }.toMutableList()
                 isRemove = chkRemove.value
                 isCaseInsensitive = btnIgnoreCase.toggle
                 isRegex = btnRegexp.toggle
@@ -175,5 +174,6 @@ class GuiFilterEditor(private val filter: UserFilter) : GuiPanel() {
                 soundName = txtSound.value
             }
         }
+
     }
 }

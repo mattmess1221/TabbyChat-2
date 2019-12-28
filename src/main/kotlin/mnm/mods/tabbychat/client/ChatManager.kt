@@ -83,16 +83,26 @@ object ChatManager : Chat {
 
     override fun getChannel(name: String): Channel {
         return allChannels.getOrPut(name) {
-            server.channels.getOrPut(name) {
-                ChatChannel(name)
+            server.getChannels().associateBy { it.name }.getOrElse(name){
+                val channels = server.getChannels().toMutableList()
+                val channel = ChatChannel(name)
+                channels.add(channel)
+                server.setChannels(channels)
+                server.config.save()
+                channel
             }
         }
     }
 
     override fun getUserChannel(user: String): Channel {
         return allPms.getOrPut(user) {
-            server.pms.getOrPut(user) {
-                UserChannel(user)
+            server.getPms().associateBy { it.name }.getOrElse(user) {
+                val channels = server.getPms().toMutableList()
+                val channel = UserChannel(user)
+                channels.add(channel)
+                server.setPms(channels)
+                server.config.save()
+                channel
             }
         }
 
@@ -250,7 +260,7 @@ object ChatManager : Chat {
     fun save() {
         synchronized(lock) {
             try {
-                saveTo(server.path.parent)
+                saveTo(server.config.nioPath.parent)
             } catch (e: IOException) {
                 TabbyChat.logger.warn(CHATBOX, "Error while saving chat data", e)
             }

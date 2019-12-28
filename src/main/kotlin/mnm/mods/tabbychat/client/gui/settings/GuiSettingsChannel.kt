@@ -14,7 +14,7 @@ import mnm.mods.tabbychat.util.Location
 import mnm.mods.tabbychat.util.Translation
 import net.minecraft.client.resources.I18n
 
-internal class GuiSettingsChannel(private var channel: AbstractChannel? = null) : SettingPanel<ServerSettings>() {
+internal class GuiSettingsChannel(private val channelName: String? = null) : SettingPanel<ServerSettings>() {
 
     private lateinit var channels: GuiScrollingPanel
     private lateinit var panel: GuiPanel
@@ -28,6 +28,9 @@ internal class GuiSettingsChannel(private var channel: AbstractChannel? = null) 
 
     override val settings: ServerSettings = TabbyChatClient.serverSettings
 
+    private var channel: AbstractChannel? = null
+    val configChannels = settings.getChannels().toMutableList()
+
     init {
         this.layout = BorderLayout()
         this.secondaryColor = Color(0, 15, 100, 65)
@@ -38,7 +41,10 @@ internal class GuiSettingsChannel(private var channel: AbstractChannel? = null) 
             location = Location(0, 0, 60, 200)
             contentPanel.apply {
                 layout = VerticalLayout()
-                for (channel in settings.channels.values) {
+                for (channel in configChannels) {
+                    if (channel.name == channelName) {
+                        this@GuiSettingsChannel.channel = channel
+                    }
                     add(ChannelButton(channel)) {
                         location = Location(0, 0, 60, 15)
                     }
@@ -106,27 +112,31 @@ internal class GuiSettingsChannel(private var channel: AbstractChannel? = null) 
             // remove from chat
             ChatBox.removeChannel(channel)
             // remove from settings file
-            settings.channels.remove(channel.name)
+            configChannels.remove(channel)
             // don't add this channel again.
-            settings.general.ignoredChannels.add(channel.toString())
+            settings.general.ignoredChannels.value = settings.general.ignoredChannels.value.toMutableSet().also {it.add(channel.toString())}.toList()
             // remove from settings gui
-            for (comp in channels.contentPanel.children()) {
+            for (comp in this.channels.contentPanel.children()) {
                 if (comp is ChannelButton && comp.channel === channel) {
-                    channels.contentPanel.remove(comp)
+                    this.channels.contentPanel.remove(comp)
                     break
                 }
             }
             select(null)
+            settings.setChannels(configChannels)
         }, intArrayOf(2, 17, 4, 2))
     }
 
     private fun save() {
+
         channel?.apply {
             alias = optAlias.value
             prefix = optPrefix.value
             isPrefixHidden = optHidePrefix.value
             command = optCommand.value
         }
+
+        settings.setChannels(configChannels)
     }
 
     private inner class ChannelButton internal constructor(internal val channel: ChatChannel) : AbstractGuiButton() {

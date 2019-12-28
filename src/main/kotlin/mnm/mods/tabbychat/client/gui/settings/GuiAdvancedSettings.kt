@@ -27,7 +27,7 @@ class GuiAdvancedSettings : SettingPanel<TabbySettings>() {
         }
 
         add(GuiLabel(Translation.ADVANCED_CHAT_VISIBILITY.toComponent()), intArrayOf(1, 3))
-        add(GuiSettingEnum.of(settings.advanced.visibility, LocalVisibility.values()), intArrayOf(5, 3, 3, 1))
+        add(GuiSettingEnum.of<LocalVisibility>(settings.advanced.visibility, LocalVisibility.values()), intArrayOf(5, 3, 3, 1))
 
         add(GuiLabel(Translation.ADVANCED_HIDE_DELIMS.toComponent()), intArrayOf(2, 5))
         add(GuiSettingBoolean(settings.advanced.hideTag), intArrayOf(1, 5))

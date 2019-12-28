@@ -101,13 +101,13 @@ object ChatBox : GuiPanel() {
     private lateinit var chat: ChatScreen
 
     // save bounds
-    override var location: ILocation = TabbyChatClient.settings.advanced.chatboxLocation
+    override var location: ILocation = TabbyChatClient.settings.advanced.chatLocation
         set(location) {
             if (field != location) {
                 field = location
                 val sett = TabbyChatClient.settings
-                sett.advanced.chatboxLocation = location
-                sett.save()
+                sett.advanced.chatLocation.merge(location)
+                sett.config.save()
             }
         }
 

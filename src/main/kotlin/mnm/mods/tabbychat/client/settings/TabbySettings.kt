@@ -1,12 +1,14 @@
 package mnm.mods.tabbychat.client.settings
 
-import mnm.mods.tabbychat.util.config.SettingsFile
+import mnm.mods.tabbychat.util.config.FileConfigView
 import mnm.mods.tabbychat.util.div
 
 import java.nio.file.Path
 
-class TabbySettings(parent: Path) : SettingsFile<TabbySettings>(parent / "tabbychat.json") {
+class TabbySettings(parent: Path) : FileConfigView(parent / "tabbychat.toml") {
 
-    val general by obj { GeneralSettings() }
-    val advanced by obj { AdvancedSettings() }
+    val general by child(::GeneralSettings)
+    val advanced by child(::AdvancedSettings) {
+        "Advanced settings. I don't recommend changing any of these. They're all handled automatically."
+    }
 }

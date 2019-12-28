@@ -1,5 +1,6 @@
 package mnm.mods.tabbychat.client
 
+import com.electronwill.nightconfig.core.Config
 import mnm.mods.tabbychat.api.Channel
 import net.minecraft.util.StringUtils
 
@@ -20,6 +21,25 @@ abstract class AbstractChannel(
         set(value) {
             field = StringUtils.stripControlCodes(value)
         }
+
+    fun toConfig(config: Config) {
+        config.set<String>("name", name)
+        config.set<String>("alias", alias)
+        config.set<String>("command", command)
+        config.set<Boolean>("isPrefixHidden", isPrefixHidden)
+        config.set<String>("prefix", prefix)
+    }
+
+    companion object {
+        fun <T : AbstractChannel> fromConfig(config: Config, factory: (String) -> T): T {
+            return factory(config.get("name")).apply {
+                alias = config.get("alias")
+                command = config.get("command")
+                isPrefixHidden = config.get("isPrefixHidden")
+                prefix = config.get("prefix")
+            }
+        }
+    }
 }
 
 

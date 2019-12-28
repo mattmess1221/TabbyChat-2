@@ -1,5 +1,6 @@
 package mnm.mods.tabbychat.client
 
+import com.electronwill.nightconfig.toml.TomlFormat
 import mnm.mods.tabbychat.CHATBOX
 import mnm.mods.tabbychat.STARTUP
 import mnm.mods.tabbychat.TabbyChat
@@ -23,13 +24,17 @@ import net.minecraftforge.event.TickEvent
 import net.minecraftforge.eventbus.api.EventPriority
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper
+import java.nio.file.Files
 
 object TabbyChatClient {
     val spellcheck = Spellcheck(TabbyChat.dataFolder)
 
     val settings: TabbySettings = TabbySettings(TabbyChat.dataFolder).apply {
         TabbyChat.logger.info("Loading TabbyChat settings")
-        load()
+        if (Files.exists(config.nioPath)) {
+            config.load()
+        }
+        config.save()
     }
 
     lateinit var serverSettings: ServerSettings
@@ -90,11 +95,16 @@ object TabbyChatClient {
         if (address != null) {
             TabbyChat.logger.info("Loading settings for server $address")
             serverSettings = ServerSettings(TabbyChat.dataFolder, address).apply {
-                load()
+                if (Files.exists(config.nioPath)) {
+                    config.load()
+                } else {
+                    config.save()
+                }
+                TomlFormat.instance().createWriter().write(config, System.out)
             }
             // load chat
             try {
-                ChatManager.loadFrom(serverSettings.path.parent)
+                ChatManager.loadFrom(serverSettings.config.nioPath.parent)
             } catch (e: Exception) {
                 TabbyChat.logger.warn(CHATBOX, "Unable to load chat data.", e)
             }

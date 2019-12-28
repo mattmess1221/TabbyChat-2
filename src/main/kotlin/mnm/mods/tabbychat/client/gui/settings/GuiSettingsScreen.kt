@@ -27,7 +27,7 @@ class GuiSettingsScreen(channel: Channel?) : ComponentScreen(StringTextComponent
 
     init {
         if (channel !== DefaultChannel) {
-            selectedSetting = GuiSettingsChannel(channel as AbstractChannel?)
+            selectedSetting = GuiSettingsChannel(channel?.name)
         }
     }
 
@@ -81,8 +81,8 @@ class GuiSettingsScreen(channel: Channel?) : ComponentScreen(StringTextComponent
     }
 
     override fun removed() {
-        TabbyChatClient.settings.save()
-        TabbyChatClient.serverSettings.save()
+        TabbyChatClient.settings.config.save()
+        TabbyChatClient.serverSettings.config.save()
     }
 
     override fun init(mc: Minecraft, width: Int, height: Int) {

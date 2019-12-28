@@ -1,5 +1,6 @@
 package mnm.mods.tabbychat.client.extra.filters
 
+import com.electronwill.nightconfig.core.Config
 import mnm.mods.tabbychat.api.filters.Filter
 import mnm.mods.tabbychat.api.filters.FilterEvent
 import mnm.mods.tabbychat.api.filters.FilterSettings
@@ -18,9 +19,7 @@ class UserFilter : Filter {
     var name = "New Filter"
     val settings = FilterSettings()
     var rawPattern = ".*"
-        private set
 
-    @Transient
     private var expression: Pattern? = null
 
     override val pattern: Pattern
@@ -120,4 +119,32 @@ class UserFilter : Filter {
     }
 
     internal inner class UserPatternException(e: PatternSyntaxException) : Exception(e)
+
+    fun toConfig(config: Config) {
+        config.set<String>("name", name)
+        config.set<String>("pattern", rawPattern)
+        config.set<List<String>>("channels", settings.channels)
+        config.set<Boolean>("isRemove", settings.isRemove)
+        config.set<Boolean>("isRaw", settings.isRaw)
+        config.set<Boolean>("isRegex", settings.isRegex)
+        config.set<Boolean>("isCaseInsensitive", settings.isCaseInsensitive)
+        config.set<Boolean>("isSoundNotification", settings.isSoundNotification)
+        config.set<Boolean>("soundName", settings.soundName ?: "")
+    }
+
+    companion object {
+        fun fromConfig(config: Config): UserFilter {
+            return UserFilter().apply {
+                name = config.get("name")
+                rawPattern = config.get("pattern")
+                settings.channels = config.get("channels")
+                settings.isRemove = config.get("isRemove")
+                settings.isRaw = config.get("isRaw")
+                settings.isRegex = config.get("isRegex")
+                settings.isCaseInsensitive = config.get("isCaseInsensitive")
+                settings.isSoundNotification = config.get("isSoundNotification")
+                settings.soundName = config.get("soundName")
+            }
+        }
+    }
 }

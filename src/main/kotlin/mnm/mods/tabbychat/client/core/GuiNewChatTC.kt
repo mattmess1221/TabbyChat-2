@@ -90,7 +90,7 @@ object GuiNewChatTC : NewChatGui(mc) {
                 chatevent.channels.remove(DefaultChannel)
             }
             val msg = !chatevent.channels.contains(ChatBox.activeChannel)
-            val ignored = TabbyChatClient.serverSettings.general.ignoredChannels.toSet()
+            val ignored = TabbyChatClient.serverSettings.general.ignoredChannels.value.toSet()
             val channels = chatevent.channels.asSequence()
                     .filter { it.name !in ignored }
                     // FIXME cast shouldn't be needed. Remove ASAP

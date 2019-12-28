@@ -16,6 +16,7 @@ class GuiSettingsFilters internal constructor() : SettingPanel<ServerSettings>()
     override val displayString by FILTERS
     override val settings: ServerSettings = TabbyChatClient.serverSettings
 
+    private val filters = settings.getFilters().toMutableList()
     private var currentFilter: GuiFilterEditor? = null
 
     private var index = 0
@@ -31,7 +32,7 @@ class GuiSettingsFilters internal constructor() : SettingPanel<ServerSettings>()
     }
 
     override fun initGUI() {
-        index = settings.filters.size - 1
+        index = filters.size - 1
 
         val panel = add(GuiPanel(), BorderLayout.Position.NORTH) {
             layout = FlowLayout()
@@ -66,7 +67,7 @@ class GuiSettingsFilters internal constructor() : SettingPanel<ServerSettings>()
         this.index = i
         currentFilter?.let { remove(it) }
 
-        val filter = settings.filters[i]
+        val filter = filters[i]
         currentFilter = this.add(GuiFilterEditor(filter), BorderLayout.Position.CENTER)
         setFocused(currentFilter)
 
@@ -75,15 +76,15 @@ class GuiSettingsFilters internal constructor() : SettingPanel<ServerSettings>()
 
     private fun delete(i: Int) {
         // deletes a filter
-        settings.filters.removeAt(i)
+        filters.removeAt(i)
         this.remove(this.currentFilter!!)
         update()
     }
 
     private fun add() {
         // creates a new filter, adds it to the list, and selects it.
-        settings.filters.add(UserFilter())
-        select(settings.filters.size - 1)
+        filters.add(UserFilter())
+        select(filters.size - 1)
         update()
     }
 
@@ -92,7 +93,7 @@ class GuiSettingsFilters internal constructor() : SettingPanel<ServerSettings>()
         this.prev.active = true
         this.delete.active = true
 
-        val size = settings.filters.size
+        val size = filters.size
 
         if (index >= size - 1) {
             this.next.active = false
@@ -106,5 +107,7 @@ class GuiSettingsFilters internal constructor() : SettingPanel<ServerSettings>()
             this.delete.active = false
             this.index = 0
         }
+
+        settings.setFilters(filters)
     }
 }

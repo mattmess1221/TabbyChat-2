@@ -2,17 +2,18 @@ package mnm.mods.tabbychat.client.settings
 
 import mnm.mods.tabbychat.util.ChannelPatterns
 import mnm.mods.tabbychat.util.MessagePatterns
-import mnm.mods.tabbychat.util.config.ValueObject
+import mnm.mods.tabbychat.util.config.ConfigView
+import mnm.mods.tabbychat.util.config.FileConfigView
 
-class GeneralServerSettings : ValueObject<GeneralServerSettings>() {
+class GeneralServerSettings(config: FileConfigView, path: List<String>) : ConfigView(config, path) {
 
-    val channelsEnabled by value { true }
-    val pmEnabled by value { true }
-    val channelPattern by value { ChannelPatterns.BRACKETS }
-    val messegePattern by value { MessagePatterns.WHISPERS }
-    val useDefaultTab by value { true }
-    val ignoredChannels by list<String>(typeToken())
-    val defaultChannel by value { "" }
-    val channelCommand by value { "" }
-    val messageCommand by value { "" }
+    val channelsEnabled by defining(true)
+    val pmEnabled by defining(true)
+    val channelPattern by definingEnum(ChannelPatterns.BRACKETS)
+    val messegePattern by definingEnum(MessagePatterns.WHISPERS)
+    val useDefaultTab by defining(true)
+    val ignoredChannels by definingList(listOf<String>())
+    val defaultChannel by defining("")
+    val channelCommand by defining("")
+    val messageCommand by defining("")
 }
