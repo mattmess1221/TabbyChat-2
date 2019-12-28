@@ -68,7 +68,7 @@ class GuiSettingsFilters internal constructor() : SettingPanel<ServerSettings>()
         currentFilter?.let { remove(it) }
 
         val filter = filters[i]
-        currentFilter = this.add(GuiFilterEditor(filter), BorderLayout.Position.CENTER)
+        currentFilter = this.add(GuiFilterEditor(filters, filter), BorderLayout.Position.CENTER)
         setFocused(currentFilter)
 
         update()
@@ -78,6 +78,7 @@ class GuiSettingsFilters internal constructor() : SettingPanel<ServerSettings>()
         // deletes a filter
         filters.removeAt(i)
         this.remove(this.currentFilter!!)
+        this.currentFilter = null
         update()
     }
 

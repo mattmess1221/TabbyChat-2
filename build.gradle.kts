@@ -40,8 +40,6 @@ minecraft {
     runs {
         create("client") {
 
-            fun properties(vararg props: Pair<String, String>) = properties(mapOf(*props))
-
             workingDirectory = file("run").absolutePath
 
             property("forge.logging.markers", "SCAN")
