@@ -1,5 +1,6 @@
 package mnm.mods.tabbychat.client.extra.filters
 
+import mnm.mods.tabbychat.client.TabbyChatClient
 import mnm.mods.tabbychat.client.gui.component.*
 import mnm.mods.tabbychat.client.gui.component.layout.GuiGridLayout
 import mnm.mods.tabbychat.util.Color
@@ -13,7 +14,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry
 import net.minecraftforge.registries.ForgeRegistries
 import org.lwjgl.glfw.GLFW
 
-class GuiFilterEditor(private val filter: UserFilter) : GuiPanel() {
+class GuiFilterEditor(private val filters: List<UserFilter>, private val filter: UserFilter) : GuiPanel() {
 
     private val txtName: GuiText
     private val chkRemove: GuiCheckbox
@@ -174,6 +175,6 @@ class GuiFilterEditor(private val filter: UserFilter) : GuiPanel() {
                 soundName = txtSound.value
             }
         }
-
+        TabbyChatClient.serverSettings.setFilters(filters)
     }
 }

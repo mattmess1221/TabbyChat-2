@@ -109,6 +109,5 @@ class GuiSettingsFilters internal constructor() : SettingPanel<ServerSettings>()
             this.index = 0
         }
 
-        settings.setFilters(filters)
     }
 }
