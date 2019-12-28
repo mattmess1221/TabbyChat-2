@@ -88,7 +88,7 @@ object ChatManager : Chat {
                 val channel = ChatChannel(name)
                 channels.add(channel)
                 server.setChannels(channels)
-                server.config.save()
+                server.save()
                 channel
             }
         }
@@ -101,7 +101,7 @@ object ChatManager : Chat {
                 val channel = UserChannel(user)
                 channels.add(channel)
                 server.setPms(channels)
-                server.config.save()
+                server.save()
                 channel
             }
         }

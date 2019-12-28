@@ -107,7 +107,7 @@ object ChatBox : GuiPanel() {
                 field = location
                 val sett = TabbyChatClient.settings
                 sett.advanced.chatLocation.merge(location)
-                sett.config.save()
+                sett.save()
             }
         }
 

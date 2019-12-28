@@ -81,8 +81,8 @@ class GuiSettingsScreen(channel: Channel?) : ComponentScreen(StringTextComponent
     }
 
     override fun removed() {
-        TabbyChatClient.settings.config.save()
-        TabbyChatClient.serverSettings.config.save()
+        TabbyChatClient.settings.save()
+        TabbyChatClient.serverSettings.save()
     }
 
     override fun init(mc: Minecraft, width: Int, height: Int) {

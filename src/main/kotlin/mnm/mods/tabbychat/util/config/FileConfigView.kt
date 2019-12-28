@@ -1,6 +1,5 @@
 package mnm.mods.tabbychat.util.config
 
-import com.electronwill.nightconfig.core.Config
 import com.electronwill.nightconfig.core.ConfigSpec
 import com.electronwill.nightconfig.core.EnumGetMethod
 import com.electronwill.nightconfig.core.file.CommentedFileConfig
@@ -13,7 +12,7 @@ import kotlin.reflect.KProperty
 abstract class AbstractConfigView(val prefix: List<String>) {
     abstract val file: FileConfigView
 
-    internal fun <T : Any> defining(default: T, builder: Spec<T>.() -> Unit = {}) = DelegateProvider { _, prop ->
+    protected fun <T : Any> defining(default: T, builder: Spec<T>.() -> Unit = {}) = DelegateProvider { _, prop ->
         val path = prefix.toMutableList().apply { add(prop.name) }
         val spec = Spec(file, path, default)
         spec.builder()
@@ -22,70 +21,32 @@ abstract class AbstractConfigView(val prefix: List<String>) {
         Delegate { _, _ -> spec }
     }
 
-    internal fun <T : Any> definingInList(default: T, vararg acceptable: T, builder: Spec<T>.() -> Unit) = defining(default) {
-        validator = { it in acceptable }
-        builder()
-    }
-
-    internal fun <V : Comparable<V>> definingInRange(default: V, min: V, max: V, builder: Spec<V>.() -> Unit) = let {
-        check(min <= max) {
-            "The minimum must be less than the maximum"
-        }
-        defining(default) {
-            validator = {
-                @Suppress("UNCHECKED_CAST")
-                (it as? Comparable<V>)?.let { c ->
-                    c > min && c < max
-                } == true
-            }
-            builder()
-        }
-    }
-
-    internal fun <T, L : List<T>> definingList(default: L, elementValidator: (Any?) -> Boolean = { true }, builder: Spec<L>.() -> Unit = {}) = defining(default) {
+    protected fun <T, L : List<T>> definingList(default: L, elementValidator: (Any?) -> Boolean = { true }, builder: Spec<L>.() -> Unit = {}) = defining(default) {
         validator = { (it as? List<*>)?.all(elementValidator) == true }
         builder()
     }
 
-    internal inline fun <reified T : Enum<T>> definingEnum(default: T, method: EnumGetMethod = EnumGetMethod.NAME, noinline builder: Spec<T>.() -> Unit = {}) = defining(default) {
+    protected inline fun <reified T : Enum<T>> definingEnum(default: T, method: EnumGetMethod = EnumGetMethod.NAME, noinline builder: Spec<T>.() -> Unit = {}) = defining(default) {
         validator = { method.validate(it, T::class.java) }
         getter = { c, p -> c.getEnum(p, T::class.java) }
         builder()
     }
 
-    internal inline fun <reified T : Enum<T>> definingRestrictedEnum(default: T, acceptable: Collection<T>, method: EnumGetMethod = EnumGetMethod.NAME, noinline builder: Spec<T>.() -> Unit = {}) = defining(default) {
+    protected inline fun <reified T : Enum<T>> definingRestrictedEnum(default: T, acceptable: Collection<T>, method: EnumGetMethod = EnumGetMethod.NAME, noinline builder: Spec<T>.() -> Unit = {}) = defining(default) {
         validator = { method.validate(it, T::class.java) && method.get(it, T::class.java) in acceptable }
         getter = { c, p -> c.getEnum(p, T::class.java) }
         builder()
     }
 
-    internal fun <T : ConfigView> child(supplier: (config: FileConfigView, prefix: List<String>) -> T, comment: () -> String? = { null }) = DelegateProvider { _, prop ->
+    protected fun <T : ConfigView> child(supplier: (config: FileConfigView, prefix: List<String>) -> T, comment: () -> String? = { null }) = DelegateProvider { _, prop ->
         val prefix = prefix.toMutableList().apply { add(prop.name) }
         file.config.setComment(prefix, comment())
         val s = supplier(file, prefix)
         Delegate { _, _ -> s }
     }
-
-    internal fun <T : Any> mapChild(getter: (Config, String) -> T = {c, p -> c.get<T>(p)}) = DelegateProvider { _, prop ->
-        val default = file.config.createSubConfig()
-        val path = prefix.toMutableList().also {it.add(prop.name)}
-        file.config.set<Config>(path, default)
-        val view = MappedConfigView(file, path, getter)
-        Delegate { _, _ -> view }
-    }
 }
 
 abstract class ConfigView(override val file: FileConfigView, prefix: List<String>) : AbstractConfigView(prefix)
-
-class MappedConfigView<T : Any>(file: FileConfigView, prefix: List<String>, val getter: (Config, String) -> T) : ConfigView(file, prefix) {
-    val config get() = file.config.get<Config>(prefix)
-
-    operator fun get(path: String) = getter(config, path)
-
-    operator fun set(path: String, value: T) {
-        config.set<T>(path, value)
-    }
-}
 
 abstract class FileConfigView(path: Path) : AbstractConfigView(listOf()) {
 
