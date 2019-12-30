@@ -29,7 +29,6 @@ open class GuiText(
         get() = delegate.text
         set(value) {
             delegate.text = value
-            delegate.cursorPosition = 0
         }
 
     init {
