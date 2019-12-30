@@ -132,15 +132,16 @@ abstract class GuiComponent : AbstractGui(), IRenderable, IGuiEventListener {
         return this.active && this.visible && location.contains(x, y)
     }
 
+    open fun init(screen: Screen) = Unit
     /**
      * Updates the component. Called when it is called on the [Screen].
      */
-    open fun tick() {}
+    open fun tick() = Unit
 
     /**
      * Called when the screen is closed.
      */
-    open fun onClosed() {}
+    open fun onClosed() = Unit
 
     fun clicked(x: Double, y: Double): Boolean {
         return isMouseOver(x, y)

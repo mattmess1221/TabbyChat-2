@@ -9,9 +9,7 @@ import mnm.mods.tabbychat.client.*
 import mnm.mods.tabbychat.client.gui.component.GuiPanel
 import mnm.mods.tabbychat.client.gui.component.layout.BorderLayout
 import mnm.mods.tabbychat.client.util.ScaledDimension
-import mnm.mods.tabbychat.getMainWindow
 import mnm.mods.tabbychat.util.*
-import net.minecraft.client.gui.CommandSuggestionHelper
 import net.minecraft.client.gui.IGuiEventListener
 import net.minecraft.client.gui.screen.ChatScreen
 import net.minecraft.client.gui.screen.Screen
@@ -19,21 +17,9 @@ import net.minecraft.client.renderer.Rectangle2d
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.MathHelper
 import net.minecraftforge.common.MinecraftForge
+import org.lwjgl.glfw.GLFW
 import kotlin.math.max
 import kotlin.math.min
-
-val ChatScreen.suggestionHelper: CommandSuggestionHelper get() = field_228174_e_
-fun CommandSuggestionHelper.render(x: Int, y: Int) = func_228114_a_(x, y)
-fun CommandSuggestionHelper.keyPressed(key: Int, code: Int, mods: Int) = func_228115_a_(key, code, mods)
-fun CommandSuggestionHelper.mouseClicked(x: Double, y: Double, b: Int) = func_228113_a_(x, y, b)
-fun CommandSuggestionHelper.mouseScrolled(scroll: Double) = func_228112_a_(scroll)
-
-val CommandSuggestionHelper.suggestions: CommandSuggestionHelper.Suggestions? get() = field_228108_q_
-var CommandSuggestionHelper.Suggestions.bounds: Rectangle2d
-    get() = field_228138_b_
-    set(b) {
-        field_228138_b_ = b
-    }
 
 object ChatBox : GuiPanel() {
 
@@ -140,17 +126,37 @@ object ChatBox : GuiPanel() {
         }
     }
 
+    override fun init(screen: Screen) {
+        this.chat = screen as ChatScreen
+        this.chat.field_228174_e_.field_228095_d_ = chatInput.textField.delegate
+        val chan = activeChannel
+        if (screen.defaultInputFieldText.isEmpty()
+                && !chan.isPrefixHidden
+                && chan.prefix.isNotEmpty()) {
+            screen.defaultInputFieldText = chan.prefix + " "
+        }
+        val text = chatInput.textField
+        screen.inputField = text.delegate
+        text.value = screen.defaultInputFieldText
+
+        chatInput.textFormatter = screen.field_228174_e_::func_228122_a_
+        text.delegate.setResponder { screen.func_212997_a(it) }
+
+        val children = screen.children() as MutableList<IGuiEventListener>
+        children[0] = ChatBox
+
+        super.init(screen)
+    }
+
     override fun tick() {
         location = normalizeLocation(location)
         super.tick()
     }
 
-    fun update(chat: ChatScreen) {
-        this.chat = chat
-        chat.suggestionHelper.field_228095_d_ = chatInput.textField.delegate
-        chat.suggestionHelper.suggestions?.apply {
-            if (bounds !is TCRect) {
-                bounds = TCRect(bounds)
+    private fun update() {
+        chat.field_228174_e_.field_228108_q_?.apply {
+            if (field_228138_b_ !is TCRect) {
+                field_228138_b_ = TCRect(field_228138_b_)
             }
         }
     }
@@ -235,11 +241,12 @@ object ChatBox : GuiPanel() {
     }
 
     override fun render(x: Int, y: Int, parTicks: Float) {
+        update()
         handleDragging(x.toDouble(), y.toDouble())
 
         super.render(x, y, parTicks)
         if (mc.ingameGUI.chatGUI.chatOpen) {
-            chat.suggestionHelper.render(x, y)
+            chat.field_228174_e_.func_228114_a_(x, y)
 
             val itextcomponent = mc.ingameGUI.chatGUI.getTextComponent(x.toDouble(), y.toDouble())
             if (itextcomponent != null && itextcomponent.style.hoverEvent != null) {
@@ -248,12 +255,30 @@ object ChatBox : GuiPanel() {
         }
     }
 
-    override fun keyPressed(key: Int, scanCode: Int, modifiers: Int): Boolean {
-        return chat.suggestionHelper.keyPressed(key, scanCode, modifiers) || super.keyPressed(key, scanCode, modifiers)
+    override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
+        if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
+            mc.ingameGUI.chatGUI.resetScroll()
+            val text = chatInput.textField
+            chat.sendMessage(text.value)
+            text.value = chat.defaultInputFieldText
+
+            if (!TabbyChatClient.settings.advanced.keepChatOpen.value) {
+                mc.displayGuiScreen(null)
+            }
+            return true
+        }
+
+        if (chat.field_228174_e_.func_228115_a_(keyCode, scanCode, modifiers)) {
+            return true
+        }
+        if (keyCode == GLFW.GLFW_KEY_TAB) {
+            return true
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers)
     }
 
     override fun mouseClicked(x: Double, y: Double, button: Int): Boolean {
-        if (chat.suggestionHelper.mouseClicked(x, y, button)) {
+        if (chat.field_228174_e_.func_228113_a_(x, y, button)) {
             return true
         }
         if (button == 0 && (tray.location.contains(x, y) || Screen.hasAltDown() && location.contains(x, y))) {
@@ -291,7 +316,7 @@ object ChatBox : GuiPanel() {
     }
 
     override fun mouseScrolled(x: Double, y: Double, scroll: Double): Boolean {
-        return this.chat.suggestionHelper.mouseScrolled(scroll) || super.mouseScrolled(x, y, scroll)
+        return this.chat.field_228174_e_.func_228112_a_(scroll) || super.mouseScrolled(x, y, scroll)
     }
 
     private fun normalizeLocation(bounds: ILocation): ILocation {
@@ -309,8 +334,8 @@ object ChatBox : GuiPanel() {
         var x1 = x
         var y1 = y
 
-        val screenW = mc.getMainWindow().scaledWidth
-        val screenH = mc.getMainWindow().scaledHeight
+        val screenW = mc.func_228018_at_().scaledWidth
+        val screenH = mc.func_228018_at_().scaledHeight
 
         val hotbar = 25
 

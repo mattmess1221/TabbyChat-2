@@ -4,6 +4,7 @@ import mnm.mods.tabbychat.client.gui.component.layout.ILayout
 import mnm.mods.tabbychat.util.Dim
 import net.minecraft.client.gui.IGuiEventListener
 import net.minecraft.client.gui.INestedGuiEventHandler
+import net.minecraft.client.gui.screen.Screen
 import kotlin.math.max
 
 /**
@@ -51,6 +52,10 @@ open class GuiPanel : GuiComponent(), INestedGuiEventHandler {
                     it.render(x, y, parTicks)
                 }
 
+    }
+
+    override fun init(screen: Screen) {
+        children().forEach{ it.init(screen) }
     }
 
     override fun tick() {
@@ -144,8 +149,8 @@ open class GuiPanel : GuiComponent(), INestedGuiEventHandler {
         return super<INestedGuiEventHandler>.mouseScrolled(x, y, scroll)
     }
 
-    override fun keyPressed(key: Int, scanCode: Int, modifiers: Int): Boolean {
-        return super<INestedGuiEventHandler>.keyPressed(key, scanCode, modifiers)
+    override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
+        return super<INestedGuiEventHandler>.keyPressed(keyCode, scanCode, modifiers)
     }
 
     override fun keyReleased(key: Int, scanCode: Int, modifiers: Int): Boolean {

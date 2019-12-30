@@ -1,4 +1,4 @@
-package mnm.mods.tabbychat.client.core
+package mnm.mods.tabbychat.client.gui
 
 import com.mojang.blaze3d.systems.RenderSystem
 import mnm.mods.tabbychat.CHATBOX
@@ -8,10 +8,9 @@ import mnm.mods.tabbychat.api.events.ChatMessageEvent.ChatReceivedEvent
 import mnm.mods.tabbychat.client.ChatManager
 import mnm.mods.tabbychat.client.DefaultChannel
 import mnm.mods.tabbychat.client.TabbyChatClient
-import mnm.mods.tabbychat.client.gui.ChatBox
-import mnm.mods.tabbychat.getMainWindow
 import mnm.mods.tabbychat.util.mc
 import net.minecraft.client.gui.NewChatGui
+import net.minecraft.client.gui.screen.ChatScreen
 import net.minecraft.util.text.ITextComponent
 import net.minecraftforge.common.MinecraftForge
 
@@ -21,9 +20,9 @@ object GuiNewChatTC : NewChatGui(mc) {
     private var prevScreenHeight: Int = 0
 
     init {
-        this.prevScreenHeight = mc.getMainWindow().height
+        prevScreenHeight = mc.func_228018_at_().height
 
-        MinecraftForge.EVENT_BUS.register(GuiChatTC)
+        MinecraftForge.EVENT_BUS.register(ComponentWrapper(ChatScreen::class, ChatBox))
     }
 
     override fun refreshChat() {
@@ -40,12 +39,12 @@ object GuiNewChatTC : NewChatGui(mc) {
     }
 
     override fun render(i: Int) {
-        if (prevScreenHeight != mc.getMainWindow().height || prevScreenWidth != mc.getMainWindow().width) {
+        if (prevScreenHeight != mc.func_228018_at_().height || prevScreenWidth != mc.func_228018_at_().width) {
 
-            ChatBox.onScreenHeightResize(prevScreenWidth, prevScreenHeight, mc.getMainWindow().width, mc.getMainWindow().height)
+            ChatBox.onScreenHeightResize(prevScreenWidth, prevScreenHeight, mc.func_228018_at_().width, mc.func_228018_at_().height)
 
-            prevScreenWidth = mc.getMainWindow().width
-            prevScreenHeight = mc.getMainWindow().height
+            prevScreenWidth = mc.func_228018_at_().width
+            prevScreenHeight = mc.func_228018_at_().height
         }
 
         if (chatOpen)
@@ -68,7 +67,7 @@ object GuiNewChatTC : NewChatGui(mc) {
     }
 
     override fun printChatMessageWithOptionalDeletion(ichat: ITextComponent, id: Int) {
-        checkThread { this.addMessage(ichat, id) }
+        checkThread { addMessage(ichat, id) }
     }
 
     fun addMessage(ichat: ITextComponent, id: Int) {
@@ -93,7 +92,6 @@ object GuiNewChatTC : NewChatGui(mc) {
             val ignored = TabbyChatClient.serverSettings.general.ignoredChannels.value.toSet()
             val channels = chatevent.channels.asSequence()
                     .filter { it.name !in ignored }
-                    // FIXME cast shouldn't be needed. Remove ASAP
                     .toSet()
             for (channel in channels) {
                 ChatManager.addMessage(channel, ichat, id)

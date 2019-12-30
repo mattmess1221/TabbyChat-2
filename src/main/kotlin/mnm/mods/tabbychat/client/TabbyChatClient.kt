@@ -4,11 +4,11 @@ import mnm.mods.tabbychat.CHATBOX
 import mnm.mods.tabbychat.STARTUP
 import mnm.mods.tabbychat.TabbyChat
 import mnm.mods.tabbychat.api.events.MessageAddedToChannelEvent
-import mnm.mods.tabbychat.client.core.GuiNewChatTC
 import mnm.mods.tabbychat.client.extra.ChatAddonAntiSpam
 import mnm.mods.tabbychat.client.extra.ChatLogging
 import mnm.mods.tabbychat.client.extra.filters.FilterAddon
 import mnm.mods.tabbychat.client.extra.spell.Spellcheck
+import mnm.mods.tabbychat.client.gui.GuiNewChatTC
 import mnm.mods.tabbychat.client.settings.ServerSettings
 import mnm.mods.tabbychat.client.settings.TabbySettings
 import mnm.mods.tabbychat.util.ChatTextUtils

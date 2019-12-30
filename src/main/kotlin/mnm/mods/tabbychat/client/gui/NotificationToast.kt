@@ -1,7 +1,6 @@
 package mnm.mods.tabbychat.client.gui
 
 import com.mojang.blaze3d.systems.RenderSystem
-import mnm.mods.tabbychat.getMainWindow
 import net.minecraft.client.gui.toasts.IToast
 import net.minecraft.client.gui.toasts.ToastGui
 import net.minecraft.util.text.ITextComponent
@@ -35,7 +34,7 @@ class NotificationToast(private val owner: String, title: ITextComponent) : IToa
 
         toastGui.minecraft.fontRenderer.drawString(TextFormatting.UNDERLINE.toString() + this.owner, 8.0f, 6.0f, -256)
 
-        val window = toastGui.minecraft.getMainWindow()
+        val window = toastGui.minecraft.func_228018_at_()
         val height = window.scaledHeight.toDouble()
         val scale = window.guiScaleFactor
 
