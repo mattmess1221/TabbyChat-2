@@ -38,19 +38,21 @@ minecraft {
     mappingVersion = "20191225-1.14.3"
     accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))
     runs {
-        create("client") {
+        listOf("client", "server").forEach {
+            create(it) {
 
-            workingDirectory = file("run").absolutePath
+                workingDirectory = file("run").absolutePath
 
-            property("forge.logging.markers", "SCAN")
-            property("forge.logging.console.level", "info")
+                property("forge.logging.markers", "SCAN")
+                property("forge.logging.console.level", "info")
 
-            mods {
-                create("tabbychat") {
-                    source(sourceSets.main.get())
+                mods {
+                    create("tabbychat") {
+                        source(sourceSets.main.get())
+                    }
                 }
+                ideaModule = "${project.name}.main"
             }
-            ideaModule = "${project.name}.main"
         }
     }
 }
