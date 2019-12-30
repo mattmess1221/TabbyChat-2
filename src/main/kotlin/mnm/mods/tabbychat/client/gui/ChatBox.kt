@@ -22,12 +22,18 @@ import net.minecraftforge.common.MinecraftForge
 import kotlin.math.max
 import kotlin.math.min
 
-val ChatScreen.suggestionHelper get() = this.field_228174_e_
+val ChatScreen.suggestionHelper: CommandSuggestionHelper get() = field_228174_e_
 fun CommandSuggestionHelper.render(x: Int, y: Int) = func_228114_a_(x, y)
-val CommandSuggestionHelper.suggestions get() = field_228108_q_
-val CommandSuggestionHelper.commandUsagePosition get() = field_228104_m_
-val CommandSuggestionHelper.commandUsageWidth get() = field_228105_n_
-val CommandSuggestionHelper.commandUsage get() = field_228103_l_
+fun CommandSuggestionHelper.keyPressed(key: Int, code: Int, mods: Int) = func_228115_a_(key, code, mods)
+fun CommandSuggestionHelper.mouseClicked(x: Double, y: Double, b: Int) = func_228113_a_(x, y, b)
+fun CommandSuggestionHelper.mouseScrolled(scroll: Double) = func_228112_a_(scroll)
+
+val CommandSuggestionHelper.suggestions: CommandSuggestionHelper.Suggestions? get() = field_228108_q_
+var CommandSuggestionHelper.Suggestions.bounds: Rectangle2d
+    get() = field_228138_b_
+    set(b) {
+        field_228138_b_ = b
+    }
 
 object ChatBox : GuiPanel() {
 
@@ -141,8 +147,11 @@ object ChatBox : GuiPanel() {
 
     fun update(chat: ChatScreen) {
         this.chat = chat
-        if (chat.suggestionHelper.suggestions != null && chat.suggestionHelper.suggestions.field_228138_b_ !is TCRect) {
-            chat.suggestionHelper.suggestions.field_228138_b_ = TCRect(chat.suggestionHelper.suggestions.field_228138_b_)
+        chat.suggestionHelper.field_228095_d_ = chatInput.textField.delegate
+        chat.suggestionHelper.suggestions?.apply {
+            if (bounds !is TCRect) {
+                bounds = TCRect(bounds)
+            }
         }
     }
 
@@ -230,30 +239,7 @@ object ChatBox : GuiPanel() {
 
         super.render(x, y, parTicks)
         if (mc.ingameGUI.chatGUI.chatOpen) {
-            val fr = mc.fontRenderer
-            val loc = location
-            val height = fr.FONT_HEIGHT + 3
-            val xPos = chat.suggestionHelper.commandUsagePosition + loc.xPos
-            var yPos = loc.yHeight - chat.suggestionHelper.commandUsage.size * height
-            when {
-                chat.suggestionHelper != null -> chat.suggestionHelper.render(x, y)
-                xPos + chat.suggestionHelper.commandUsageWidth > loc.xWidth -> {
-
-                    for ((i, s) in chat.suggestionHelper.commandUsage.withIndex()) {
-                        fill(0,
-                                chat.height - 14 - 12 * i,
-                                chat.suggestionHelper.commandUsageWidth + 1,
-                                chat.height - 2 - 12 * i,
-                                -0x1000000)
-                        fr.drawStringWithShadow(s, 1f, (chat.height - 14 + 2 - 12 * i).toFloat(), -1)
-                    }
-                }
-                else -> for (s in chat.suggestionHelper.commandUsage) {
-                    fill(xPos - 1, yPos, xPos + chat.suggestionHelper.commandUsageWidth + 1, yPos - height, -0x30000000)
-                    fr.drawStringWithShadow(s, xPos.toFloat(), (yPos - height + 2).toFloat(), -1)
-                    yPos += height
-                }
-            }
+            chat.suggestionHelper.render(x, y)
 
             val itextcomponent = mc.ingameGUI.chatGUI.getTextComponent(x.toDouble(), y.toDouble())
             if (itextcomponent != null && itextcomponent.style.hoverEvent != null) {
@@ -262,7 +248,14 @@ object ChatBox : GuiPanel() {
         }
     }
 
+    override fun keyPressed(key: Int, scanCode: Int, modifiers: Int): Boolean {
+        return chat.suggestionHelper.keyPressed(key, scanCode, modifiers) || super.keyPressed(key, scanCode, modifiers)
+    }
+
     override fun mouseClicked(x: Double, y: Double, button: Int): Boolean {
+        if (chat.suggestionHelper.mouseClicked(x, y, button)) {
+            return true
+        }
         if (button == 0 && (tray.location.contains(x, y) || Screen.hasAltDown() && location.contains(x, y))) {
             dragMode = !tray.isHandleHovered(x, y)
             drag = Vec2i(x.toInt(), y.toInt())
@@ -298,7 +291,7 @@ object ChatBox : GuiPanel() {
     }
 
     override fun mouseScrolled(x: Double, y: Double, scroll: Double): Boolean {
-        return this.chatArea.mouseScrolled(x, y, scroll)
+        return this.chat.suggestionHelper.mouseScrolled(scroll) || super.mouseScrolled(x, y, scroll)
     }
 
     private fun normalizeLocation(bounds: ILocation): ILocation {
