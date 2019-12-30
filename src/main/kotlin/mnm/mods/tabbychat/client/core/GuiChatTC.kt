@@ -55,7 +55,9 @@ object GuiChatTC {
     @SubscribeEvent
     fun onKeyPressed(event: GuiScreenEvent.KeyboardKeyPressedEvent.Pre) {
         if (event.gui is ChatScreen) {
-            event.isCanceled = keyPressed(event.gui as ChatScreen, event.keyCode) || ChatBox.keyPressed(event.keyCode, event.scanCode, event.modifiers)
+            event.isCanceled = keyPressed(event.gui as ChatScreen, event.keyCode)
+                    || ChatBox.keyPressed(event.keyCode, event.scanCode, event.modifiers)
+                    || event.keyCode == GLFW.GLFW_KEY_TAB
         }
     }
 
