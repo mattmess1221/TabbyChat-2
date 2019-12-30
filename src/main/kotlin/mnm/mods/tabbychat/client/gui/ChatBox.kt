@@ -136,6 +136,7 @@ object ChatBox : GuiPanel() {
 
     override fun tick() {
         location = normalizeLocation(location)
+        super.tick()
     }
 
     fun update(chat: ChatScreen) {
