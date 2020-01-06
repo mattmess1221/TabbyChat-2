@@ -1,16 +1,19 @@
 package mnm.mods.tabbychat.api
 
-/**
- * Represents a channel.
- */
 interface Channel {
 
-    /**
-     * Gets the name of this channel.
-     *
-     * @return The name
-     */
     val name: String
 
-    val displayName: String
+    val type: ChannelType
+
+    var alias: String
+
+    val displayName get() = type.prefix + (alias.takeUnless { it.isBlank() } ?: name)
+}
+
+enum class ChannelType(val prefix: String) {
+    CHAT("#"),
+    USER("@"),
+    ROOT("*"),
+    OTHER("")
 }

@@ -5,15 +5,15 @@ import com.google.common.base.Splitter
 import mnm.mods.tabbychat.client.gui.component.GuiText
 import mnm.mods.tabbychat.client.gui.component.GuiWrappedComponent
 import mnm.mods.tabbychat.client.gui.component.IGuiInput
-import mnm.mods.tabbychat.util.config.Spec
+import kotlin.reflect.KMutableProperty0
 
 class GuiSettingStringList(
-        setting: Spec<List<String>>,
+        setting: KMutableProperty0<List<String>>,
         split: String,
         join: String = split)
     : GuiSetting.ListSetting<String, GuiSettingStringList.GuiStringList>(setting, GuiStringList(split, join)) {
 
-    constructor(setting: Spec<List<String>>) : this(setting, ",", ", ")
+    constructor(setting: KMutableProperty0<List<String>>) : this(setting, ",", ", ")
 
     class GuiStringList(
             private val split: String,

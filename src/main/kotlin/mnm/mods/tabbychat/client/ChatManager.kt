@@ -5,15 +5,14 @@ import com.google.gson.GsonBuilder
 import mnm.mods.tabbychat.CHATBOX
 import mnm.mods.tabbychat.TabbyChat
 import mnm.mods.tabbychat.api.Channel
+import mnm.mods.tabbychat.api.ChannelType
 import mnm.mods.tabbychat.api.Chat
 import mnm.mods.tabbychat.api.events.MessageAddedToChannelEvent
 import mnm.mods.tabbychat.client.gui.ChatBox
 import mnm.mods.tabbychat.client.settings.ServerSettings
 import mnm.mods.tabbychat.client.settings.TabbySettings
-import mnm.mods.tabbychat.util.ChatTextUtils
-import mnm.mods.tabbychat.util.ToStringAdapter
-import mnm.mods.tabbychat.util.mc
-import mnm.mods.tabbychat.util.style
+import mnm.mods.tabbychat.util.*
+import mnm.mods.tabbychat.util.ConfigEvent
 import net.minecraft.util.EnumTypeAdapterFactory
 import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.StringTextComponent
@@ -70,42 +69,32 @@ object ChatManager : Chat {
 
     init {
         allChannels["*"] = DefaultChannel
-        settings.general.timestampChat.listen {
-            markDirty()
-        }
-        settings.general.timestampColor.listen {
-            markDirty()
-        }
-        settings.general.timestampStyle.listen {
-            markDirty()
+        val dirtys = listOf(
+                settings.general::timestampChat,
+                settings.general::timestampColor,
+                settings.general::timestampStyle
+        )
+        MinecraftForge.EVENT_BUS.listen<ConfigEvent> {
+            if (it.prop in dirtys) {
+                markDirty()
+            }
         }
     }
 
-    override fun getChannel(name: String): Channel {
+    override fun getChannel(type: ChannelType, name: String): Channel {
         return allChannels.getOrPut(name) {
-            server.getChannels().associateBy { it.name }.getOrElse(name){
-                val channels = server.getChannels().toMutableList()
-                val channel = ChatChannel(name)
+            server.channels.associateBy { it.name }.getOrElse(name){
+                val channels = server.channels.toMutableList()
+                val channel = ChannelImpl(type, name)
+                if (type === ChannelType.USER) {
+                    channel.prefix = "/msg $name"
+                }
                 channels.add(channel)
-                server.setChannels(channels)
+                server.channels = channels
                 server.save()
                 channel
             }
         }
-    }
-
-    override fun getUserChannel(user: String): Channel {
-        return allPms.getOrPut(user) {
-            server.getPms().associateBy { it.name }.getOrElse(user) {
-                val channels = server.getPms().toMutableList()
-                val channel = UserChannel(user)
-                channels.add(channel)
-                server.setPms(channels)
-                server.save()
-                channel
-            }
-        }
-
     }
 
     /**
@@ -115,13 +104,14 @@ object ChatManager : Chat {
      * @return The channel
      */
     fun parseChannel(format: String): Channel? {
-        if (format.length <= 1) {
+        if (format.isEmpty()) {
             return null
         }
         val name = format.substring(1)
         return when (format[0]) {
-            '@' -> getUserChannel(name)
-            '#' -> getChannel(name)
+            '@' -> getChannel(ChannelType.USER, name)
+            '#' -> getChannel(ChannelType.CHAT, name)
+            '*' -> DefaultChannel
             else -> null
         }
 
@@ -131,7 +121,7 @@ object ChatManager : Chat {
         if (name.isBlank()) {
             return "#"
         }
-        var firstChar = name.first()
+        val firstChar = name.first()
         if (firstChar != '#' && firstChar != '@') {
             return "#$name"
         }
@@ -179,7 +169,7 @@ object ChatManager : Chat {
         val messages = getChannelMessages(channel)
         messages.add(0, msg)
 
-        trimMessages(messages, settings.advanced.historyLen.value)
+        trimMessages(messages, settings.advanced.historyLen)
 
         MinecraftForge.EVENT_BUS.post(MessageAddedToChannelEvent.Post(text, id, channel))
 
@@ -204,7 +194,7 @@ object ChatManager : Chat {
         getChannelMessages(chan).removeIf { m -> m.id == id }
     }
 
-    fun removeMessageAt(channel: AbstractChannel, index: Int) {
+    fun removeMessageAt(channel: Channel, index: Int) {
         getChannelMessages(channel).removeAt(index)
         save()
     }
@@ -281,7 +271,7 @@ object ChatManager : Chat {
 
     private class PersistantChat(
             messages: Map<Channel, List<ChatMessage>>?,
-            active: Collection<AbstractChannel>?,
+            active: Collection<Channel>?,
             datetime: LocalDateTime? = LocalDateTime.now()
     ) {
         val messages = messages ?: emptyMap()

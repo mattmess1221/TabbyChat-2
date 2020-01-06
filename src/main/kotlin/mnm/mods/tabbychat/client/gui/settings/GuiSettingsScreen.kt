@@ -3,7 +3,6 @@ package mnm.mods.tabbychat.client.gui.settings
 import mnm.mods.tabbychat.CONFIG
 import mnm.mods.tabbychat.TabbyChat
 import mnm.mods.tabbychat.api.Channel
-import mnm.mods.tabbychat.client.AbstractChannel
 import mnm.mods.tabbychat.client.DefaultChannel
 import mnm.mods.tabbychat.client.TabbyChatClient
 import mnm.mods.tabbychat.client.gui.component.ComponentScreen

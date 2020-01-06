@@ -175,6 +175,6 @@ class GuiFilterEditor(private val filters: List<UserFilter>, private val filter:
                 soundName = txtSound.value
             }
         }
-        TabbyChatClient.serverSettings.setFilters(filters)
+        TabbyChatClient.serverSettings.filters = filters
     }
 }

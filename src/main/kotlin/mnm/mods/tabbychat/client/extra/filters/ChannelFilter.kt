@@ -1,5 +1,6 @@
 package mnm.mods.tabbychat.client.extra.filters
 
+import mnm.mods.tabbychat.api.ChannelType
 import mnm.mods.tabbychat.api.filters.Filter
 import mnm.mods.tabbychat.api.filters.FilterEvent
 import mnm.mods.tabbychat.client.ChatManager
@@ -9,14 +10,14 @@ import java.util.regex.Pattern
 class ChannelFilter : Filter {
 
     override val pattern: Pattern
-        get() = TabbyChatClient.serverSettings.general.channelPattern.value.pattern
+        get() = TabbyChatClient.serverSettings.general.channelPattern.pattern
 
     override fun action(event: FilterEvent) {
 
         val general = TabbyChatClient.serverSettings.general
-        if (general.channelsEnabled.value) {
+        if (general.channelsEnabled) {
             val chan = event.matcher.group(1)
-            val dest = ChatManager.getChannel(chan)
+            val dest = ChatManager.getChannel(ChannelType.CHAT, chan)
             event.channels.add(dest)
         }
 

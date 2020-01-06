@@ -15,12 +15,11 @@ java {
 }
 
 val include: Configuration by configurations.creating
-val mod: Configuration by configurations.creating
 
 repositories {
     jcenter()
-    maven("https://minecraft.curseforge.com/api/maven/") {
-        name = "curseforge"
+    maven("https://jitpack.io") {
+        name = "JitPack"
     }
 }
 
@@ -31,7 +30,7 @@ dependencies {
 
     testImplementation("junit:junit:4.12")
     implementation(kotlin("stdlib-jdk8"))
-    mod(implementation("kottle:Kottle:1.2.1")!!)
+    implementation("com.github.autaut03:kottle:1.4.0")
 }
 minecraft {
     mappingChannel = "snapshot"
@@ -63,7 +62,7 @@ tasks.shadowJar {
     relocate("com.swabunga", "mnm.mods.tabbychat.redist.com.swabunga")
 }
 
-tasks.withType<Jar> {
+tasks.jar {
     manifest.attributes(
             "Specification-Title" to project.name,
             "Specification-Vendor" to "killjoy1221",
@@ -73,25 +72,6 @@ tasks.withType<Jar> {
             "Implementation-Vendor" to "killjoy1221",
             "Implementation-Timestamp" to Date()
     )
-}
-
-task<Delete>("uninstallMods") {
-    delete(fileTree("run/mods"))
-}
-
-task<Copy>("installMods") {
-    dependsOn("uninstallMods")
-    from(mod)
-    include("**/*.jar")
-    into(file("run/mods"))
-}
-
-afterEvaluate {
-    tasks {
-        "prepareRuns" {
-            dependsOn("installMods")
-        }
-    }
 }
 
 reobf {

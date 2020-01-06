@@ -1,7 +1,6 @@
 package mnm.mods.tabbychat.client.gui.settings
 
-import mnm.mods.tabbychat.client.AbstractChannel
-import mnm.mods.tabbychat.client.ChatChannel
+import mnm.mods.tabbychat.client.ChannelImpl
 import mnm.mods.tabbychat.client.TabbyChatClient
 import mnm.mods.tabbychat.client.gui.ChatBox
 import mnm.mods.tabbychat.client.gui.component.*
@@ -28,8 +27,8 @@ internal class GuiSettingsChannel(private val channelName: String? = null) : Set
 
     override val settings: ServerSettings = TabbyChatClient.serverSettings
 
-    private var channel: AbstractChannel? = null
-    val configChannels = settings.getChannels().toMutableList()
+    private var channel: ChannelImpl? = null
+    private val configChannels = settings.channels.toMutableList()
 
     init {
         this.layout = BorderLayout()
@@ -59,7 +58,7 @@ internal class GuiSettingsChannel(private val channelName: String? = null) : Set
         this.select(channel)
     }
 
-    private fun select(channel: AbstractChannel?) {
+    private fun select(channel: ChannelImpl?) {
 
         for (comp in channels.contentPanel.children()) {
             comp.active = (comp as ChannelButton).channel !== channel
@@ -114,7 +113,7 @@ internal class GuiSettingsChannel(private val channelName: String? = null) : Set
             // remove from settings file
             configChannels.remove(channel)
             // don't add this channel again.
-            settings.general.ignoredChannels.value = settings.general.ignoredChannels.value.toMutableSet().also {it.add(channel.toString())}.toList()
+            settings.general.ignoredChannels += channel.toString()
             // remove from settings gui
             for (comp in this.channels.contentPanel.children()) {
                 if (comp is ChannelButton && comp.channel === channel) {
@@ -123,7 +122,7 @@ internal class GuiSettingsChannel(private val channelName: String? = null) : Set
                 }
             }
             select(null)
-            settings.setChannels(configChannels)
+            settings.channels = configChannels
         }, intArrayOf(2, 17, 4, 2))
     }
 
@@ -136,10 +135,10 @@ internal class GuiSettingsChannel(private val channelName: String? = null) : Set
             command = optCommand.value
         }
 
-        settings.setChannels(configChannels)
+        settings.channels = configChannels
     }
 
-    private inner class ChannelButton internal constructor(internal val channel: ChatChannel) : AbstractGuiButton() {
+    private inner class ChannelButton internal constructor(internal val channel: ChannelImpl) : AbstractGuiButton() {
 
         override val text: String = channel.name
 

@@ -28,7 +28,7 @@ class ComponentWrapper(private val type: KClass<out Screen>, private val panel: 
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    fun onRenderChat(event: GuiScreenEvent.DrawScreenEvent.Pre) {
+    fun onRenderScreen(event: GuiScreenEvent.DrawScreenEvent.Pre) {
         if (isValid(event.gui)) {
             event.isCanceled = true
             panel.render(event.mouseX, event.mouseY, event.renderPartialTicks)

@@ -47,8 +47,8 @@ object TabbyChatClient {
     }
 
     private fun removeChannelTags(event: MessageAddedToChannelEvent.Pre) {
-        if (settings.advanced.hideTag.value && event.channel !== DefaultChannel) {
-            val pattern = serverSettings.general.channelPattern.value
+        if (settings.advanced.hideTag && event.channel !== DefaultChannel) {
+            val pattern = serverSettings.general.channelPattern
 
             val text = event.text
             if (text != null) {

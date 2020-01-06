@@ -85,11 +85,11 @@ object GuiNewChatTC : NewChatGui(mc) {
                 chatevent.channels.add(ChatBox.activeChannel)
             }
             if (chatevent.channels.contains(DefaultChannel) && chatevent.channels.size > 1
-                    && !TabbyChatClient.serverSettings.general.useDefaultTab.value) {
+                    && !TabbyChatClient.serverSettings.general.useDefaultTab) {
                 chatevent.channels.remove(DefaultChannel)
             }
             val msg = !chatevent.channels.contains(ChatBox.activeChannel)
-            val ignored = TabbyChatClient.serverSettings.general.ignoredChannels.value.toSet()
+            val ignored = TabbyChatClient.serverSettings.general.ignoredChannels.toSet()
             val channels = chatevent.channels.asSequence()
                     .filter { it.name !in ignored }
                     .toSet()

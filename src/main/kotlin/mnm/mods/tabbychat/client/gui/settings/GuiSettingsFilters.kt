@@ -16,7 +16,7 @@ class GuiSettingsFilters internal constructor() : SettingPanel<ServerSettings>()
     override val displayString by FILTERS
     override val settings: ServerSettings = TabbyChatClient.serverSettings
 
-    private val filters = settings.getFilters().toMutableList()
+    private val filters = settings.filters.toMutableList()
     private var currentFilter: GuiFilterEditor? = null
 
     private var index = 0

@@ -18,7 +18,7 @@ class SpellingFormatter(sp: Spellcheck) {
     fun apply(text: String?): ITextComponent? {
         if (text == null)
             return null
-        if (text.contains("\u00a7") || !TabbyChatClient.settings.advanced.spelling.value) {
+        if (text.contains("\u00a7") || !TabbyChatClient.settings.advanced.spelling) {
             return StringTextComponent(text)
         }
 

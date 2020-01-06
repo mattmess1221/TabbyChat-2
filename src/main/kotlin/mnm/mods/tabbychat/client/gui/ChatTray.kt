@@ -3,7 +3,6 @@ package mnm.mods.tabbychat.client.gui
 import com.mojang.blaze3d.systems.RenderSystem
 import mnm.mods.tabbychat.api.Channel
 import mnm.mods.tabbychat.api.ChannelStatus
-import mnm.mods.tabbychat.client.AbstractChannel
 import mnm.mods.tabbychat.client.DefaultChannel
 import mnm.mods.tabbychat.client.TabbyChatClient
 import mnm.mods.tabbychat.client.gui.component.GuiComponent
@@ -57,7 +56,7 @@ class ChatTray internal constructor() : GuiPanel() {
         }
     }
 
-    fun addChannel(channel: AbstractChannel) {
+    fun addChannel(channel: Channel) {
         tabList.add(ChatTab(channel)) {
             map[channel] = this
         }
@@ -82,7 +81,7 @@ class ChatTray internal constructor() : GuiPanel() {
 
     private class ToggleButton internal constructor() : GuiComponent() {
 
-        private var value by TabbyChatClient.settings.advanced.keepChatOpen
+        private var value by property(TabbyChatClient.settings.advanced::keepChatOpen)
 
         override var location: ILocation
             get() = super.location.copy().move(0, 2)

@@ -38,9 +38,9 @@ object ChatTextUtils {
     fun getMessageWithOptionalTimestamp(msg: Message): ITextComponent {
         val settings = TabbyChatClient.settings.general
         val date = msg.dateTime
-        if (date != null && settings.timestampChat.value) {
-            val stamp = settings.timestampStyle.value
-            val format = settings.timestampColor.value
+        if (date != null && settings.timestampChat) {
+            val stamp = settings.timestampStyle
+            val format = settings.timestampColor
             return "".toComponent()
                     .appendSibling("${stamp.format(date)} ".toComponent().style {
                         color = format

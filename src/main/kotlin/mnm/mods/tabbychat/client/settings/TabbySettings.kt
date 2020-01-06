@@ -1,6 +1,6 @@
 package mnm.mods.tabbychat.client.settings
 
-import mnm.mods.tabbychat.util.config.FileConfigView
+import mnm.mods.tabbychat.util.FileConfigView
 import mnm.mods.tabbychat.util.div
 
 import java.nio.file.Path

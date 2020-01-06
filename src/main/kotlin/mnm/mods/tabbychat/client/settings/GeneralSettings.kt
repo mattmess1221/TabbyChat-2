@@ -1,18 +1,18 @@
 package mnm.mods.tabbychat.client.settings
 
+import com.electronwill.nightconfig.core.Config
 import mnm.mods.tabbychat.util.TimeStamps
-import mnm.mods.tabbychat.util.config.ConfigView
-import mnm.mods.tabbychat.util.config.FileConfigView
+import mnm.mods.tabbychat.util.ConfigView
 import net.minecraft.util.text.TextFormatting
 
-class GeneralSettings(config: FileConfigView, path: List<String>) : ConfigView(config, path) {
-    val logChat by defining(true)
-    val splitLog by defining(true)
-    val timestampChat by defining(false)
-    val timestampStyle by definingEnum(TimeStamps.MILITARYSECONDS)
-    val timestampColor by definingRestrictedEnum(TextFormatting.WHITE, TextFormatting.values().filter { it.isColor })
-    val antiSpam by defining(false)
-    val antiSpamPrejudice by defining(0.0)
-    val unreadFlashing by defining(true)
-    val checkUpdates by defining(true)
+class GeneralSettings(config: Config) : ConfigView(config) {
+    var logChat by defining(true)
+    var splitLog by defining(true)
+    var timestampChat by defining(false)
+    var timestampStyle by definingEnum(TimeStamps.MILITARYSECONDS)
+    var timestampColor by definingRestrictedEnum(TextFormatting.WHITE, TextFormatting.values().filter { it.isColor })
+    var antiSpam by defining(false)
+    var antiSpamPrejudice by defining(0.0)
+    var unreadFlashing by defining(true)
+    var checkUpdates by defining(true)
 }

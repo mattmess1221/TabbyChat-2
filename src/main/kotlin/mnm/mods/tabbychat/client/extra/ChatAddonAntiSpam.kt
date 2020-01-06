@@ -2,7 +2,6 @@ package mnm.mods.tabbychat.client.extra
 
 import mnm.mods.tabbychat.api.Channel
 import mnm.mods.tabbychat.api.events.MessageAddedToChannelEvent
-import mnm.mods.tabbychat.client.ChatChannel
 import mnm.mods.tabbychat.client.ChatManager
 import mnm.mods.tabbychat.client.TabbyChatClient
 import net.minecraftforge.eventbus.api.SubscribeEvent
@@ -15,11 +14,11 @@ object ChatAddonAntiSpam {
     @SubscribeEvent
     fun onMessageAdded(event: MessageAddedToChannelEvent.Pre) {
 
-        val enabled = TabbyChatClient.settings.general.antiSpam.value
-        val prejudice = TabbyChatClient.settings.general.antiSpamPrejudice.value
+        val enabled = TabbyChatClient.settings.general.antiSpam
+        val prejudice = TabbyChatClient.settings.general.antiSpamPrejudice
 
         if (enabled && event.id == 0) {
-            val channel = event.channel as ChatChannel
+            val channel = event.channel
             val counter = messageMap.getOrPut(channel) { Counter() }
             val text = event.text
             if (text != null) {

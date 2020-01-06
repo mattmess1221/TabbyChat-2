@@ -1,9 +1,10 @@
 package mnm.mods.tabbychat.client.gui
 
 import com.mojang.blaze3d.systems.RenderSystem
-import mnm.mods.tabbychat.client.AbstractChannel
+import mnm.mods.tabbychat.api.Channel
 import mnm.mods.tabbychat.client.ChatManager
 import mnm.mods.tabbychat.client.ChatMessage
+import mnm.mods.tabbychat.client.DefaultChannel
 import mnm.mods.tabbychat.client.TabbyChatClient
 import mnm.mods.tabbychat.client.gui.component.GuiComponent
 import mnm.mods.tabbychat.util.*
@@ -17,7 +18,7 @@ import java.util.*
 
 class ChatArea : GuiComponent() {
 
-    internal var channel: AbstractChannel? = null
+    internal var channel: Channel = DefaultChannel
 
     var scrollPos = 0
         set(scroll) {
@@ -34,7 +35,7 @@ class ChatArea : GuiComponent() {
     override var location: ILocation
         get() {
             val height = visibleChat.size * mc.fontRenderer.FONT_HEIGHT
-            val vis = TabbyChatClient.settings.advanced.visibility.value
+            val vis = TabbyChatClient.settings.advanced.visibility
 
             if (mc.ingameGUI.chatGUI.chatOpen || vis === LocalVisibility.ALWAYS) {
                 return super.location
@@ -54,7 +55,7 @@ class ChatArea : GuiComponent() {
     override var visible: Boolean
         get() {
             val height = visibleChat.size * mc.fontRenderer.FONT_HEIGHT
-            val vis = TabbyChatClient.settings.advanced.visibility.value
+            val vis = TabbyChatClient.settings.advanced.visibility
 
             return mc.gameSettings.chatVisibility != ChatVisibility.HIDDEN && (mc.ingameGUI.chatGUI.chatOpen || vis === LocalVisibility.ALWAYS || height != 0)
         }
@@ -63,7 +64,7 @@ class ChatArea : GuiComponent() {
         }
 
     internal val chat: List<ChatMessage>
-        get() = ChatManager.getVisible(channel!!, super.location.width - 6)
+        get() = ChatManager.getVisible(channel, super.location.width - 6)
 
     private val visibleChat: List<ChatMessage>
         get() {
@@ -73,7 +74,7 @@ class ChatArea : GuiComponent() {
             var length = 0
 
             var pos = scrollPos
-            val unfoc = TabbyChatClient.settings.advanced.unfocHeight.value
+            val unfoc = TabbyChatClient.settings.advanced.unfocHeight
             val div = if (mc.ingameGUI.chatGUI.chatOpen) 1.toFloat() else unfoc
             while (pos < lines.size && length < super.location.height * div - 10) {
                 val line = lines[pos]
@@ -145,7 +146,7 @@ class ChatArea : GuiComponent() {
     }
 
     private fun getLineOpacity(line: ChatMessage): Int {
-        val vis = TabbyChatClient.settings.advanced.visibility.value
+        val vis = TabbyChatClient.settings.advanced.visibility
         when {
             vis === LocalVisibility.ALWAYS -> return 4
             vis === LocalVisibility.HIDDEN && !mc.ingameGUI.chatGUI.chatOpen -> return 0
@@ -154,7 +155,7 @@ class ChatArea : GuiComponent() {
 
                 val age = (mc.ingameGUI.ticks - line.counter).toDouble()
                 if (!mc.ingameGUI.chatGUI.chatOpen) {
-                    var opacPerc = age / TabbyChatClient.settings.advanced.fadeTime.value
+                    var opacPerc = age / TabbyChatClient.settings.advanced.fadeTime
                     opacPerc = 1.0 - opacPerc
                     opacPerc *= 10.0
 

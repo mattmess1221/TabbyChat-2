@@ -6,6 +6,7 @@ import mnm.mods.tabbychat.client.ChatManager
 import mnm.mods.tabbychat.client.TabbyChatClient
 import mnm.mods.tabbychat.client.extra.spell.Spellcheck
 import mnm.mods.tabbychat.client.extra.spell.SpellingFormatter
+import mnm.mods.tabbychat.client.gui.TextBox.delegate
 import mnm.mods.tabbychat.client.gui.component.GuiText
 import mnm.mods.tabbychat.client.gui.component.GuiWrappedComponent
 import mnm.mods.tabbychat.util.Color
@@ -35,7 +36,6 @@ object TextBox : GuiWrappedComponent<GuiText>(GuiText(
     private val MODAL = TexturedModal(ChatBox.GUI_LOCATION, 0, 219, 254, 37)
 
     private val fr = mc.fontRenderer
-    val textField = this.delegate
     private var cursorCounter: Int = 0
     private val spellcheck: Spellcheck = TabbyChatClient.spellcheck
 
@@ -43,7 +43,7 @@ object TextBox : GuiWrappedComponent<GuiText>(GuiText(
     var suggestion: String? = null
 
     val wrappedLines: List<String>
-        get() = fr.listFormattedStringToWidth(textField.value, location.width)
+        get() = fr.listFormattedStringToWidth(delegate.value, location.width)
 
     private val formattedLines: List<ITextComponent>
         get() {
@@ -69,9 +69,9 @@ object TextBox : GuiWrappedComponent<GuiText>(GuiText(
         }
 
     var text: String
-        get() = textField.value
+        get() = delegate.value
         set(text) {
-            textField.value = text
+            delegate.value = text
         }
 
     override var visible: Boolean
@@ -80,10 +80,10 @@ object TextBox : GuiWrappedComponent<GuiText>(GuiText(
         }
 
     init {
-        textField.delegate.maxStringLength = ChatManager.MAX_CHAT_LENGTH
-        textField.delegate.setCanLoseFocus(false)
-        textField.delegate.setEnableBackgroundDrawing(false)
-        textField.delegate.setFocused2(true)
+        delegate.delegate.maxStringLength = ChatManager.MAX_CHAT_LENGTH
+        delegate.delegate.setCanLoseFocus(false)
+        delegate.delegate.setEnableBackgroundDrawing(false)
+        delegate.delegate.setFocused2(true)
     }
 
     override fun onClosed() {
@@ -102,7 +102,7 @@ object TextBox : GuiWrappedComponent<GuiText>(GuiText(
     }
 
     private fun drawCursor() {
-        val textField = this.textField.delegate
+        val textField = this.delegate.delegate
 
         // keeps track of all the characters. Used to compensate for spaces
         var totalPos = 0
@@ -129,7 +129,7 @@ object TextBox : GuiWrappedComponent<GuiText>(GuiText(
                 val c = fr.getStringWidth(text.substring(0, pos))
                 val cursorBlink = this.cursorCounter / 6 % 3 != 0
                 if (cursorBlink) {
-                    if (textField.cursorPosition < this.textField.value.length) {
+                    if (textField.cursorPosition < this.delegate.value.length) {
                         vLine(loc.xPos + c + 3,
                                 loc.yPos + line - 2,
                                 loc.yPos + line + fr.FONT_HEIGHT + 1, -0x2f2f30)
@@ -215,7 +215,7 @@ object TextBox : GuiWrappedComponent<GuiText>(GuiText(
         }
         yPos -= fr.FONT_HEIGHT + 2
 
-        val flag2 = textField.delegate.cursorPosition < text.length || text.length >= textField.delegate.maxStringLength
+        val flag2 = delegate.delegate.cursorPosition < text.length || text.length >= delegate.delegate.maxStringLength
 
         val x = loc.xPos + 3
         if (!flag2 && suggestion != null) {
@@ -228,7 +228,7 @@ object TextBox : GuiWrappedComponent<GuiText>(GuiText(
      * Draws the blue selection box. Forwards to [TextFieldWidget.drawSelectionBox]
      */
     private fun drawSelectionBox(x1: Int, y1: Int, x2: Int, y2: Int) {
-        this.textField.delegate.drawSelectionBox(
+        this.delegate.delegate.drawSelectionBox(
                 x1 + location.xPos, y1 + location.yPos,
                 x2 + location.xPos, y2 + location.yPos)
     }

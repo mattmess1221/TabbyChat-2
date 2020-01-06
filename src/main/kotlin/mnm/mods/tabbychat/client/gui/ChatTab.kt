@@ -1,22 +1,22 @@
 package mnm.mods.tabbychat.client.gui
 
 import com.mojang.blaze3d.systems.RenderSystem
+import mnm.mods.tabbychat.api.Channel
 import mnm.mods.tabbychat.api.ChannelStatus
-import mnm.mods.tabbychat.client.AbstractChannel
 import mnm.mods.tabbychat.client.TabbyChatClient
 import mnm.mods.tabbychat.client.gui.component.GuiComponent
 import mnm.mods.tabbychat.client.gui.settings.GuiSettingsScreen
 import mnm.mods.tabbychat.util.*
 import net.minecraft.client.gui.screen.Screen
 
-class ChatTab internal constructor(private val channel: AbstractChannel) : GuiComponent() {
+class ChatTab(private val channel: Channel) : GuiComponent() {
 
-    var text: String = channel.displayName
+    val text: String
         get() {
             return when (ChatBox.status[channel]) {
-                ChannelStatus.ACTIVE -> "[$field]"
-                ChannelStatus.UNREAD -> "<$field>"
-                else -> field
+                ChannelStatus.ACTIVE -> "[${channel.displayName}]"
+                ChannelStatus.UNREAD -> "<${channel.displayName}>"
+                else -> channel.displayName
             }
         }
 
@@ -60,8 +60,8 @@ class ChatTab internal constructor(private val channel: AbstractChannel) : GuiCo
     override fun render(x: Int, y: Int, parTicks: Float) {
         val status = ChatBox.status[channel]
         if (mc.ingameGUI.chatGUI.chatOpen
-                || status != null && status > ChannelStatus.PINGED && TabbyChatClient.settings.general.unreadFlashing.value
-                || TabbyChatClient.settings.advanced.visibility.value === LocalVisibility.ALWAYS) {
+                || status != null && status > ChannelStatus.PINGED && TabbyChatClient.settings.general.unreadFlashing
+                || TabbyChatClient.settings.advanced.visibility === LocalVisibility.ALWAYS) {
             val loc = location
             RenderSystem.enableBlend()
             RenderSystem.color4f(1f, 1f, 1f, mc.gameSettings.chatOpacity.toFloat())

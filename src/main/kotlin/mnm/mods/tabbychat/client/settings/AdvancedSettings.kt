@@ -1,32 +1,27 @@
 package mnm.mods.tabbychat.client.settings
 
+import com.electronwill.nightconfig.core.Config
 import mnm.mods.tabbychat.util.ILocation
 import mnm.mods.tabbychat.util.ImmutableLocation
 import mnm.mods.tabbychat.util.LocalVisibility
-import mnm.mods.tabbychat.util.config.ConfigView
-import mnm.mods.tabbychat.util.config.FileConfigView
+import mnm.mods.tabbychat.util.ConfigView
 
-class AdvancedSettings(config: FileConfigView, path: List<String>) : ConfigView(config, path) {
+class AdvancedSettings(config: Config) : ConfigView(config) {
 
     val chatLocation by child(::LocationConfig)
-    val unfocHeight by defining(0.5f)
-    val fadeTime by defining(200)
-    val historyLen by defining(100)
-    val hideTag by defining(false)
-    val keepChatOpen by defining(false)
-    val spelling by defining(true)
-    val visibility by definingEnum(LocalVisibility.NORMAL)
+    var unfocHeight by defining(0.5f)
+    var fadeTime by defining(200)
+    var historyLen by defining(100)
+    var hideTag by defining(false)
+    var keepChatOpen by defining(false)
+    var spelling by defining(true)
+    var visibility by definingEnum(LocalVisibility.NORMAL)
 
-    class LocationConfig(config: FileConfigView, path: List<String>) : ConfigView(config, path), ILocation {
-        val x by defining(5)
-        val y by defining(17)
-        val w by defining(300)
-        val h by defining(160)
-
-        override var xPos by x
-        override var yPos by y
-        override var width by w
-        override var height by h
+    class LocationConfig(config: Config) : ConfigView(config), ILocation {
+        override var xPos by defining(5)
+        override var yPos by defining(17)
+        override var width by defining(300)
+        override var height by defining(160)
 
         fun merge(loc: ILocation) {
             xPos = loc.xPos

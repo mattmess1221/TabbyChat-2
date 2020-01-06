@@ -30,7 +30,7 @@ object FilterAddon {
         val text = message.text
         if (text != null) {
 
-            for (filter in filters + settings.getFilters()) {
+            for (filter in filters + settings.filters) {
 
                 val matcher = filter.pattern.matcher(filter.prepareText(text))
                 val event = FilterEvent(matcher, message.channels, text)

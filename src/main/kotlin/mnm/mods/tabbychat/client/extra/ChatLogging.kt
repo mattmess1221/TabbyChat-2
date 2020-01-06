@@ -86,7 +86,7 @@ object ChatLogging {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     fun onChatReceived(message: ChatReceivedEvent) {
         val text = message.text
-        if (text != null && TabbyChatClient.settings.general.logChat.value) {
+        if (text != null && TabbyChatClient.settings.general.logChat) {
             checkLog()
             log?.println("[%s] %s".format(LOG_FORMAT.format(LocalDateTime.now()), text.string))
         }

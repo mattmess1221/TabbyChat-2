@@ -5,7 +5,11 @@ import mnm.mods.tabbychat.MODID
 import mnm.mods.tabbychat.api.Channel
 import mnm.mods.tabbychat.api.ChannelStatus
 import mnm.mods.tabbychat.api.events.MessageAddedToChannelEvent
-import mnm.mods.tabbychat.client.*
+import mnm.mods.tabbychat.client.ChannelImpl
+import mnm.mods.tabbychat.client.ChatManager
+import mnm.mods.tabbychat.client.DefaultChannel
+import mnm.mods.tabbychat.client.TabbyChatClient
+import mnm.mods.tabbychat.client.gui.TextBox.delegate
 import mnm.mods.tabbychat.client.gui.component.GuiPanel
 import mnm.mods.tabbychat.client.gui.component.layout.BorderLayout
 import mnm.mods.tabbychat.client.util.ScaledDimension
@@ -35,7 +39,7 @@ object ChatBox : GuiPanel() {
     private var drag: Vec2i? = null
     private var tempbox: Location? = null
 
-    private val channels = ArrayList<AbstractChannel>()
+    private val channels = ArrayList<Channel>()
 
     class ChannelStatusMap {
         private val channelStatus = mutableMapOf<Channel, ChannelStatus>()
@@ -51,7 +55,7 @@ object ChatBox : GuiPanel() {
                     old
                 }
             }
-            if (status == ChannelStatus.ACTIVE && chan is AbstractChannel) {
+            if (status == ChannelStatus.ACTIVE) {
                 chatArea.channel = chan
             }
         }
@@ -59,24 +63,33 @@ object ChatBox : GuiPanel() {
 
     var status = ChannelStatusMap()
 
-    var activeChannel: AbstractChannel = DefaultChannel
+    var activeChannel: Channel = DefaultChannel
         set(channel) {
             val text = this.chatInput
 
             val prefix = text.text.trim { it <= ' ' }
-            if (field.isPrefixHidden && prefix.isEmpty() || prefix == field.prefix) {
-                // text is the prefix, so remove it.
-                text.text = ""
-                if (!channel.isPrefixHidden && channel.prefix.isNotEmpty()) {
-                    // target has prefix visible
-                    text.textField.delegate.text = channel.prefix + " "
+            val oldChannel = field
+            if (oldChannel is ChannelImpl) {
+                if (oldChannel.isPrefixHidden && prefix.isEmpty() || prefix == oldChannel.prefix) {
+                    // text is the prefix, so remove it.
+                    text.text = ""
+                    if (channel is ChannelImpl) {
+                        if (!channel.isPrefixHidden && channel.prefix.isNotEmpty()) {
+                            // target has prefix visible
+                            text.text = channel.prefix + " "
+                        }
+                    }
                 }
             }
-            // set max text length
-            val hidden = channel.isPrefixHidden
-            val prefLength = if (hidden) channel.prefix.length + 1 else 0
 
-            text.textField.delegate.maxStringLength = ChatManager.MAX_CHAT_LENGTH - prefLength
+            if (channel is ChannelImpl) {
+                // set max text length
+                val hidden = channel.isPrefixHidden
+                val prefLength = if (hidden) channel.prefix.length + 1 else 0
+                text.delegate.delegate.maxStringLength = ChatManager.MAX_CHAT_LENGTH - prefLength
+            } else {
+                text.delegate.delegate.maxStringLength = ChatManager.MAX_CHAT_LENGTH
+            }
 
             // reset scroll
             // TODO per-channel scroll settings?
@@ -86,8 +99,6 @@ object ChatBox : GuiPanel() {
             status[field] = null
             field = channel
             status[field] = ChannelStatus.ACTIVE
-
-            runActivationCommand(channel)
         }
 
     private lateinit var chat: ChatScreen
@@ -128,14 +139,15 @@ object ChatBox : GuiPanel() {
 
     override fun init(screen: Screen) {
         this.chat = screen as ChatScreen
-        this.chat.field_228174_e_.field_228095_d_ = chatInput.textField.delegate
+        this.chat.field_228174_e_.field_228095_d_ = chatInput.delegate.delegate
         val chan = activeChannel
         if (screen.defaultInputFieldText.isEmpty()
+                && chan is ChannelImpl
                 && !chan.isPrefixHidden
                 && chan.prefix.isNotEmpty()) {
             screen.defaultInputFieldText = chan.prefix + " "
         }
-        val text = chatInput.textField
+        val text = chatInput.delegate
         screen.inputField = text.delegate
         text.value = screen.defaultInputFieldText
 
@@ -171,20 +183,20 @@ object ChatBox : GuiPanel() {
     }
 
     private fun addChatMessage(event: MessageAddedToChannelEvent.Post) {
-        val channel = event.channel as AbstractChannel
+        val channel = event.channel
         addChannel(channel)
         status[channel] = ChannelStatus.UNREAD
     }
 
-    fun addChannels(active: Collection<AbstractChannel>) {
+    fun addChannels(active: Collection<Channel>) {
         active.forEach { this.addChannel(it) }
     }
 
-    fun getChannels(): Set<AbstractChannel> {
+    fun getChannels(): Set<Channel> {
         return ImmutableSet.copyOf(this.channels)
     }
 
-    private fun addChannel(channel: AbstractChannel) {
+    private fun addChannel(channel: Channel) {
         if (!this.channels.contains(channel)) {
             this.channels.add(channel)
             tray.addChannel(channel)
@@ -193,7 +205,7 @@ object ChatBox : GuiPanel() {
 
     }
 
-    fun removeChannel(channel: AbstractChannel) {
+    fun removeChannel(channel: Channel) {
         if (channels.contains(channel) && channel !== DefaultChannel) {
             channels.remove(channel)
             tray.removeChannel(channel)
@@ -211,22 +223,23 @@ object ChatBox : GuiPanel() {
         status[DefaultChannel] = ChannelStatus.ACTIVE
     }
 
+    /*
     private val settings get() = TabbyChatClient.serverSettings
 
-    private fun runActivationCommand(channel: AbstractChannel) {
+    private fun runActivationCommand(channel: ChannelImpl) {
         var cmd = channel.command
         if (cmd.isEmpty()) {
             val pat = if (channel is UserChannel) {
-                settings.general.messageCommand.value
+                settings.general.messageCommand
             } else {
-                settings.general.channelCommand.value
+                settings.general.channelCommand
             }
             if (pat.isEmpty()) {
                 return
             }
             var name = channel.name
             if (channel === DefaultChannel) {
-                name = settings.general.defaultChannel.value
+                name = settings.general.defaultChannel
             }
             // insert the channel name
             cmd = pat.replace("{}", name)
@@ -240,12 +253,14 @@ object ChatBox : GuiPanel() {
         }
     }
 
+     */
+
     override fun render(x: Int, y: Int, parTicks: Float) {
-        update()
         handleDragging(x.toDouble(), y.toDouble())
 
         super.render(x, y, parTicks)
         if (mc.ingameGUI.chatGUI.chatOpen) {
+            update()
             chat.field_228174_e_.func_228114_a_(x, y)
 
             val itextcomponent = mc.ingameGUI.chatGUI.getTextComponent(x.toDouble(), y.toDouble())
@@ -258,11 +273,11 @@ object ChatBox : GuiPanel() {
     override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
         if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
             mc.ingameGUI.chatGUI.resetScroll()
-            val text = chatInput.textField
+            val text = chatInput.delegate
             chat.sendMessage(text.value)
             text.value = chat.defaultInputFieldText
 
-            if (!TabbyChatClient.settings.advanced.keepChatOpen.value) {
+            if (!TabbyChatClient.settings.advanced.keepChatOpen) {
                 mc.displayGuiScreen(null)
             }
             return true

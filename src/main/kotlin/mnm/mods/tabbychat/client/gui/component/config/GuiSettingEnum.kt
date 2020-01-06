@@ -4,8 +4,9 @@ import com.google.common.collect.ImmutableList
 import mnm.mods.tabbychat.client.gui.component.GuiComponent
 import mnm.mods.tabbychat.util.Color
 import mnm.mods.tabbychat.util.Translatable
-import mnm.mods.tabbychat.util.config.Spec
 import mnm.mods.tabbychat.util.mc
+import mnm.mods.tabbychat.util.property
+import kotlin.reflect.KMutableProperty0
 
 /**
  * A setting for set values, such as enums. Values should either have a
@@ -14,16 +15,16 @@ import mnm.mods.tabbychat.util.mc
  * @param <T> The type
  */
 class GuiSettingEnum<T : Any>(
-        setting: Spec<T>,
+        setting: KMutableProperty0<T>,
         values: Array<T>,
         private val namer: T.() -> Translatable = {
             this as? Translatable ?: Translatable { toString() }
         }) : GuiComponent(), GuiSetting<T> {
 
-    override var value by setting
+    override var value by property(setting)
 
     companion object {
-        fun <T : Translatable> of(setting: Spec<T>, values: Array<T>) = GuiSettingEnum(setting, values) {
+        fun <T : Translatable> of(setting: KMutableProperty0<T>, values: Array<T>) = GuiSettingEnum(setting, values) {
             this
         }
     }

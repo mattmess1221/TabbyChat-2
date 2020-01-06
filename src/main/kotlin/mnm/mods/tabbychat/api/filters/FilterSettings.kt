@@ -1,22 +1,24 @@
 package mnm.mods.tabbychat.api.filters
 
+import com.electronwill.nightconfig.core.Config
+import mnm.mods.tabbychat.util.ConfigView
 import java.util.regex.Pattern
 
 /**
  * Defines the settings used by filters.
  */
-class FilterSettings {
+class FilterSettings(config: Config) : ConfigView(config) {
 
     // destinations
-    var channels = listOf<String>()
-    var isRemove = false
-    var isRaw = true
-    var isRegex = false
-    var isCaseInsensitive = false
+    var channels by definingList<String>()
+    var isRemove by defining(false)
+    var isRaw by defining(true)
+    var isRegex by defining( false)
+    var isCaseInsensitive by defining(false)
 
     // notifications
-    var isSoundNotification = false
-    var soundName: String? = null
+    var isSoundNotification by defining(false)
+    var soundName by defining("")
 
     val flags: Int
         get() {
