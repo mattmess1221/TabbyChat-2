@@ -20,7 +20,7 @@ class ChannelImpl(config: Config = Config.inMemory()) : ConfigView(config), Chan
             c.set<String>(p, StringUtils.stripControlCodes(v))
         }
         getter = {c, p ->
-            StringUtils.stripControlCodes(c.get<String>(p))
+            StringUtils.stripControlCodes(c.get<String>(p) ?: "")
         }
     }
 
