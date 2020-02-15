@@ -301,6 +301,14 @@ object ChatBox : GuiPanel() {
             drag = Vec2i(x.toInt(), y.toInt())
             tempbox = location.copy()
         }
+
+        if (mc.ingameGUI.chatGUI.chatOpen) {
+            val itextcomponent = mc.ingameGUI.chatGUI.getTextComponent(x, y)
+            if (itextcomponent != null && itextcomponent.style.clickEvent != null) {
+                return chat.handleComponentClicked(itextcomponent)
+            }
+        }
+
         return super.mouseClicked(x, y, button)
     }
 
