@@ -3,7 +3,7 @@ package mnm.mods.tabbychat.client.gui.component
 import mnm.mods.tabbychat.util.Color
 import mnm.mods.tabbychat.util.Location
 import mnm.mods.tabbychat.util.mc
-import net.minecraftforge.fml.client.config.GuiUtils
+import net.minecraftforge.fml.client.gui.GuiUtils
 
 /**
  * A checkbox, representing a boolean input.

@@ -2,7 +2,7 @@ import java.util.*
 
 plugins {
     kotlin("jvm") version "1.3.61"
-    id("net.minecraftforge.gradle") version "3.0.157"
+    id("net.minecraftforge.gradle") version "3.0.161"
     id("com.github.johnrengelman.shadow") version "5.2.0"
 }
 
@@ -18,23 +18,25 @@ val include: Configuration by configurations.creating
 
 repositories {
     jcenter()
-    maven("https://jitpack.io") {
-        name = "JitPack"
+    maven("https://minecraft.curseforge.com/api/maven/") {
+        name = "CurseForge"
     }
 }
 
 dependencies {
-    minecraft("net.minecraftforge:forge:1.15.1-30.0.16")
+    minecraft("net.minecraftforge:forge:1.15.2-31.1.0")
 
     include(implementation("net.sf.jazzy:jazzy:0.5.2-rtext-1.4.1-2")!!)
 
+    implementation(kotlin("stdlib"))
+    implementation(kotlin("reflect"))
+    implementation("kottle:Kottle:1.4.0:slim")
+
     testImplementation("junit:junit:4.12")
-    implementation(kotlin("stdlib-jdk8"))
-    implementation("com.github.autaut03:kottle:1.4.0")
 }
 minecraft {
     mappingChannel = "snapshot"
-    mappingVersion = "20191225-1.14.3"
+    mappingVersion = "20200215-1.15.1"
     accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))
     runs {
         listOf("client", "server").forEach {

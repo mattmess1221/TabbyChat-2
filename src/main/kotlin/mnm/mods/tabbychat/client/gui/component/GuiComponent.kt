@@ -5,7 +5,7 @@ import net.minecraft.client.gui.AbstractGui
 import net.minecraft.client.gui.IGuiEventListener
 import net.minecraft.client.gui.IRenderable
 import net.minecraft.client.gui.screen.Screen
-import net.minecraftforge.fml.client.config.GuiUtils
+import net.minecraftforge.fml.client.gui.GuiUtils
 
 /**
  * The base class for all gui components.

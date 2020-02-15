@@ -20,7 +20,7 @@ object GuiNewChatTC : NewChatGui(mc) {
     private var prevScreenHeight: Int = 0
 
     init {
-        prevScreenHeight = mc.func_228018_at_().height
+        prevScreenHeight = mc.mainWindow.height
 
         MinecraftForge.EVENT_BUS.register(ComponentWrapper(ChatScreen::class, ChatBox))
     }
@@ -39,12 +39,12 @@ object GuiNewChatTC : NewChatGui(mc) {
     }
 
     override fun render(i: Int) {
-        if (prevScreenHeight != mc.func_228018_at_().height || prevScreenWidth != mc.func_228018_at_().width) {
+        if (prevScreenHeight != mc.mainWindow.height || prevScreenWidth != mc.mainWindow.width) {
 
-            ChatBox.onScreenHeightResize(prevScreenWidth, prevScreenHeight, mc.func_228018_at_().width, mc.func_228018_at_().height)
+            ChatBox.onScreenHeightResize(prevScreenWidth, prevScreenHeight, mc.mainWindow.width, mc.mainWindow.height)
 
-            prevScreenWidth = mc.func_228018_at_().width
-            prevScreenHeight = mc.func_228018_at_().height
+            prevScreenWidth = mc.mainWindow.width
+            prevScreenHeight = mc.mainWindow.height
         }
 
         if (chatOpen)

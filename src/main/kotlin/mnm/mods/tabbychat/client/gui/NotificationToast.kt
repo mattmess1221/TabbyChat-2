@@ -34,7 +34,7 @@ class NotificationToast(private val owner: String, title: ITextComponent) : IToa
 
         toastGui.minecraft.fontRenderer.drawString(TextFormatting.UNDERLINE.toString() + this.owner, 8.0f, 6.0f, -256)
 
-        val window = toastGui.minecraft.func_228018_at_()
+        val window = toastGui.minecraft.mainWindow
         val height = window.scaledHeight.toDouble()
         val scale = window.guiScaleFactor
 

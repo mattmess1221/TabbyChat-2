@@ -357,8 +357,8 @@ object ChatBox : GuiPanel() {
         var x1 = x
         var y1 = y
 
-        val screenW = mc.func_228018_at_().scaledWidth
-        val screenH = mc.func_228018_at_().scaledHeight
+        val screenW = mc.mainWindow.scaledWidth
+        val screenH = mc.mainWindow.scaledHeight
 
         val hotbar = 25
 

@@ -47,8 +47,8 @@ class GuiScrollingPanel : GuiPanel() {
             }
         }
 
-        val height = mc.func_228018_at_().height.toDouble()
-        val scale = mc.func_228018_at_().guiScaleFactor
+        val height = mc.mainWindow.height.toDouble()
+        val scale = mc.mainWindow.guiScaleFactor
 
         GL11.glEnable(GL11.GL_SCISSOR_TEST)
         GL11.glScissor((rect.xPos * scale).toInt(), (height - rect.yHeight * scale).toInt(),
