@@ -68,6 +68,7 @@ abstract class FileConfigView(path: Path) : AbstractConfigView() {
     private val configSpec = ConfigSpec()
 
     fun save() {
+        Files.createDirectories(config.nioPath.parent)
         config.save()
     }
 
