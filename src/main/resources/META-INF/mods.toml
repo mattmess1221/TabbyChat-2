@@ -15,12 +15,12 @@ description="Chat overhaul"
 [[dependencies.tabbychat]] #optional
     modId="forge" #mandatory
     mandatory=true #mandatory
-    versionRange="[30.0,)" #mandatory
+    versionRange="[31.0,)" #mandatory
     ordering="NONE"
     side="BOTH"
 [[dependencies.tabbychat]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.15.1]"
+    versionRange="[1.15.2]"
     ordering="NONE"
     side="BOTH"
