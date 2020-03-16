@@ -17,15 +17,20 @@ import mnm.mods.tabbychat.util.mc
 import net.minecraft.client.gui.IngameGui
 import net.minecraft.client.gui.NewChatGui
 import net.minecraft.resources.IReloadableResourceManager
+import net.minecraft.resources.IResourceManager
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.TickEvent
 import net.minecraftforge.eventbus.api.EventPriority
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper
+import net.minecraftforge.resource.IResourceType
+import net.minecraftforge.resource.ISelectiveResourceReloadListener
+import net.minecraftforge.resource.VanillaResourceType
+import java.util.function.Predicate
 
 object TabbyChatClient {
-    val spellcheck = Spellcheck(TabbyChat.dataFolder)
+    val spellcheck = Spellcheck()
 
     val settings: TabbySettings = TabbySettings(TabbyChat.dataFolder).apply {
         TabbyChat.logger.info("Loading TabbyChat settings")
@@ -35,10 +40,6 @@ object TabbyChatClient {
     lateinit var serverSettings: ServerSettings
 
     init {
-        // Keeps the current language updated whenever it is changed.
-        val irrm = mc.resourceManager as IReloadableResourceManager
-        irrm.addReloadListener(spellcheck)
-
         MinecraftForge.EVENT_BUS.listen(EventPriority.LOW, listener = this::removeChannelTags)
         MinecraftForge.EVENT_BUS.register(StartListener)
         MinecraftForge.EVENT_BUS.register(ChatAddonAntiSpam)
@@ -77,6 +78,18 @@ object TabbyChatClient {
             // Do the first tick, then unregister self.
             // essentially an on-thread startup complete listener
             mc.ingameGUI.chat = GuiNewChatTC
+
+            // init spellchecking to load languages
+            spellcheck.loadCurrentLanguage()
+            (mc.resourceManager as IReloadableResourceManager).addReloadListener(object : ISelectiveResourceReloadListener {
+                override fun onResourceManagerReload(resourceManager: IResourceManager, resourcePredicate: Predicate<IResourceType>) {
+                    if (resourcePredicate.test(VanillaResourceType.LANGUAGES)) {
+                        spellcheck.loadCurrentLanguage()
+                    }
+                }
+            })
+
+            // unregister self so it doesn't get called again.
             MinecraftForge.EVENT_BUS.unregister(StartListener)
         }
     }

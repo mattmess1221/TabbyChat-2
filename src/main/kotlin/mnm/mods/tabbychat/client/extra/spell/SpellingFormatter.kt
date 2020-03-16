@@ -8,14 +8,12 @@ import mnm.mods.tabbychat.util.toComponent
 import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.StringTextComponent
 
-class SpellingFormatter(sp: Spellcheck) {
-
-    private val spelling: Iterator<SpellCheckEvent> = sp.getErrors().iterator()
+class SpellingFormatter(private val spelling: Iterator<SpellCheckEvent>) : (String?) -> ITextComponent? {
 
     private var event: SpellCheckEvent? = null
     private var totalLength: Int = 0
 
-    fun apply(text: String?): ITextComponent? {
+    override operator fun invoke(text: String?): ITextComponent? {
         if (text == null)
             return null
         if (text.contains("\u00a7") || !TabbyChatClient.settings.advanced.spelling) {

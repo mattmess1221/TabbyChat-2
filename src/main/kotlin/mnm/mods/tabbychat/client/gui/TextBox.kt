@@ -1,12 +1,8 @@
 package mnm.mods.tabbychat.client.gui
 
-import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import mnm.mods.tabbychat.client.ChatManager
 import mnm.mods.tabbychat.client.TabbyChatClient
-import mnm.mods.tabbychat.client.extra.spell.Spellcheck
-import mnm.mods.tabbychat.client.extra.spell.SpellingFormatter
-import mnm.mods.tabbychat.client.gui.TextBox.delegate
 import mnm.mods.tabbychat.client.gui.component.GuiText
 import mnm.mods.tabbychat.client.gui.component.GuiWrappedComponent
 import mnm.mods.tabbychat.util.Color
@@ -37,7 +33,7 @@ object TextBox : GuiWrappedComponent<GuiText>(GuiText(
 
     private val fr = mc.fontRenderer
     private var cursorCounter: Int = 0
-    private val spellcheck: Spellcheck = TabbyChatClient.spellcheck
+    private val spellcheck = TabbyChatClient.spellcheck
 
     var textFormatter: (String, Int) -> String = { text, _ -> text }
     var suggestion: String? = null
@@ -47,10 +43,9 @@ object TextBox : GuiWrappedComponent<GuiText>(GuiText(
 
     private val formattedLines: List<ITextComponent>
         get() {
-            spellcheck.checkSpelling(text)
+            val spelling = spellcheck.checkSpelling(text)
             val formatter: (String, Int) -> ITextComponent? = { line, len ->
-                SpellingFormatter(spellcheck).apply(textFormatter(line, len)
-                )
+                spelling(textFormatter(line, len))
             }
             val lines = ArrayList<ITextComponent>()
             var length = 0
