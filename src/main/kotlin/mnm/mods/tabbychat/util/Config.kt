@@ -15,7 +15,7 @@ import kotlin.reflect.KProperty
 
 abstract class AbstractConfigView {
     abstract val config: Config
-    private val configSpec = ConfigSpec()
+    protected val configSpec = ConfigSpec()
 
     protected fun <T : Any> defining(default: T, builder: Spec<T>.() -> Unit = {}) = DelegateProvider { _, prop ->
         val spec = Spec(config, prop, default)
@@ -65,7 +65,6 @@ abstract class ConfigView(override val config: Config) : AbstractConfigView()
 abstract class FileConfigView(path: Path) : AbstractConfigView() {
 
     override val config: CommentedFileConfig = CommentedFileConfig.of(path)
-    private val configSpec = ConfigSpec()
 
     fun save() {
         Files.createDirectories(config.nioPath.parent)
