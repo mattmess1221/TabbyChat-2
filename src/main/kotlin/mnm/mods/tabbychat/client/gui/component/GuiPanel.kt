@@ -132,7 +132,6 @@ open class GuiPanel : GuiComponent(), INestedGuiEventHandler {
 
     override fun getFocused(): IGuiEventListener? = focused2
 
-
     override fun mouseClicked(x: Double, y: Double, button: Int): Boolean {
         return super<INestedGuiEventHandler>.mouseClicked(x, y, button)
     }

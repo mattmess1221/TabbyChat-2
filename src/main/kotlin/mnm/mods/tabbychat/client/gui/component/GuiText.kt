@@ -10,7 +10,7 @@ import kotlin.properties.Delegates
  * A gui component that wraps [TextFieldWidget].
  */
 open class GuiText(
-        textField: TextFieldWidget = TextFieldWidget(mc.fontRenderer, 0, 0, 1, 1, "")
+        textField: TextFieldWidget = TextFieldWidget(mc.fontRenderer, 0, 0, 200, 20, "")
 ) : GuiWrappedEventListener<TextFieldWidget>(textField), IGuiInput<String> {
     var hint: String? = null
 
