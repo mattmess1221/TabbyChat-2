@@ -57,6 +57,7 @@ class GuiSettingsFilters internal constructor() : SettingPanel<ServerSettings>()
             delete.active = false
             next.active = false
         } else {
+            currentFilter?.parent = this
             select(index)
         }
 

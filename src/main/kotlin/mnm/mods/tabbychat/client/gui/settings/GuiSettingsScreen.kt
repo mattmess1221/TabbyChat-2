@@ -30,15 +30,13 @@ class GuiSettingsScreen(channel: Channel?) : ComponentScreen(StringTextComponent
         }
     }
 
-    public override fun init() {
+    override fun init() {
         val panels = mutableListOf<SettingPanel<*>>()
         for ((key, value) in settings) {
             try {
-                if (selectedSetting != null && key.isInstance(selectedSetting)) {
-                    panels.add(selectedSetting!!)
-                } else {
-                    panels.add(value())
-                }
+                panels.add(selectedSetting?.takeIf { key.isInstance(it) }?.also {
+                    it.parent = null
+                } ?: value())
             } catch (e: Exception) {
                 TabbyChat.logger.error(CONFIG, "Unable to add {} as a setting.", key, e)
             }
