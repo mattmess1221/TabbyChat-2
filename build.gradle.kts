@@ -2,7 +2,7 @@ import java.util.*
 
 plugins {
     kotlin("jvm") version "1.3.61"
-    id("net.minecraftforge.gradle") version "3.0.161"
+    id("net.minecraftforge.gradle")
     id("com.github.johnrengelman.shadow") version "5.2.0"
 }
 
