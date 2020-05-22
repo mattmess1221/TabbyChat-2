@@ -98,6 +98,7 @@ object TextBox : GuiWrappedComponent<GuiText>(GuiText(
 
     private fun drawCursor() {
         val textField = this.delegate.delegate
+        var rawText = StringBuilder(this.text)
 
         // keeps track of all the characters. Used to compensate for spaces
         var totalPos = 0
@@ -176,19 +177,22 @@ object TextBox : GuiWrappedComponent<GuiText>(GuiText(
 
             // keep track of the lines
             totalPos += text.length
-            val space = text.length > totalPos && text[totalPos] == ' '
 
             // prepare all the markers for the next line.
             pos -= text.length
             start -= text.length
             end -= text.length
 
-            if (space) {
+            // the string splitter already strips out spaces, so I need to
+            // follow along with the raw string, removing any spaces I see.
+            rawText.delete(0, text.length)
+            while (rawText.isNotEmpty() && rawText[0] == ' ') {
                 // compensate for spaces
                 pos--
                 start--
                 end--
                 totalPos++
+                rawText.deleteCharAt(0)
             }
             line = lineY
         }
