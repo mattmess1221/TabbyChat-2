@@ -24,7 +24,7 @@ repositories {
 }
 
 dependencies {
-    minecraft("net.minecraftforge:forge:1.15.2-31.1.0")
+    minecraft("net.minecraftforge:forge:1.15.2-31.2.0")
 
     include(implementation("net.sf.jazzy:jazzy:0.5.2-rtext-1.4.1-2")!!)
 
