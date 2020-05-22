@@ -12,7 +12,6 @@ import mnm.mods.tabbychat.util.mc
 import mnm.mods.tabbychat.util.text.FancyFontRenderer
 import net.minecraft.client.gui.widget.TextFieldWidget
 import net.minecraft.util.text.ITextComponent
-import java.util.*
 import kotlin.math.max
 import kotlin.math.min
 
@@ -98,7 +97,7 @@ object TextBox : GuiWrappedComponent<GuiText>(GuiText(
 
     private fun drawCursor() {
         val textField = this.delegate.delegate
-        var rawText = StringBuilder(this.text)
+        val rawText = StringBuilder(this.text)
 
         // keeps track of all the characters. Used to compensate for spaces
         var totalPos = 0
@@ -216,7 +215,6 @@ object TextBox : GuiWrappedComponent<GuiText>(GuiText(
 
         val flag2 = delegate.delegate.cursorPosition < text.length || text.length >= delegate.delegate.maxStringLength
 
-        val x = loc.xPos + 3
         if (!flag2 && suggestion != null) {
             this.fr.drawStringWithShadow(this.suggestion!!, xPos.toFloat(), yPos.toFloat(), -8355712)
         }
