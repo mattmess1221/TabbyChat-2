@@ -1,13 +1,13 @@
 package mnm.mods.tabbychat.api.filters
 
-import com.electronwill.nightconfig.core.Config
+import mnm.mods.tabbychat.util.AbstractConfigView
 import mnm.mods.tabbychat.util.ConfigView
 import java.util.regex.Pattern
 
 /**
  * Defines the settings used by filters.
  */
-class FilterSettings(config: Config) : ConfigView(config) {
+class FilterSettings(config: AbstractConfigView, path: List<String>) : ConfigView(config, path) {
 
     // destinations
     var channels by definingList<String>()

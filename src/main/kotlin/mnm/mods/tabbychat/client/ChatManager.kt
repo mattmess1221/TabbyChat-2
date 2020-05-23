@@ -83,14 +83,13 @@ object ChatManager : Chat {
 
     override fun getChannel(type: ChannelType, name: String): Channel {
         return allChannels.getOrPut(name) {
-            server.channels.associateBy { it.name }.getOrElse(name){
+            server.channels.associateBy { it.name }.getOrElse(name) {
                 val channels = server.channels.toMutableList()
                 val channel = ChannelImpl(type, name)
                 if (type === ChannelType.USER) {
                     channel.prefix = "/msg $name"
                 }
                 channels.add(channel)
-                server.channels = channels
                 server.save()
                 channel
             }

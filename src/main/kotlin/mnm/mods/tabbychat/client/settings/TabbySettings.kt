@@ -9,6 +9,6 @@ class TabbySettings(parent: Path) : FileConfigView(parent / "tabbychat.toml") {
 
     val general by child(::GeneralSettings)
     val advanced by child(::AdvancedSettings) {
-        "Advanced settings. I don't recommend changing any of these. They're all handled automatically."
+        comment = "Advanced settings. I don't recommend changing any of these. They're all handled automatically."
     }
 }

@@ -9,18 +9,18 @@ import net.minecraft.util.StringUtils
 class ChannelImpl(config: Config = Config.inMemory()) : ConfigView(config), Channel {
 
     override var name by defining("")
-    override var type by definingEnum(ChannelType.OTHER)
+    override var type by definingEnum(ChannelType.OTHER, ChannelType::class.java)
         private set
     override var alias by defining("")
 
     var command by defining("")
     var isPrefixHidden by defining(false)
     var prefix by defining("") {
-        setter = { c, p, v ->
-            c.set<String>(p, StringUtils.stripControlCodes(v))
+        serialize = {
+            StringUtils.stripControlCodes(it)
         }
-        getter = {c, p ->
-            StringUtils.stripControlCodes(c.get<String>(p) ?: "")
+        deserialize = { value ->
+            value?.let { StringUtils.stripControlCodes(it) } ?: default
         }
     }
 

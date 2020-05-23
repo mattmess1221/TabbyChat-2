@@ -28,7 +28,7 @@ internal class GuiSettingsChannel(private val channelName: String? = null) : Set
     override val settings: ServerSettings = TabbyChatClient.serverSettings
 
     private var channel: ChannelImpl? = null
-    private val configChannels = settings.channels.toMutableList()
+    private val configChannels = settings.channels
 
     init {
         this.layout = BorderLayout()
@@ -122,20 +122,16 @@ internal class GuiSettingsChannel(private val channelName: String? = null) : Set
                 }
             }
             select(null)
-            settings.channels = configChannels
         }, intArrayOf(2, 17, 4, 2))
     }
 
     private fun save() {
-
         channel?.apply {
             alias = optAlias.value
             prefix = optPrefix.value
             isPrefixHidden = optHidePrefix.value
             command = optCommand.value
         }
-
-        settings.channels = configChannels
     }
 
     private inner class ChannelButton internal constructor(internal val channel: ChannelImpl) : AbstractGuiButton() {

@@ -16,7 +16,7 @@ class GuiSettingsFilters internal constructor() : SettingPanel<ServerSettings>()
     override val displayString by FILTERS
     override val settings: ServerSettings = TabbyChatClient.serverSettings
 
-    private val filters = settings.filters.toMutableList()
+    private val filters = settings.filters
     private var currentFilter: GuiFilterEditor? = null
 
     private var index = 0
@@ -69,7 +69,7 @@ class GuiSettingsFilters internal constructor() : SettingPanel<ServerSettings>()
         currentFilter?.let { remove(it) }
 
         val filter = filters[i]
-        currentFilter = this.add(GuiFilterEditor(filters, filter), BorderLayout.Position.CENTER)
+        currentFilter = this.add(GuiFilterEditor(filter), BorderLayout.Position.CENTER)
         setFocused(currentFilter)
 
         update()

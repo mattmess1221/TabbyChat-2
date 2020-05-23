@@ -1,12 +1,8 @@
 package mnm.mods.tabbychat.client.settings
 
-import com.electronwill.nightconfig.core.Config
-import mnm.mods.tabbychat.util.ILocation
-import mnm.mods.tabbychat.util.ImmutableLocation
-import mnm.mods.tabbychat.util.LocalVisibility
-import mnm.mods.tabbychat.util.ConfigView
+import mnm.mods.tabbychat.util.*
 
-class AdvancedSettings(config: Config) : ConfigView(config) {
+class AdvancedSettings(config: AbstractConfigView, path: List<String>) : ConfigView(config, path) {
 
     val chatLocation by child(::LocationConfig)
     var unfocHeight by defining(0.5f)
@@ -15,9 +11,9 @@ class AdvancedSettings(config: Config) : ConfigView(config) {
     var hideTag by defining(false)
     var keepChatOpen by defining(false)
     var spelling by defining(true)
-    var visibility by definingEnum(LocalVisibility.NORMAL)
+    var visibility by definingEnum(LocalVisibility.NORMAL, LocalVisibility::class.java)
 
-    class LocationConfig(config: Config) : ConfigView(config), ILocation {
+    class LocationConfig(config: AbstractConfigView, path: List<String>) : ConfigView(config, path), ILocation {
         override var xPos by defining(5)
         override var yPos by defining(17)
         override var width by defining(300)

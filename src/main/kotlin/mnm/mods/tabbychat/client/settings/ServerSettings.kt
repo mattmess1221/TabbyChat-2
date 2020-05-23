@@ -16,8 +16,8 @@ class ServerSettings(
 ) : FileConfigView(parent / socket2path(socket) / "server.toml") {
 
     val general by child(::GeneralServerSettings)
-    var filters by definingChildList(::UserFilter)
-    var channels by definingChildList(::ChannelImpl)
+    val filters by childList(::UserFilter)
+    val channels by childList(::ChannelImpl)
 
     private companion object {
         fun socket2path(addr: SocketAddress): Path {

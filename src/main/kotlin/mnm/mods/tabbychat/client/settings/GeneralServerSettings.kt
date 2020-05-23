@@ -1,16 +1,16 @@
 package mnm.mods.tabbychat.client.settings
 
-import com.electronwill.nightconfig.core.Config
+import mnm.mods.tabbychat.util.AbstractConfigView
 import mnm.mods.tabbychat.util.ChannelPatterns
-import mnm.mods.tabbychat.util.MessagePatterns
 import mnm.mods.tabbychat.util.ConfigView
+import mnm.mods.tabbychat.util.MessagePatterns
 
-class GeneralServerSettings(config: Config) : ConfigView(config) {
+class GeneralServerSettings(config: AbstractConfigView, path: List<String>) : ConfigView(config, path) {
 
     var channelsEnabled by defining(true)
     var pmEnabled by defining(true)
-    var channelPattern by definingEnum(ChannelPatterns.BRACKETS)
-    var messegePattern by definingEnum(MessagePatterns.WHISPERS)
+    var channelPattern by definingEnum(ChannelPatterns.BRACKETS, ChannelPatterns::class.java)
+    var messegePattern by definingEnum(MessagePatterns.WHISPERS, MessagePatterns::class.java)
     var useDefaultTab by defining(true)
     var ignoredChannels by definingList<String>()
     var defaultChannel by defining("")
