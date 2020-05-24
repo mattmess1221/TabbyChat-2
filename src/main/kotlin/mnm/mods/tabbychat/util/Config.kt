@@ -11,6 +11,11 @@ import java.nio.file.Path
 import kotlin.properties.ReadOnlyProperty
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
+import kotlin.reflect.full.findAnnotation
+
+@Target(AnnotationTarget.PROPERTY)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class Comment(val value: String)
 
 abstract class AbstractConfigView {
     abstract val config: Config
@@ -104,18 +109,17 @@ sealed class AbstractSpec<T : Any, R : Any>(
         protected val view: AbstractConfigView,
         protected val property: KProperty<*>)
     : ReadOnlyProperty<Any, T> {
-    private val commentedConfig get() = view as? CommentedConfig
     val path get() = listOf(property.name)
-
-    var comment: String?
-        get() = commentedConfig?.getComment(path)
-        set(value) {
-            commentedConfig?.setComment(path, value)
-        }
 
     abstract val value: T
 
-    open fun populateDefaults() = Unit
+    open fun populateDefaults() {
+        val config = view.config as? CommentedConfig
+        if (config != null) {
+            val comment = property.findAnnotation<Comment>()?.value
+            config.setComment(view.path + path, comment)
+        }
+    }
 
     @Suppress("UNCHECKED_CAST")
     protected fun getRaw(): R? {
@@ -156,6 +160,7 @@ open class Spec<T : Any, R : Any>(
         if (this.getRaw() == null) {
             this.value = this.default
         }
+        super.populateDefaults()
     }
 
     override operator fun setValue(thisRef: Any, property: KProperty<*>, value: T) {
@@ -173,6 +178,7 @@ class ChildSpec<T : ConfigView>(
 
     override fun populateDefaults() {
         value.populateDefaults()
+        super.populateDefaults()
     }
 }
 

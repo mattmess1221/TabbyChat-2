@@ -4,13 +4,28 @@ import mnm.mods.tabbychat.util.*
 
 class AdvancedSettings(config: AbstractConfigView, path: List<String>) : ConfigView(config, path) {
 
+    @Comment("The location of the chatbox.\n" +
+            "To move, drag chatbox around using the top panel.\n" +
+            "To resize, drag the triangle in the top right corner of the chatbox.")
     val chatLocation by child(::LocationConfig)
+    @Comment("The height percentage to show chat messages when chat is not open")
     var unfocHeight by defining(0.5f)
+    @Comment("How long it takes for a message to fade away when chat is not open")
     var fadeTime by defining(200)
+    @Comment("How many chat message to keep in the buffer at a time.\n" +
+            "Warning: Setting this too high may cause performance issues.")
     var historyLen by defining(100)
+    @Comment("Attempts to remove the matched tag from the message when added to a channel.")
     var hideTag by defining(false)
+    @Comment("Keeps the chat open after sending a message.\n" +
+            "Can be toggled using the square in the top right corner of the chatbox")
     var keepChatOpen by defining(false)
+    @Comment("Enables spellcheck for chat input")
     var spelling by defining(true)
+    @Comment("An additional visibility setting\n" +
+            "ALWAYS: always renders the chatbox as if it were open\n" +
+            "NORMAL: uses the settings from vanilla\n" +
+            "HIDDEN: hides chat when the chatbox is not open")
     var visibility by definingEnum(LocalVisibility.NORMAL, LocalVisibility::class.java)
 
     class LocationConfig(config: AbstractConfigView, path: List<String>) : ConfigView(config, path), ILocation {
