@@ -1,7 +1,7 @@
 package mnm.mods.tabbychat.client.gui.settings
 
 import mnm.mods.tabbychat.client.gui.component.GuiPanel
-import mnm.mods.tabbychat.util.FileConfigView
+import mnm.mods.tabbychat.util.config.FileConfigView
 
 /**
  * Base class for a setting panel.

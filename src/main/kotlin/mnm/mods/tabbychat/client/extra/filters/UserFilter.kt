@@ -5,7 +5,7 @@ import mnm.mods.tabbychat.api.filters.Filter
 import mnm.mods.tabbychat.api.filters.FilterEvent
 import mnm.mods.tabbychat.api.filters.FilterSettings
 import mnm.mods.tabbychat.client.ChatManager
-import mnm.mods.tabbychat.util.ConfigView
+import mnm.mods.tabbychat.util.config.ConfigView
 import mnm.mods.tabbychat.util.mc
 import net.minecraft.client.audio.SimpleSound
 import net.minecraft.util.ResourceLocation

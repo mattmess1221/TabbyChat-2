@@ -3,7 +3,7 @@ package mnm.mods.tabbychat.client
 import com.electronwill.nightconfig.core.Config
 import mnm.mods.tabbychat.api.Channel
 import mnm.mods.tabbychat.api.ChannelType
-import mnm.mods.tabbychat.util.ConfigView
+import mnm.mods.tabbychat.util.config.ConfigView
 import net.minecraft.util.StringUtils
 
 class ChannelImpl(config: Config = Config.inMemory()) : ConfigView(config), Channel {

@@ -1,7 +1,7 @@
 package mnm.mods.tabbychat.api.filters
 
-import mnm.mods.tabbychat.util.AbstractConfigView
-import mnm.mods.tabbychat.util.ConfigView
+import mnm.mods.tabbychat.util.config.AbstractConfigView
+import mnm.mods.tabbychat.util.config.ConfigView
 import java.util.regex.Pattern
 
 /**

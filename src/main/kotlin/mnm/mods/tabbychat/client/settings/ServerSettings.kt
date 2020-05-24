@@ -2,7 +2,7 @@ package mnm.mods.tabbychat.client.settings
 
 import mnm.mods.tabbychat.client.ChannelImpl
 import mnm.mods.tabbychat.client.extra.filters.UserFilter
-import mnm.mods.tabbychat.util.FileConfigView
+import mnm.mods.tabbychat.util.config.FileConfigView
 import mnm.mods.tabbychat.util.div
 import mnm.mods.tabbychat.util.toPath
 import mnm.mods.tabbychat.util.urlEncoded

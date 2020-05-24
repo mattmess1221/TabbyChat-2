@@ -1,6 +1,10 @@
 package mnm.mods.tabbychat.client.settings
 
-import mnm.mods.tabbychat.util.*
+import mnm.mods.tabbychat.util.ChannelPatterns
+import mnm.mods.tabbychat.util.MessagePatterns
+import mnm.mods.tabbychat.util.config.AbstractConfigView
+import mnm.mods.tabbychat.util.config.Comment
+import mnm.mods.tabbychat.util.config.ConfigView
 
 class GeneralServerSettings(config: AbstractConfigView, path: List<String>) : ConfigView(config, path) {
 

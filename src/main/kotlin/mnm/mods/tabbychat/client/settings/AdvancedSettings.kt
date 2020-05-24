@@ -1,6 +1,11 @@
 package mnm.mods.tabbychat.client.settings
 
-import mnm.mods.tabbychat.util.*
+import mnm.mods.tabbychat.util.ILocation
+import mnm.mods.tabbychat.util.ImmutableLocation
+import mnm.mods.tabbychat.util.LocalVisibility
+import mnm.mods.tabbychat.util.config.AbstractConfigView
+import mnm.mods.tabbychat.util.config.Comment
+import mnm.mods.tabbychat.util.config.ConfigView
 
 class AdvancedSettings(config: AbstractConfigView, path: List<String>) : ConfigView(config, path) {
 

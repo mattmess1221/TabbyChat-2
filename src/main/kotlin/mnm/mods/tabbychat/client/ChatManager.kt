@@ -12,7 +12,7 @@ import mnm.mods.tabbychat.client.gui.ChatBox
 import mnm.mods.tabbychat.client.settings.ServerSettings
 import mnm.mods.tabbychat.client.settings.TabbySettings
 import mnm.mods.tabbychat.util.*
-import mnm.mods.tabbychat.util.ConfigEvent
+import mnm.mods.tabbychat.util.config.ConfigEvent
 import net.minecraft.util.EnumTypeAdapterFactory
 import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.StringTextComponent
