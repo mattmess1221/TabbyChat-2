@@ -27,6 +27,7 @@ object Translation {
     val SETTINGS_FILTERS = "tabbychat.settings.filters".tr
     val SETTINGS_COLORS = "tabbychat.settings.colors".tr
     val SETTINGS_ADVANCED = "tabbychat.settings.advanced".tr
+    val SETTINGS_SPELLING = "tabbychat.settings.spelling".tr
 
     // general settings
     val LOG_CHAT = "tabbychat.settings.general.logChat".tr
@@ -96,6 +97,10 @@ object Translation {
     val ADVANCED_HIDE_DELIMS = "tabbychat.settings.advanced.hidedelims".tr
     val ADVANCED_SPELLCHECK = "tabbychat.settings.advanced.spellcheck".tr
     val EXPERIMENTAL = "tabbychat.settings.experimental".tr
+
+    // spellcheck
+    val SPELLCHECK_NOPE = "tabbychat.spellcheck.nope".tr
+    val SPELLCHECK_DOWNLOAD_LISTS = "tabbychat.spellcheck.download_lists".tr
 
     // messages
     val WARN_COMPLETIONS = "tabbychat.warn.completions".tr

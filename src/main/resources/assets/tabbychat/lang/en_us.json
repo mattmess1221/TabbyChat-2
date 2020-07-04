@@ -48,6 +48,7 @@
   "tabbychat.settings.server.defaultChannel.desc": "The default channel used with the channel command and prefix.",
   "tabbychat.settings.server.filters": "Filters",
   "tabbychat.settings.server.filters.new": "New",
+  "tabbychat.spelling.missing": "Spellcheck dictionaries are missing. Go to spellcheck settings to download them.",
   "tabbychat.filter.title": "Edit Filter",
   "tabbychat.filter.name": "Name",
   "tabbychat.filter.destinations": "Destinations",

@@ -126,7 +126,8 @@ class GuiSettingsScreen(channel: Channel?) : ComponentScreen(StringTextComponent
                 GuiSettingsServer::class to { GuiSettingsServer() },
                 GuiSettingsChannel::class to { GuiSettingsChannel() },
                 GuiSettingsFilters::class to { GuiSettingsFilters() },
-                GuiAdvancedSettings::class to { GuiAdvancedSettings() }
+                GuiAdvancedSettings::class to { GuiAdvancedSettings() },
+                GuiSettingsSpelling::class to { GuiSettingsSpelling() }
         )
     }
 }

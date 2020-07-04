@@ -12,9 +12,9 @@ import org.lwjgl.opengl.GL11
 /**
  * A [net.minecraft.client.gui.widget.button.Button] for the GuiComponent system.
  */
-class GuiButton(override val text: String, val callback: () -> Unit = {}) : AbstractGuiButton() {
+class GuiButton(override val text: String, val callback: (GuiButton) -> Unit = {}) : AbstractGuiButton() {
 
-    override fun onPress() = callback()
+    override fun onPress() = callback(this)
 }
 
 abstract class AbstractGuiButton() : GuiComponent() {

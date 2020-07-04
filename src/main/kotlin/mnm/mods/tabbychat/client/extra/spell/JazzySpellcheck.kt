@@ -1,5 +1,6 @@
 package mnm.mods.tabbychat.client.extra.spell
 
+import com.mojang.bridge.game.Language
 import com.swabunga.spell.engine.SpellDictionary
 import com.swabunga.spell.engine.SpellDictionaryHashMap
 import com.swabunga.spell.event.SpellCheckEvent
@@ -12,45 +13,31 @@ import net.minecraft.resources.IResourceManager
 import net.minecraft.util.text.ITextComponent
 import net.minecraftforge.resource.IResourceType
 import net.minecraftforge.resource.ISelectiveResourceReloadListener
-import java.io.FileNotFoundException
 import java.io.IOException
-import java.io.InputStream
-import java.io.InputStreamReader
 import java.nio.file.Files
 import java.nio.file.Path
+import java.util.*
 import java.util.function.Predicate
 
-internal class JazzySpellcheck : Spellcheck, ISelectiveResourceReloadListener {
+internal class JazzySpellcheck(dataFolder: Path, val wordLists: WordLists) : Spellcheck, ISelectiveResourceReloadListener {
 
-    val userDictionaryFile: Path = TabbyChat.dataFolder.resolve("userdict.txt")
+    private val userDictionaryFile: Path = dataFolder.resolve("userdict.txt")
 
-    private var spellCheck: SpellChecker? = null
-    private var userDict: SpellDictionary? = null
+    private lateinit var spellCheck: SpellChecker
+    private lateinit var userDict: SpellDictionary
     private val errors = mutableListOf<SpellCheckEvent>()
 
     @Synchronized
     @Throws(IOException::class)
-    fun loadDictionary(lang: LangDict): SpellChecker {
-        InputStreamReader(openLangStream(lang)).use { read ->
-            val dictionary = SpellDictionaryHashMap(read)
-            return SpellChecker(dictionary).apply {
-                setUserDictionary(userDict)
-                addSpellCheckListener { errors.add(it) }
+    fun loadDictionary(lang: WordList?): SpellChecker {
+        val dictionary = lang?.let {
+            wordLists.loadWords(it).use { read ->
+                SpellDictionaryHashMap(read)
             }
-        }
-    }
-
-    @Throws(IOException::class)
-    private fun openLangStream(lang: LangDict): InputStream {
-        return try {
-            lang.openStream()
-        } catch (e: FileNotFoundException) {
-            if (lang === LangDict.ENGLISH) {
-                // Prevent StackOverflowException
-                throw e
-            }
-            TabbyChat.logger.warn(SPELLCHECK, "Error loading dictionary. Falling back to en_us.", e)
-            openLangStream(LangDict.ENGLISH)
+        } ?: SpellDictionaryHashMap()
+        return SpellChecker(dictionary).apply {
+            setUserDictionary(userDict)
+            addSpellCheckListener { errors.add(it) }
         }
     }
 
@@ -72,14 +59,12 @@ internal class JazzySpellcheck : Spellcheck, ISelectiveResourceReloadListener {
     @Synchronized
     fun addToDictionary(word: String) {
         // add to user dictionary
-        this.userDict!!.addWord(word)
+        this.userDict.addWord(word)
     }
 
     override fun checkSpelling(string: String): (String?) -> ITextComponent? {
-        if (spellCheck != null) {
-            this.errors.clear()
-            this.spellCheck!!.checkSpelling(StringWordTokenizer(string))
-        }
+        this.errors.clear()
+        this.spellCheck.checkSpelling(StringWordTokenizer(string))
 
         return SpellingFormatter(this.errors.iterator())
     }
@@ -91,14 +76,25 @@ internal class JazzySpellcheck : Spellcheck, ISelectiveResourceReloadListener {
     override fun loadCurrentLanguage() {
         val lang = mc.languageManager.currentLanguage
         try {
+
+            val wordList = wordLists.getWordList(lang.toLocale())
             userDict = loadUserDictionary()
-            spellCheck = loadDictionary(LangDict.fromLanguage(lang.code)).apply {
-                addDictionary(userDict)
-            }
+            spellCheck = loadDictionary(wordList)
+            spellCheck.addDictionary(userDict)
+
         } catch (e: IOException) {
             TabbyChat.logger.warn(SPELLCHECK, "Error while loading dictionary ${lang.code}.", e)
-            spellCheck = null
-            userDict = null
+        }
+    }
+
+    private fun Language.toLocale(): Locale {
+        // forge bug causes the javaLocale to be badly formed.
+        // FIXME MinecraftForge#6861
+        val parts = this.code.split("_".toRegex(), 2)
+        return if (parts.size == 1) {
+            Locale(parts[0])
+        } else {
+            Locale(parts[0], parts[1].toUpperCase())
         }
     }
 
