@@ -30,7 +30,7 @@ dependencies {
 
     implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
-    implementation("kottle:Kottle:1.4.0:slim")
+    implementation("kottle:Kottle:1.5.2:slim")
 
     testImplementation("junit:junit:4.12")
 }
