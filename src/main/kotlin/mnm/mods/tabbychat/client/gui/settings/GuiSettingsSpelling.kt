@@ -9,6 +9,10 @@ import mnm.mods.tabbychat.client.gui.component.layout.GuiGridLayout
 import mnm.mods.tabbychat.client.settings.TabbySettings
 import mnm.mods.tabbychat.util.Color
 import mnm.mods.tabbychat.util.Translation
+import mnm.mods.tabbychat.util.mc
+import mnm.mods.tabbychat.util.toComponent
+import net.minecraftforge.client.ForgeHooksClient
+import net.minecraftforge.resource.VanillaResourceType
 
 class GuiSettingsSpelling : SettingPanel<TabbySettings>() {
     override val displayString: String by Translation.SETTINGS_SPELLING
@@ -25,10 +29,9 @@ class GuiSettingsSpelling : SettingPanel<TabbySettings>() {
         if (wordLists == null) {
             add(GuiLabel(Translation.SPELLCHECK_NOPE.toComponent()))
         } else {
+            val missing = wordLists.getMissingLocales()
             add(GuiButton(Translation.SPELLCHECK_DOWNLOAD_LISTS.translate()) {
-                checkNotNull(wordLists)
                 it.active = false
-                val missing = wordLists.getMissingLocales()
                 if (missing.isNotEmpty()) {
                     TabbyChat.logger.info("Downloading word lists")
                     wordLists.downloadAll(missing).thenAccept { futures ->
@@ -40,10 +43,21 @@ class GuiSettingsSpelling : SettingPanel<TabbySettings>() {
                                 TabbyChat.logger.error("failed to download word list", e)
                             }
                         }
+                        ForgeHooksClient.refreshResources(mc, VanillaResourceType.LANGUAGES)
                     }
                 }
             }, intArrayOf(0, 0, 4, 2)) {
-                active = (wordLists?.getMissingLocales() ?: emptySet()).isNotEmpty()
+                active = missing.isNotEmpty()
+            }
+
+            // TODO translations
+            if (missing.isEmpty()) {
+                add(GuiLabel("No missing locales (yet)".toComponent()), intArrayOf(0, 2))
+            } else {
+                add(GuiLabel("click this button to download these word lists.".toComponent()), intArrayOf(0, 2))
+                for ((y, loc) in missing.withIndex()) {
+                    add(GuiLabel(loc.toString().toComponent()), intArrayOf(1, y + 3))
+                }
             }
         }
     }
