@@ -1,6 +1,5 @@
 package mnm.mods.tabbychat.client.extra.spell
 
-import com.mojang.bridge.game.Language
 import com.swabunga.spell.engine.SpellDictionary
 import com.swabunga.spell.engine.SpellDictionaryHashMap
 import com.swabunga.spell.event.SpellCheckEvent
@@ -13,10 +12,13 @@ import net.minecraft.resources.IResourceManager
 import net.minecraft.util.text.ITextComponent
 import net.minecraftforge.resource.IResourceType
 import net.minecraftforge.resource.ISelectiveResourceReloadListener
+import net.minecraftforge.resource.VanillaResourceType
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.*
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 import java.util.function.Predicate
 
 internal class JazzySpellcheck(dataFolder: Path, val wordLists: WordLists) : Spellcheck, ISelectiveResourceReloadListener {
@@ -26,6 +28,8 @@ internal class JazzySpellcheck(dataFolder: Path, val wordLists: WordLists) : Spe
     private lateinit var spellCheck: SpellChecker
     private lateinit var userDict: SpellDictionary
     private val errors = mutableListOf<SpellCheckEvent>()
+
+    private val delayedExecutor = Executors.newSingleThreadScheduledExecutor()
 
     @Synchronized
     @Throws(IOException::class)
@@ -70,31 +74,43 @@ internal class JazzySpellcheck(dataFolder: Path, val wordLists: WordLists) : Spe
     }
 
     override fun onResourceManagerReload(resourceManager: IResourceManager, resourcePredicate: Predicate<IResourceType>) {
-        loadCurrentLanguage()
+        if (resourcePredicate.test(VanillaResourceType.LANGUAGES)) {
+            loadCurrentLanguage()
+
+            mc.execute {
+                // the loading gui interferes with the toast,
+                delayedExecutor.schedule({
+                    mc.execute {
+                        wordLists.alertMissingWordLists()
+                    }
+                }, 3, TimeUnit.SECONDS)
+            }
+        }
     }
 
     override fun loadCurrentLanguage() {
-        val lang = mc.languageManager.currentLanguage
+        // LanguageManager.currentLanguage is null during startup because languages haven't been
+        // loaded yet. I just need the code, and it's the same as the settings language anyway.
+        val lang = mc.gameSettings.language
         try {
-
             val wordList = wordLists.getWordList(lang.toLocale())
             userDict = loadUserDictionary()
             spellCheck = loadDictionary(wordList)
             spellCheck.addDictionary(userDict)
 
         } catch (e: IOException) {
-            TabbyChat.logger.warn(SPELLCHECK, "Error while loading dictionary ${lang.code}.", e)
+            TabbyChat.logger.warn(SPELLCHECK, "Error while loading dictionary ${lang}.", e)
         }
     }
 
-    private fun Language.toLocale(): Locale {
-        // forge bug causes the javaLocale to be badly formed.
-        // FIXME MinecraftForge#6861
-        val parts = this.code.split("_".toRegex(), 2)
+    private fun String.toLocale(): Locale {
+        val parts = this.split("_", limit = 2)
         return if (parts.size == 1) {
-            Locale(parts[0])
+            val (code) = parts
+            Locale(code)
         } else {
-            Locale(parts[0], parts[1].toUpperCase())
+            val (code, country) = parts
+            Locale(code,country.toUpperCase())
         }
     }
 

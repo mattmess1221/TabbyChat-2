@@ -2,8 +2,10 @@ package mnm.mods.tabbychat.client.extra.spell
 
 import com.google.common.collect.ImmutableSet
 import com.google.gson.GsonBuilder
-import com.google.gson.JsonObject
+import mnm.mods.tabbychat.client.gui.NotificationToast
 import mnm.mods.tabbychat.util.div
+import mnm.mods.tabbychat.util.mc
+import net.minecraft.util.text.TranslationTextComponent
 import org.apache.http.HttpStatus
 import org.apache.http.client.HttpClient
 import org.apache.http.client.methods.HttpGet
@@ -34,6 +36,8 @@ interface WordLists {
     fun downloadAll(locales: Collection<Locale>) = downloadAll(*locales.toTypedArray())
 
     fun downloadAll(vararg locales: Locale): CompletableFuture<List<CompletableFuture<WordList>>>
+
+    fun alertMissingWordLists()
 }
 
 data class WordList(
@@ -136,6 +140,13 @@ class WordListDownloader(dataFolder: Path, private val syncExecutor: Executor) :
                 }
                 allOf(*futures.toTypedArray()).join()
             }
+        }
+    }
+
+    override fun alertMissingWordLists() {
+        if (missingLocales.isNotEmpty()) {
+            val title = TranslationTextComponent("tabbychat.spelling.missing")
+            mc.toastGui.add(NotificationToast("Spellcheck", title))
         }
     }
 

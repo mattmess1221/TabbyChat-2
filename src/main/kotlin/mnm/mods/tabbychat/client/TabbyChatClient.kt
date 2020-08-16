@@ -7,11 +7,8 @@ import mnm.mods.tabbychat.api.events.MessageAddedToChannelEvent
 import mnm.mods.tabbychat.client.extra.ChatAddonAntiSpam
 import mnm.mods.tabbychat.client.extra.ChatLogging
 import mnm.mods.tabbychat.client.extra.filters.FilterAddon
-import mnm.mods.tabbychat.client.extra.spell.JazzySpellcheck
 import mnm.mods.tabbychat.client.extra.spell.Spellcheck
-import mnm.mods.tabbychat.client.extra.spell.WordListDownloader
 import mnm.mods.tabbychat.client.gui.GuiNewChatTC
-import mnm.mods.tabbychat.client.gui.NotificationToast
 import mnm.mods.tabbychat.client.settings.ServerSettings
 import mnm.mods.tabbychat.client.settings.TabbySettings
 import mnm.mods.tabbychat.util.ChatTextUtils
@@ -84,7 +81,7 @@ object TabbyChatClient {
             }
 
         @SubscribeEvent
-        fun onGuiOpen(event: TickEvent.ClientTickEvent) {
+        fun onFirstTick(event: TickEvent.ClientTickEvent) {
             // Do the first tick, then unregister self.
             // essentially an on-thread startup complete listener
             mc.ingameGUI.chat = GuiNewChatTC
@@ -107,11 +104,6 @@ object TabbyChatClient {
                 ChatManager.loadFrom(serverSettings.config.nioPath.parent)
             } catch (e: Exception) {
                 TabbyChat.logger.warn(CHATBOX, "Unable to load chat data.", e)
-            }
-
-            if (spellcheck is JazzySpellcheck && spellcheck.wordLists.getMissingLocales().isNotEmpty()) {
-                val title = TranslationTextComponent("tabbychat.spelling.missing")
-                mc.toastGui.add(NotificationToast("Spellcheck", title))
             }
         }
     }
