@@ -1,7 +1,9 @@
 package mnm.mods.tabbychat.client.extra.spell
 
 import com.google.common.collect.ImmutableSet
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import mnm.mods.tabbychat.client.gui.NotificationToast
 import mnm.mods.tabbychat.util.div
 import mnm.mods.tabbychat.util.mc
@@ -15,6 +17,7 @@ import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.MarkerManager
 import java.io.BufferedReader
 import java.io.IOException
+import java.io.Reader
 import java.net.URI
 import java.nio.file.Files
 import java.nio.file.Path
@@ -42,7 +45,8 @@ interface WordLists {
 
 data class WordList(
         val locale: String,
-        val file: String
+        val file: String,
+        val hash: String
 )
 
 class WordListDownloader(dataFolder: Path, private val syncExecutor: Executor) : WordLists {
@@ -51,14 +55,14 @@ class WordListDownloader(dataFolder: Path, private val syncExecutor: Executor) :
         private val logger = LogManager.getLogger()
         private val marker = MarkerManager.getMarker("spelling")
         private val gson = GsonBuilder().setPrettyPrinting().create()
-        private val DICS_JSON = "dics.json"
-        private val GITHUB_URL = "https://github.com/killjoy1221/aspell-dump/blob/master/dics/%s/%s.dic.gz?raw=true"
+        private const val GITHUB_URL = "https://github.com/killjoy1221/aspell-dump/blob/master/dics/%s/%s.dic.gz%s?raw=true"
     }
 
-    private val dicsDir = dataFolder.resolve("dics")
+    private val dicsDir = dataFolder / "wordlists"
+    private val dicsJson = dicsDir / "wordlists.json"
 
     private val missingLocales = HashSet<Locale>()
-    private val wordLists = HashMap<String, String>()
+    private val wordLists = HashMap<String, WordList>()
 
     init {
         loadWordLists()
@@ -68,26 +72,21 @@ class WordListDownloader(dataFolder: Path, private val syncExecutor: Executor) :
 
     private fun loadWordLists() {
         wordLists.clear()
-        val path = dicsDir / DICS_JSON
-        if (Files.exists(path)) {
-            Files.newBufferedReader(path).use {
-                val obj = gson.fromJson(it, JsonObject::class.java)
-                for (e in obj.entrySet()) {
-                    wordLists[e.key] = e.value.asString
-                }
+        if (Files.exists(dicsJson)) {
+            Files.newBufferedReader(dicsJson).use {
+                wordLists += gson.fromJson<Map<String, WordList>>(it)
             }
         }
     }
 
+    private inline fun <reified T> Gson.fromJson(reader: Reader): T {
+        return this.fromJson(reader, object : TypeToken<T>() {}.type)
+    }
+
     private fun saveWordLists() {
-        val obj = JsonObject()
-        for (e in wordLists.entries) {
-            obj.addProperty(e.key, e.value)
-        }
-        val path = dicsDir / DICS_JSON
         Files.createDirectories(dicsDir)
-        Files.newBufferedWriter(path).use {
-            gson.toJson(obj, it)
+        Files.newBufferedWriter(dicsJson).use {
+            gson.toJson(wordLists, it)
         }
     }
 
@@ -112,7 +111,7 @@ class WordListDownloader(dataFolder: Path, private val syncExecutor: Executor) :
     private fun findWordList(locale: Locale): WordList? {
         val key = locale.toString()
         if (key in wordLists) {
-            return WordList(key, wordLists[key]!!)
+            return wordLists[key]
         }
         logger.warn(marker, "Missing spellcheck dictionary for '{}'. Download it from the spellcheck settings menu.", key)
         missingLocales += locale
@@ -132,7 +131,7 @@ class WordListDownloader(dataFolder: Path, private val syncExecutor: Executor) :
                     CompletableFuture
                             .supplyAsync { downloadWordList(client, locale) }
                             .thenApplyAsync(UnaryOperator<WordList> {
-                                wordLists[it.locale] = it.file
+                                wordLists[it.locale] = it
                                 missingLocales.remove(locale)
                                 saveWordLists()
                                 it
@@ -166,13 +165,15 @@ class WordListDownloader(dataFolder: Path, private val syncExecutor: Executor) :
 
     private fun downloadWordList(client: HttpClient, locale: Locale): WordList {
         val lang = locale.language
+        var dicUrl = URI.create(GITHUB_URL.format(lang, locale, ""))
+        var shaUrl = URI.create(GITHUB_URL.format(lang, locale, ".sha1"))
         try {
-            var url = URI.create(GITHUB_URL.format(lang, locale))
-            if (!tryConnectHead(client, url)) {
-                val suppressed = IOException("First URL: $url")
-                url = URI.create(GITHUB_URL.format(lang, lang))
-                if (!tryConnectHead(client, url)) {
-                    val suppressed2 = IOException("Second URL: $url")
+            if (!tryConnectHead(client, dicUrl)) {
+                val suppressed = IOException("First URL: $dicUrl")
+                dicUrl = URI.create(GITHUB_URL.format(lang, lang, ""))
+                shaUrl = URI.create(GITHUB_URL.format(lang, lang, ".sha1"))
+                if (!tryConnectHead(client, dicUrl)) {
+                    val suppressed2 = IOException("Second URL: $dicUrl")
 
                     throw IOException("No word list found for $locale").apply {
                         addSuppressed(suppressed)
@@ -181,10 +182,13 @@ class WordListDownloader(dataFolder: Path, private val syncExecutor: Executor) :
                 }
             }
 
-            val path = Paths.get(lang, "$locale.tar.gz")
-            downloadFile(client, url, dicsDir.resolve(path))
 
-            return WordList(locale.toString(), path.toString())
+
+            val hash = readUrl(client, shaUrl)
+            val path = Paths.get(lang, "$locale.dic.gz")
+            downloadFile(client, dicUrl, dicsDir.resolve(path))
+
+            return WordList(locale.toString(), path.toString(), hash)
         } catch (e: Exception) {
             logger.catching(e)
             throw e
@@ -194,6 +198,15 @@ class WordListDownloader(dataFolder: Path, private val syncExecutor: Executor) :
     private fun tryConnectHead(client: HttpClient, url: URI): Boolean {
         return client.execute(HttpHead(url)) {
             it.statusLine.statusCode == HttpStatus.SC_OK
+        }
+    }
+
+    private fun readUrl(client: HttpClient, url: URI): String {
+        return client.execute(HttpGet(url)) {
+            if (it.statusLine.statusCode != HttpStatus.SC_OK) {
+                throw IOException()
+            }
+            it.entity.content.bufferedReader().readText()
         }
     }
 
