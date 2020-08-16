@@ -8,8 +8,7 @@ import net.minecraft.util.text.TextFormatting
 import org.lwjgl.opengl.GL11
 import kotlin.math.max
 
-class NotificationToast(private val owner: String, title: ITextComponent) : IToast {
-    private val title: String = title.string
+class NotificationToast(private val owner: String, private val title: ITextComponent) : IToast {
 
     private var firstDrawTime: Long = 0
     private var newDisplay: Boolean = false
@@ -20,7 +19,7 @@ class NotificationToast(private val owner: String, title: ITextComponent) : IToa
             this.newDisplay = false
         }
         var x = 10
-        val textWidth = toastGui.minecraft.fontRenderer.getStringWidth(title)
+        val textWidth = toastGui.minecraft.fontRenderer.getStringWidth(title.string)
         val delay: Long = 500
         val maxSize = textWidth - 150
         val timeElapsed = delta - firstDrawTime - delay
@@ -45,7 +44,7 @@ class NotificationToast(private val owner: String, title: ITextComponent) : IToa
         GL11.glEnable(GL11.GL_SCISSOR_TEST)
         GL11.glScissor(((xpos + 10) * scale).toInt(), ((height - 32) * scale).toInt(), (140 * scale).toInt(), (32 * scale).toInt())
 
-        toastGui.minecraft.fontRenderer.drawString(this.title, x.toFloat(), 16.0f, -1)
+        toastGui.minecraft.fontRenderer.drawString(this.title.string, x.toFloat(), 16.0f, -1)
 
         GL11.glDisable(GL11.GL_SCISSOR_TEST)
 
