@@ -8,11 +8,12 @@ import net.alexwells.kottle.FMLKotlinModLoadingContext
 import net.minecraft.entity.player.ServerPlayerEntity
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.text.ITextComponent
+import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.entity.player.PlayerEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
+import net.minecraftforge.fml.DistExecutor
 import net.minecraftforge.fml.common.Mod
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent
 import net.minecraftforge.fml.loading.FMLPaths
 import net.minecraftforge.fml.network.NetworkDirection
@@ -34,13 +35,12 @@ object TabbyChat {
     init {
         MinecraftForge.EVENT_BUS.register(this)
         FMLKotlinModLoadingContext.get().modEventBus.register(this)
-    }
 
-    @SubscribeEvent
-    fun initClient(event: FMLClientSetupEvent) {
-        logger.info("client setup")
-        MinecraftForge.EVENT_BUS.register(TabbyChatClient)
-        FMLKotlinModLoadingContext.get().modEventBus.register(TabbyChatClient)
+        DistExecutor.runWhenOn(Dist.CLIENT) {
+            Runnable {
+                TabbyChatClient
+            }
+        }
     }
 
     @SubscribeEvent
