@@ -1,4 +1,5 @@
 import java.util.*
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "1.3.61"
@@ -36,7 +37,7 @@ dependencies {
 }
 minecraft {
     mappingChannel = "snapshot"
-    mappingVersion = "20200215-1.15.1"
+    mappingVersion = "20200925-1.15.1"
     accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))
     runs {
         listOf("client", "server").forEach {
@@ -85,4 +86,8 @@ artifacts {
 }
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
+}
+val compileKotlin: KotlinCompile by tasks
+compileKotlin.kotlinOptions {
+    freeCompilerArgs = listOf("-Xinline-classes")
 }

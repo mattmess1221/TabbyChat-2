@@ -2,15 +2,16 @@ package mnm.mods.tabbychat.util.text
 
 import com.google.common.collect.Streams
 import mnm.mods.tabbychat.util.Color
+import mnm.mods.tabbychat.util.Colors
 import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.TextComponent
 import java.util.stream.Stream
 
 class FancyText(val text: ITextComponent) : TextComponent() {
 
-    data class FancyStyle(var color: Color = Color.WHITE,
-                          var underline: Color = Color(0),
-                          var highlight: Color = Color(0)) {
+    data class FancyStyle(val color: Color = Colors.WHITE,
+                          val underline: Color? = null,
+                          val highlight: Color? = null) {
         fun copy(other: FancyStyle): FancyStyle {
             return FancyStyle(other.color, other.underline, other.highlight)
         }
@@ -18,8 +19,8 @@ class FancyText(val text: ITextComponent) : TextComponent() {
 
     var fancyStyle = FancyStyle()
 
-    fun fancyStyle(block: FancyStyle.() -> Unit) = apply {
-        fancyStyle.block()
+    fun fancyStyle(block: () -> FancyStyle) = apply {
+        fancyStyle = block()
     }
 
     init {
