@@ -2,7 +2,7 @@ package mnm.mods.tabbychat.client.extra.spell
 
 import com.swabunga.spell.event.SpellCheckEvent
 import mnm.mods.tabbychat.client.TabbyChatClient
-import mnm.mods.tabbychat.util.Color
+import mnm.mods.tabbychat.util.Colors
 import mnm.mods.tabbychat.util.text.FancyText
 import mnm.mods.tabbychat.util.toComponent
 import net.minecraft.util.text.ITextComponent
@@ -41,18 +41,15 @@ class SpellingFormatter(private val spelling: Iterator<SpellCheckEvent>) : (Stri
             }
             b.appendText(text.substring(prev, start))
 
+            val style = {FancyText.FancyStyle(underline = Colors.RED)}
+
             if (end > text.length) {
                 // error goes to next line
-                return b.appendSibling(FancyText(text.substring(start).toComponent()).fancyStyle {
-                    underline = Color.RED
-                })
+                return b.appendSibling(FancyText(text.substring(start).toComponent()).fancyStyle(style))
             }
-            b.appendSibling(FancyText(text.substring(start, end).toComponent()).fancyStyle {
-                underline = Color.RED
-
-                prev = end
-                event = null
-            })
+            b.appendSibling(FancyText(text.substring(start, end).toComponent()).fancyStyle(style))
+            prev = end
+            event = null
         }
         // no more errors.
         totalLength++

@@ -9,37 +9,42 @@ import mnm.mods.tabbychat.client.ChannelImpl
 import mnm.mods.tabbychat.client.ChatManager
 import mnm.mods.tabbychat.client.DefaultChannel
 import mnm.mods.tabbychat.client.TabbyChatClient
-import mnm.mods.tabbychat.client.gui.TextBox.delegate
-import mnm.mods.tabbychat.client.gui.component.GuiPanel
-import mnm.mods.tabbychat.client.gui.component.layout.BorderLayout
+import mnm.mods.tabbychat.client.gui.widget.MultiLineTextFieldWidget
 import mnm.mods.tabbychat.client.util.ScaledDimension
-import mnm.mods.tabbychat.util.*
+import mnm.mods.tabbychat.util.listen
+import mnm.mods.tabbychat.util.mc
+import net.minecraft.client.gui.FocusableGui
 import net.minecraft.client.gui.IGuiEventListener
+import net.minecraft.client.gui.IRenderable
 import net.minecraft.client.gui.screen.ChatScreen
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.renderer.Rectangle2d
 import net.minecraft.util.ResourceLocation
-import net.minecraft.util.math.MathHelper
+import net.minecraft.util.math.MathHelper.ceil
+import net.minecraft.util.math.MathHelper.floor
 import net.minecraftforge.common.MinecraftForge
 import org.lwjgl.glfw.GLFW
 import kotlin.math.max
 import kotlin.math.min
 
-object ChatBox : GuiPanel() {
+object ChatBox : FocusableGui(), IRenderable, ILocatable {
+
+    override var xPos: Int = 0
+    override var yPos: Int = 0
+    override var width: Int = 0
+    override var height: Int = 0
 
     val GUI_LOCATION = ResourceLocation(MODID, "textures/chatbox.png")
     var chatArea: ChatArea
         private set
     var tray: ChatTray
         private set
-    var chatInput: TextBox
+    var chatInput: MultiLineTextFieldWidget
         private set
-
-    private var dragMode: Boolean = false
-    private var drag: Vec2i? = null
-    private var tempbox: Location? = null
+    var scrollbar: Scrollbar
 
     private val channels = ArrayList<Channel>()
+    private val children = ArrayList<IGuiEventListener>()
 
     class ChannelStatusMap {
         private val channelStatus = mutableMapOf<Channel, ChannelStatus>()
@@ -86,9 +91,9 @@ object ChatBox : GuiPanel() {
                 // set max text length
                 val hidden = channel.isPrefixHidden
                 val prefLength = if (hidden) channel.prefix.length + 1 else 0
-                text.delegate.delegate.maxStringLength = ChatManager.MAX_CHAT_LENGTH - prefLength
+                text.maxStringLength = ChatManager.MAX_CHAT_LENGTH - prefLength
             } else {
-                text.delegate.delegate.maxStringLength = ChatManager.MAX_CHAT_LENGTH
+                text.maxStringLength = ChatManager.MAX_CHAT_LENGTH
             }
 
             // reset scroll
@@ -103,31 +108,37 @@ object ChatBox : GuiPanel() {
 
     private lateinit var chat: ChatScreen
 
-    // save bounds
-    override var location: ILocation = TabbyChatClient.settings.advanced.chatLocation
-        set(location) {
-            if (field != location) {
-                field = location
-                val sett = TabbyChatClient.settings
-                sett.advanced.chatLocation.merge(location)
-                sett.save()
-            }
-        }
+    private var locationDirty = false
+
+    private fun saveLocation() {
+        val loc = TabbyChatClient.settings.advanced.chatLocation
+        loc.xPos = xPos
+        loc.yPos = yPos
+        loc.width = width
+        loc.height = height
+
+        TabbyChatClient.settings.save()
+        locationDirty = true
+    }
 
     init {
-        layout = BorderLayout()
+        val location = TabbyChatClient.settings.advanced.chatLocation
+        xPos = location.xPos
+        yPos = location.yPos
+        width = location.width
+        height = location.height
 
-        tray = this.add(ChatTray(), BorderLayout.Position.NORTH)
-        chatArea = this.add(ChatArea(), BorderLayout.Position.CENTER)
-        chatInput = this.add(TextBox, BorderLayout.Position.SOUTH)
-        this.add(Scrollbar(chatArea), BorderLayout.Position.EAST)
+        tray = ChatTray(this)
+        chatArea = ChatArea(this)
+        chatInput = MultiLineTextFieldWidget(this, mc.fontRenderer, "")
+        scrollbar = Scrollbar(chatArea)
+
+        this.children += listOf<IGuiEventListener>(tray, chatArea, chatInput)
 
         this.channels.add(DefaultChannel)
         this.tray.addChannel(DefaultChannel)
 
         status[DefaultChannel] = ChannelStatus.ACTIVE
-
-        super.tick()
 
         MinecraftForge.EVENT_BUS.listen<MessageAddedToChannelEvent.Post> {
             messageScroller(it)
@@ -137,9 +148,13 @@ object ChatBox : GuiPanel() {
         }
     }
 
-    override fun init(screen: Screen) {
+    override fun children(): MutableList<out IGuiEventListener> {
+        return children
+    }
+
+    fun init(screen: Screen) {
         this.chat = screen as ChatScreen
-        this.chat.field_228174_e_.field_228095_d_ = chatInput.delegate.delegate
+        this.chat.commandSuggestionHelper.field_228095_d_ = chatInput
         val chan = activeChannel
         if (screen.defaultInputFieldText.isEmpty()
                 && chan is ChannelImpl
@@ -147,26 +162,35 @@ object ChatBox : GuiPanel() {
                 && chan.prefix.isNotEmpty()) {
             screen.defaultInputFieldText = chan.prefix + " "
         }
-        val text = chatInput.delegate
-        screen.inputField = text.delegate
-        text.value = screen.defaultInputFieldText
+        screen.inputField = chatInput
+        chatInput.text = screen.defaultInputFieldText
 
-        chatInput.textFormatter = screen.field_228174_e_::func_228122_a_
-        text.delegate.setResponder { screen.func_212997_a(it) }
+        chatInput.setTextFormatter(screen.commandSuggestionHelper::func_228122_a_)
+        chatInput.setResponder(screen::func_212997_a)
 
         val children = screen.children() as MutableList<IGuiEventListener>
-        children[0] = ChatBox
-
-        super.init(screen)
+        children[0] = chatInput
     }
 
-    override fun tick() {
-        location = normalizeLocation(location)
-        super.tick()
+    fun tick() {
+        // try to fix the chatbox location to keep it in the window.
+        if (normalizeLocation()) {
+            ChatManager.markDirty(activeChannel)
+            this.locationDirty = true
+        }
+
+        tray.tick()
+        chatInput.tick()
+
+        // finally, save the location if it changed.
+        if (!draggingChatBox && locationDirty) {
+            saveLocation()
+            locationDirty = false
+        }
     }
 
     private fun update() {
-        chat.field_228174_e_.field_228108_q_?.apply {
+        chat.commandSuggestionHelper.suggestions?.apply {
             if (field_228138_b_ !is TCRect) {
                 field_228138_b_ = TCRect(field_228138_b_)
             }
@@ -258,10 +282,13 @@ object ChatBox : GuiPanel() {
     override fun render(x: Int, y: Int, parTicks: Float) {
         handleDragging(x.toDouble(), y.toDouble())
 
-        super.render(x, y, parTicks)
+        this.chatArea.render(x, y, parTicks)
+
         if (mc.ingameGUI.chatGUI.chatOpen) {
+            this.tray.render(x, y, parTicks)
+            this.chatInput.render(x, y, parTicks)
             update()
-            chat.field_228174_e_.func_228114_a_(x, y)
+            chat.commandSuggestionHelper.render(x, y)
 
             val itextcomponent = mc.ingameGUI.chatGUI.getTextComponent(x.toDouble(), y.toDouble())
             if (itextcomponent != null && itextcomponent.style.hoverEvent != null) {
@@ -273,9 +300,8 @@ object ChatBox : GuiPanel() {
     override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
         if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
             mc.ingameGUI.chatGUI.resetScroll()
-            val text = chatInput.delegate
-            chat.sendMessage(text.value)
-            text.value = chat.defaultInputFieldText
+            chat.sendMessage(chatInput.text)
+            chatInput.text = chat.defaultInputFieldText
 
             if (!TabbyChatClient.settings.advanced.keepChatOpen) {
                 mc.displayGuiScreen(null)
@@ -283,7 +309,7 @@ object ChatBox : GuiPanel() {
             return true
         }
 
-        if (chat.field_228174_e_.func_228115_a_(keyCode, scanCode, modifiers)) {
+        if (chat.commandSuggestionHelper.onKeyPressed(keyCode, scanCode, modifiers)) {
             return true
         }
         if (keyCode == GLFW.GLFW_KEY_TAB) {
@@ -292,14 +318,31 @@ object ChatBox : GuiPanel() {
         return super.keyPressed(keyCode, scanCode, modifiers)
     }
 
+    private var draggingChatBox = false
+    private var resizing = false
+
+    private var dragStartX = 0
+    private var dragStartY = 0
+
+    private var tempX = 0
+    private var tempY = 0
+    private var tempW = 0
+    private var tempH = 0
+
     override fun mouseClicked(x: Double, y: Double, button: Int): Boolean {
-        if (chat.field_228174_e_.func_228113_a_(x, y, button)) {
+        if (chat.commandSuggestionHelper.onClick(x, y, button)) {
             return true
         }
-        if (button == 0 && (tray.location.contains(x, y) || Screen.hasAltDown() && location.contains(x, y))) {
-            dragMode = !tray.isHandleHovered(x, y)
-            drag = Vec2i(x.toInt(), y.toInt())
-            tempbox = location.copy()
+        if (button == 0 && tray.contains(x.toInt(), y.toInt())
+                || Screen.hasAltDown() && this.contains(x.toInt(), y.toInt())) {
+            draggingChatBox = true
+            resizing = tray.isHandleHovered(x, y)
+            dragStartX = x.toInt()
+            dragStartY = y.toInt()
+            tempX = this.xPos
+            tempY = this.yPos
+            tempW = this.width
+            tempH = this.height
         }
 
         if (mc.ingameGUI.chatGUI.chatOpen) {
@@ -313,43 +356,45 @@ object ChatBox : GuiPanel() {
     }
 
     private fun handleDragging(mx: Double, my: Double) {
-        if (drag != null) {
-            if (!dragMode) {
-                location = Location(
-                        tempbox!!.xPos,
-                        tempbox!!.yPos + my.toInt() - drag!!.y,
-                        tempbox!!.width + mx.toInt() - drag!!.x,
-                        tempbox!!.height - my.toInt() + drag!!.y)
-                ChatManager.markDirty(activeChannel)
+        if (draggingChatBox) {
+            if (resizing) {
+//                xPos = tempX + mx.toInt() - dragStartX
+                yPos = tempY + my.toInt() - dragStartY
+                width = tempW + mx.toInt() - dragStartX
+                height = tempH - my.toInt() + dragStartY
             } else {
-                val loc = location.copy()
-                loc.xPos = tempbox!!.xPos + mx.toInt() - drag!!.x
-                loc.yPos = tempbox!!.yPos + my.toInt() - drag!!.y
-                location = loc.asImmutable()
+                xPos = tempX + mx.toInt() - dragStartX
+                yPos = tempY - dragStartY + my.toInt()
+            }
+            if (normalizeLocation()) {
+                ChatManager.markDirty(activeChannel)
             }
         }
     }
 
     override fun mouseReleased(x: Double, y: Double, button: Int): Boolean {
-        if (drag != null) {
-            drag = null
-            tempbox = null
+        if (draggingChatBox) {
+            draggingChatBox = false
+            locationDirty = true
         }
         return super.mouseReleased(x, y, button)
     }
 
     override fun mouseScrolled(x: Double, y: Double, scroll: Double): Boolean {
-        return this.chat.field_228174_e_.func_228112_a_(scroll) || super.mouseScrolled(x, y, scroll)
+        return this.chat.commandSuggestionHelper.onScroll(scroll) || super.mouseScrolled(x, y, scroll)
     }
 
-    private fun normalizeLocation(bounds: ILocation): ILocation {
+    /**
+     * Normalizes the chatbox to keep it in view.
+     */
+    private fun normalizeLocation(): Boolean {
         val scale = mc.gameSettings.chatScale
 
         // original dims
-        val x = (bounds.xPos * scale).toInt()
-        val y = (bounds.yPos * scale).toInt()
-        val w = (bounds.width * scale).toInt()
-        val h = (bounds.height * scale).toInt()
+        val x = floor(xPos * scale)
+        val y = floor(yPos * scale)
+        val w = floor(width * scale)
+        val h = floor(height * scale)
 
         // the new dims
         var w1 = w
@@ -363,7 +408,7 @@ object ChatBox : GuiPanel() {
         val hotbar = 25
 
         // limits for sizes
-        val minW = 50
+        val minW = 150
         val minH = 50
         val maxH = screenH - hotbar
 
@@ -395,19 +440,13 @@ object ChatBox : GuiPanel() {
 
         // reset the location if it changed.
         if (x1 != x || y1 != y || w1 != w || h1 != h) {
-            return Location(
-                    MathHelper.ceil(x1 / scale),
-                    MathHelper.ceil(y1 / scale),
-                    MathHelper.ceil(w1 / scale),
-                    MathHelper.ceil(h1 / scale))
+            this.xPos = ceil(x1 / scale)
+            this.yPos = ceil(y1 / scale)
+            this.width = ceil(w1 / scale)
+            this.height = ceil(h1 / scale)
+            return true
         }
-
-        return bounds
-    }
-
-    override fun onClosed() {
-        super.onClosed()
-        tick()
+        return false
     }
 
     override fun getFocused(): IGuiEventListener? {
@@ -424,22 +463,23 @@ object ChatBox : GuiPanel() {
         val oldDim = ScaledDimension(oldWidth, oldHeight)
         val newDim = ScaledDimension(newWidth, newHeight)
 
-        val bottom = oldDim.scaledHeight - location.yPos
+        val bottom = oldDim.scaledHeight - yPos
         val y = newDim.scaledHeight - bottom
-        val loc = location.copy()
-        loc.yPos = y
-        this.location = loc
-        this.tick()
+        if (this.yPos != y) {
+            this.yPos = y
+            locationDirty = true
+        }
     }
 
     private class TCRect(private val parent: Rectangle2d) : Rectangle2d(0, 0, 0, 0) {
 
         override fun getX(): Int {
-            return max(0, min(parent.x + location.xPos, chat.width - parent.width))
+            return parent.x
         }
 
         override fun getY(): Int {
-            return location.yHeight - parent.height - 14 * chatInput.wrappedLines.size
+            chatInput.y
+            return chatInput.y - parent.height + chatInput.wrappedLines.size * mc.fontRenderer.FONT_HEIGHT
         }
 
         override fun getWidth(): Int {
@@ -451,7 +491,7 @@ object ChatBox : GuiPanel() {
         }
 
         override fun contains(x: Int, y: Int): Boolean {
-            return x >= this.x && x <= this.x + this.width && y >= this.y && y <= this.y + this.height
+            return this.x <= x && x <= this.x + this.width && this.y <= y && y <= this.y + this.height
         }
     }
 

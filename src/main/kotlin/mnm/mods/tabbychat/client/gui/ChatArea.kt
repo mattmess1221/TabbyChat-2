@@ -6,17 +6,21 @@ import mnm.mods.tabbychat.client.ChatManager
 import mnm.mods.tabbychat.client.ChatMessage
 import mnm.mods.tabbychat.client.DefaultChannel
 import mnm.mods.tabbychat.client.TabbyChatClient
-import mnm.mods.tabbychat.client.gui.component.GuiComponent
 import mnm.mods.tabbychat.util.*
-import net.minecraft.client.gui.RenderComponentsUtil
+import net.minecraft.client.gui.*
 import net.minecraft.client.gui.screen.Screen
-import net.minecraft.entity.player.ChatVisibility
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.StringTextComponent
 import java.util.*
 
-class ChatArea : GuiComponent() {
+class ChatArea(private val chatbox: ChatBox)
+    : AbstractGui(), IGuiEventListener, IRenderable, ILocatable {
+
+   override val xPos get() = chatbox.xPos
+   override val yPos get() = chatbox.yPos + chatbox.tray.height
+   override val width get() = chatbox.width
+   override val height get() = chatbox.height - chatbox.tray.height - chatbox.chatInput.height
 
     internal var channel: Channel = DefaultChannel
 
@@ -32,39 +36,8 @@ class ChatArea : GuiComponent() {
             }
         }
 
-    override var location: ILocation
-        get() {
-            val height = visibleChat.size * mc.fontRenderer.FONT_HEIGHT
-            val vis = TabbyChatClient.settings.advanced.visibility
-
-            if (mc.ingameGUI.chatGUI.chatOpen || vis === LocalVisibility.ALWAYS) {
-                return super.location
-            }
-            if (height != 0) {
-                return super.location.copy().apply {
-                    move(0, super.location.height - height - 2)
-                    this.height = height + 2
-                }.asImmutable()
-            }
-            return super.location
-        }
-        set(value) {
-            super.location = value
-        }
-
-    override var visible: Boolean
-        get() {
-            val height = visibleChat.size * mc.fontRenderer.FONT_HEIGHT
-            val vis = TabbyChatClient.settings.advanced.visibility
-
-            return mc.gameSettings.chatVisibility != ChatVisibility.HIDDEN && (mc.ingameGUI.chatGUI.chatOpen || vis === LocalVisibility.ALWAYS || height != 0)
-        }
-        set(value) {
-            super.visible = value
-        }
-
     internal val chat: List<ChatMessage>
-        get() = ChatManager.getVisible(channel, super.location.width - 6)
+        get() = ChatManager.getVisible(channel, width - 6)
 
     private val visibleChat: List<ChatMessage>
         get() {
@@ -76,7 +49,7 @@ class ChatArea : GuiComponent() {
             var pos = scrollPos
             val unfoc = TabbyChatClient.settings.advanced.unfocHeight
             val div = if (mc.ingameGUI.chatGUI.chatOpen) 1.toFloat() else unfoc
-            while (pos < lines.size && length < super.location.height * div - 10) {
+            while (pos < lines.size && length < height * div - 10) {
                 val line = lines[pos]
 
                 if (mc.ingameGUI.chatGUI.chatOpen) {
@@ -94,13 +67,9 @@ class ChatArea : GuiComponent() {
             return messages
         }
 
-    init {
-        this.minimumSize = Dim(300, 160)
-    }
-
     override fun mouseScrolled(x: Double, y: Double, scroll: Double): Boolean {
         // One tick = 120
-        if (location.contains(x, y) && scroll != 0.0) {
+        if (this.xPos < x && this.yPos < y && this.xPos + this.width > x && this.yPos + this.height > y && scroll != 0.0) {
             val s = scroll.coerceIn(-1.0, 1.0)
             scroll((if (Screen.hasShiftDown()) s * 7 else s).toInt())
 
@@ -109,35 +78,39 @@ class ChatArea : GuiComponent() {
         return false
     }
 
-    override fun onClosed() {
+    /*override TODO*/ fun onClosed() {
         resetScroll()
-        super.onClosed()
     }
 
     override fun render(x: Int, y: Int, parTicks: Float) {
         val visible = visibleChat
-        RenderSystem.enableBlend()
-        val opac = mc.gameSettings.chatOpacity.toFloat()
-        RenderSystem.color4f(1f, 1f, 1f, opac)
+        val chatOpen = mc.ingameGUI.chatGUI.chatOpen
+        if (visible.isNotEmpty() || chatOpen) {
+            RenderSystem.enableBlend()
+            val opac = mc.gameSettings.chatOpacity.toFloat()
+            RenderSystem.color4f(1f, 1f, 1f, opac)
 
-        drawModalCorners(MODAL)
+            val height = if (chatOpen) this.height else visible.size * mc.fontRenderer.FONT_HEIGHT
+            val minY = this.y2 - height
+            drawModalCorners(xPos, minY, width, height, MODAL)
 
-        blitOffset = 100
-        // TODO abstracted padding
-        val xPos = location.xPos + 3
-        var yPos = location.yHeight
-        for (line in visible) {
-            yPos -= mc.fontRenderer.FONT_HEIGHT
-            drawChatLine(line, xPos, yPos)
+            blitOffset = 100
+            // TODO abstracted padding
+            val xPos = this.x1 + 3
+            var yPos = this.y2
+            for (line in visible) {
+                yPos -= mc.fontRenderer.FONT_HEIGHT
+                drawChatLine(line, xPos, yPos)
+            }
+            blitOffset = 0
+            RenderSystem.disableAlphaTest()
+            RenderSystem.disableBlend()
         }
-        blitOffset = 0
-        RenderSystem.disableAlphaTest()
-        RenderSystem.disableBlend()
     }
 
     private fun drawChatLine(line: ChatMessage, xPos: Int, yPos: Int) {
         val text = ChatTextUtils.getMessageWithOptionalTimestamp(line).formattedText
-        mc.fontRenderer.drawStringWithShadow(text, xPos.toFloat(), yPos.toFloat(), Color.WHITE.hex + (getLineOpacity(line) shl 24))
+        mc.fontRenderer.drawStringWithShadow(text, xPos.toFloat(), yPos.toFloat(), Colors.WHITE + (getLineOpacity(line) shl 24))
     }
 
     @Deprecated("")
@@ -178,49 +151,51 @@ class ChatArea : GuiComponent() {
     }
 
     fun getTextComponent(clickX: Int, clickY: Int): ITextComponent? {
-        var clickX = clickX
-        var clickY = clickY
         if (mc.ingameGUI.chatGUI.chatOpen) {
             val scale = mc.ingameGUI.chatGUI.scale
-            clickX = MathHelper.floor(clickX / scale)
-            clickY = MathHelper.floor(clickY / scale)
+            return getTextComponentClamped(
+                    MathHelper.floor(clickX / scale),
+                    MathHelper.floor(clickY / scale),
+                    scale)
+        }
+        return null
+    }
 
-            val actual = location
-            // check that cursor is in bounds.
-            if (actual.contains(clickX, clickY)) {
+    private fun getTextComponentClamped(clickX: Int, clickY: Int, scale: Double): ITextComponent? {
 
+        // check that cursor is in bounds.
+        if (clickX in xPos..(xPos+width) && clickY in yPos..(yPos + height)) {
+            val size = mc.fontRenderer.FONT_HEIGHT * scale
+            val bottom = (yPos + height).toDouble()
 
-                val size = mc.fontRenderer.FONT_HEIGHT * scale
-                val bottom = (actual.yPos + actual.height).toDouble()
+            // The line to get
+            val linePos = MathHelper.floor((clickY - bottom) / -size) + this.scrollPos
 
-                // The line to get
-                val linePos = MathHelper.floor((clickY - bottom) / -size) + this.scrollPos
+            // Iterate through the chat component, stopping when the desired
+            // x is reached.
+            val list = this.chat
+            if (linePos >= 0 && linePos < list.size) {
+                val chatline = list[linePos]
+                var x = (xPos + 3).toFloat()
 
-                // Iterate through the chat component, stopping when the desired
-                // x is reached.
-                val list = this.chat
-                if (linePos >= 0 && linePos < list.size) {
-                    val chatline = list[linePos]
-                    var x = (actual.xPos + 3).toFloat()
+                for (ichatcomponent in ChatTextUtils.getMessageWithOptionalTimestamp(chatline)) {
+                    if (ichatcomponent is StringTextComponent) {
 
-                    for (ichatcomponent in ChatTextUtils.getMessageWithOptionalTimestamp(chatline)) {
-                        if (ichatcomponent is StringTextComponent) {
+                        // get the text of the component, no children.
+                        val text = ichatcomponent.unformattedComponentText
+                        // clean it up
+                        val clean = RenderComponentsUtil.removeTextColorsIfConfigured(text, false)
+                        // get it's width, then scale it.
+                        x += (mc.fontRenderer.getStringWidth(clean) * scale).toFloat()
 
-                            // get the text of the component, no children.
-                            val text = ichatcomponent.unformattedComponentText
-                            // clean it up
-                            val clean = RenderComponentsUtil.removeTextColorsIfConfigured(text, false)
-                            // get it's width, then scale it.
-                            x += (mc.fontRenderer.getStringWidth(clean) * scale).toFloat()
-
-                            if (x > clickX) {
-                                return ichatcomponent
-                            }
+                        if (x > clickX) {
+                            return ichatcomponent
                         }
                     }
                 }
             }
         }
+
         return null
     }
 

@@ -1,16 +1,17 @@
 package mnm.mods.tabbychat.client.gui
 
-import mnm.mods.tabbychat.client.gui.component.GuiComponent
 import mnm.mods.tabbychat.util.mc
+import net.minecraft.client.gui.AbstractGui
+import net.minecraft.client.gui.IRenderable
 import kotlin.math.absoluteValue
 import kotlin.math.max
 
-class Scrollbar(private val chat: ChatArea) : GuiComponent() {
+class Scrollbar(private val chat: ChatArea) : AbstractGui(), IRenderable {
 
     override fun render(x: Int, y: Int, parTicks: Float) {
         if (mc.ingameGUI.chatGUI.chatOpen) {
             val scroll = chat.scrollPos.toFloat()
-            val max = chat.location.height.toFloat()
+            val max = chat.height.toFloat()
             val lines = max / mc.fontRenderer.FONT_HEIGHT
             var total = chat.chat.size.toFloat()
             if (total <= lines) {
@@ -21,9 +22,10 @@ class Scrollbar(private val chat: ChatArea) : GuiComponent() {
             val perc = ((scroll / total - 1) * (size / max - 1)).absoluteValue
             val pos = (perc * max).toInt()
 
-            val loc = location
-            fill(loc.xPos, loc.yPos + pos, loc.xPos + 1, loc.yPos + pos + size.toInt(), -1)
-            super.render(x, y, parTicks)
+            fill(chat.xPos + chat.width,
+                    chat.yPos + pos,
+                    chat.xPos + chat.width + 1,
+                    chat.yPos + pos + size.toInt(), -1)
         }
     }
 

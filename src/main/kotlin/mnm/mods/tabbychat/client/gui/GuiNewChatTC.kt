@@ -22,7 +22,7 @@ object GuiNewChatTC : NewChatGui(mc) {
     init {
         prevScreenHeight = mc.mainWindow.height
 
-        MinecraftForge.EVENT_BUS.register(ComponentWrapper(ChatScreen::class, ChatBox))
+        MinecraftForge.EVENT_BUS.register(ChatBoxWrapper(ChatScreen::class, ChatBox))
     }
 
     override fun refreshChat() {
@@ -70,9 +70,9 @@ object GuiNewChatTC : NewChatGui(mc) {
         checkThread { addMessage(ichat, id) }
     }
 
-    fun addMessage(ichat: ITextComponent, id: Int) {
+    private fun addMessage(chat: ITextComponent, chatLineId: Int) {
         // chat listeners
-        val chatevent = ChatReceivedEvent(ichat, id)
+        val chatevent = ChatReceivedEvent(chat, chatLineId)
         chatevent.channels.add(DefaultChannel)
         MinecraftForge.EVENT_BUS.post(chatevent)
         // chat filters
@@ -123,10 +123,10 @@ object GuiNewChatTC : NewChatGui(mc) {
     }
 
     override fun getChatHeight(): Int {
-        return ChatBox.chatArea.location.height
+        return ChatBox.chatArea.height
     }
 
     override fun getChatWidth(): Int {
-        return ChatBox.chatArea.location.width
+        return ChatBox.chatArea.width
     }
 }
