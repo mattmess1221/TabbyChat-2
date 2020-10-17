@@ -3,8 +3,8 @@ package mnm.mods.tabbychat.util
 import java.util.regex.Pattern
 
 enum class ChannelPatterns(
-        private val translation: Translatable,
-        pattern: String) : Translatable by translation {
+        val display: Translatable,
+        pattern: String) {
 
     ANGLES(Translation.DELIMS_ANGLES, "^\\<%s\\>"),
     BRACES(Translation.DELIMS_BRACES, "^\\{%s\\}"),

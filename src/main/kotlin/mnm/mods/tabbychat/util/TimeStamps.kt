@@ -3,10 +3,7 @@ package mnm.mods.tabbychat.util
 import java.time.format.DateTimeFormatter
 import java.time.temporal.TemporalAccessor
 
-enum class TimeStamps(
-        val code: String,
-        override val unlocalized: String) : Translatable {
-
+enum class TimeStamps(code: String, val display: String) {
     MILITARY("'['HHmm']'", "[2359]"),
     MILITARYWITHCOLON("'['HH:mm']'", "[23:59]"),
     STANDARD("'['hh':'mm']'", "[12:00]"),
@@ -21,8 +18,7 @@ enum class TimeStamps(
         return format.format(date)
     }
 
-    override fun translate(vararg params: Any): String {
-        return this.unlocalized
+    override fun toString(): String {
+        return display
     }
-
 }

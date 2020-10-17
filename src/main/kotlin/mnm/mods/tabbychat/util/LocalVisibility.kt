@@ -1,10 +1,7 @@
 package mnm.mods.tabbychat.util
 
-enum class LocalVisibility : Translatable {
-
+enum class LocalVisibility {
     ALWAYS,
     NORMAL,
     HIDDEN;
-
-    override val unlocalized = name
 }
