@@ -1,75 +1,85 @@
 package mnm.mods.tabbychat.client.gui.settings
-
-import mnm.mods.tabbychat.client.TabbyChatClient
-import mnm.mods.tabbychat.client.gui.component.GuiLabel
-import mnm.mods.tabbychat.client.gui.component.config.GuiSettingBoolean
-import mnm.mods.tabbychat.client.gui.component.config.GuiSettingEnum
-import mnm.mods.tabbychat.client.gui.component.config.GuiSettingString
-import mnm.mods.tabbychat.client.gui.component.config.GuiSettingStringList
-import mnm.mods.tabbychat.client.gui.component.layout.GuiGridLayout
-import mnm.mods.tabbychat.client.settings.ServerSettings
-import mnm.mods.tabbychat.util.ChannelPatterns
-import mnm.mods.tabbychat.util.Color
-import mnm.mods.tabbychat.util.MessagePatterns
-import mnm.mods.tabbychat.util.Translation
-
-internal class GuiSettingsServer : SettingPanel<ServerSettings>() {
-
-    override val displayString: String by Translation.SETTINGS_SERVER
-    override val settings = TabbyChatClient.serverSettings
-
-    init {
-        this.layout = GuiGridLayout(10, 20)
-        this.secondaryColor = Color(255, 215, 0, 64)
-    }
-
-    override fun initGUI() {
-
-        var pos = 1
-        this.add(GuiLabel(Translation.CHANNELS_ENABLED.toComponent()), intArrayOf(2, pos))
-        this.add(GuiSettingBoolean(settings.general::channelsEnabled), intArrayOf(1, pos)).apply {
-            //            caption = Translation.CHANNELS_ENABLED_DESC.toComponent()
-        }
-
-        pos += 1
-        this.add(GuiLabel(Translation.PM_ENABLED.toComponent()), intArrayOf(2, pos))
-        this.add(GuiSettingBoolean(settings.general::pmEnabled), intArrayOf(1, pos)).apply {
-            //            caption = Translation.PM_ENABLED_DESC.toComponent()
-        }
-
-        pos += 1
-        this.add(GuiLabel(Translation.USE_DEFAULT.toComponent()), intArrayOf(2, pos))
-        this.add(GuiSettingBoolean(settings.general::useDefaultTab), intArrayOf(1, pos))
-
-        pos += 2
-        this.add(GuiLabel(Translation.CHANNEL_PATTERN.toComponent()), intArrayOf(1, pos))
-        this.add(GuiSettingEnum(settings.general::channelPattern, ChannelPatterns.values()), intArrayOf(5, pos, 4, 1)).apply {
-            //            caption = Translation.CHANNEL_PATTERN_DESC.toComponent()
-        }
-
-        pos += 2
-        this.add(GuiLabel(Translation.MESSAGE_PATTERN.toComponent()), intArrayOf(1, pos))
-        this.add(GuiSettingEnum(settings.general::messegePattern, MessagePatterns.values()), intArrayOf(5, pos, 4, 1)).apply {
-            //            caption = Translation.MESSAGE_PATTERN_DESC.toComponent()
-        }
-
-        pos += 2
-        this.add(GuiLabel(Translation.IGNORED_CHANNELS.toComponent()), intArrayOf(0, pos))
-        this.add(GuiSettingStringList(settings.general::ignoredChannels), intArrayOf(5, pos, 5, 1)).apply {
-            //            caption = Translation.IGNORED_CHANNELS_DESC.toComponent()
-        }
-
-//        pos += 2
-//        this.add(GuiLabel(Translation.DEFAULT_CHANNEL_COMMAND.toComponent()), intArrayOf(0, pos))
-//        this.add(GuiSettingString(settings.general::channelCommand), intArrayOf(5, pos, 5, 1)).apply {
-//            caption = Translation.DEFAULT_CHANNEL_COMMAND_DESC.toComponent()
+//
+//import mnm.mods.tabbychat.client.TabbyChatClient
+//import mnm.mods.tabbychat.client.gui.IScreenHelper
+//import mnm.mods.tabbychat.client.gui.Label
+//import mnm.mods.tabbychat.client.gui.component.*
+//import mnm.mods.tabbychat.client.gui.widget.*
+//import mnm.mods.tabbychat.client.settings.ServerSettings
+//import mnm.mods.tabbychat.util.*
+//import net.minecraft.client.gui.widget.TextFieldWidget
+//
+//internal class GuiSettingsServer : SettingPanel<ServerSettings> {
+//
+//    override val settings = TabbyChatClient.serverSettings
+//
+//    override fun init(screen: IScreenHelper) {
+//
+//        val left = screen.width / 2 - 80
+//        fun top(pos: Int) = pos * 25 + 10
+//
+//        var pos = 0
+////        this.add(Label(Translation.CHANNELS_ENABLED.toComponent()), intArrayOf(2, pos))
+//        screen.addWidget(FieldBackedCheckboxButton(settings.general::channelsEnabled,
+//                left + 60, top(pos), 80, 20,
+//                Translation.CHANNELS_ENABLED.translate())) {
+//            //            caption = Translation.CHANNELS_ENABLED_DESC.toComponent()
 //        }
-
-        pos += 2
-        this.add(GuiLabel(Translation.DEFAULT_CHANNEL.toComponent()), intArrayOf(0, pos))
-        this.add(GuiSettingString(settings.general::defaultChannel), intArrayOf(5, pos, 5, 1)).apply {
-            //            caption = Translation.DEFAULT_CHANNEL_DESC.toComponent()
-        }
-    }
-
-}
+//
+//        pos += 1
+////        this.add(Label(Translation.PM_ENABLED.toComponent()), intArrayOf(2, pos))
+//        screen.addWidget(FieldBackedCheckboxButton(settings.general::pmEnabled,
+//                left + 60, top(pos), 80, 20,
+//                Translation.PM_ENABLED.translate())) {
+//            //            caption = Translation.PM_ENABLED_DESC.toComponent()
+//        }
+//
+//        pos += 1
+////        this.add(Label(Translation.USE_DEFAULT.toComponent()), intArrayOf(2, pos))
+//        screen.addWidget(FieldBackedCheckboxButton(settings.general::useDefaultTab,
+//                left + 60, top(pos), 80, 20,
+//                Translation.USE_DEFAULT.translate()))
+//
+//        pos += 1
+//        screen.addRender(Label(mc.fontRenderer, Translation.CHANNEL_PATTERN, left, top(pos)))
+//        screen.addWidget(SelectWidget(settings.general::channelPattern, EnumValues(ChannelPatterns.values()) { it.display },
+//                left + 80, top(pos), 80, 20, "")) {
+//            //            caption = Translation.CHANNEL_PATTERN_DESC.toComponent()
+//        }
+//
+//        pos += 1
+//        screen.addRender(Label(mc.fontRenderer, Translation.MESSAGE_PATTERN, left, top(pos)))
+//        screen.addWidget(SelectWidget(settings.general::messegePattern, EnumValues(MessagePatterns.values()) { it.display },
+//                left + 80, top(pos), 80, 20, "")) {
+//            //            caption = Translation.MESSAGE_PATTERN_DESC.toComponent()
+//        }
+//
+//        pos += 1
+//        screen.addRender(Label(mc.fontRenderer, Translation.IGNORED_CHANNELS, left, top(pos)))
+//        screen.addWidget(TextFieldWidget(mc.fontRenderer, left + 80, top(pos), 120, 20, "")) {
+//            setResponder { text ->
+//                settings.general.ignoredChannels = text.split(",")
+//                        .map { it.trim() }
+//                        .filter { it.isNotEmpty() }
+//            }
+//            //            caption = Translation.IGNORED_CHANNELS_DESC.toComponent()
+//        }
+//
+//        // TODO
+////        pos += 1
+////        this.add(GuiLabel(Translation.DEFAULT_CHANNEL_COMMAND.toComponent()), intArrayOf(0, pos))
+////        this.add(GuiSettingString(settings.general::channelCommand), intArrayOf(5, pos, 5, 1)).apply {
+////            caption = Translation.DEFAULT_CHANNEL_COMMAND_DESC.toComponent()
+////        }
+//
+//        pos += 2
+//        screen.addRender(Label(mc.fontRenderer, Translation.DEFAULT_CHANNEL, left, top(pos)))
+//        screen.addWidget(FieldBackedTextFieldWidget(settings.general::defaultChannel,
+//                mc.fontRenderer, left + 80, top(pos), 80, 20,
+//                Translation.DEFAULT_CHANNEL.translate())) {
+//
+//            //            caption = Translation.DEFAULT_CHANNEL_DESC.toComponent()
+//        }
+//    }
+//
+//}
