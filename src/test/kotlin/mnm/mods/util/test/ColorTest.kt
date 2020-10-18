@@ -29,7 +29,7 @@ class ColorTest {
     @Test
     fun testParse() {
         val c = color(0xff666666)
-        assertEquals(parseColorHex("#666"), c)
+        assertEquals(color("#666"), c)
         assertEquals(c.asString, "#ff666666")
     }
 }
