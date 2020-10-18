@@ -1,7 +1,6 @@
 package mnm.mods.tabbychat.test
 
 import mnm.mods.tabbychat.util.ChatTextUtils
-import mnm.mods.tabbychat.util.style
 import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.StringTextComponent
 import net.minecraft.util.text.TextFormatting
@@ -18,11 +17,12 @@ class ChatTextUtilsTest {
 
     private fun makeChat(tag: Boolean): ITextComponent {
 
-        return StringTextComponent(if (tag) "[test] " else "").style { bold = true }
-                .appendSibling(StringTextComponent("This should be green").style { color = TextFormatting.GREEN })
+        return StringTextComponent(if (tag) "[test] " else "").applyTextStyle(TextFormatting.BOLD)
+                .appendSibling(StringTextComponent("This should be green")
+                        .applyTextStyle(TextFormatting.GREEN))
                 .appendText(" ")
-                .appendSibling(StringTextComponent("This is a link.").style {
-                    clickEvent = ClickEvent(ClickEvent.Action.OPEN_URL, "http://google.com")
+                .appendSibling(StringTextComponent("This is a link.").applyTextStyle {
+                    it.clickEvent = ClickEvent(ClickEvent.Action.OPEN_URL, "http://google.com")
                 })
 
     }

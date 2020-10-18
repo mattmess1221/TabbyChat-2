@@ -19,8 +19,8 @@ val include: Configuration by configurations.creating
 
 repositories {
     jcenter()
-    maven("https://minecraft.curseforge.com/api/maven/") {
-        name = "CurseForge"
+    maven("https://thedarkcolour.github.io/KotlinForForge/") {
+        name = "kotlinforforge"
     }
 }
 
@@ -31,7 +31,7 @@ dependencies {
 
     implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
-    implementation("kottle:Kottle:1.5.2:slim")
+    implementation("thedarkcolour:kotlinforforge:1.6.1")
 
     testImplementation("junit:junit:4.12")
 }
@@ -84,10 +84,8 @@ reobf {
 artifacts {
     archives(tasks.shadowJar)
 }
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
-}
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {
+    jvmTarget = "1.8"
     freeCompilerArgs = listOf("-Xinline-classes")
 }

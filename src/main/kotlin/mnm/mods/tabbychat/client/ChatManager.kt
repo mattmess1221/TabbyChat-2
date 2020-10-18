@@ -11,16 +11,18 @@ import mnm.mods.tabbychat.api.events.MessageAddedToChannelEvent
 import mnm.mods.tabbychat.client.gui.ChatBox
 import mnm.mods.tabbychat.client.settings.ServerSettings
 import mnm.mods.tabbychat.client.settings.TabbySettings
-import mnm.mods.tabbychat.util.*
+import mnm.mods.tabbychat.util.ChatTextUtils
+import mnm.mods.tabbychat.util.ToStringAdapter
 import mnm.mods.tabbychat.util.config.ConfigEvent
+import mnm.mods.tabbychat.util.mc
 import net.minecraft.util.EnumTypeAdapterFactory
 import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.StringTextComponent
 import net.minecraft.util.text.Style
 import net.minecraft.util.text.TextFormatting
-import net.minecraftforge.common.MinecraftForge
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream
+import thedarkcolour.kotlinforforge.forge.FORGE_BUS
 import java.io.*
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
@@ -69,15 +71,17 @@ object ChatManager : Chat {
 
     init {
         allChannels["*"] = DefaultChannel
+        FORGE_BUS.addListener(::onConfig)
+    }
+
+    private fun onConfig(event: ConfigEvent) {
         val dirtys = listOf(
                 settings.general::timestampChat,
                 settings.general::timestampColor,
                 settings.general::timestampStyle
         )
-        MinecraftForge.EVENT_BUS.listen<ConfigEvent> {
-            if (it.prop in dirtys) {
-                markDirty()
-            }
+        if (event.prop in dirtys) {
+            markDirty()
         }
     }
 
@@ -153,7 +157,7 @@ object ChatManager : Chat {
 
     fun addMessage(channel: Channel, text: ITextComponent, id: Int) {
         val event = MessageAddedToChannelEvent.Pre(text.deepCopy(), id, channel)
-        if (MinecraftForge.EVENT_BUS.post(event) || event.text == null) {
+        if (FORGE_BUS.post(event) || event.text == null) {
             return
         }
         val text = event.text!!
@@ -170,7 +174,7 @@ object ChatManager : Chat {
 
         trimMessages(messages, settings.advanced.historyLen)
 
-        MinecraftForge.EVENT_BUS.post(MessageAddedToChannelEvent.Post(text, id, channel))
+        FORGE_BUS.post(MessageAddedToChannelEvent.Post(text, id, channel))
 
         save()
         markDirty(channel)
@@ -234,9 +238,8 @@ object ChatManager : Chat {
             }
             ChatBox.addChannels(root.active)
 
-            val chat: ITextComponent = StringTextComponent("Chat log from ${root.time}").style {
-                color = TextFormatting.GRAY
-            }
+            val chat: ITextComponent = StringTextComponent("Chat log from ${root.time}")
+                    .applyTextStyle(TextFormatting.GRAY)
 
             for (c in channels) {
                 if (getMessages(c).isNotEmpty()) {

@@ -4,12 +4,10 @@ import mnm.mods.tabbychat.client.TabbyChatClient
 import mnm.mods.tabbychat.command.TCTellCommand
 import mnm.mods.tabbychat.net.SNetworkVersion
 import mnm.mods.tabbychat.net.SSendChannelMessage
-import net.alexwells.kottle.FMLKotlinModLoadingContext
 import net.minecraft.entity.player.ServerPlayerEntity
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.text.ITextComponent
 import net.minecraftforge.api.distmarker.Dist
-import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.entity.player.PlayerEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.DistExecutor
@@ -21,6 +19,7 @@ import net.minecraftforge.fml.network.NetworkRegistry
 import net.minecraftforge.fml.network.simple.SimpleChannel
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
+import thedarkcolour.kotlinforforge.forge.FORGE_BUS
 import java.nio.file.Path
 
 @Mod(MODID)
@@ -33,8 +32,8 @@ object TabbyChat {
     private val versionChannel = initVersionNetwork()
 
     init {
-        MinecraftForge.EVENT_BUS.register(this)
-        FMLKotlinModLoadingContext.get().modEventBus.register(this)
+        FORGE_BUS.addListener(::serverStarting)
+        FORGE_BUS.addListener(::playerJoin)
 
         DistExecutor.runWhenOn(Dist.CLIENT) {
             Runnable {

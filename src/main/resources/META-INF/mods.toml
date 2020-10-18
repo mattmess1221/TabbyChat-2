@@ -1,5 +1,5 @@
 
-modLoader="kotlinfml" #mandatory
+modLoader="kotlinforforge" #mandatory
 loaderVersion="[1,)"#mandatory
 issueTrackerURL="https://github.com/killjoy1221/TabbyChat-2/issues/" #optional
 url="https://minecraft.curseforge.com/projects/tabbychat-2"
@@ -15,7 +15,7 @@ description="Chat overhaul"
 [[dependencies.tabbychat]] #optional
     modId="forge" #mandatory
     mandatory=true #mandatory
-    versionRange="[31.0,)" #mandatory
+    versionRange="[31.2,)" #mandatory
     ordering="NONE"
     side="BOTH"
 [[dependencies.tabbychat]]

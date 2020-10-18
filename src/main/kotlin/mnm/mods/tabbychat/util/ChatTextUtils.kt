@@ -42,9 +42,7 @@ object ChatTextUtils {
             val stamp = settings.timestampStyle
             val format = settings.timestampColor
             return "".toComponent()
-                    .appendSibling("${stamp.format(date)} ".toComponent().style {
-                        color = format
-                    })
+                    .appendSibling("${stamp.format(date)} ".toComponent().applyTextStyle(format))
                     .appendSibling(msg.message)
         }
         return msg.message

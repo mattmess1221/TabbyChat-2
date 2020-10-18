@@ -2,7 +2,7 @@ package mnm.mods.tabbychat.util.config
 
 import com.electronwill.nightconfig.core.CommentedConfig
 import com.electronwill.nightconfig.core.Config
-import net.minecraftforge.common.MinecraftForge
+import thedarkcolour.kotlinforforge.forge.FORGE_BUS
 import kotlin.properties.ReadOnlyProperty
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -56,7 +56,7 @@ open class Spec<T : Any, R : Any>(
         get() = deserialize(getRaw())
         set(value) {
             setRaw(serialize(value))
-            MinecraftForge.EVENT_BUS.post(ConfigEvent(property))
+            FORGE_BUS.post(ConfigEvent(property))
         }
 
     override fun populateDefaults() {

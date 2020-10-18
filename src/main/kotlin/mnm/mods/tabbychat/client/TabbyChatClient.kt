@@ -12,18 +12,16 @@ import mnm.mods.tabbychat.client.gui.GuiNewChatTC
 import mnm.mods.tabbychat.client.settings.ServerSettings
 import mnm.mods.tabbychat.client.settings.TabbySettings
 import mnm.mods.tabbychat.util.ChatTextUtils
-import mnm.mods.tabbychat.util.listen
 import mnm.mods.tabbychat.util.mc
 import net.minecraft.client.gui.IngameGui
 import net.minecraft.client.gui.NewChatGui
 import net.minecraft.resources.IReloadableResourceManager
-import net.minecraft.util.text.TranslationTextComponent
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent
-import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.TickEvent
 import net.minecraftforge.eventbus.api.EventPriority
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper
+import thedarkcolour.kotlinforforge.forge.FORGE_BUS
 
 object TabbyChatClient {
     val spellcheck = Spellcheck()
@@ -36,16 +34,12 @@ object TabbyChatClient {
     lateinit var serverSettings: ServerSettings
 
     init {
-        MinecraftForge.EVENT_BUS.listen<MessageAddedToChannelEvent.Pre>(EventPriority.LOW) {
-            removeChannelTags(it)
-        }
-        MinecraftForge.EVENT_BUS.listen<ClientPlayerNetworkEvent.LoggedInEvent> {
-            onClientLogin(it)
-        }
-        MinecraftForge.EVENT_BUS.register(StartListener)
-        MinecraftForge.EVENT_BUS.register(ChatAddonAntiSpam)
-        MinecraftForge.EVENT_BUS.register(FilterAddon)
-        MinecraftForge.EVENT_BUS.register(ChatLogging)
+        FORGE_BUS.addListener(EventPriority.LOW, ::removeChannelTags)
+        FORGE_BUS.addListener(::onClientLogin)
+        FORGE_BUS.register(StartListener)
+        FORGE_BUS.register(ChatAddonAntiSpam)
+        FORGE_BUS.register(FilterAddon)
+        FORGE_BUS.register(ChatLogging)
 
         registerReloadListeners(mc.resourceManager as IReloadableResourceManager)
     }
@@ -87,7 +81,7 @@ object TabbyChatClient {
             mc.ingameGUI.chat = GuiNewChatTC
 
             // unregister self so it doesn't get called again.
-            MinecraftForge.EVENT_BUS.unregister(StartListener)
+            FORGE_BUS.unregister(StartListener)
         }
     }
 

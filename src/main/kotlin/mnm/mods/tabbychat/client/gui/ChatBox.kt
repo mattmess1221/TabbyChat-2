@@ -11,7 +11,6 @@ import mnm.mods.tabbychat.client.DefaultChannel
 import mnm.mods.tabbychat.client.TabbyChatClient
 import mnm.mods.tabbychat.client.gui.widget.MultiLineTextFieldWidget
 import mnm.mods.tabbychat.client.util.ScaledDimension
-import mnm.mods.tabbychat.util.listen
 import mnm.mods.tabbychat.util.mc
 import net.minecraft.client.gui.FocusableGui
 import net.minecraft.client.gui.IGuiEventListener
@@ -22,10 +21,8 @@ import net.minecraft.client.renderer.Rectangle2d
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.MathHelper.ceil
 import net.minecraft.util.math.MathHelper.floor
-import net.minecraftforge.common.MinecraftForge
 import org.lwjgl.glfw.GLFW
-import kotlin.math.max
-import kotlin.math.min
+import thedarkcolour.kotlinforforge.forge.FORGE_BUS
 
 object ChatBox : FocusableGui(), IRenderable, ILocatable {
 
@@ -140,12 +137,8 @@ object ChatBox : FocusableGui(), IRenderable, ILocatable {
 
         status[DefaultChannel] = ChannelStatus.ACTIVE
 
-        MinecraftForge.EVENT_BUS.listen<MessageAddedToChannelEvent.Post> {
-            messageScroller(it)
-        }
-        MinecraftForge.EVENT_BUS.listen<MessageAddedToChannelEvent.Post> {
-            addChatMessage(it)
-        }
+        FORGE_BUS.addListener(::messageScroller)
+        FORGE_BUS.addListener(::addChatMessage)
     }
 
     override fun children(): MutableList<out IGuiEventListener> {

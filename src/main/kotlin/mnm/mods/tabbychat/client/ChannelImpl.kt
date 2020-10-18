@@ -49,11 +49,3 @@ class ChannelImpl(config: Config = Config.inMemory()) : ConfigView(config), Chan
 
     override fun toString() = type.prefix + name
 }
-
-object DefaultChannel : Channel {
-    override val name = ""
-    override val type = ChannelType.ROOT
-    override var alias = ""
-
-    override fun toString() = "*"
-}
