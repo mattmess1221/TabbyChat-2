@@ -1,22 +1,19 @@
-package mnm.mods.tabbychat.client.extra.spell
+package mnm.mods.tabbychat.extra.spell
 
 import com.swabunga.spell.event.SpellCheckEvent
-import mnm.mods.tabbychat.client.TabbyChatClient
 import mnm.mods.tabbychat.util.Colors
 import mnm.mods.tabbychat.util.text.FancyText
 import mnm.mods.tabbychat.util.toComponent
 import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.StringTextComponent
 
-class SpellingFormatter(private val spelling: Iterator<SpellCheckEvent>) : (String?) -> ITextComponent? {
+class SpellingFormatter(private val spelling: Iterator<SpellCheckEvent>) : (String) -> ITextComponent {
 
     private var event: SpellCheckEvent? = null
     private var totalLength: Int = 0
 
-    override operator fun invoke(text: String?): ITextComponent? {
-        if (text == null)
-            return null
-        if (text.contains("\u00a7") || !TabbyChatClient.settings.advanced.spelling) {
+    override operator fun invoke(text: String): ITextComponent {
+        if (text.contains("\u00a7") || !SpellcheckFeature.config.enabled) {
             return StringTextComponent(text)
         }
 

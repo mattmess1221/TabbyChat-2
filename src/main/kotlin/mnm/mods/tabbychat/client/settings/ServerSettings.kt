@@ -1,7 +1,6 @@
 package mnm.mods.tabbychat.client.settings
 
 import mnm.mods.tabbychat.client.ChannelImpl
-import mnm.mods.tabbychat.client.extra.filters.UserFilter
 import mnm.mods.tabbychat.util.config.FileConfigView
 import mnm.mods.tabbychat.util.div
 import mnm.mods.tabbychat.util.toPath
@@ -16,7 +15,6 @@ class ServerSettings(
 ) : FileConfigView(parent / socket2path(socket) / "server.toml") {
 
     val general by child(::GeneralServerSettings)
-    val filters by childList(::UserFilter)
     val channels by childList(::ChannelImpl)
 
     private companion object {

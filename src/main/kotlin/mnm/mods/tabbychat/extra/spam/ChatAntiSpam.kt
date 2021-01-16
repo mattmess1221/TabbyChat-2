@@ -1,30 +1,38 @@
-package mnm.mods.tabbychat.client.extra
+package mnm.mods.tabbychat.extra.spam
 
+import mnm.mods.tabbychat.MODID
+import mnm.mods.tabbychat.TabbyChat
 import mnm.mods.tabbychat.api.Channel
 import mnm.mods.tabbychat.api.events.MessageAddedToChannelEvent
 import mnm.mods.tabbychat.client.ChatManager
-import mnm.mods.tabbychat.client.TabbyChatClient
+import mnm.mods.tabbychat.util.config.ConfigManager
+import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.eventbus.api.SubscribeEvent
+import net.minecraftforge.fml.common.Mod
 import org.apache.commons.lang3.StringUtils
 
-object ChatAddonAntiSpam {
+@Mod.EventBusSubscriber(modid = MODID, value = [Dist.CLIENT])
+object ChatAntiSpam {
 
     private val messageMap = mutableMapOf<Channel, Counter>()
+
+    val config = ChatAntiSpamConfig(TabbyChat.dataFolder)
+
+    init {
+        ConfigManager.addConfigs(config)
+    }
 
     @SubscribeEvent
     fun onMessageAdded(event: MessageAddedToChannelEvent.Pre) {
 
-        val enabled = TabbyChatClient.settings.general.antiSpam
-        val prejudice = TabbyChatClient.settings.general.antiSpamPrejudice
-
-        if (enabled && event.id == 0) {
+        if (config.antiSpam && event.id == 0) {
             val channel = event.channel
             val counter = messageMap.getOrPut(channel) { Counter() }
             val text = event.text
             if (text != null) {
                 val chat = text.string
 
-                if (getDifference(chat, counter.lastMessage) <= prejudice) {
+                if (getDifference(chat, counter.lastMessage) <= config.antiSpamPrejudice) {
                     counter.spamCounter++
                     text.appendText(" [" + counter.spamCounter + "x]")
                     ChatManager.removeMessageAt(channel, 0)
@@ -38,8 +46,8 @@ object ChatAddonAntiSpam {
     }
 
     private class Counter {
-        internal var lastMessage = ""
-        internal var spamCounter = 1
+        var lastMessage = ""
+        var spamCounter = 1
     }
 
     private fun getDifference(s1: String, s2: String): Double {

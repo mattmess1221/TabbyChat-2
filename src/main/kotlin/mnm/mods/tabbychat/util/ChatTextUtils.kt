@@ -1,6 +1,5 @@
 package mnm.mods.tabbychat.util
 
-import com.google.common.collect.Lists
 import mnm.mods.tabbychat.api.Message
 import mnm.mods.tabbychat.client.ChatMessage
 import mnm.mods.tabbychat.client.TabbyChatClient
@@ -10,28 +9,25 @@ import net.minecraft.util.text.StringTextComponent
 
 object ChatTextUtils {
 
-    fun split(chat: ITextComponent, width: Int): List<ITextComponent> {
-        val fr = mc.fontRenderer
-        return RenderComponentsUtil.splitText(chat, width, fr, false, false)
-    }
-
     fun split(list: List<ChatMessage>, width: Int): List<ChatMessage> {
-        if (width <= 8)
-        // ignore, characters are larger than width
-            return Lists.newArrayList(list)
+        if (width <= 8) {
+            // ignore, characters are larger than width
+            return list.toMutableList()
+        }
         // prevent concurrent modification caused by chat thread
-        synchronized(list) {
-            val result = Lists.newArrayList<ChatMessage>()
-            val iter = list.iterator()
-            while (iter.hasNext() && result.size <= 100) {
-                val line = iter.next()
-                val chatlist = split(getMessageWithOptionalTimestamp(line), width)
-                for (i in chatlist.indices.reversed()) {
-                    val chat = chatlist[i]
-                    result.add(ChatMessage(line.counter, chat, line.id, null))
-                }
-            }
-            return result
+        return synchronized(list) {
+            list.asSequence()
+                    .flatMap { line ->
+                        val msg = getMessageWithOptionalTimestamp(line)
+                        val texts = RenderComponentsUtil.splitText(msg, width, mc.fontRenderer, false, false)
+                        texts.reverse()
+                        texts.asSequence()
+                                .map { chat ->
+                                    ChatMessage(line.counter, chat, line.id, null)
+                                }
+                    }
+                    .take(100)
+                    .toList()
         }
     }
 

@@ -1,15 +1,17 @@
-package mnm.mods.tabbychat.client.extra
+package mnm.mods.tabbychat.extra.log
 
 import io.netty.channel.local.LocalAddress
 import mnm.mods.tabbychat.CHATBOX
+import mnm.mods.tabbychat.MODID
 import mnm.mods.tabbychat.TabbyChat
 import mnm.mods.tabbychat.api.events.ChatMessageEvent.ChatReceivedEvent
-import mnm.mods.tabbychat.client.TabbyChatClient
+import mnm.mods.tabbychat.util.config.ConfigManager
 import mnm.mods.tabbychat.util.div
 import mnm.mods.tabbychat.util.mc
 import mnm.mods.tabbychat.util.urlEncoded
-import net.minecraftforge.eventbus.api.EventPriority
+import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.eventbus.api.SubscribeEvent
+import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.loading.FMLPaths
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream
 import org.apache.commons.compress.compressors.gzip.GzipUtils
@@ -24,10 +26,13 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+@Mod.EventBusSubscriber(modid = MODID, value = [Dist.CLIENT])
 object ChatLogging {
 
     private val LOG_NAME_FORMAT = DateTimeFormatter.ISO_LOCAL_DATE
     private val LOG_FORMAT = DateTimeFormatter.ISO_LOCAL_TIME
+
+    val config = ChatLoggingConfig(TabbyChat.dataFolder)
 
     private val directory = FMLPaths.GAMEDIR.get() / "logs/chat"
 
@@ -76,6 +81,7 @@ object ChatLogging {
     private var log: LogFile? = null
 
     init {
+        ConfigManager.addConfigs(config)
         try {
             compressLogs()
         } catch (e: IOException) {
@@ -83,10 +89,10 @@ object ChatLogging {
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
+    @SubscribeEvent
     fun onChatReceived(message: ChatReceivedEvent) {
         val text = message.text
-        if (text != null && TabbyChatClient.settings.general.logChat) {
+        if (text != null && config.logChat) {
             checkLog()
             log?.println("[%s] %s".format(LOG_FORMAT.format(LocalDateTime.now()), text.string))
         }
@@ -106,7 +112,7 @@ object ChatLogging {
                 }
             } catch (e: IOException) {
                 TabbyChat.logger.warn(CHATBOX, "Unable to create log file", e)
-                this.log = null
+                log = null
             }
         }
     }

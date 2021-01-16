@@ -60,7 +60,7 @@ minecraft {
 }
 
 tasks.shadowJar {
-    archiveClassifier.set("release")
+    archiveClassifier.set("")
     configurations = listOf(include)
     relocate("com.swabunga", "mnm.mods.tabbychat.redist.com.swabunga")
 }

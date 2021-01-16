@@ -2,6 +2,7 @@ package mnm.mods.tabbychat.util
 
 import net.minecraft.client.Minecraft
 import net.minecraft.util.text.StringTextComponent
+import net.minecraft.util.text.TextFormatting
 import java.net.URLEncoder
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -14,5 +15,6 @@ fun String.toPath(): Path = Paths.get(this)
 val String.urlEncoded: String get() = URLEncoder.encode(this, "utf-8")
 
 fun String.toComponent() = StringTextComponent(this)
+fun String.red() = this.toComponent().applyTextStyle(TextFormatting.RED)
 
 val mc: Minecraft get() = Minecraft.getInstance()

@@ -472,7 +472,7 @@ object ChatBox : FocusableGui(), IRenderable, ILocatable {
 
         override fun getY(): Int {
             chatInput.y
-            return chatInput.y - parent.height + chatInput.wrappedLines.size * mc.fontRenderer.FONT_HEIGHT
+            return chatInput.y - parent.height + chatInput.lines.size * mc.fontRenderer.FONT_HEIGHT
         }
 
         override fun getWidth(): Int {

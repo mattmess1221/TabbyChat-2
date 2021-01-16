@@ -1,24 +1,29 @@
-package mnm.mods.tabbychat.client.extra.filters
+package mnm.mods.tabbychat.extra.filters
 
-import com.electronwill.nightconfig.core.Config
 import mnm.mods.tabbychat.api.filters.Filter
 import mnm.mods.tabbychat.api.filters.FilterEvent
-import mnm.mods.tabbychat.api.filters.FilterSettings
 import mnm.mods.tabbychat.client.ChatManager
-import mnm.mods.tabbychat.util.config.ConfigView
+import mnm.mods.tabbychat.util.config.FileConfigView
 import mnm.mods.tabbychat.util.mc
 import net.minecraft.client.audio.SimpleSound
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.text.ITextComponent
 import net.minecraftforge.registries.ForgeRegistries
+import org.apache.commons.io.FilenameUtils
+import java.nio.file.Path
 import java.util.regex.Pattern
 import java.util.regex.PatternSyntaxException
 import javax.annotation.RegEx
 
-class UserFilter(config: Config = Config.inMemory()) : ConfigView(config), Filter {
+class UserFilter(path: Path) : FileConfigView(path), Filter {
 
-    var name by defining("New Filter")
-    val settings by child(::FilterSettings)
+    val name: String
+        get() {
+            val file = config.nioPath.fileName.toString()
+            return FilenameUtils.getBaseName(file)
+        }
+
+    val settings by child(::FilterConfig)
     var rawPattern by defining(".*")
 
     private var expression: Pattern? = null
@@ -109,7 +114,7 @@ class UserFilter(config: Config = Config.inMemory()) : ConfigView(config), Filte
         }
         // play sound
         if (settings.isSoundNotification) {
-            settings.soundName?.let { ResourceLocation.tryCreate(it) }
+            settings.soundLocation
                     ?.let { ForgeRegistries.SOUND_EVENTS.getValue(it) }
                     ?.let { mc.soundHandler.play(SimpleSound.master(it, 1.0f)) }
         }

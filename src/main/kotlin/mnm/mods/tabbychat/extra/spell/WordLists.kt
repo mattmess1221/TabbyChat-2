@@ -1,4 +1,4 @@
-package mnm.mods.tabbychat.client.extra.spell
+package mnm.mods.tabbychat.extra.spell
 
 import com.google.common.collect.ImmutableSet
 import com.google.gson.Gson

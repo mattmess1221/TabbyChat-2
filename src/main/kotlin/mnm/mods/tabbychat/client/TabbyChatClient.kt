@@ -1,49 +1,39 @@
 package mnm.mods.tabbychat.client
 
 import mnm.mods.tabbychat.CHATBOX
+import mnm.mods.tabbychat.MODID
 import mnm.mods.tabbychat.STARTUP
 import mnm.mods.tabbychat.TabbyChat
 import mnm.mods.tabbychat.api.events.MessageAddedToChannelEvent
-import mnm.mods.tabbychat.client.extra.ChatAddonAntiSpam
-import mnm.mods.tabbychat.client.extra.ChatLogging
-import mnm.mods.tabbychat.client.extra.filters.FilterAddon
-import mnm.mods.tabbychat.client.extra.spell.Spellcheck
 import mnm.mods.tabbychat.client.gui.GuiNewChatTC
 import mnm.mods.tabbychat.client.settings.ServerSettings
 import mnm.mods.tabbychat.client.settings.TabbySettings
 import mnm.mods.tabbychat.util.ChatTextUtils
+import mnm.mods.tabbychat.util.config.ConfigManager
 import mnm.mods.tabbychat.util.mc
 import net.minecraft.client.gui.IngameGui
 import net.minecraft.client.gui.NewChatGui
-import net.minecraft.resources.IReloadableResourceManager
+import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent
 import net.minecraftforge.event.TickEvent
 import net.minecraftforge.eventbus.api.EventPriority
 import net.minecraftforge.eventbus.api.SubscribeEvent
+import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper
 import thedarkcolour.kotlinforforge.forge.FORGE_BUS
 
+@Mod.EventBusSubscriber(modid = MODID, value = [Dist.CLIENT])
 object TabbyChatClient {
-    val spellcheck = Spellcheck()
 
-    val settings: TabbySettings = TabbySettings(TabbyChat.dataFolder).apply {
-        TabbyChat.logger.info("Loading TabbyChat settings")
-        load()
-    }
+    val settings: TabbySettings = TabbySettings(TabbyChat.dataFolder)
 
     lateinit var serverSettings: ServerSettings
 
     init {
-        FORGE_BUS.addListener(EventPriority.LOW, ::removeChannelTags)
-        FORGE_BUS.addListener(::onClientLogin)
-        FORGE_BUS.register(StartListener)
-        FORGE_BUS.register(ChatAddonAntiSpam)
-        FORGE_BUS.register(FilterAddon)
-        FORGE_BUS.register(ChatLogging)
-
-        registerReloadListeners(mc.resourceManager as IReloadableResourceManager)
+        ConfigManager.addConfigs(settings)
     }
 
+    @SubscribeEvent(priority = EventPriority.LOW)
     private fun removeChannelTags(event: MessageAddedToChannelEvent.Pre) {
         if (settings.advanced.hideTag && event.channel !== DefaultChannel) {
             val pattern = serverSettings.general.channelPattern
@@ -58,10 +48,7 @@ object TabbyChatClient {
         }
     }
 
-    private fun registerReloadListeners(manager: IReloadableResourceManager) {
-        manager.addReloadListener(spellcheck)
-    }
-
+    @Mod.EventBusSubscriber(modid = MODID, value = [Dist.CLIENT])
     private object StartListener {
         var IngameGui.chat: NewChatGui
             get() = this.chatGUI
@@ -85,20 +72,14 @@ object TabbyChatClient {
         }
     }
 
+    @SubscribeEvent(priority = EventPriority.LOW)
     private fun onClientLogin(event: ClientPlayerNetworkEvent.LoggedInEvent) {
-        // load up the current server's settings
-        val address = event.networkManager?.remoteAddress
-        if (address != null) {
-            TabbyChat.logger.info("Loading settings for server $address")
-            serverSettings = ServerSettings(TabbyChat.dataFolder, address).apply {
-                load()
-            }
-            // load chat
-            try {
-                ChatManager.loadFrom(serverSettings.config.nioPath.parent)
-            } catch (e: Exception) {
-                TabbyChat.logger.warn(CHATBOX, "Unable to load chat data.", e)
-            }
+        // load chat
+        try {
+            serverSettings = ServerSettings(TabbyChat.dataFolder, event.networkManager!!.remoteAddress)
+            ChatManager.loadFrom(serverSettings.config.nioPath.parent)
+        } catch (e: Exception) {
+            TabbyChat.logger.warn(CHATBOX, "Unable to load chat data.", e)
         }
     }
 }

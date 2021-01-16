@@ -1,4 +1,4 @@
-package mnm.mods.tabbychat.client.extra.spell
+package mnm.mods.tabbychat.extra.spell
 //
 //import mnm.mods.tabbychat.TabbyChat
 //import mnm.mods.tabbychat.client.TabbyChatClient

@@ -1,16 +1,16 @@
 package mnm.mods.tabbychat
 
-import mnm.mods.tabbychat.client.TabbyChatClient
 import mnm.mods.tabbychat.command.TCTellCommand
 import mnm.mods.tabbychat.net.SNetworkVersion
 import mnm.mods.tabbychat.net.SSendChannelMessage
+import mnm.mods.tabbychat.util.config.ConfigManager
 import net.minecraft.entity.player.ServerPlayerEntity
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.text.ITextComponent
-import net.minecraftforge.api.distmarker.Dist
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent
 import net.minecraftforge.event.entity.player.PlayerEvent
+import net.minecraftforge.eventbus.api.EventPriority
 import net.minecraftforge.eventbus.api.SubscribeEvent
-import net.minecraftforge.fml.DistExecutor
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent
 import net.minecraftforge.fml.loading.FMLPaths
@@ -32,18 +32,17 @@ object TabbyChat {
     private val versionChannel = initVersionNetwork()
 
     init {
-        FORGE_BUS.addListener(::serverStarting)
-        FORGE_BUS.addListener(::playerJoin)
+        FORGE_BUS.register(this)
+    }
 
-        DistExecutor.runWhenOn(Dist.CLIENT) {
-            Runnable {
-                TabbyChatClient
-            }
-        }
+    @SubscribeEvent(priority = EventPriority.LOW)
+    fun clientLogin(event: ClientPlayerNetworkEvent.LoggedInEvent) {
+        ConfigManager.load()
     }
 
     @SubscribeEvent
     fun serverStarting(event: FMLServerStartingEvent) {
+        ConfigManager.load()
         TCTellCommand.register(event.commandDispatcher)
     }
 

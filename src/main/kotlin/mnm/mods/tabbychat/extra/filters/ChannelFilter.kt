@@ -1,4 +1,4 @@
-package mnm.mods.tabbychat.client.extra.filters
+package mnm.mods.tabbychat.extra.filters
 
 import mnm.mods.tabbychat.api.ChannelType
 import mnm.mods.tabbychat.api.filters.Filter

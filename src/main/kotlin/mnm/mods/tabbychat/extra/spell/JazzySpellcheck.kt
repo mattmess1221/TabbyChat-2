@@ -1,4 +1,4 @@
-package mnm.mods.tabbychat.client.extra.spell
+package mnm.mods.tabbychat.extra.spell
 
 import com.swabunga.spell.engine.SpellDictionary
 import com.swabunga.spell.engine.SpellDictionaryHashMap
@@ -8,6 +8,8 @@ import com.swabunga.spell.event.StringWordTokenizer
 import mnm.mods.tabbychat.SPELLCHECK
 import mnm.mods.tabbychat.TabbyChat
 import mnm.mods.tabbychat.util.mc
+import mnm.mods.tabbychat.util.red
+import mnm.mods.tabbychat.util.toComponent
 import net.minecraft.resources.IResourceManager
 import net.minecraft.util.text.ITextComponent
 import net.minecraftforge.resource.IResourceType
@@ -21,10 +23,11 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.function.Predicate
 
-internal class JazzySpellcheck(dataFolder: Path, val wordLists: WordLists) : Spellcheck, ISelectiveResourceReloadListener {
+internal class JazzySpellcheck(dataFolder: Path) : Spellcheck, ISelectiveResourceReloadListener {
 
-    private val userDictionaryFile: Path = dataFolder.resolve("userdict.txt")
+    private val userDictionaryFile: Path = dataFolder.resolve("dictionary.txt")
 
+    private val wordLists = WordListDownloader(dataFolder, mc)
     private lateinit var spellCheck: SpellChecker
     private lateinit var userDict: SpellDictionary
     private val errors = mutableListOf<SpellCheckEvent>()
@@ -66,11 +69,22 @@ internal class JazzySpellcheck(dataFolder: Path, val wordLists: WordLists) : Spe
         this.userDict.addWord(word)
     }
 
-    override fun checkSpelling(string: String): (String?) -> ITextComponent? {
+    override fun checkSpelling(text: String): ITextComponent {
+        if (text.contains("\u00a7") || !SpellcheckFeature.config.enabled) {
+            return text.toComponent()
+        }
         this.errors.clear()
-        this.spellCheck.checkSpelling(StringWordTokenizer(string))
+        this.spellCheck.checkSpelling(StringWordTokenizer(text))
 
-        return SpellingFormatter(this.errors.iterator())
+        val result = "".toComponent()
+        var prev = 0
+        for (event in errors) {
+            val start = event.wordContextPosition
+            result.appendText(text.substring(prev, start))
+            result.appendSibling(event.invalidWord.red())
+            prev = start + event.invalidWord.length
+        }
+        return result.appendText(text.substring(prev))
     }
 
     override fun onResourceManagerReload(resourceManager: IResourceManager, resourcePredicate: Predicate<IResourceType>) {
@@ -110,7 +124,7 @@ internal class JazzySpellcheck(dataFolder: Path, val wordLists: WordLists) : Spe
             Locale(code)
         } else {
             val (code, country) = parts
-            Locale(code,country.toUpperCase())
+            Locale(code, country.toUpperCase())
         }
     }
 

@@ -1,8 +1,8 @@
 package mnm.mods.tabbychat.client.gui.settings
 //
 //import mnm.mods.tabbychat.client.TabbyChatClient
-//import mnm.mods.tabbychat.client.extra.filters.GuiFilterEditor
-//import mnm.mods.tabbychat.client.extra.filters.UserFilter
+//import mnm.mods.tabbychat.extra.filters.GuiFilterEditor
+//import mnm.mods.tabbychat.extra.filters.UserFilter
 //import mnm.mods.tabbychat.client.gui.IScreenHelper
 //import mnm.mods.tabbychat.client.settings.ServerSettings
 //import mnm.mods.tabbychat.util.Color

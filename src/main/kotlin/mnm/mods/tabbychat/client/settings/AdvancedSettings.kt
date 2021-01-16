@@ -29,9 +29,6 @@ class AdvancedSettings(config: AbstractConfigView, path: List<String>) : ConfigV
             "Can be toggled using the square in the top right corner of the chatbox")
     var keepChatOpen by defining(false)
 
-    @Comment("Enables spellcheck for chat input")
-    var spelling by defining(true)
-
     @Comment("An additional visibility setting\n" +
             "ALWAYS: always renders the chatbox as if it were open\n" +
             "NORMAL: uses the settings from vanilla\n" +

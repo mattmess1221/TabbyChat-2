@@ -1,4 +1,4 @@
-package mnm.mods.tabbychat.client.extra.spell
+package mnm.mods.tabbychat.extra.spell
 
 import com.swabunga.spell.engine.SpellDictionaryHashMap
 import java.io.BufferedReader

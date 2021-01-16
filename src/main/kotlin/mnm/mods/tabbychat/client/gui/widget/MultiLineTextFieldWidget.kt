@@ -2,14 +2,16 @@ package mnm.mods.tabbychat.client.gui.widget
 
 import com.mojang.blaze3d.systems.RenderSystem
 import mnm.mods.tabbychat.client.ChatManager
-import mnm.mods.tabbychat.client.TabbyChatClient
 import mnm.mods.tabbychat.client.gui.ChatBox
 import mnm.mods.tabbychat.client.gui.drawModalCorners
+import mnm.mods.tabbychat.extra.spell.Spellcheck
 import mnm.mods.tabbychat.util.Colors
 import mnm.mods.tabbychat.util.TexturedModal
+import mnm.mods.tabbychat.util.mc
 import mnm.mods.tabbychat.util.text.FancyFontRenderer
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.gui.IRenderable
+import net.minecraft.client.gui.RenderComponentsUtil
 import net.minecraft.client.gui.widget.TextFieldWidget
 import net.minecraft.util.text.ITextComponent
 import kotlin.math.max
@@ -27,29 +29,17 @@ class MultiLineTextFieldWidget(
     private val MODAL = TexturedModal(ChatBox.GUI_LOCATION, 0, 219, 254, 37)
 
     private var cursorCounter: Int = 0
-    private val spellcheck = TabbyChatClient.spellcheck
 
-    var textFormatter: (String, Int) -> String = { text, _ -> text }
+    // TODO make this a callback instead of a hard dependency
+    private val spellcheck = Spellcheck
 
-    val wrappedLines: List<String>
+    var textFormatter: (String) -> ITextComponent = spellcheck::checkSpelling
+
+    val lines: List<String>
         get() = font.listFormattedStringToWidth(text, width)
 
-    private val formattedLines: List<ITextComponent>
-        get() {
-            val spelling = spellcheck.checkSpelling(text)
-            val formatter: (String, Int) -> ITextComponent? = { line, len ->
-                spelling(textFormatter(line, len))
-            }
-            val lines = ArrayList<ITextComponent>()
-            var length = 0
-            for (line in wrappedLines) {
-                formatter(line, length)?.also {
-                    lines.add(it)
-                    length += line.length
-                }
-            }
-            return lines
-        }
+    private val displayLines: List<ITextComponent>
+        get() = RenderComponentsUtil.splitText(textFormatter(text), width, mc.fontRenderer, false, true)
 
     init {
         maxStringLength = ChatManager.MAX_CHAT_LENGTH
@@ -61,7 +51,7 @@ class MultiLineTextFieldWidget(
 
     fun updateLocation() {
         width = chat.width
-        height = wrappedLines.size * (font.FONT_HEIGHT + 2)
+        height = lines.size * (font.FONT_HEIGHT + 2)
         x = chat.xPos
         y = chat.yPos + ChatBox.height - height
     }
@@ -89,18 +79,21 @@ class MultiLineTextFieldWidget(
         // The position of the cursor
         var pos = this.cursorPosition
         // the position of the selection
-        val sel = pos + this.selectedText.length
+        val sel = this.selectionEnd
 
         // make the position and selection in order
         var start = min(pos, sel)
         var end = max(pos, sel)
 
-        for (text in wrappedLines) {
+        for (text in lines) {
 
             // cursor drawing
             if (pos >= 0 && pos <= text.length) {
                 // cursor is on this line
-                val c = font.getStringWidth(text.substring(0, pos))
+                val str = text.substring(0, pos)
+                // if the line ends with a non-rendered space, compensate
+                val offset = if (str.endsWith(" ")) 1 else 0
+                val c = font.getStringWidth(str) - offset
                 val cursorBlink = this.cursorCounter / 6 % 3 != 0
                 if (cursorBlink) {
                     if (this.cursorPosition < this.text.length) {
@@ -123,7 +116,7 @@ class MultiLineTextFieldWidget(
 
             // test the start
             if (start >= 0 && start <= text.length) {
-                x = font.getStringWidth(text.substring(0, start))
+                x = this.x + font.getStringWidth(text.substring(0, start))
             }
 
             // test the end
@@ -133,22 +126,22 @@ class MultiLineTextFieldWidget(
 
             val lineY = line + font.FONT_HEIGHT + 2
 
-            if (w != 0) {
+            if (start != end) {
                 if (x >= 0 && w > 0) {
                     // start and end on same line
-                    drawSelectionBox(x + 2, line, x + w, lineY)
+                    drawSelectionBox(x + 2, y + line, x + w + 2, y + lineY)
                 } else {
                     if (x >= 0) {
                         // started on this line
-                        drawSelectionBox(x + 2, line, x + font.getStringWidth(text.substring(start)) + 1, lineY)
+                        drawSelectionBox(x + 2, y + line, x + font.getStringWidth(text.substring(start)) + 2, y + lineY)
                     }
                     if (w >= 0) {
                         // ends on this line
-                        drawSelectionBox(2, line, w, lineY)
+                        drawSelectionBox(this.x + 2, y + line, this.x + w + 2, y + lineY)
                     }
                     if (start < 0 && end > text.length) {
                         // full line
-                        drawSelectionBox(1, line, font.getStringWidth(text), lineY)
+                        drawSelectionBox(this.x + 2, y + line, this.x + font.getStringWidth(text) + 2, y + lineY)
                     }
                 }
             }
@@ -181,7 +174,7 @@ class MultiLineTextFieldWidget(
         val ffr = FancyFontRenderer(font)
         var xPos = x + 3
         var yPos = y + 1
-        val lines = formattedLines
+        val lines = displayLines
         for (line in lines) {
             val color = Colors.WHITE
             xPos = x + 3
@@ -218,7 +211,7 @@ class MultiLineTextFieldWidget(
             val width = width - 1
             val row = y.toInt() / (font.FONT_HEIGHT + 2)
 
-            val lines = wrappedLines
+            val lines = lines
             if (row < 0 || row >= lines.size || x < 0 || x > width) {
                 return false
             }
