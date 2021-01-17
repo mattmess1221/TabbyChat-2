@@ -1,6 +1,7 @@
 package mnm.mods.tabbychat.client.settings
 
 import mnm.mods.tabbychat.client.ChannelImpl
+import mnm.mods.tabbychat.extra.filters.FilterConfig
 import mnm.mods.tabbychat.util.config.FileConfigView
 import mnm.mods.tabbychat.util.div
 import mnm.mods.tabbychat.util.toPath
@@ -11,14 +12,15 @@ import java.nio.file.Path
 
 class ServerSettings(
         parent: Path,
-        socket: SocketAddress
+        socket: SocketAddress?
 ) : FileConfigView(parent / socket2path(socket) / "server.toml") {
 
     val general by child(::GeneralServerSettings)
     val channels by childList(::ChannelImpl)
+    val filters by childList(::FilterConfig)
 
     private companion object {
-        fun socket2path(addr: SocketAddress): Path {
+        fun socket2path(addr: SocketAddress?): Path {
             return (addr as? InetSocketAddress)?.let {
                 "multiplayer" / it.toString().urlEncoded
             } ?: "singleplayer".toPath()

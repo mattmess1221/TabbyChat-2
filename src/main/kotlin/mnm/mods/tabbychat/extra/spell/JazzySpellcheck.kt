@@ -7,6 +7,7 @@ import com.swabunga.spell.event.SpellChecker
 import com.swabunga.spell.event.StringWordTokenizer
 import mnm.mods.tabbychat.SPELLCHECK
 import mnm.mods.tabbychat.TabbyChat
+import mnm.mods.tabbychat.client.TabbyChatClient
 import mnm.mods.tabbychat.util.mc
 import mnm.mods.tabbychat.util.red
 import mnm.mods.tabbychat.util.toComponent
@@ -33,6 +34,8 @@ internal class JazzySpellcheck(dataFolder: Path) : Spellcheck, ISelectiveResourc
     private val errors = mutableListOf<SpellCheckEvent>()
 
     private val delayedExecutor = Executors.newSingleThreadScheduledExecutor()
+
+    val config get() = TabbyChatClient.settings.spellcheck
 
     @Synchronized
     @Throws(IOException::class)
@@ -70,7 +73,7 @@ internal class JazzySpellcheck(dataFolder: Path) : Spellcheck, ISelectiveResourc
     }
 
     override fun checkSpelling(text: String): ITextComponent {
-        if (text.contains("\u00a7") || !SpellcheckFeature.config.enabled) {
+        if (text.contains("\u00a7") || !config.enabled) {
             return text.toComponent()
         }
         this.errors.clear()

@@ -14,6 +14,7 @@ import mnm.mods.tabbychat.client.settings.TabbySettings
 import mnm.mods.tabbychat.util.ChatTextUtils
 import mnm.mods.tabbychat.util.ToStringAdapter
 import mnm.mods.tabbychat.util.config.ConfigEvent
+import mnm.mods.tabbychat.util.config.ConfigManager
 import mnm.mods.tabbychat.util.mc
 import net.minecraft.util.EnumTypeAdapterFactory
 import net.minecraft.util.text.ITextComponent
@@ -94,7 +95,7 @@ object ChatManager : Chat {
                     channel.prefix = "/msg $name"
                 }
                 channels.add(channel)
-                server.save()
+                ConfigManager.save()
                 channel
             }
         }

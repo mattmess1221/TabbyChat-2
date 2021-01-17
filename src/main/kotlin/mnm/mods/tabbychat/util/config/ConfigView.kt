@@ -11,7 +11,7 @@ abstract class AbstractConfigView {
     private val specs = ArrayList<AbstractSpec<*, *>>()
 
     internal fun getRaw(path: String) = getRaw(listOf(path))
-    internal fun getRaw(path: List<String>): Any? = config.get<Any?>(this.path + path)
+    internal fun getRaw(path: List<String>): Any? = config.get(this.path + path)
     internal fun setRaw(path: String, value: Any?) = this.setRaw(listOf(path), value)
     internal fun setRaw(path: List<String>, value: Any?) = config.set<Any?>(this.path + path, value)
 

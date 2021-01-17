@@ -1,15 +1,11 @@
 package mnm.mods.tabbychat.util.config
 
 object ConfigManager {
-    private val configs = ArrayList<() -> Iterable<FileConfigView>>()
+    private val configs = ArrayList<() -> FileConfigView>()
 
-    private val allConfigs: Sequence<FileConfigView> get() = configs.asSequence().flatMap { it().asSequence() }
+    private val allConfigs get() = configs.asSequence().map { it() }
 
-    fun addConfigs(vararg configs: FileConfigView) {
-        this.configs += { configs.asIterable() }
-    }
-
-    fun addConfigs(configs: () -> Iterable<FileConfigView>) {
+    fun register(configs: () -> FileConfigView) {
         this.configs += configs
     }
 

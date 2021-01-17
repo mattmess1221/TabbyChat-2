@@ -10,12 +10,7 @@ import java.util.regex.Pattern
  */
 interface Filter {
 
-    /**
-     * Gets the pattern that will trigger this filter.
-     *
-     * @return The pattern
-     */
-    val pattern: Pattern
+    val expression: Regex
 
     fun action(event: FilterEvent)
 

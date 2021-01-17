@@ -4,4 +4,4 @@ import mnm.mods.tabbychat.api.Channel
 import net.minecraft.util.text.ITextComponent
 import java.util.regex.Matcher
 
-class FilterEvent(val matcher: Matcher, var channels: MutableSet<Channel>, var text: ITextComponent)
+class FilterEvent(val matcher: MatchResult, var channels: MutableSet<Channel>, var text: ITextComponent)

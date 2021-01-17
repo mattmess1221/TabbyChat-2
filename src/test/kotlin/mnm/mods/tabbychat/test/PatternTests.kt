@@ -58,14 +58,11 @@ class PatternTests {
         return received
     }
 
-    private inner class ChanPattern(internal val pattern: ChannelPatterns, internal val channel: String, internal val message: String) {
+    private inner class ChanPattern(val pattern: ChannelPatterns, val channel: String, val message: String) {
 
         fun testChannel(): String? {
             val pattern = this.pattern.pattern
-            val matcher = pattern.matcher(message)
-            return if (matcher.find()) {
-                matcher.group(1)
-            } else null
+            return pattern.find(message)?.groups?.get(1)?.value
         }
 
     }

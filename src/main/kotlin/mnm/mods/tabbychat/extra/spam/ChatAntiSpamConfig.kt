@@ -1,11 +1,10 @@
 package mnm.mods.tabbychat.extra.spam
 
+import mnm.mods.tabbychat.util.config.AbstractConfigView
 import mnm.mods.tabbychat.util.config.Comment
-import mnm.mods.tabbychat.util.config.FileConfigView
-import mnm.mods.tabbychat.util.div
-import java.nio.file.Path
+import mnm.mods.tabbychat.util.config.ConfigView
 
-class ChatAntiSpamConfig(path: Path) : FileConfigView(path / "spam.toml") {
+class ChatAntiSpamConfig(config: AbstractConfigView, path: List<String>) : ConfigView(config, path) {
     @Comment("Merge duplicate chat messages with the previous message")
     var antiSpam by defining(false)
 

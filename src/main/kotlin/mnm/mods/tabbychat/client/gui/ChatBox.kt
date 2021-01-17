@@ -11,6 +11,7 @@ import mnm.mods.tabbychat.client.DefaultChannel
 import mnm.mods.tabbychat.client.TabbyChatClient
 import mnm.mods.tabbychat.client.gui.widget.MultiLineTextFieldWidget
 import mnm.mods.tabbychat.client.util.ScaledDimension
+import mnm.mods.tabbychat.util.config.ConfigManager
 import mnm.mods.tabbychat.util.mc
 import net.minecraft.client.gui.FocusableGui
 import net.minecraft.client.gui.IGuiEventListener
@@ -114,7 +115,7 @@ object ChatBox : FocusableGui(), IRenderable, ILocatable {
         loc.width = width
         loc.height = height
 
-        TabbyChatClient.settings.save()
+        ConfigManager.save()
         locationDirty = true
     }
 

@@ -12,6 +12,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent
 import net.minecraftforge.eventbus.api.EventPriority
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent
 import net.minecraftforge.fml.loading.FMLPaths
 import net.minecraftforge.fml.network.NetworkDirection
@@ -20,6 +21,7 @@ import net.minecraftforge.fml.network.simple.SimpleChannel
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import thedarkcolour.kotlinforforge.forge.FORGE_BUS
+import thedarkcolour.kotlinforforge.forge.MOD_BUS
 import java.nio.file.Path
 
 @Mod(MODID)
@@ -32,24 +34,35 @@ object TabbyChat {
     private val versionChannel = initVersionNetwork()
 
     init {
-        FORGE_BUS.register(this)
-    }
-
-    @SubscribeEvent(priority = EventPriority.LOW)
-    fun clientLogin(event: ClientPlayerNetworkEvent.LoggedInEvent) {
-        ConfigManager.load()
+        MOD_BUS.register(this)
     }
 
     @SubscribeEvent
-    fun serverStarting(event: FMLServerStartingEvent) {
+    fun commonSetup(event: FMLCommonSetupEvent) {
         ConfigManager.load()
-        TCTellCommand.register(event.commandDispatcher)
     }
 
-    @SubscribeEvent
-    fun playerJoin(event: PlayerEvent.PlayerLoggedInEvent) {
-        val player = event.player as ServerPlayerEntity
-        versionChannel.sendTo(SNetworkVersion(PROTOCOL_VERSION), player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT)
+    @Mod.EventBusSubscriber
+    object ForgeBusListener {
+        @SubscribeEvent(priority = EventPriority.HIGH)
+        fun clientLogin(event: ClientPlayerNetworkEvent.LoggedInEvent) {
+            ConfigManager.load()
+        }
+
+        @SubscribeEvent
+        fun serverStarting(event: FMLServerStartingEvent) {
+            TCTellCommand.register(event.commandDispatcher)
+        }
+
+        @SubscribeEvent
+        fun playerJoin(event: PlayerEvent.PlayerLoggedInEvent) {
+            val player = event.player as ServerPlayerEntity
+            versionChannel.sendTo(
+                SNetworkVersion(PROTOCOL_VERSION),
+                player.connection.netManager,
+                NetworkDirection.PLAY_TO_CLIENT
+            )
+        }
     }
 
     private fun initNetwork(): SimpleChannel {
@@ -60,10 +73,10 @@ object TabbyChat {
         val channel = newChannel(id, PROTOCOL_VERSION)
 
         channel.messageBuilder(SSendChannelMessage::class.java, 0)
-                .encoder(SSendChannelMessage::encode)
-                .decoder(::SSendChannelMessage)
-                .consumer(SSendChannelMessage::handle)
-                .add()
+            .encoder(SSendChannelMessage::encode)
+            .decoder(::SSendChannelMessage)
+            .consumer(SSendChannelMessage::handle)
+            .add()
 
         return channel
     }
@@ -73,25 +86,29 @@ object TabbyChat {
         val channel = newChannel(id, "1")
 
         channel.messageBuilder(SNetworkVersion::class.java, 0)
-                .encoder(SNetworkVersion::encode)
-                .decoder(::SNetworkVersion)
-                .consumer(SNetworkVersion::handle)
-                .add()
+            .encoder(SNetworkVersion::encode)
+            .decoder(::SNetworkVersion)
+            .consumer(SNetworkVersion::handle)
+            .add()
 
         return channel
     }
 
     private fun newChannel(key: ResourceLocation, version: String): SimpleChannel {
         return NetworkRegistry.ChannelBuilder
-                .named(key)
-                .networkProtocolVersion { version }
-                // The network is optional, allow everyone
-                .clientAcceptedVersions { true }
-                .serverAcceptedVersions { true }
-                .simpleChannel()
+            .named(key)
+            .networkProtocolVersion { version }
+            // The network is optional, allow everyone
+            .clientAcceptedVersions { true }
+            .serverAcceptedVersions { true }
+            .simpleChannel()
     }
 
     fun sendTo(player: ServerPlayerEntity, channel: String, text: ITextComponent) {
-        this.channel.sendTo(SSendChannelMessage(channel, text), player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT)
+        this.channel.sendTo(
+            SSendChannelMessage(channel, text),
+            player.connection.netManager,
+            NetworkDirection.PLAY_TO_CLIENT
+        )
     }
 }

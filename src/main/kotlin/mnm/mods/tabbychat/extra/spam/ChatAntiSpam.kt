@@ -5,6 +5,7 @@ import mnm.mods.tabbychat.TabbyChat
 import mnm.mods.tabbychat.api.Channel
 import mnm.mods.tabbychat.api.events.MessageAddedToChannelEvent
 import mnm.mods.tabbychat.client.ChatManager
+import mnm.mods.tabbychat.client.TabbyChatClient
 import mnm.mods.tabbychat.util.config.ConfigManager
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.eventbus.api.SubscribeEvent
@@ -16,11 +17,7 @@ object ChatAntiSpam {
 
     private val messageMap = mutableMapOf<Channel, Counter>()
 
-    val config = ChatAntiSpamConfig(TabbyChat.dataFolder)
-
-    init {
-        ConfigManager.addConfigs(config)
-    }
+    val config get() = TabbyChatClient.settings.antispam
 
     @SubscribeEvent
     fun onMessageAdded(event: MessageAddedToChannelEvent.Pre) {

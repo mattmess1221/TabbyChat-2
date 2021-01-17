@@ -5,7 +5,7 @@ import mnm.mods.tabbychat.CHATBOX
 import mnm.mods.tabbychat.MODID
 import mnm.mods.tabbychat.TabbyChat
 import mnm.mods.tabbychat.api.events.ChatMessageEvent.ChatReceivedEvent
-import mnm.mods.tabbychat.util.config.ConfigManager
+import mnm.mods.tabbychat.client.TabbyChatClient
 import mnm.mods.tabbychat.util.div
 import mnm.mods.tabbychat.util.mc
 import mnm.mods.tabbychat.util.urlEncoded
@@ -32,7 +32,7 @@ object ChatLogging {
     private val LOG_NAME_FORMAT = DateTimeFormatter.ISO_LOCAL_DATE
     private val LOG_FORMAT = DateTimeFormatter.ISO_LOCAL_TIME
 
-    val config = ChatLoggingConfig(TabbyChat.dataFolder)
+    val config get() = TabbyChatClient.settings.logging
 
     private val directory = FMLPaths.GAMEDIR.get() / "logs/chat"
 
@@ -81,7 +81,6 @@ object ChatLogging {
     private var log: LogFile? = null
 
     init {
-        ConfigManager.addConfigs(config)
         try {
             compressLogs()
         } catch (e: IOException) {

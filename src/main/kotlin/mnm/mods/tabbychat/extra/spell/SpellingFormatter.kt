@@ -1,6 +1,7 @@
 package mnm.mods.tabbychat.extra.spell
 
 import com.swabunga.spell.event.SpellCheckEvent
+import mnm.mods.tabbychat.client.TabbyChatClient
 import mnm.mods.tabbychat.util.Colors
 import mnm.mods.tabbychat.util.text.FancyText
 import mnm.mods.tabbychat.util.toComponent
@@ -12,8 +13,10 @@ class SpellingFormatter(private val spelling: Iterator<SpellCheckEvent>) : (Stri
     private var event: SpellCheckEvent? = null
     private var totalLength: Int = 0
 
+    val config get() = TabbyChatClient.settings.spellcheck
+
     override operator fun invoke(text: String): ITextComponent {
-        if (text.contains("\u00a7") || !SpellcheckFeature.config.enabled) {
+        if (text.contains("\u00a7") || !config.enabled) {
             return StringTextComponent(text)
         }
 

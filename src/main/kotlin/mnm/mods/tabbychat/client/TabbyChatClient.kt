@@ -21,28 +21,29 @@ import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper
 import thedarkcolour.kotlinforforge.forge.FORGE_BUS
+import java.net.SocketAddress
 
 @Mod.EventBusSubscriber(modid = MODID, value = [Dist.CLIENT])
 object TabbyChatClient {
 
-    val settings: TabbySettings = TabbySettings(TabbyChat.dataFolder)
-
-    lateinit var serverSettings: ServerSettings
+    val settings = TabbySettings(TabbyChat.dataFolder)
+    var serverSettings = ServerSettings(TabbyChat.dataFolder, null)
 
     init {
-        ConfigManager.addConfigs(settings)
+        ConfigManager.register { settings }
+        ConfigManager.register { serverSettings }
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
-    private fun removeChannelTags(event: MessageAddedToChannelEvent.Pre) {
+    fun removeChannelTags(event: MessageAddedToChannelEvent.Pre) {
         if (settings.advanced.hideTag && event.channel !== DefaultChannel) {
             val pattern = serverSettings.general.channelPattern
 
             val text = event.text
             if (text != null) {
-                val matcher = pattern.pattern.matcher(text.string)
-                if (matcher.find()) {
-                    event.text = ChatTextUtils.subChat(text, matcher.end())
+                val matcher = pattern.pattern.find(text.string)
+                if (matcher != null) {
+                    event.text = ChatTextUtils.subChat(text, matcher.range.last)
                 }
             }
         }
@@ -72,8 +73,8 @@ object TabbyChatClient {
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.LOW)
-    private fun onClientLogin(event: ClientPlayerNetworkEvent.LoggedInEvent) {
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    fun onClientLogin(event: ClientPlayerNetworkEvent.LoggedInEvent) {
         // load chat
         try {
             serverSettings = ServerSettings(TabbyChat.dataFolder, event.networkManager!!.remoteAddress)

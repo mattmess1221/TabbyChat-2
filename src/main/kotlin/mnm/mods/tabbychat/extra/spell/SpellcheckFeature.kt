@@ -13,12 +13,7 @@ import thedarkcolour.kotlinforforge.forge.runWhenOn
 @Mod.EventBusSubscriber(modid = MODID, value = [Dist.CLIENT])
 object SpellcheckFeature {
 
-    val spellcheckFolder = TabbyChat.dataFolder / "spellcheck"
-    val config = SpellcheckConfig(spellcheckFolder)
-
     init {
-        ConfigManager.addConfigs(config)
-
         runWhenOn(Dist.CLIENT) {
             val resources = mc.resourceManager as IReloadableResourceManager
             resources.addReloadListener(Spellcheck)

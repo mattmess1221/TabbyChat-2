@@ -1,11 +1,10 @@
 package mnm.mods.tabbychat.extra.log
 
+import mnm.mods.tabbychat.util.config.AbstractConfigView
 import mnm.mods.tabbychat.util.config.Comment
-import mnm.mods.tabbychat.util.config.FileConfigView
-import mnm.mods.tabbychat.util.div
-import java.nio.file.Path
+import mnm.mods.tabbychat.util.config.ConfigView
 
-class ChatLoggingConfig(path: Path) : FileConfigView(path / "logging.toml") {
+class ChatLoggingConfig(config: AbstractConfigView, path: List<String>) : ConfigView(config, path) {
     @Comment("Logs chat to a file")
     var logChat by defining(true)
 
