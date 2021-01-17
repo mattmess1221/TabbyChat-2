@@ -12,6 +12,7 @@ import mnm.mods.tabbychat.util.mc
 import net.minecraft.client.gui.NewChatGui
 import net.minecraft.client.gui.screen.ChatScreen
 import net.minecraft.util.text.ITextComponent
+import net.minecraftforge.common.MinecraftForge
 import thedarkcolour.kotlinforforge.forge.FORGE_BUS
 
 object GuiNewChatTC : NewChatGui(mc) {
@@ -74,7 +75,7 @@ object GuiNewChatTC : NewChatGui(mc) {
         // chat listeners
         val chatevent = ChatReceivedEvent(chat, chatLineId)
         chatevent.channels.add(DefaultChannel)
-        FORGE_BUS.post(chatevent)
+        MinecraftForge.EVENT_BUS.post(chatevent)
         // chat filters
         val ichat = chatevent.text
         val id = chatevent.id

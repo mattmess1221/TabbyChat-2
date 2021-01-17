@@ -21,6 +21,7 @@ import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.StringTextComponent
 import net.minecraft.util.text.Style
 import net.minecraft.util.text.TextFormatting
+import net.minecraftforge.common.MinecraftForge
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream
 import thedarkcolour.kotlinforforge.forge.FORGE_BUS
@@ -158,7 +159,7 @@ object ChatManager : Chat {
 
     fun addMessage(channel: Channel, text: ITextComponent, id: Int) {
         val event = MessageAddedToChannelEvent.Pre(text.deepCopy(), id, channel)
-        if (FORGE_BUS.post(event) || event.text == null) {
+        if (MinecraftForge.EVENT_BUS.post(event) || event.text == null) {
             return
         }
         val text = event.text!!
@@ -175,7 +176,7 @@ object ChatManager : Chat {
 
         trimMessages(messages, settings.advanced.historyLen)
 
-        FORGE_BUS.post(MessageAddedToChannelEvent.Post(text, id, channel))
+        MinecraftForge.EVENT_BUS.post(MessageAddedToChannelEvent.Post(text, id, channel))
 
         save()
         markDirty(channel)

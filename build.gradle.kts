@@ -31,7 +31,7 @@ dependencies {
 
     implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
-    implementation("thedarkcolour:kotlinforforge:1.6.1")
+    implementation("thedarkcolour:kotlinforforge:1.7.0")
 
     testImplementation("junit:junit:4.12")
 }
